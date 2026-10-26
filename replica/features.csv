@@ -1,0 +1,81 @@
+feature,area,priority,original,clone,notes
+הרשמה עם Google או אימייל (קישור קסם),onboarding,must,yes,no,
+שאלון פרופיל: גיל מין גובה משקל מטרה ניסיון ימים ציוד,onboarding,must,yes,no,אצלם כ-35 שלבים. אצלנו עד 10
+תוכנית אימון מוצעת בסוף האונבורדינג,onboarding,must,yes,no,
+מסך בית עם האימון של היום,home,must,yes,no,
+כפתור + לפעולות מהירות (אימון קרדיו שקילה תמונה),home,should,yes,no,
+התחלת אימון מתבנית,logger,must,yes,no,
+אימון פריסטייל ריק,logger,must,yes,no,
+רישום סט: משקל וחזרות,logger,must,yes,no,
+הצגת הביצוע הקודם בכל תרגיל,logger,must,yes,no,
+טיימר מנוחה אוטומטי אחרי סט,logger,must,yes,no,5.4.0
+זמני מנוחה מדויקים (לא רק דקות שלמות),logger,should,yes,no,5.4.0
+מקלדת מספרים מותאמת לרישום,logger,should,yes,no,5.4.0
+הערות לאימון ולתרגיל,logger,should,yes,no,
+סופרסטים,logger,should,yes,no,אצלם בתשלום
+החלפת תרגיל באמצע אימון,logger,must,yes,no,
+סוגי סט: חימום עבודה drop כושל,logger,should,yes,no,
+מחשבון פלטות,logger,could,yes,no,
+שעון אימון (משך),logger,must,yes,no,
+מצב אופליין בחדר כושר,logger,must,yes,no,5.17.0. אצלנו קריטי
+שחזור אימון פתוח אחרי סגירת הדפדפן,logger,must,yes,no,
+סיום אימון עם סיכום (משך נפח סטים),completion,must,yes,no,
+שיאים אישיים בזמן אמת,completion,must,yes,no,5.12.0
+כרטיס שיתוף לאימון ולשיא,completion,could,yes,no,
+ספריית תרגילים 600+ עם חיפוש,exercises,must,yes,no,ספרייה פתוחה (לא שלהם). התחלה: 150 נפוצים
+סינון תרגילים לפי שריר ציוד וסוג,exercises,must,yes,no,
+הדגמת תרגיל (וידאו או אנימציה),exercises,should,yes,no,מדיה ברישיון פתוח בלבד
+היסטוריית תרגיל וגרף 1RM משוער,exercises,must,yes,no,
+תרגילים מועדפים,exercises,could,yes,no,5.17.0
+תרגיל מותאם אישית,exercises,should,yes,no,אצלם בתשלום
+יצירה ועריכת תבנית אימון,templates,must,yes,no,
+סידור תרגילים בגרירה,templates,should,yes,no,
+יעדי סטים חזרות ומנוחה בתבנית,templates,must,yes,no,
+שמירת אימון פריסטייל כתבנית,templates,should,yes,no,
+ספריית תוכניות מוכנות,programs,should,yes,no,תוכניות שאנחנו כותבים. לא שלהם
+התחלת תוכנית ולוח אימונים שבועי,programs,should,yes,no,
+סיכום התקדמות (תדירות נפח),progress,must,yes,no,5.13.0
+Strength Score עם 5 תת-ציונים,progress,must,yes,no,נוסחה משלנו ושקופה
+רמות כוח (מתחיל עד עילית),progress,should,yes,no,
+איזון שרירים לאורך זמן,progress,should,yes,no,5.13.0
+היסטוריית אימונים ועריכת אימון ישן,progress,must,yes,no,
+רשימת שיאים אישיים,progress,should,yes,no,
+מדדי גוף: משקל ואחוז שומן עם גרף,body,must,yes,no,
+היקפים (מותן חזה זרוע וכו'),body,could,yes,no,
+תמונות התקדמות פרטיות,body,should,yes,no,
+השוואת תמונות זו לצד זו,body,should,yes,no,5.14.1
+תיעוד קרדיו ידני,cardio,should,yes,no,
+אשף תזונה: חישוב קלוריות ומאקרו לפי מטרה,nutrition,must,yes,no,
+יעד יומי לחלבון ולסיבים,nutrition,must,yes,no,
+מעקב יומי מול היעדים (טבעות),nutrition,must,yes,no,
+הרגלים יומיים עם רצפים,habits,could,yes,no,
+שיעורים על אימון ותזונה,lessons,could,yes,no,כתיבה מאפס בעברית
+יחידות ק"ג או ליברות,settings,must,yes,no,
+תחילת שבוע ראשון או שני,settings,should,yes,no,5.4.0. בישראל ברירת מחדל ראשון
+ברירות מחדל למנוחה ולתרגילים,settings,could,yes,no,5.4.0
+מצב כהה,settings,should,yes,no,5.14.1
+מחיקת חשבון וכל הנתונים,settings,must,yes,no,
+ייצוא נתונים,settings,could,yes,no,
+Workout Circles: צ'אט קבוצתי עם חברים,social,could,yes,no,לשימוש אישי. אחרי ה-MVP
+חיבור Strava,integrations,could,yes,no,API רשמי עם המפתחות שלך
+אימון אישי עם מאמן אנושי (Premium),coaching,should,yes,skip,שירות של אנשים ולא פיצ'ר. לשימוש אישי לא נדרש
+קבוצות מאמן ו-4 שבועות חודשיים (Pro),coaching,could,yes,skip,שירות של אנשים
+סרטוני התרגילים של Caliber,exercises,should,yes,skip,התוכן שלהם. מוחלף בספרייה פתוחה
+120+ התוכניות של Caliber,programs,should,yes,skip,התוכן שלהם. כותבים תוכניות משלנו
+סנכרון Apple Health,integrations,should,yes,skip,לא נגיש מאתר. אפשרי רק באפליקציה נייטיב בהמשך
+אפליקציית Apple Watch,integrations,could,yes,skip,לא נגיש מאתר
+שרת MCP לחיבור ל-ChatGPT ו-Claude,integrations,could,yes,skip,לא נדרש לשימוש אישי בשלב זה
+ממשק בעברית מלאה RTL,localization,must,no,no,תוספת: המקור באנגלית בלבד
+יומן אוכל עם מאגר מזון ישראלי וחיפוש בעברית,nutrition,must,no,no,תוספת: אצלם כנראה רק יעדים + Apple Health
+סריקת ברקוד למוצרים ישראליים,nutrition,should,no,no,תוספת: Open Food Facts
+ארוחות חוזרות ומתכונים ביתיים,nutrition,should,no,no,תוספת
+נוסחת ציון שקופה (למה הציון עלה או ירד),progress,must,no,no,תוספת: תלונה ידועה על הציון שלהם
+רישום סט בנגיעה אחת כשחוזרים על הקודם,logger,must,no,no,תוספת: יעד מהירות
+התראת סיום מנוחה גם כשהמסך נעול (Web Push),logger,must,no,no,תוספת: הבקשה הכי מבוקשת אצלם (682)
+בחירת ציוד זמין ותבניות שמתאימות אליו,templates,should,no,no,תוספת: בקשה שנייה (557)
+הצעות לשינוי אימון לפי התקדמות (עומס פרוגרסיבי),logger,should,no,no,תוספת: בקשה שלישית (464)
+קלוריות משוערות לאימון,completion,could,no,no,תוספת: בקשה (285)
+גביעים ואבני דרך,progress,could,no,no,תוספת: בקשה (263)
+גרסת ווב,platform,must,no,no,תוספת: בקשה (315). זו הפלטפורמה שלנו
+כל הפיצ'רים בחינם (בלי paywall),pricing,should,no,no,תוספת: תלונה ידועה. לשימוש אישי
+ממשק פשוט עם פחות צעדים,ux,should,no,no,תוספת: תלונה על ממשק מסובך
