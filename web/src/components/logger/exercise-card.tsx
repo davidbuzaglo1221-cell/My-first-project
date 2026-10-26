@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
-import { MoreVertical, Plus, StickyNote } from "lucide-react";
+import { MoreHorizontal, Plus } from "lucide-react";
 import { IconButton } from "@/components/ui/button";
+import { Tag } from "@/components/ui/surface";
 import { cn } from "@/lib/cn";
 
 /**
- * One exercise inside the logger: name, meta, notes, the set rows, add set.
- * A superset gets a coloured rail on the start side and its letter (א, ב...).
+ * One exercise inside the logger: name, tags, the coach note, the set rows, add set.
+ * A superset gets a lit rail on the start side and its letter (א, ב...).
  */
 export function ExerciseCard({
   name,
-  meta,
+  tags = [],
   supersetLabel,
   note,
   children,
@@ -19,7 +20,7 @@ export function ExerciseCard({
   totalCount,
 }: {
   name: string;
-  meta?: string;
+  tags?: string[];
   supersetLabel?: string;
   note?: string;
   children: ReactNode;
@@ -30,51 +31,36 @@ export function ExerciseCard({
 }) {
   const complete = totalCount > 0 && doneCount === totalCount;
   return (
-    <section
-      aria-label={name}
-      className={cn(
-        "relative rounded-lg border bg-bg p-3 shadow-card",
-        complete ? "border-accent/40" : "border-border",
-        supersetLabel && "border-s-4 border-s-accent",
-      )}
-    >
-      <header className="mb-2 flex items-start gap-2">
+    <section aria-label={name} className="glass relative overflow-hidden rounded-lg p-4">
+      {supersetLabel && <span aria-hidden className="absolute inset-y-4 start-0 w-0.5 rounded-pill bg-accent" />}
+      <header className="mb-3 flex items-start gap-3">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            {supersetLabel && (
-              <span className="rounded-sm bg-accent-soft px-1.5 py-0.5 text-xs font-bold text-accent-ink">
-                סופרסט {supersetLabel}
-              </span>
-            )}
-            <h3 className="truncate text-lg">{name}</h3>
-          </div>
-          <p className="text-sm text-text-muted">
-            {meta && <span>{meta} · </span>}
-            <span className="num">
-              {doneCount}/{totalCount} סטים
+          {supersetLabel && <p className="mb-1 text-xs font-medium text-accent">סופרסט {supersetLabel}</p>}
+          <h3 className="truncate text-lg">{name}</h3>
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+            {tags.map((t) => (
+              <Tag key={t}>{t}</Tag>
+            ))}
+            <span className={cn("num ms-auto text-xs", complete ? "text-success" : "text-text-subtle")}>
+              {doneCount} מתוך {totalCount} סטים
             </span>
-          </p>
+          </div>
         </div>
         {onMenu && (
-          <IconButton label={`אפשרויות ל${name}`} onClick={onMenu}>
-            <MoreVertical aria-hidden className="size-5" />
+          <IconButton label={`אפשרויות ל${name}`} onClick={onMenu} className="-me-2 -mt-1.5">
+            <MoreHorizontal aria-hidden className="size-5" />
           </IconButton>
         )}
       </header>
 
-      {note && (
-        <p className="mb-2 flex items-start gap-2 rounded-sm bg-warning-soft px-2.5 py-2 text-sm text-warning">
-          <StickyNote aria-hidden className="mt-0.5 size-4 shrink-0" />
-          {note}
-        </p>
-      )}
+      {note && <p className="mb-3 border-s-2 border-warning/70 ps-3 text-sm text-text-muted">{note}</p>}
 
       <div className="flex flex-col gap-1">{children}</div>
 
       <button
         type="button"
         onClick={onAddSet}
-        className="mt-2 flex h-11 w-full items-center justify-center gap-1.5 rounded-md bg-surface text-sm font-semibold text-accent hover:bg-surface-2"
+        className="mt-3 flex h-11 w-full items-center justify-center gap-1.5 rounded-md text-sm font-medium text-accent transition-colors duration-(--motion-fast) hover:bg-accent-soft/40"
       >
         <Plus aria-hidden className="size-4" />
         הוספת סט

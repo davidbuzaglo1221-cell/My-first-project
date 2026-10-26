@@ -6,7 +6,7 @@ import { cn } from "@/lib/cn";
 export type TabId = "home" | "workouts" | "progress" | "nutrition" | "profile";
 
 export const TABS: { id: TabId; label: string; href: string; Icon: typeof Home }[] = [
-  { id: "home", label: "בית", href: "/", Icon: Home },
+  { id: "home", label: "היום", href: "/", Icon: Home },
   { id: "workouts", label: "אימונים", href: "/workouts", Icon: Dumbbell },
   { id: "progress", label: "התקדמות", href: "/progress", Icon: LineChart },
   { id: "nutrition", label: "תזונה", href: "/nutrition", Icon: Apple },
@@ -14,25 +14,30 @@ export const TABS: { id: TabId; label: string; href: string; Icon: typeof Home }
 ];
 
 /**
- * Bottom navigation. In RTL the first tab (בית) sits on the right, where the thumb starts.
- * `onSelect` lets the design page demo it without routing; real screens pass hrefs through.
+ * Floating glass navigation, inset from the screen edges. In RTL the first tab sits on the right,
+ * where the thumb starts. `onSelect` lets the design page demo it without routing.
  */
-export function TabBar({ active, onSelect }: { active: TabId; onSelect?: (id: TabId) => void }) {
+export function TabBar({
+  active,
+  onSelect,
+  hrefFor,
+}: {
+  active: TabId;
+  onSelect?: (id: TabId) => void;
+  hrefFor?: (id: TabId) => string;
+}) {
   return (
     <nav
       aria-label="ניווט ראשי"
-      className={cn(
-        "fixed inset-x-0 bottom-0 z-20 border-t border-border bg-bg/95 backdrop-blur",
-        "pb-[env(safe-area-inset-bottom)]",
-      )}
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-20 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
     >
-      <ul className="mx-auto flex h-(--layout-tabbar-height) max-w-(--layout-max-width)">
+      <ul className="glass-raised pointer-events-auto mx-auto flex h-(--layout-tabbar-height) max-w-(--layout-max-width) items-stretch rounded-xl px-1.5">
         {TABS.map(({ id, label, href, Icon }) => {
           const current = id === active;
           return (
             <li key={id} className="flex-1">
               <a
-                href={href}
+                href={hrefFor ? hrefFor(id) : href}
                 aria-current={current ? "page" : undefined}
                 onClick={(e) => {
                   if (onSelect) {
@@ -41,19 +46,20 @@ export function TabBar({ active, onSelect }: { active: TabId; onSelect?: (id: Ta
                   }
                 }}
                 className={cn(
-                  "flex h-full flex-col items-center justify-center gap-1 text-xs font-medium",
-                  current ? "text-accent" : "text-text-muted",
+                  "relative flex h-full flex-col items-center justify-center gap-1 text-[0.6875rem] font-medium transition-colors duration-(--motion-fast)",
+                  current ? "text-text" : "text-text-subtle hover:text-text-muted",
                 )}
               >
-                <span
-                  className={cn(
-                    "flex h-7 w-14 items-center justify-center rounded-pill transition-colors duration-(--motion-fast)",
-                    current && "bg-accent-soft",
-                  )}
-                >
-                  <Icon aria-hidden className="size-5" strokeWidth={current ? 2.4 : 2} />
-                </span>
+                <Icon aria-hidden className={cn("size-[1.35rem]", current && "text-accent")} strokeWidth={current ? 2.1 : 1.7} />
                 {label}
+                {/* A short lit line under the current tab, instead of a filled pill. */}
+                <span
+                  aria-hidden
+                  className={cn(
+                    "absolute bottom-1.5 h-0.5 rounded-pill bg-accent transition-[width,opacity] duration-(--motion-base)",
+                    current ? "w-5 opacity-100" : "w-0 opacity-0",
+                  )}
+                />
               </a>
             </li>
           );

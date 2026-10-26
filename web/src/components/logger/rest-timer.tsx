@@ -48,62 +48,51 @@ export function RestTimer({
   const fraction = totalSec > 0 ? Math.min(1, remaining / totalSec) : 0;
   const time = formatDuration(remaining);
 
+  const step = "well num h-10 min-w-13 rounded-pill px-3 text-sm font-medium text-text-muted hover:text-text";
   const controls = (
-    <div className="flex items-center gap-2">
-      <button
-        type="button"
-        onClick={() => onAdjust(-15)}
-        className="num h-10 rounded-sm bg-surface-2 px-3 text-sm font-semibold"
-        aria-label="הפחתת 15 שניות"
-      >
+    <div className="flex items-center gap-1.5">
+      <button type="button" onClick={() => onAdjust(-15)} className={step} aria-label="הפחתת 15 שניות">
         <bdi dir="ltr">−15</bdi>
       </button>
-      <button
-        type="button"
-        onClick={() => onAdjust(15)}
-        className="num h-10 rounded-sm bg-surface-2 px-3 text-sm font-semibold"
-        aria-label="הוספת 15 שניות"
-      >
+      <button type="button" onClick={() => onAdjust(15)} className={step} aria-label="הוספת 15 שניות">
         <bdi dir="ltr">+15</bdi>
       </button>
-      <button type="button" onClick={onSkip} className="h-10 rounded-sm px-3 text-sm font-semibold text-accent">
+      <button type="button" onClick={onSkip} className="h-10 rounded-pill px-3 text-sm font-semibold text-accent">
         {finished ? "סגירה" : "דילוג"}
       </button>
     </div>
   );
 
   return (
-    <div
-      className={cn(
-        "overflow-hidden rounded-lg border",
-        finished ? "border-accent bg-accent-soft" : "border-border bg-bg",
-        variant === "full" ? "p-5" : "p-3",
-      )}
-    >
+    <div className={cn("glass overflow-hidden rounded-lg", variant === "full" ? "p-6" : "px-4 pt-3.5 pb-4")}>
       {/* Announced once when it ends, not every second. */}
       <p aria-live="assertive" className="sr-only">
         {finished ? "המנוחה הסתיימה. לסט הבא" : ""}
       </p>
       {variant === "full" ? (
         <div className="flex flex-col items-center gap-4">
-          <span className="text-sm font-medium text-text-muted">{finished ? "לסט הבא!" : "מנוחה"}</span>
-          <span role="timer" aria-label={`נותרו ${time}`} className="num text-timer">
+          <span className="text-sm text-text-muted">{finished ? "לסט הבא" : "מנוחה"}</span>
+          <span role="timer" aria-label={`נותרו ${time}`} className={cn("figure text-timer", finished && "text-success")}>
             <bdi dir="ltr">{time}</bdi>
           </span>
           {controls}
         </div>
       ) : (
         <div className="flex items-center justify-between gap-3">
-          <div className="flex items-baseline gap-2">
-            <span className="text-sm font-medium text-text-muted">{finished ? "לסט הבא!" : "מנוחה"}</span>
-            <span role="timer" aria-label={`נותרו ${time}`} className="num text-2xl">
+          <div className="flex flex-col">
+            <span className="text-xs text-text-subtle">{finished ? "לסט הבא" : "מנוחה"}</span>
+            <span
+              role="timer"
+              aria-label={`נותרו ${time}`}
+              className={cn("figure text-[2.25rem] leading-none", finished ? "text-success" : "text-text")}
+            >
               <bdi dir="ltr">{time}</bdi>
             </span>
           </div>
           {controls}
         </div>
       )}
-      <div aria-hidden className={cn("h-1.5 overflow-hidden rounded-pill bg-surface-2", variant === "full" ? "mt-5" : "mt-3")}>
+      <div aria-hidden className={cn("well h-1 overflow-hidden rounded-pill", variant === "full" ? "mt-6" : "mt-3.5")}>
         {/* Shrinks toward the start side (right, in RTL). */}
         <div
           className="h-full rounded-pill bg-accent transition-[width] duration-300 ease-linear"

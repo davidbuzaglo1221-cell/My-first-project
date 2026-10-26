@@ -50,13 +50,18 @@ export function NumericKeypad({
     onChange(String(next));
   };
 
-  const key = "num flex h-13 items-center justify-center rounded-md bg-bg text-xl font-semibold active:bg-surface-2";
+  const key = "figure glass flex h-13 items-center justify-center rounded-md text-2xl text-text active:brightness-125";
+  const fn = "glass flex h-13 items-center justify-center rounded-md text-base font-medium text-text-muted active:brightness-125";
   const stepLabel = formatNumber(step);
 
   return (
-    <div role="group" aria-label={`מקלדת: ${label}`} className="border-t border-border bg-surface px-3 pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+    <div
+      role="group"
+      aria-label={`מקלדת: ${label}`}
+      className="glass-raised mx-2 mb-2 rounded-xl px-3 pt-2.5 pb-[calc(0.75rem+env(safe-area-inset-bottom))]"
+    >
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-sm font-medium text-text-muted">{label}</span>
+        <span className="ps-1 text-sm text-text-muted">{label}</span>
         <button type="button" onClick={onDone} className="h-9 px-2 text-sm font-semibold text-accent">
           סיום
         </button>
@@ -67,7 +72,7 @@ export function NumericKeypad({
             {k}
           </button>
         ))}
-        <button type="button" className={cn(key, "bg-surface-2 text-base")} onClick={() => bump(-step)} aria-label={`הפחתה של ${stepLabel}`}>
+        <button type="button" className={fn} onClick={() => bump(-step)} aria-label={`הפחתה של ${stepLabel}`}>
           −{stepLabel}
         </button>
         {["4", "5", "6"].map((k) => (
@@ -75,7 +80,7 @@ export function NumericKeypad({
             {k}
           </button>
         ))}
-        <button type="button" className={cn(key, "bg-surface-2 text-base")} onClick={() => bump(step)} aria-label={`הוספה של ${stepLabel}`}>
+        <button type="button" className={fn} onClick={() => bump(step)} aria-label={`הוספה של ${stepLabel}`}>
           +{stepLabel}
         </button>
         {["7", "8", "9"].map((k) => (
@@ -83,8 +88,8 @@ export function NumericKeypad({
             {k}
           </button>
         ))}
-        <button type="button" className={cn(key, "bg-surface-2")} onClick={() => press("back")} aria-label="מחיקה">
-          <Delete aria-hidden className="size-6" />
+        <button type="button" className={fn} onClick={() => press("back")} aria-label="מחיקה">
+          <Delete aria-hidden className="size-5" />
         </button>
         <button
           type="button"
@@ -101,7 +106,7 @@ export function NumericKeypad({
         <button
           type="button"
           onClick={onNext}
-          className="col-span-2 flex h-13 items-center justify-center rounded-md bg-accent text-lg font-bold text-on-accent active:bg-accent-hover"
+          className="col-span-2 flex h-13 items-center justify-center rounded-md bg-accent text-lg font-semibold text-on-accent shadow-[inset_0_1px_0_rgb(255_255_255/0.35)] active:bg-accent-hover"
         >
           הבא
         </button>

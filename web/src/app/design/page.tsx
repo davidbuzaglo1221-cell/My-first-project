@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { Button, Fab, IconButton } from "@/components/ui/button";
 import { FilterChip, SearchField, Segmented, TextField } from "@/components/ui/field";
-import { Banner, Card, EmptyState, SectionHeader, Skeleton, Stat } from "@/components/ui/surface";
+import { Banner, EmptyState, Panel, SectionHeader, Skeleton, Stat } from "@/components/ui/surface";
 import { BottomSheet, SheetAction } from "@/components/ui/bottom-sheet";
 import { TabBar, type TabId } from "@/components/ui/tab-bar";
 import { ToastProvider, useToast } from "@/components/ui/toast";
@@ -48,8 +48,8 @@ const initialSets: DemoSet[] = [
 
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
-    <section aria-labelledby={id} className="flex flex-col gap-4 border-b border-border pb-8">
-      <h2 id={id} className="text-xl">
+    <section aria-labelledby={id} className="flex flex-col gap-4">
+      <h2 id={id} className="font-display text-2xl">
         {title}
       </h2>
       {children}
@@ -162,8 +162,7 @@ function Demo() {
   return (
     <div className="mx-auto flex max-w-(--layout-max-width) flex-col gap-8 px-4 pt-6 pb-[calc(var(--layout-tabbar-height)+18rem)]">
       <header className="flex flex-col gap-3">
-        <p className="text-sm font-semibold text-accent">מערכת העיצוב</p>
-        <h1 className="text-2xl">כל הרכיבים, במקום אחד</h1>
+        <h1 className="font-display text-[2.5rem] leading-tight">מערכת העיצוב</h1>
         <p className="text-text-muted">
           עמוד בדיקה: כל רכיב בכל המצבים, בעברית ומימין לשמאל. הערכים מגיעים מ-<bdi dir="ltr">tokens.json</bdi>.
         </p>
@@ -182,8 +181,8 @@ function Demo() {
       <Section id="colors" title="צבעים">
         <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {COLOR_ROLES.map((role) => (
-            <li key={role} className="flex items-center gap-2 rounded-md border border-border p-2">
-              <span className="size-8 shrink-0 rounded-sm border border-border" style={{ background: `var(--c-${role})` }} />
+            <li key={role} className="glass flex items-center gap-2 rounded-md p-2">
+              <span className="size-8 shrink-0 rounded-sm shadow-[inset_0_0_0_1px_var(--g-border)]" style={{ background: `var(--c-${role})` }} />
               <bdi dir="ltr" className="truncate text-xs text-text-muted">
                 {role}
               </bdi>
@@ -196,10 +195,13 @@ function Demo() {
         <div className="flex flex-col gap-2">
           {TYPE_SCALE.map((t) => (
             <p key={t} className={typeClass[t]}>
-              אימון כוח 100 ק״ג <span className="text-xs text-text-muted">({t})</span>
+              אימון כוח 100 ק״ג <span className="text-xs text-text-subtle">({t})</span>
             </p>
           ))}
-          <p className="num text-timer">
+          <p className="figure text-display">
+            <bdi dir="ltr">142.5</bdi>
+          </p>
+          <p className="figure text-timer">
             <bdi dir="ltr">1:45</bdi>
           </p>
         </div>
@@ -242,7 +244,7 @@ function Demo() {
           <IconButton label="הוספה" variant="soft">
             <Plus aria-hidden className="size-5" />
           </IconButton>
-          <IconButton label="מחיקה" variant="secondary">
+          <IconButton label="מחיקה" variant="glass">
             <Trash2 aria-hidden className="size-5" />
           </IconButton>
         </div>
@@ -271,7 +273,7 @@ function Demo() {
       </Section>
 
       <Section id="logger" title="מתעד אימון">
-        <Banner tone="offline">אין חיבור. הכול נשמר בטלפון ויסתנכרן כשהרשת תחזור.</Banner>
+        <Banner tone="info">אין חיבור. הכול נשמר בטלפון ויסתנכרן כשהרשת תחזור.</Banner>
         <RestTimer
           endsAt={restEnd}
           totalSec={restTotal}
@@ -289,7 +291,7 @@ function Demo() {
         )}
         <ExerciseCard
           name="סקוואט עם מוט"
-          meta="רגליים · מוט"
+          tags={["רגליים", "מוט"]}
           note="ירידה עד מתחת למקביל, ברכיים בכיוון האצבעות"
           doneCount={doneCount}
           totalCount={sets.length}
@@ -314,8 +316,8 @@ function Demo() {
             />
           ))}
         </ExerciseCard>
-        <ExerciseCard name="לחיצת חזה" meta="חזה · מוט" supersetLabel="א" doneCount={0} totalCount={0} onAddSet={() => {}}>
-          <p className="py-2 text-center text-sm text-text-muted">עוד אין סטים. בפעם הקודמת: 3 × 80 ק״ג × 8</p>
+        <ExerciseCard name="לחיצת חזה" tags={["חזה", "מוט"]} supersetLabel="א" doneCount={0} totalCount={0} onAddSet={() => {}}>
+          <p className="py-2 text-center text-sm text-text-subtle">עוד אין סטים. בפעם הקודמת: 3 סטים של 80 ק״ג × 8</p>
         </ExerciseCard>
         <p className="text-sm text-text-muted">
           לנסות: ✓ בשורה ריקה ממלא את מה שעשית בפעם הקודמת ומפעיל מנוחה. לגעת במשקל פותח מקלדת. הסט האחרון (100 × 5) ייתן
@@ -324,21 +326,21 @@ function Demo() {
       </Section>
 
       <Section id="progress" title="התקדמות ותזונה">
-        <Card className="flex flex-col gap-4">
+        <Panel className="flex flex-col gap-4">
           <SectionHeader title="ציון כוח" action={<Button variant="ghost" size="sm">למה?</Button>} />
           <ScoreBadge score={342} level="intermediate" delta={12} size="lg" />
           <p className="text-sm text-text-muted">
             עלה ב-12: שיא חדש בסקוואט (<bdi dir="ltr">100 × 5</bdi>). החזה לא השתנה.
           </p>
-        </Card>
-        <Card className="flex flex-col items-center gap-5">
+        </Panel>
+        <Panel className="flex flex-col items-center gap-5">
           <ProgressRing value={1650} target={2400} label="קלוריות" unit="קלוריות" />
           <div className="flex w-full flex-col gap-3">
             <MacroBar macro="protein" value={128} target={165} />
             <MacroBar macro="carbs" value={180} target={260} />
             <MacroBar macro="fat" value={84} target={70} />
           </div>
-        </Card>
+        </Panel>
         <div className="grid grid-cols-3 gap-2">
           <Stat label="אימונים השבוע" value="3" hint="מתוך 4" />
           <Stat label="נפח" value="12,400" unit='ק"ג' />

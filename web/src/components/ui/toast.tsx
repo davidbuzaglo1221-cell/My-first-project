@@ -15,9 +15,9 @@ export function useToast() {
 
 const icons = { success: CheckCircle2, danger: AlertTriangle, pr: Trophy };
 const tones = {
-  success: "bg-text text-bg",
+  success: "glass-raised text-text [&_svg]:text-success",
   danger: "bg-danger text-on-danger",
-  pr: "bg-pr-soft text-pr border border-pr/30",
+  pr: "glass-raised text-text [&_svg]:text-pr",
 };
 
 /** One toast at a time, above the tab bar, announced politely (assertive for errors). */
@@ -46,14 +46,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       <div
         aria-live={toast?.tone === "danger" ? "assertive" : "polite"}
-        className="pointer-events-none fixed inset-x-0 z-50 flex justify-center px-4 bottom-[calc(var(--layout-tabbar-height)+5.5rem+env(safe-area-inset-bottom))]"
+        className="pointer-events-none fixed inset-x-0 z-50 flex justify-center px-4 bottom-[calc(var(--layout-tabbar-height)+6.5rem+env(safe-area-inset-bottom))]"
       >
         {toast && Icon && (
           <div
             key={toast.id}
             role="status"
             className={cn(
-              "pointer-events-auto flex w-full max-w-(--layout-max-width) items-center gap-3 rounded-md px-4 py-3 shadow-pop",
+              "pointer-events-auto flex w-full max-w-(--layout-max-width) items-center gap-3 rounded-lg px-4 py-3.5",
               "animate-[toast-in_var(--motion-base)_var(--ease-out)]",
               tones[toast.tone],
             )}
@@ -67,7 +67,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                   toast.action?.onClick();
                   setToast(null);
                 }}
-                className="text-sm font-bold underline underline-offset-4"
+                className="text-sm font-semibold text-accent"
               >
                 {toast.action.label}
               </button>

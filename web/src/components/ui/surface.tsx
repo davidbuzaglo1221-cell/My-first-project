@@ -1,59 +1,51 @@
 import type { HTMLAttributes, ReactNode } from "react";
-import { AlertTriangle, CheckCircle2, Info, WifiOff } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-export function Card({ className, ...rest }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("rounded-lg border border-border bg-bg p-4 shadow-card", className)} {...rest} />;
+/** A raised glass pane. The default container for one block of content. */
+export function Panel({ className, ...rest }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={cn("glass rounded-lg p-5", className)} {...rest} />;
 }
 
 export function SectionHeader({ title, action }: { title: string; action?: ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-3">
+    <div className="flex items-baseline justify-between gap-3">
       <h2 className="text-lg">{title}</h2>
       {action}
     </div>
   );
 }
 
+/** A value held in a well: label above, serif figure, quiet hint. */
 export function Stat({ label, value, unit, hint }: { label: string; value: ReactNode; unit?: string; hint?: ReactNode }) {
   return (
-    <div className="flex flex-col gap-0.5 rounded-md bg-surface p-3">
+    <div className="well flex flex-col gap-1 rounded-md px-3.5 py-3">
       <span className="text-xs text-text-muted">{label}</span>
-      <span className="num text-xl">
+      <span className="figure text-2xl leading-none text-text">
         {value}
-        {unit && <span className="ms-1 text-sm font-medium text-text-muted">{unit}</span>}
+        {unit && <span className="ms-1 font-sans text-xs font-medium text-text-muted">{unit}</span>}
       </span>
-      {hint && <span className="text-xs text-text-muted">{hint}</span>}
+      {hint && <span className="text-xs text-text-subtle">{hint}</span>}
     </div>
   );
 }
 
-type Tone = "info" | "success" | "warning" | "danger" | "offline";
+type Tone = "info" | "success" | "warning" | "danger";
 
-const toneStyle: Record<Tone, string> = {
-  info: "bg-surface-2 text-text",
-  success: "bg-accent-soft text-accent-ink",
-  warning: "bg-warning-soft text-warning",
-  danger: "bg-danger-soft text-danger",
-  offline: "bg-surface-2 text-text",
+const toneDot: Record<Tone, string> = {
+  info: "bg-text-muted",
+  success: "bg-success",
+  warning: "bg-warning",
+  danger: "bg-danger",
 };
 
-const toneIcon: Record<Tone, typeof Info> = {
-  info: Info,
-  success: CheckCircle2,
-  warning: AlertTriangle,
-  danger: AlertTriangle,
-  offline: WifiOff,
-};
-
+/** A quiet status line on glass. The coloured dot carries the tone; the words carry the meaning. */
 export function Banner({ tone = "info", children, action }: { tone?: Tone; children: ReactNode; action?: ReactNode }) {
-  const Icon = toneIcon[tone];
   return (
     <div
       role={tone === "danger" ? "alert" : "status"}
-      className={cn("flex items-start gap-3 rounded-md px-3 py-2.5 text-sm", toneStyle[tone])}
+      className="glass flex items-center gap-3 rounded-md px-4 py-3 text-sm text-text"
     >
-      <Icon aria-hidden className="mt-0.5 size-5 shrink-0" />
+      <span aria-hidden className={cn("size-2 shrink-0 rounded-pill", toneDot[tone])} />
       <div className="flex-1">{children}</div>
       {action}
     </div>
@@ -72,15 +64,20 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-border px-6 py-10 text-center">
-      <div className="flex size-14 items-center justify-center rounded-pill bg-accent-soft text-accent-ink">{icon}</div>
+    <div className="glass flex flex-col items-center gap-3 rounded-lg px-6 py-10 text-center">
+      <div className="well flex size-14 items-center justify-center rounded-pill text-accent">{icon}</div>
       <h3 className="text-lg">{title}</h3>
       {body && <p className="max-w-xs text-sm text-text-muted">{body}</p>}
-      {action}
+      {action && <div className="mt-2">{action}</div>}
     </div>
   );
 }
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div aria-hidden className={cn("animate-pulse rounded-md bg-surface-2", className)} />;
+  return <div aria-hidden className={cn("well animate-pulse rounded-md", className)} />;
+}
+
+/** Small descriptor, e.g. the muscle and equipment of an exercise. Replaces "A · B" strings. */
+export function Tag({ children }: { children: ReactNode }) {
+  return <span className="well inline-flex h-6 items-center rounded-pill px-2.5 text-xs text-text-muted">{children}</span>;
 }

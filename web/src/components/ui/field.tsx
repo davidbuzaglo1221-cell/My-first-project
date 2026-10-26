@@ -13,6 +13,7 @@ type TextFieldProps = InputHTMLAttributes<HTMLInputElement> & {
   hideLabel?: boolean;
 };
 
+/** Inputs are wells: recessed into the glass, so it is obvious where to type. */
 export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function TextField(
   { label, hint, error, suffix, hideLabel, className, id, ...rest },
   ref,
@@ -22,15 +23,15 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function T
   const describedBy = [hint && `${inputId}-hint`, error && `${inputId}-error`].filter(Boolean).join(" ") || undefined;
 
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
-      <label htmlFor={inputId} className={cn("text-sm font-medium text-text", hideLabel && "sr-only")}>
+    <div className={cn("flex flex-col gap-2", className)}>
+      <label htmlFor={inputId} className={cn("text-sm font-medium text-text-muted", hideLabel && "sr-only")}>
         {label}
       </label>
       <div
         className={cn(
-          "flex h-12 items-center gap-2 rounded-md border bg-bg px-3",
-          "focus-within:outline-2 focus-within:outline-offset-1 focus-within:outline-focus",
-          error ? "border-danger" : "border-border-input",
+          "well flex h-13 items-center gap-2 rounded-md px-4 transition-shadow duration-(--motion-fast)",
+          "focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-focus",
+          error && "outline-2 outline-offset-2 outline-danger",
         )}
       >
         <input
@@ -44,7 +45,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function T
         {suffix && <span className="shrink-0 text-sm text-text-muted">{suffix}</span>}
       </div>
       {hint && !error && (
-        <p id={`${inputId}-hint`} className="text-sm text-text-muted">
+        <p id={`${inputId}-hint`} className="text-sm text-text-subtle">
           {hint}
         </p>
       )}
@@ -71,9 +72,9 @@ export function SearchField({
   return (
     <div
       role="search"
-      className="flex h-11 items-center gap-2 rounded-pill bg-surface-2 px-4 focus-within:outline-2 focus-within:outline-focus"
+      className="well flex h-12 items-center gap-2.5 rounded-pill px-4 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-focus"
     >
-      <Search aria-hidden className="size-5 shrink-0 text-text-muted" />
+      <Search aria-hidden className="size-[1.15rem] shrink-0 text-text-subtle" />
       <input
         type="search"
         aria-label={label}
@@ -87,7 +88,7 @@ export function SearchField({
           type="button"
           aria-label="ניקוי החיפוש"
           onClick={() => onChange("")}
-          className="-me-2 inline-flex size-9 items-center justify-center rounded-pill text-text-muted hover:bg-surface"
+          className="-me-2 inline-flex size-9 items-center justify-center rounded-pill text-text-muted hover:text-text"
         >
           <X aria-hidden className="size-4" />
         </button>
@@ -112,10 +113,8 @@ export function FilterChip({
       aria-pressed={selected}
       onClick={onToggle}
       className={cn(
-        "inline-flex h-9 shrink-0 items-center rounded-pill border px-3.5 text-sm font-medium transition-colors duration-(--motion-fast)",
-        selected
-          ? "border-accent bg-accent-soft text-accent-ink"
-          : "border-border bg-bg text-text hover:bg-surface",
+        "inline-flex h-9 shrink-0 items-center rounded-pill px-4 text-sm font-medium transition-[background-color,color] duration-(--motion-fast)",
+        selected ? "bg-accent text-on-accent" : "glass text-text-muted hover:text-text",
       )}
     >
       {children}
@@ -123,20 +122,22 @@ export function FilterChip({
   );
 }
 
-/** Two to four mutually exclusive options, e.g. ק"ג / ליב'. Uses radio semantics. */
+/** Two to four mutually exclusive options. A raised glass thumb sits in a well. */
 export function Segmented<T extends string>({
   label,
   value,
   options,
   onChange,
+  fullWidth,
 }: {
   label: string;
   value: T;
   options: { value: T; label: string }[];
   onChange: (v: T) => void;
+  fullWidth?: boolean;
 }) {
   return (
-    <div role="radiogroup" aria-label={label} className="inline-flex rounded-md bg-surface-2 p-1">
+    <div role="radiogroup" aria-label={label} className={cn("well inline-flex rounded-md p-1", fullWidth && "flex w-full")}>
       {options.map((o) => {
         const active = o.value === value;
         return (
@@ -147,8 +148,8 @@ export function Segmented<T extends string>({
             aria-checked={active}
             onClick={() => onChange(o.value)}
             className={cn(
-              "h-9 min-w-16 rounded-sm px-3 text-sm font-semibold transition-colors duration-(--motion-fast)",
-              active ? "bg-bg text-text shadow-card" : "text-text-muted",
+              "h-9 min-w-16 flex-1 rounded-sm px-3.5 text-sm font-medium transition-[background-color,color] duration-(--motion-fast)",
+              active ? "glass-raised text-text" : "text-text-muted hover:text-text",
             )}
           >
             {o.label}

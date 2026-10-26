@@ -28,33 +28,33 @@ export function OptionCard({
       aria-checked={selected}
       onClick={onSelect}
       className={cn(
-        "flex w-full items-center gap-3 rounded-lg border-2 p-4 text-start transition-colors duration-(--motion-fast)",
-        selected ? "border-accent bg-accent-soft" : "border-border bg-bg hover:bg-surface",
+        "glass flex w-full items-center gap-4 rounded-lg p-4 text-start transition-[box-shadow,background-color] duration-(--motion-fast)",
+        selected && "bg-accent-soft/70 outline-1 outline-accent/70",
       )}
     >
       {icon && (
         <span
           className={cn(
-            "flex size-11 shrink-0 items-center justify-center rounded-md",
-            selected ? "bg-accent text-on-accent" : "bg-surface-2 text-text",
+            "flex size-11 shrink-0 items-center justify-center rounded-md transition-colors duration-(--motion-fast)",
+            selected ? "bg-accent text-on-accent" : "well text-text-muted",
           )}
         >
           {icon}
         </span>
       )}
       <span className="flex flex-1 flex-col">
-        <span className="font-semibold">{title}</span>
-        {body && <span className="text-sm text-text-muted">{body}</span>}
+        <span className="font-medium">{title}</span>
+        {body && <span className="text-sm text-text-subtle">{body}</span>}
       </span>
       <span
         aria-hidden
         className={cn(
-          "flex size-6 shrink-0 items-center justify-center border-2",
-          multiple ? "rounded-sm" : "rounded-pill",
+          "flex size-5.5 shrink-0 items-center justify-center border-[1.5px] transition-colors duration-(--motion-fast)",
+          multiple ? "rounded-[0.4rem]" : "rounded-pill",
           selected ? "border-accent bg-accent text-on-accent" : "border-border-input",
         )}
       >
-        {selected && <Check className="size-4" strokeWidth={3} />}
+        {selected && <Check className="size-3.5" strokeWidth={3} />}
       </span>
     </button>
   );
@@ -64,7 +64,7 @@ export function OptionCard({
 export function StepProgress({ step, total }: { step: number; total: number }) {
   return (
     <div className="flex flex-col gap-2">
-      <span className="num text-xs font-medium text-text-muted">
+      <span className="num text-xs text-text-subtle">
         שאלה {step} מתוך {total}
       </span>
       <div
@@ -73,7 +73,7 @@ export function StepProgress({ step, total }: { step: number; total: number }) {
         aria-valuemin={1}
         aria-valuemax={total}
         aria-valuenow={step}
-        className="h-1.5 overflow-hidden rounded-pill bg-surface-2"
+        className="well h-1 overflow-hidden rounded-pill"
       >
         <div className="h-full rounded-pill bg-accent transition-[width] duration-(--motion-base)" style={{ width: `${(step / total) * 100}%` }} />
       </div>

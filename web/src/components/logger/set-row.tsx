@@ -11,23 +11,23 @@ export type SetField = "weight" | "reps";
 export type SetValues = { weightKg: number | null; reps: number | null };
 
 const kindBadge: Record<SetKind, { short: string; name: string; className: string }> = {
-  warmup: { short: "ח", name: "חימום", className: "bg-warning-soft text-warning" },
-  work: { short: "", name: "סט עבודה", className: "bg-surface-2 text-text" },
-  drop: { short: "י", name: "סט ירידה", className: "bg-accent-soft text-accent-ink" },
-  failure: { short: "כ", name: "עד כשל", className: "bg-danger-soft text-danger" },
+  warmup: { short: "ח", name: "חימום", className: "text-warning" },
+  work: { short: "", name: "סט עבודה", className: "text-text-muted" },
+  drop: { short: "י", name: "סט ירידה", className: "text-accent" },
+  failure: { short: "כ", name: "עד כשל", className: "text-danger" },
 };
 
-export const SET_GRID = "grid grid-cols-[2.5rem_minmax(0,1fr)_4.5rem_4rem_3.25rem] items-center gap-2";
+export const SET_GRID = "grid grid-cols-[2.25rem_minmax(0,1fr)_4.75rem_4rem_3rem] items-center gap-2";
 
 /** Column headings, rendered once above the rows of an exercise. */
 export function SetHeader({ units }: { units: Units }) {
   return (
-    <div className={cn(SET_GRID, "px-1 pb-1 text-xs font-medium text-text-muted")} aria-hidden>
+    <div className={cn(SET_GRID, "px-1 pb-1.5 text-xs text-text-subtle")} aria-hidden>
       <span className="text-center">סט</span>
-      <span>קודם</span>
+      <span>פעם קודמת</span>
       <span className="text-center">{units === "kg" ? 'ק"ג' : "ליב'"}</span>
       <span className="text-center">חזרות</span>
-      <span className="text-center">✓</span>
+      <span />
     </div>
   );
 }
@@ -64,13 +64,14 @@ export function SetRow({
 }) {
   const badge = kindBadge[kind];
   const rowRef = useRef<HTMLDivElement>(null);
+  // Warmups are not counted, so they get a name instead of a number.
+  const setName = kind === "warmup" ? "סט חימום" : `סט ${number}`;
 
   // The keypad docks over the bottom of the screen; keep the row being edited above it.
   useEffect(() => {
     if (activeField) rowRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
   }, [activeField]);
-  // Warmups are not counted, so they get a name instead of a number.
-  const setName = kind === "warmup" ? "סט חימום" : `סט ${number}`;
+
   const prevText =
     previous && previous.weightKg != null && previous.reps != null
       ? `${formatWeight(previous.weightKg, units)} × ${previous.reps}`
@@ -87,13 +88,9 @@ export function SetRow({
         aria-pressed={activeField === field}
         onClick={() => onFieldFocus(field)}
         className={cn(
-          "num h-(--layout-touch-logger) rounded-sm text-center text-lg font-semibold transition-colors duration-(--motion-fast)",
-          activeField === field
-            ? "bg-bg outline-2 outline-focus"
-            : done
-              ? "bg-transparent"
-              : "bg-surface-2",
-          shown == null && "font-normal text-text-subtle",
+          "figure h-(--layout-touch-logger) rounded-sm text-center text-[1.35rem] transition-[background-color,box-shadow,color] duration-(--motion-fast)",
+          activeField === field ? "glass-raised outline-2 outline-offset-1 outline-focus" : done ? "bg-transparent" : "well",
+          shown == null ? "text-text-subtle" : "text-text",
         )}
       >
         {shown ?? (hint || "—")}
@@ -107,19 +104,19 @@ export function SetRow({
       className={cn(
         SET_GRID,
         "rounded-md px-1 py-1 transition-colors duration-(--motion-base)",
-        done && "bg-accent-soft",
+        done && "bg-success-soft/70",
       )}
     >
       <button
         type="button"
         onClick={onCycleKind}
         aria-label={`${setName}, ${badge.name}. לשינוי סוג הסט`}
-        className={cn("num mx-auto flex size-9 items-center justify-center rounded-sm text-sm font-bold", badge.className)}
+        className={cn("figure mx-auto flex size-9 items-center justify-center rounded-pill text-lg", badge.className)}
       >
         {badge.short || number}
       </button>
 
-      <span className="num truncate text-sm text-text-muted">
+      <span className="num truncate text-sm text-text-subtle">
         <bdi dir="ltr">{prevText}</bdi>
       </span>
 
@@ -134,17 +131,19 @@ export function SetRow({
           aria-label={done ? `${setName} הושלם. לביטול` : `סימון ${setName} כהושלם`}
           onClick={onToggleDone}
           className={cn(
-            "flex size-11 items-center justify-center rounded-md border-2 transition-colors duration-(--motion-fast)",
-            done ? "border-accent bg-accent text-on-accent" : "border-border-input text-transparent hover:bg-surface",
+            "flex size-11 items-center justify-center rounded-pill transition-[background-color,box-shadow,color,transform] duration-(--motion-fast) active:scale-95",
+            done
+              ? "bg-success text-on-accent shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_8px_18px_-10px_var(--c-success)]"
+              : "well text-text-subtle/50 hover:text-text-muted",
           )}
         >
-          <Check aria-hidden className="size-6" strokeWidth={3} />
+          <Check aria-hidden className="size-5" strokeWidth={2.75} />
         </button>
         {isPr && done && (
           <span
             aria-label="שיא אישי חדש"
             role="img"
-            className="absolute -top-2 -end-1 flex size-6 items-center justify-center rounded-pill bg-pr-soft text-pr ring-2 ring-bg animate-[pr-pop_var(--motion-slow)_var(--ease-out)]"
+            className="glass-raised absolute -top-2 -end-1.5 flex size-6 items-center justify-center rounded-pill text-pr animate-[pr-pop_var(--motion-slow)_var(--ease-out)]"
           >
             <Trophy aria-hidden className="size-3.5" />
           </span>
