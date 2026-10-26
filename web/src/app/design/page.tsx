@@ -49,7 +49,7 @@ const initialSets: DemoSet[] = [
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
     <section aria-labelledby={id} className="flex flex-col gap-4">
-      <h2 id={id} className="font-display text-2xl">
+      <h2 id={id} className="text-2xl font-bold">
         {title}
       </h2>
       {children}
@@ -162,7 +162,7 @@ function Demo() {
   return (
     <div className="mx-auto flex max-w-(--layout-max-width) flex-col gap-8 px-4 pt-6 pb-[calc(var(--layout-tabbar-height)+18rem)]">
       <header className="flex flex-col gap-3">
-        <h1 className="font-display text-[2.5rem] leading-tight">מערכת העיצוב</h1>
+        <h1 className="text-[2.25rem] leading-tight font-bold">מערכת העיצוב</h1>
         <p className="text-text-muted">
           עמוד בדיקה: כל רכיב בכל המצבים, בעברית ומימין לשמאל. הערכים מגיעים מ-<bdi dir="ltr">tokens.json</bdi>.
         </p>

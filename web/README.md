@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# אימונים ותזונה
 
-## Getting Started
+A Hebrew (RTL) web app for strength training and nutrition: workout logging with last time's numbers and records, a food diary with AI photo recognition, barcode lookup, and personal targets. Built with Next.js 16, Tailwind 4 and a local-first data layer (IndexedDB).
 
-First, run the development server:
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000
+npm test             # data layer and formulas (vitest)
+npm run lint
+npm run build && npx next start -p 3100 && npm run e2e   # end-to-end smoke run
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Photo recognition (Claude API)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Meal photos are sent from the app to `/api/food-photo`, which asks Claude to list the foods with estimated grams, calories and macros. The key stays on the server.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| variable | required | what it does |
+| --- | --- | --- |
+| `ANTHROPIC_API_KEY` | for photos | Your Anthropic API key. Without it the photo screen says recognition is not set up, and everything else works. |
+| `APP_ACCESS_TOKEN` | recommended once deployed | Any long random string. When set, the server only answers requests that send it, so a stranger who finds your URL cannot spend your key. Enter the same value in the app under פרופיל → קוד גישה. |
 
-## Learn More
+Locally, put them in `web/.env.local` (see `.env.example`). On Vercel: Project → Settings → Environment Variables.
 
-To learn more about Next.js, take a look at the following resources:
+Each photo costs a few cents of API usage. Photos are resized on the phone (1280 px) before upload, and only a small thumbnail is kept, on the phone.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deploy (Vercel)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Import the GitHub repository in Vercel, with **Root Directory** set to `web`.
+2. Add `ANTHROPIC_API_KEY` and `APP_ACCESS_TOKEN` as environment variables.
+3. Deploy, open the site on your phone, and choose "Add to Home Screen".
 
-## Deploy on Vercel
+## Data
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Everything is stored in the browser on this device (IndexedDB): workouts, the food diary, photos and targets. Back it up from פרופיל → ייצוא כל הנתונים. Accounts and sync across devices come with the backend (`/replica-backend`, Supabase), behind the same functions in `src/data/`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Food values are approximate (USDA FoodData Central and typical labels). Barcode products come from [Open Food Facts](https://world.openfoodfacts.org) (ODbL).

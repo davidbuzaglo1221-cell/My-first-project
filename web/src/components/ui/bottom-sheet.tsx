@@ -39,7 +39,7 @@ export function BottomSheet({
           <div aria-hidden className="mx-auto mt-2.5 h-1 w-9 rounded-pill bg-text-subtle/40" />
           <div className="flex items-start justify-between gap-3 px-5 pt-3 pb-2">
             <div className="flex flex-col gap-0.5">
-              <Dialog.Title className="font-display text-xl">{title}</Dialog.Title>
+              <Dialog.Title className="text-xl font-bold">{title}</Dialog.Title>
               {description ? (
                 <Dialog.Description className="text-sm text-text-muted">{description}</Dialog.Description>
               ) : (
@@ -67,17 +67,20 @@ export function SheetAction({
   label,
   hint,
   onClick,
+  disabled,
 }: {
   icon: ReactNode;
   label: string;
   hint?: string;
   onClick?: () => void;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center gap-4 rounded-md px-3 py-3 text-start transition-colors duration-(--motion-fast) hover:bg-accent-soft/40 active:bg-accent-soft/60"
+      disabled={disabled}
+      className="flex w-full items-center gap-4 rounded-md px-3 py-3 text-start transition-colors duration-(--motion-fast) enabled:hover:bg-accent-soft/40 enabled:active:bg-accent-soft/60 disabled:opacity-50"
     >
       <span className="well flex size-11 shrink-0 items-center justify-center rounded-md text-accent">{icon}</span>
       <span className="flex flex-col">

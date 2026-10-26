@@ -3,10 +3,9 @@
 
 /*
  * Depth system. Three materials, used by meaning, not decoration:
- *   glass         a raised pane (exercise, summary, dashboard block)
+ *   glass         a card: white with a light frost (exercise, summary, dashboard block)
  *   glass-raised  a pane over other panes (sheets, keypad, tab bar, toasts): more opaque, so it reads on top
  *   well          a recessed surface you type into or that holds a value (inputs, set cells, tracks)
- * Every glass pane carries a 1px highlight on its top edge: the light source is above.
  */
 @utility glass {
   background: var(--g-fill);
@@ -29,12 +28,13 @@
   box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.18), inset 0 0 0 1px var(--g-well-border);
 }
 
-/* Big numbers (weights, timer, score, calories) are set in the serif, like a dial. */
+/* Big numbers (weights, timer, calories): bold, tabular, tight, so they read at a glance. */
 @utility figure {
-  font-family: var(--font-display);
-  font-variant-numeric: lining-nums tabular-nums;
-  font-feature-settings: "lnum" 1, "tnum" 1;
-  letter-spacing: -0.01em;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.02em;
 }
 
 @layer base {
@@ -83,7 +83,7 @@
   h2,
   h3 {
     font-weight: 600;
-    letter-spacing: -0.005em;
+    letter-spacing: -0.015em;
   }
 
   :focus-visible {

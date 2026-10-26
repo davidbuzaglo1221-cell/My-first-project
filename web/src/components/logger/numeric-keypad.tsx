@@ -63,7 +63,7 @@ export function NumericKeypad({
       <div className="mb-2 flex items-center justify-between">
         <span className="ps-1 text-sm text-text-muted">{label}</span>
         <button type="button" onClick={onDone} className="h-9 px-2 text-sm font-semibold text-accent">
-          סיום
+          סגירה
         </button>
       </div>
       <div dir="ltr" className="grid grid-cols-4 gap-2">

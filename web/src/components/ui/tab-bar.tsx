@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Apple, Dumbbell, Home, LineChart, User } from "lucide-react";
 import { cn } from "@/lib/cn";
 
@@ -36,7 +37,7 @@ export function TabBar({
           const current = id === active;
           return (
             <li key={id} className="flex-1">
-              <a
+              <Link
                 href={hrefFor ? hrefFor(id) : href}
                 aria-current={current ? "page" : undefined}
                 onClick={(e) => {
@@ -60,7 +61,7 @@ export function TabBar({
                     current ? "w-5 opacity-100" : "w-0 opacity-0",
                   )}
                 />
-              </a>
+              </Link>
             </li>
           );
         })}

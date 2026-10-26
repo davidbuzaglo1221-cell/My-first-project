@@ -7,8 +7,7 @@ type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
   // Solid celadon with a lit top edge: the one opaque, bright thing on a glass screen.
-  primary:
-    "bg-accent text-on-accent shadow-[inset_0_1px_0_rgb(255_255_255/0.35),0_10px_24px_-12px_var(--c-accent)] hover:bg-accent-hover",
+  primary: "bg-accent text-on-accent shadow-[0_8px_20px_-12px_var(--c-overlay)] hover:bg-accent-hover",
   secondary: "glass text-text hover:brightness-110",
   soft: "bg-accent-soft text-accent-ink hover:brightness-110",
   ghost: "bg-transparent text-accent hover:bg-accent-soft/60",
@@ -101,9 +100,9 @@ export function Fab({ label, onClick, children }: { label: string; onClick?: () 
       title={label}
       onClick={onClick}
       className={cn(
-        "fixed end-5 z-30 inline-flex size-14 items-center justify-center rounded-pill",
+        "fixed end-5 z-30 inline-flex size-15 items-center justify-center rounded-pill",
         "bottom-[calc(var(--layout-tabbar-height)+1.75rem+env(safe-area-inset-bottom))]",
-        "glass-raised text-accent outline-1 -outline-offset-1 outline-accent/45",
+        "bg-accent text-on-accent shadow-pop",
         "transition-transform duration-(--motion-fast) active:scale-95",
       )}
     >

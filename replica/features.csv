@@ -1,61 +1,61 @@
 feature,area,priority,original,clone,notes
-הרשמה עם Google או אימייל (קישור קסם),onboarding,must,yes,no,
-שאלון פרופיל: גיל מין גובה משקל מטרה ניסיון ימים ציוד,onboarding,must,yes,no,אצלם כ-35 שלבים. אצלנו עד 10
+הרשמה עם Google או אימייל (קישור קסם),onboarding,must,yes,no,needs the backend (/replica-backend)
+שאלון פרופיל: גיל מין גובה משקל מטרה ניסיון ימים ציוד,onboarding,must,yes,partial,"אצלם כ-35 שלבים. אצלנו עד 10. the goals wizard asks sex, age, height, weight, activity, goal; no onboarding flow yet"
 תוכנית אימון מוצעת בסוף האונבורדינג,onboarding,must,yes,no,
-מסך בית עם האימון של היום,home,must,yes,no,
-כפתור + לפעולות מהירות (אימון קרדיו שקילה תמונה),home,should,yes,no,
-התחלת אימון מתבנית,logger,must,yes,no,
-אימון פריסטייל ריק,logger,must,yes,no,
-רישום סט: משקל וחזרות,logger,must,yes,no,
-הצגת הביצוע הקודם בכל תרגיל,logger,must,yes,no,
-טיימר מנוחה אוטומטי אחרי סט,logger,must,yes,no,5.4.0
-זמני מנוחה מדויקים (לא רק דקות שלמות),logger,should,yes,no,5.4.0
-מקלדת מספרים מותאמת לרישום,logger,should,yes,no,5.4.0
-הערות לאימון ולתרגיל,logger,should,yes,no,
-סופרסטים,logger,should,yes,no,אצלם בתשלום
-החלפת תרגיל באמצע אימון,logger,must,yes,no,
-סוגי סט: חימום עבודה drop כושל,logger,should,yes,no,
+מסך בית עם האימון של היום,home,must,yes,yes,next template by least recently done
+כפתור + לפעולות מהירות (אימון קרדיו שקילה תמונה),home,should,yes,partial,tile 'עוד' with sheet; cardio and weigh-in disabled
+התחלת אימון מתבנית,logger,must,yes,yes,
+אימון פריסטייל ריק,logger,must,yes,yes,
+רישום סט: משקל וחזרות,logger,must,yes,yes,custom keypad
+הצגת הביצוע הקודם בכל תרגיל,logger,must,yes,yes,placeholder in each cell + column
+טיימר מנוחה אוטומטי אחרי סט,logger,must,yes,yes,5.4.0. survives reload; wake lock; chime + vibrate
+זמני מנוחה מדויקים (לא רק דקות שלמות),logger,should,yes,yes,5.4.0. ±15 s
+מקלדת מספרים מותאמת לרישום,logger,should,yes,yes,5.4.0
+הערות לאימון ולתרגיל,logger,should,yes,partial,exercise cues shown; no user notes yet
+סופרסטים,logger,should,yes,no,"אצלם בתשלום. schema ready, UI not yet"
+החלפת תרגיל באמצע אימון,logger,must,yes,yes,
+סוגי סט: חימום עבודה drop כושל,logger,should,yes,yes,tap the badge to cycle
 מחשבון פלטות,logger,could,yes,no,
-שעון אימון (משך),logger,must,yes,no,
-מצב אופליין בחדר כושר,logger,must,yes,no,5.17.0. אצלנו קריטי
-שחזור אימון פתוח אחרי סגירת הדפדפן,logger,must,yes,no,
-סיום אימון עם סיכום (משך נפח סטים),completion,must,yes,no,
-שיאים אישיים בזמן אמת,completion,must,yes,no,5.12.0
+שעון אימון (משך),logger,must,yes,yes,
+מצב אופליין בחדר כושר,logger,must,yes,partial,"5.17.0. אצלנו קריטי. all data local (IndexedDB) so it works without signal; no service worker yet, first load needs network"
+שחזור אימון פתוח אחרי סגירת הדפדפן,logger,must,yes,yes,tested: reload keeps the open workout
+סיום אימון עם סיכום (משך נפח סטים),completion,must,yes,yes,"duration, sets, volume, vs last time, rating"
+שיאים אישיים בזמן אמת,completion,must,yes,yes,5.12.0. e1RM based; tested
 כרטיס שיתוף לאימון ולשיא,completion,could,yes,no,
-ספריית תרגילים 600+ עם חיפוש,exercises,must,yes,no,ספרייה פתוחה (לא שלהם). התחלה: 150 נפוצים
-סינון תרגילים לפי שריר ציוד וסוג,exercises,must,yes,no,
-הדגמת תרגיל (וידאו או אנימציה),exercises,should,yes,no,מדיה ברישיון פתוח בלבד
-היסטוריית תרגיל וגרף 1RM משוער,exercises,must,yes,no,
+ספריית תרגילים 600+ עם חיפוש,exercises,must,yes,partial,ספרייה פתוחה (לא שלהם). התחלה: 150 נפוצים. 38 exercises written in Hebrew; open library import pending licence check
+סינון תרגילים לפי שריר ציוד וסוג,exercises,must,yes,partial,muscle filter; no equipment filter in UI
+הדגמת תרגיל (וידאו או אנימציה),exercises,should,yes,partial,"מדיה ברישיון פתוח בלבד. text cue only, no media"
+היסטוריית תרגיל וגרף 1RM משוער,exercises,must,yes,yes,
 תרגילים מועדפים,exercises,could,yes,no,5.17.0
-תרגיל מותאם אישית,exercises,should,yes,no,אצלם בתשלום
-יצירה ועריכת תבנית אימון,templates,must,yes,no,
+תרגיל מותאם אישית,exercises,should,yes,partial,"אצלם בתשלום. data layer only, no UI"
+יצירה ועריכת תבנית אימון,templates,must,yes,partial,save a workout as a template; no template editor
 סידור תרגילים בגרירה,templates,should,yes,no,
-יעדי סטים חזרות ומנוחה בתבנית,templates,must,yes,no,
-שמירת אימון פריסטייל כתבנית,templates,should,yes,no,
+יעדי סטים חזרות ומנוחה בתבנית,templates,must,yes,partial,sets and reps; rest uses the profile default
+שמירת אימון פריסטייל כתבנית,templates,should,yes,yes,
 ספריית תוכניות מוכנות,programs,should,yes,no,תוכניות שאנחנו כותבים. לא שלהם
 התחלת תוכנית ולוח אימונים שבועי,programs,should,yes,no,
-סיכום התקדמות (תדירות נפח),progress,must,yes,no,5.13.0
-Strength Score עם 5 תת-ציונים,progress,must,yes,no,נוסחה משלנו ושקופה
+סיכום התקדמות (תדירות נפח),progress,must,yes,yes,"5.13.0. 8-week bars, lifts"
+Strength Score עם 5 תת-ציונים,progress,must,yes,no,"נוסחה משלנו ושקופה. formula specified in architecture.md, not built"
 רמות כוח (מתחיל עד עילית),progress,should,yes,no,
 איזון שרירים לאורך זמן,progress,should,yes,no,5.13.0
-היסטוריית אימונים ועריכת אימון ישן,progress,must,yes,no,
-רשימת שיאים אישיים,progress,should,yes,no,
-מדדי גוף: משקל ואחוז שומן עם גרף,body,must,yes,no,
+היסטוריית אימונים ועריכת אימון ישן,progress,must,yes,partial,history + view + delete; no editing of old sets
+רשימת שיאים אישיים,progress,should,yes,partial,"records in summary, history and exercise view; no single list"
+מדדי גוף: משקל ואחוז שומן עם גרף,body,must,yes,partial,bodyweight stored from the goals wizard; no log or chart
 היקפים (מותן חזה זרוע וכו'),body,could,yes,no,
 תמונות התקדמות פרטיות,body,should,yes,no,
 השוואת תמונות זו לצד זו,body,should,yes,no,5.14.1
 תיעוד קרדיו ידני,cardio,should,yes,no,
-אשף תזונה: חישוב קלוריות ומאקרו לפי מטרה,nutrition,must,yes,no,
-יעד יומי לחלבון ולסיבים,nutrition,must,yes,no,
-מעקב יומי מול היעדים (טבעות),nutrition,must,yes,no,
+אשף תזונה: חישוב קלוריות ומאקרו לפי מטרה,nutrition,must,yes,yes,"Mifflin-St Jeor, explained on screen; tested"
+יעד יומי לחלבון ולסיבים,nutrition,must,yes,partial,protein yes; fibre computed but not tracked on screen
+מעקב יומי מול היעדים (טבעות),nutrition,must,yes,yes,segmented calorie arc + three macro bars
 הרגלים יומיים עם רצפים,habits,could,yes,no,
 שיעורים על אימון ותזונה,lessons,could,yes,no,כתיבה מאפס בעברית
-יחידות ק"ג או ליברות,settings,must,yes,no,
-תחילת שבוע ראשון או שני,settings,should,yes,no,5.4.0. בישראל ברירת מחדל ראשון
-ברירות מחדל למנוחה ולתרגילים,settings,could,yes,no,5.4.0
-מצב כהה,settings,should,yes,no,5.14.1
-מחיקת חשבון וכל הנתונים,settings,must,yes,no,
-ייצוא נתונים,settings,could,yes,no,
+"יחידות ק""ג או ליברות",settings,must,yes,yes,
+תחילת שבוע ראשון או שני,settings,should,yes,yes,5.4.0. בישראל ברירת מחדל ראשון
+ברירות מחדל למנוחה ולתרגילים,settings,could,yes,yes,5.4.0. rest default + auto timer toggle
+מצב כהה,settings,should,yes,yes,"5.14.1. light default, dark and system"
+מחיקת חשבון וכל הנתונים,settings,must,yes,yes,deletes all local data
+ייצוא נתונים,settings,could,yes,yes,JSON of every table
 Workout Circles: צ'אט קבוצתי עם חברים,social,could,yes,no,לשימוש אישי. אחרי ה-MVP
 חיבור Strava,integrations,could,yes,no,API רשמי עם המפתחות שלך
 אימון אישי עם מאמן אנושי (Premium),coaching,should,yes,skip,שירות של אנשים ולא פיצ'ר. לשימוש אישי לא נדרש
@@ -65,17 +65,26 @@ Workout Circles: צ'אט קבוצתי עם חברים,social,could,yes,no,לשי
 סנכרון Apple Health,integrations,should,yes,skip,לא נגיש מאתר. אפשרי רק באפליקציה נייטיב בהמשך
 אפליקציית Apple Watch,integrations,could,yes,skip,לא נגיש מאתר
 שרת MCP לחיבור ל-ChatGPT ו-Claude,integrations,could,yes,skip,לא נדרש לשימוש אישי בשלב זה
-ממשק בעברית מלאה RTL,localization,must,no,no,תוספת: המקור באנגלית בלבד
-יומן אוכל עם מאגר מזון ישראלי וחיפוש בעברית,nutrition,must,no,no,תוספת: אצלם כנראה רק יעדים + Apple Health
-סריקת ברקוד למוצרים ישראליים,nutrition,should,no,no,תוספת: Open Food Facts
-ארוחות חוזרות ומתכונים ביתיים,nutrition,should,no,no,תוספת
-נוסחת ציון שקופה (למה הציון עלה או ירד),progress,must,no,no,תוספת: תלונה ידועה על הציון שלהם
-רישום סט בנגיעה אחת כשחוזרים על הקודם,logger,must,no,no,תוספת: יעד מהירות
-התראת סיום מנוחה גם כשהמסך נעול (Web Push),logger,must,no,no,תוספת: הבקשה הכי מבוקשת אצלם (682)
+ממשק בעברית מלאה RTL,localization,must,no,yes,תוספת: המקור באנגלית בלבד
+יומן אוכל עם מאגר מזון ישראלי וחיפוש בעברית,nutrition,must,no,yes,"תוספת: אצלם כנראה רק יעדים + Apple Health. 110 Hebrew foods, approximate values"
+סריקת ברקוד למוצרים ישראליים,nutrition,should,no,partial,תוספת: Open Food Facts. camera scan where the browser has BarcodeDetector (not iPhone Safari); typed code everywhere; Open Food Facts
+ארוחות חוזרות ומתכונים ביתיים,nutrition,should,no,no,תוספת. recent foods first in search; no saved meals yet
+נוסחת ציון שקופה (למה הציון עלה או ירד),progress,must,no,no,תוספת: תלונה ידועה על הציון שלהם. depends on Strength Score
+רישום סט בנגיעה אחת כשחוזרים על הקודם,logger,must,no,yes,תוספת: יעד מהירות. tested
+התראת סיום מנוחה גם כשהמסך נעול (Web Push),logger,must,no,partial,תוספת: הבקשה הכי מבוקשת אצלם (682). wake lock keeps the screen on; push for a locked screen needs the backend
 בחירת ציוד זמין ותבניות שמתאימות אליו,templates,should,no,no,תוספת: בקשה שנייה (557)
 הצעות לשינוי אימון לפי התקדמות (עומס פרוגרסיבי),logger,should,no,no,תוספת: בקשה שלישית (464)
 קלוריות משוערות לאימון,completion,could,no,no,תוספת: בקשה (285)
 גביעים ואבני דרך,progress,could,no,no,תוספת: בקשה (263)
-גרסת ווב,platform,must,no,no,תוספת: בקשה (315). זו הפלטפורמה שלנו
-כל הפיצ'רים בחינם (בלי paywall),pricing,should,no,no,תוספת: תלונה ידועה. לשימוש אישי
-ממשק פשוט עם פחות צעדים,ux,should,no,no,תוספת: תלונה על ממשק מסובך
+גרסת ווב,platform,must,no,yes,תוספת: בקשה (315). זו הפלטפורמה שלנו
+כל הפיצ'רים בחינם (בלי paywall),pricing,should,no,yes,תוספת: תלונה ידועה. לשימוש אישי
+ממשק פשוט עם פחות צעדים,ux,should,no,yes,תוספת: תלונה על ממשק מסובך
+זיהוי ארוחה מצילום (AI) עם פירוק לפריטים,nutrition,must,yes,yes,Calzo. Claude vision + structured output; editable grams; confidence per item. Needs ANTHROPIC_API_KEY
+עריכת הערכת התמונה לפני שמירה,nutrition,must,yes,yes,Calzo. grams rescale each item
+רצועת ימי השבוע עם סימון ימים,nutrition,should,yes,yes,"Calzo pattern; dashed = logged, solid = on target"
+מד קלוריות מקוטע,nutrition,should,yes,yes,Calzo pattern; our own drawing
+תמונות הארוחות ביומן,nutrition,should,yes,yes,Calzo. thumbnails kept on the phone only
+הוספה מהירה של קלוריות ומאקרו,nutrition,should,yes,yes,
+ספריית 250 אלף מתכונים,nutrition,could,yes,skip,"Calzo's content, not ours to copy"
+קהילה ושיתוף ארוחות,social,could,yes,skip,Calzo's network; not needed for personal use
+סריקת מקרר או קבלה למתכונים,nutrition,could,yes,no,Calzo

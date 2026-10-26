@@ -44,3 +44,56 @@ export function estimateOneRepMax(weightKg: number, reps: number): number | null
   if (reps < 1 || reps > 12 || weightKg <= 0) return null;
   return reps === 1 ? weightKg : weightKg * (1 + reps / 30);
 }
+
+const dayMonth = new Intl.DateTimeFormat("he-IL", { day: "numeric", month: "long" });
+const weekdayDayMonth = new Intl.DateTimeFormat("he-IL", { weekday: "long", day: "numeric", month: "long" });
+const time = new Intl.DateTimeFormat("he-IL", { hour: "2-digit", minute: "2-digit" });
+
+function startOfDay(d: Date): number {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+}
+
+/** "היום", "אתמול", "יום שלישי", or "12 באוקטובר" for anything older than a week. */
+export function formatRelativeDay(iso: string, now = new Date()): string {
+  const d = new Date(iso);
+  const days = Math.round((startOfDay(now) - startOfDay(d)) / 86_400_000);
+  if (days === 0) return "היום";
+  if (days === 1) return "אתמול";
+  if (days > 1 && days < 7) return new Intl.DateTimeFormat("he-IL", { weekday: "long" }).format(d);
+  return dayMonth.format(d);
+}
+
+export function formatFullDate(d: Date | string): string {
+  return weekdayDayMonth.format(typeof d === "string" ? new Date(d) : d);
+}
+
+export function formatTime(iso: string): string {
+  return time.format(new Date(iso));
+}
+
+/** 3725 -> "שעה ו-2 דק׳", 1500 -> "25 דק׳". For summaries, not for running clocks. */
+export function formatDurationWords(totalSeconds: number): string {
+  const m = Math.round(totalSeconds / 60);
+  if (m < 60) return `${m} דק׳`;
+  const h = Math.floor(m / 60);
+  const rest = m % 60;
+  const hours = h === 1 ? "שעה" : h === 2 ? "שעתיים" : `${h} שעות`;
+  return rest ? `${hours} ו-${rest} דק׳` : hours;
+}
+
+export function greeting(now = new Date()): string {
+  const h = now.getHours();
+  if (h < 5) return "לילה טוב";
+  if (h < 12) return "בוקר טוב";
+  if (h < 17) return "צהריים טובים";
+  if (h < 21) return "ערב טוב";
+  return "לילה טוב";
+}
+
+/** Start of the current week, by the user's choice of Sunday or Monday. */
+export function startOfWeek(now: Date, weekStartsOn: "sun" | "mon"): Date {
+  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diff = (d.getDay() - (weekStartsOn === "sun" ? 0 : 1) + 7) % 7;
+  d.setDate(d.getDate() - diff);
+  return d;
+}
