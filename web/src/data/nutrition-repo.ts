@@ -5,7 +5,12 @@ import type { Food, FoodLog, LogSource, Macros, Meal, NutritionTarget, Per100, S
 
 // Nutrition data layer. Same rule as repo.ts: these signatures stay when Supabase replaces IndexedDB.
 
-const now = () => new Date().toISOString();
+// Strictly increasing, so items saved in the same millisecond (a photo meal) keep their order.
+let lastStamp = 0;
+const now = () => {
+  lastStamp = Math.max(Date.now(), lastStamp + 1);
+  return new Date(lastStamp).toISOString();
+};
 const uuid = () => crypto.randomUUID();
 const USER = "me";
 

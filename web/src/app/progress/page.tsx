@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useLiveQuery } from "dexie-react-hooks";
-import { ChevronLeft, LineChart as LineIcon } from "lucide-react";
+import { Activity, Award, BookOpen, ChevronLeft, Image as ImageIcon, LineChart as LineIcon, Scale } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
 import { EmptyState, Panel, Skeleton, Stat } from "@/components/ui/surface";
 import { BarChart } from "@/components/progress/charts";
@@ -78,6 +78,20 @@ export default function ProgressPage() {
       ) : (
         <>
           <StrengthPanel units={units} />
+          <nav aria-label="עוד מעקב" className="grid grid-cols-5 gap-2">
+            {[
+              { href: "/body", label: "משקל", Icon: Scale },
+              { href: "/cardio", label: "קרדיו", Icon: Activity },
+              { href: "/photos", label: "תמונות", Icon: ImageIcon },
+              { href: "/achievements", label: "הישגים", Icon: Award },
+              { href: "/learn", label: "ללמוד", Icon: BookOpen },
+            ].map(({ href, label, Icon }) => (
+              <Link key={href} href={href} className="glass flex flex-col items-center gap-1.5 rounded-lg py-3 text-xs font-medium">
+                <Icon aria-hidden className="size-5" />
+                {label}
+              </Link>
+            ))}
+          </nav>
           <div className="grid grid-cols-3 gap-2">
             <Stat label="אימונים בסך הכול" value={data.history.length} />
             <Stat label="השבוע" value={data.weeks.at(-1)!.count} hint="אימונים" />

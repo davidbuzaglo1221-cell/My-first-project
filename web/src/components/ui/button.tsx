@@ -2,7 +2,7 @@ import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-type Variant = "primary" | "secondary" | "soft" | "ghost" | "danger";
+type Variant = "primary" | "secondary" | "soft" | "ghost" | "danger" | "inverse";
 type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
@@ -12,6 +12,8 @@ const variants: Record<Variant, string> = {
   soft: "bg-accent-soft text-accent-ink hover:brightness-110",
   ghost: "bg-transparent text-accent hover:bg-accent-soft/60",
   danger: "bg-danger text-on-danger hover:brightness-105",
+  // On the ink card: the page colour on black, the one bright thing there.
+  inverse: "bg-on-accent text-accent hover:brightness-95",
 };
 
 const sizes: Record<Size, string> = {

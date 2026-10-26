@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Trophy } from "lucide-react";
+import { Award, Check, Flame, Trophy } from "lucide-react";
+import { getWorkoutCelebration } from "@/data/coach-repo";
+import { listFinishedWorkouts } from "@/data/repo";
 import { AppShell } from "@/components/app/app-shell";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/field";
@@ -31,6 +33,11 @@ function Summary() {
   const profile = useProfile();
   const units = profile?.units ?? "kg";
   const summary = useLiveQuery(async () => (await getWorkoutSummary(id)) ?? null, [id]);
+  const party = useLiveQuery(async () => {
+    const [c, all] = await Promise.all([getWorkoutCelebration(id), listFinishedWorkouts()]);
+    const n = all.length - all.findIndex((w) => w.workout.id === id);
+    return { ...c, number: n };
+  }, [id]);
   const [saveOpen, setSaveOpen] = useState(false);
   const [templateName, setTemplateName] = useState("");
 
@@ -46,7 +53,38 @@ function Summary() {
   const { workout } = summary;
   return (
     <>
-      {/* The one moment of ceremony in the app: records, engraved in brass. */}
+      {/* The one moment of ceremony in the app. */}
+      {party && (
+        <section aria-label="סיכום" className="flex flex-col items-center gap-4 rounded-xl bg-accent px-5 py-7 text-center text-on-accent shadow-pop">
+          <span className="flex size-16 items-center justify-center rounded-pill bg-success animate-[pr-pop_var(--motion-slow)_var(--ease-out)]">
+            <Check aria-hidden className="size-8 text-on-accent" strokeWidth={3} />
+          </span>
+          <div className="flex flex-col gap-1">
+            <span className="text-sm text-on-accent/70">אימון מספר</span>
+            <span className="figure text-[3.5rem] leading-none">{party.number}</span>
+          </div>
+          <span className="flex items-center gap-1.5 text-sm font-semibold">
+            <Flame aria-hidden className="size-4 text-pr-soft" />
+            {party.thisWeek >= party.weekGoal
+              ? party.weekStreak > 1
+                ? `${party.weekStreak} שבועות ברצף ביעד`
+                : "היעד השבועי הושג"
+              : `${party.thisWeek} מתוך ${party.weekGoal} אימונים השבוע`}
+          </span>
+          {party.unlocked.length > 0 && (
+            <ul className="flex flex-wrap justify-center gap-2" aria-label="הישגים חדשים">
+              {party.unlocked.map((a) => (
+                <li key={a.id} className="flex items-center gap-1.5 rounded-pill bg-pr-soft px-3 py-1.5 text-sm font-semibold text-pr">
+                  <Award aria-hidden className="size-4" />
+                  {a.title}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
+
+      {/* Records, engraved in brass. */}
       {summary.records.length > 0 && (
         <Panel className="flex flex-col gap-4 border-pr/30">
           <div className="flex items-center gap-2 text-pr">

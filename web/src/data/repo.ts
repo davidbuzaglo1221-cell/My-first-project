@@ -193,6 +193,8 @@ export async function startWorkout(opts: { templateId?: string } = {}): Promise<
         supersetGroup: item.supersetGroup,
         notes: null,
         restSec: item.targetRestSec,
+        repsMin: item.targetRepsMin,
+        repsMax: item.targetRepsMax,
       });
       await db().sets.bulkAdd(
         Array.from({ length: item.targetSets }, (_, p) => emptySet(id, weId, p)),

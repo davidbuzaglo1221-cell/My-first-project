@@ -57,7 +57,7 @@ export default function WelcomePage() {
       inputs: { sex, age: n(age), heightCm: n(height), weightKg: n(weight), activity, goal, pace: "normal" },
     });
     await logBodyweight(n(weight));
-    await updateProfile({ goal, sex, onboardedAt: new Date().toISOString() });
+    await updateProfile({ goal, sex, daysPerWeek: days, onboardedAt: new Date().toISOString() });
     router.replace("/");
   };
 

@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/cn";
 import { formatNumber } from "@/lib/format";
 
@@ -7,12 +10,18 @@ import { formatNumber } from "@/lib/format";
  * bars turn the warning colour and the centre says by how much.
  */
 export function CalorieArc({ value, target, size = 260 }: { value: number; target: number; size?: number }) {
+  // Bars fill in one by one when the screen opens: the one orchestrated motion on the page.
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setShown(true), 60);
+    return () => clearTimeout(t);
+  }, []);
   const bars = 28;
   const sweep = 240;
   const start = -90 - sweep / 2; // centred on the top
   const ratio = target > 0 ? value / target : 0;
-  const filled = Math.min(bars, Math.round(Math.min(ratio, 1) * bars));
-  const over = ratio > 1 ? Math.min(bars, Math.round((ratio - 1) * bars)) : 0;
+  const filled = shown ? Math.min(bars, Math.round(Math.min(ratio, 1) * bars)) : 0;
+  const over = shown && ratio > 1 ? Math.min(bars, Math.round((ratio - 1) * bars)) : 0;
   const c = size / 2;
   const outer = size / 2 - 6;
   const inner = outer - size * 0.13;
@@ -155,6 +164,44 @@ export function WeekStrip({
           </button>
         );
       })}
+    </div>
+  );
+}
+
+/**
+ * Training days this week against the goal, as a ring of segments (one per day of the goal).
+ * Drawn for the ink card: done segments in the page colour, the rest faint.
+ */
+export function WeekRing({ done, goal, size = 76 }: { done: number; goal: number; size?: number }) {
+  const n = Math.max(1, goal);
+  const r = size / 2 - 5;
+  const c = 2 * Math.PI * r;
+  const gap = n > 1 ? 6 : 0;
+  const seg = c / n - gap;
+  return (
+    <div role="img" aria-label={`${done} מתוך ${goal} אימונים השבוע`} className="relative shrink-0" style={{ width: size, height: size }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="-rotate-90" aria-hidden>
+        {Array.from({ length: n }, (_, i) => (
+          <circle
+            key={i}
+            cx={size / 2}
+            cy={size / 2}
+            r={r}
+            fill="none"
+            strokeWidth={6}
+            strokeLinecap="round"
+            stroke="var(--c-on-accent)"
+            strokeOpacity={i < done ? 1 : 0.18}
+            strokeDasharray={`${seg} ${c - seg}`}
+            strokeDashoffset={-i * (seg + gap)}
+          />
+        ))}
+      </svg>
+      <span className="figure absolute inset-0 flex items-center justify-center text-xl text-on-accent">
+        <bdi dir="ltr">
+          {Math.min(done, 99)}/{goal}
+        </bdi>
+      </span>
     </div>
   );
 }

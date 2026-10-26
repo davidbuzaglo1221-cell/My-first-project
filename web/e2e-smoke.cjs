@@ -41,14 +41,22 @@ const log = (...a) => console.log('✓', ...a);
   await shot('S06-logger'); log('logger with rest timer');
   await page.locator('header').getByRole('button', { name: 'סיום' }).click();
   await page.getByRole('button', { name: 'סיום ושמירה' }).click();
-  await page.waitForURL('**/summary**'); await page.getByText('כל הכבוד').first().waitFor();
-  await shot('S12-summary'); log('summary');
+  await page.waitForURL('**/summary**'); await page.getByText('אימון מספר').first().waitFor();
+  await page.getByText('האימון הראשון').first().waitFor();
+  await shot('S12-summary'); log('summary celebrates the first workout');
 
   // Workout 2: one-tap set from last time, then a heavier set = record
   await page.goto(BASE + '/workouts'); await page.getByRole('button', { name: 'התחלה' }).first().click();
   await page.waitForURL('**/workout');
   const prevCell = page.getByRole('button', { name: /^משקל, סט 1: ריק, בפעם הקודמת 100/ }).first();
   await prevCell.waitFor(); log('previous performance shown as placeholder');
+  // Coach: last time 100 × 5 in every set, at the top of a 6–10 range? No: 5 < 6, so repeat 100 × 6.
+  await page.getByText(/יעד היום/).first().waitFor();
+  await page.getByRole('button', { name: 'למה?' }).first().click(); await page.getByText(/מתחת לטווח/).first().waitFor();
+  await shot('S06-coach-hint'); log('coach target with the reason');
+  // Superset the first two exercises
+  await page.getByRole('button', { name: /^אפשרויות לסקוואט/ }).click(); await page.getByRole('button', { name: /סופרסט עם התרגיל הבא/ }).click();
+  await page.getByText('סופרסט א').first().waitFor(); log('superset linked');
   await page.getByRole('checkbox', { name: 'סימון סט 1 כהושלם' }).first().click();
   await page.getByRole('button', { name: /^משקל, סט 2:/ }).first().click(); await keypad('105');
   await page.locator('[role=group][aria-label^="מקלדת"]').getByRole('button', { name: 'סגירה' }).click();
@@ -85,6 +93,22 @@ const log = (...a) => console.log('✓', ...a);
   await shot('S14-template-editor', true);
   await page.getByRole('button', { name: 'שמירת התבנית' }).click(); await page.waitForURL('**/workouts');
   await page.getByText('בוקר קצר').first().waitFor(); log('template created with a custom exercise');
+
+  // Cardio
+  await page.goto(BASE + '/cardio'); await page.getByRole('button', { name: 'ריצה' }).click(); await page.getByRole('button', { name: 'שמירה' }).click();
+  await page.getByText('ריצה נשמרה').first().waitFor(); await shot('S25-cardio'); log('cardio logged with a calorie estimate');
+
+  // Progress photos: two, then compare
+  const portrait = async (hue) => { const pg = await browser.newPage(); await pg.setViewportSize({ width: 600, height: 800 }); await pg.setContent(`<body style="margin:0;background:hsl(${hue} 30% 80%)"><div style="margin:120px auto;width:220px;height:520px;border-radius:110px;background:hsl(${hue} 25% 45%)"></div></body>`); const b = await pg.screenshot({ type: 'jpeg' }); await pg.close(); return b; };
+  await page.goto(BASE + '/photos');
+  await page.locator('input[type=file]').setInputFiles({ name: 'a.jpg', mimeType: 'image/jpeg', buffer: await portrait(20) }); await page.locator('ul[aria-label="תמונות"] li').first().waitFor();
+  await page.locator('input[type=file]').setInputFiles({ name: 'b.jpg', mimeType: 'image/jpeg', buffer: await portrait(200) }); await page.getByText('לפני ואחרי').first().waitFor();
+  await page.getByLabel('השוואה: לפני ואחרי').fill('30'); await shot('S24-photos'); log('progress photos compared');
+
+  // Learning and achievements
+  await page.goto(BASE + '/learn'); await page.getByRole('link', { name: /למה צריך להוסיף/ }).click(); await page.getByText('לנסות היום').first().waitFor();
+  await shot('S29-lesson'); log('lesson read');
+  await page.goto(BASE + '/achievements'); await page.getByText('האימון הראשון').first().waitFor(); await shot('S31-achievements', true); log('achievements');
 
   // Weigh-in and strength score
   await page.goto(BASE + '/body'); await page.getByRole('button', { name: 'שמירה' }).click(); await page.getByText('השקילה נשמרה').first().waitFor();

@@ -3,6 +3,9 @@ import { SEED_EXERCISES, SEED_TEMPLATES } from "./seed";
 import { SEED_FOODS } from "./food-seed";
 import type {
   BodyMetric,
+  CardioSession,
+  LessonRead,
+  ProgressPhoto,
   Exercise,
   Food,
   FoodLog,
@@ -61,6 +64,9 @@ export class LocalDb extends Dexie {
   mealPhotos!: EntityTable<MealPhoto, "id">;
   targets!: EntityTable<NutritionTarget, "id">;
   bodyMetrics!: EntityTable<BodyMetric, "id">;
+  cardio!: EntityTable<CardioSession, "id">;
+  progressPhotos!: EntityTable<ProgressPhoto, "id">;
+  lessonReads!: EntityTable<LessonRead, "id">;
 
   constructor() {
     super("training-app");
@@ -84,6 +90,8 @@ export class LocalDb extends Dexie {
       .upgrade((tx) => tx.table("foods").bulkPut(seedFoods()));
     // v3: bodyweight log.
     this.version(3).stores({ bodyMetrics: "id, &date" });
+    // v5: cardio, progress photos, lessons read.
+    this.version(5).stores({ cardio: "id, date, startedAt", progressPhotos: "id, date, pose", lessonReads: "id" });
     // v4: the exercise library grew; existing installs get the new ones by slug.
     this.version(4)
       .stores({})

@@ -26,6 +26,36 @@ export interface Profile {
   sex?: "male" | "female" | null;
   /** First-run flow finished or skipped. */
   onboardedAt?: string | null;
+  /** Training days per week the user aims for (from onboarding); drives the weekly streak. */
+  daysPerWeek?: number | null;
+}
+
+export type CardioKind = "walk" | "run" | "bike" | "row" | "elliptical" | "swim" | "hiit" | "other";
+
+export interface CardioSession {
+  id: string;
+  date: string;
+  startedAt: string;
+  kind: CardioKind;
+  minutes: number;
+  distanceKm: number | null;
+  kcal: number; // estimated from MET × bodyweight × time unless entered
+  notes: string | null;
+}
+
+export type Pose = "front" | "side" | "back";
+
+export interface ProgressPhoto {
+  id: string;
+  date: string;
+  pose: Pose;
+  dataUrl: string; // kept on this phone only
+  createdAt: string;
+}
+
+export interface LessonRead {
+  id: string; // lesson id
+  readAt: string;
 }
 
 export interface BodyMetric {
@@ -94,6 +124,9 @@ export interface WorkoutExercise {
   notes: string | null;
   /** Rest after each set, from the template; null = the profile default. */
   restSec?: number | null;
+  /** Rep range from the template, for today's suggested target. */
+  repsMin?: number | null;
+  repsMax?: number | null;
 }
 
 export interface WorkoutSet {

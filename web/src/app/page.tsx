@@ -4,21 +4,26 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Activity, Barcode, Camera, ChevronLeft, Dumbbell, Plus, Scale, Search } from "lucide-react";
+import { Activity, Award, Barcode, BookOpen, Camera, ChevronLeft, Dumbbell, Flame, Image as ImageIcon, Plus, Scale, Search } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
 import { Button } from "@/components/ui/button";
 import { BottomSheet, SheetAction } from "@/components/ui/bottom-sheet";
 import { Panel, Skeleton } from "@/components/ui/surface";
-import { CalorieArc, MacroTrio, WeekStrip } from "@/components/nutrition/visuals";
+import { CalorieArc, MacroTrio, WeekRing, WeekStrip } from "@/components/nutrition/visuals";
 import { getDayLog, getWeekMarks } from "@/data/nutrition-repo";
+import { getCoachSummary } from "@/data/coach-repo";
 import { listFinishedWorkouts, listTemplates } from "@/data/repo";
 import { useOpenWorkout, useProfile } from "@/hooks/use-data";
 import { useNow } from "@/hooks/use-now";
 import { useStartWorkout } from "@/hooks/use-start-workout";
 import { localDateKey } from "@/lib/nutrition";
+import { TOPIC_LABEL } from "@/lib/lessons";
 import { formatDuration, formatDurationWords, formatFullDate, formatRelativeDay, greeting, startOfWeek } from "@/lib/format";
 
-/** S04: today at a glance. Eating (the arc) and training (the next workout) on one screen. */
+/**
+ * S04: today at a glance. One ink card carries the day's training (the week's goal, the streak,
+ * the next workout); below it, eating, a one-minute lesson, and the next achievement within reach.
+ */
 export default function HomePage() {
   const router = useRouter();
   const profile = useProfile();
@@ -31,6 +36,7 @@ export default function HomePage() {
 
   const day = useLiveQuery(() => getDayLog(today), [today]);
   const marks = useLiveQuery(async () => (weekStart ? getWeekMarks(weekStart) : null), [weekStart]);
+  const coach = useLiveQuery(() => getCoachSummary(), []);
   const training = useLiveQuery(async () => {
     const [templates, history] = await Promise.all([listTemplates(), listFinishedWorkouts()]);
     // Suggest the template that has waited longest since it was last done.
@@ -45,8 +51,57 @@ export default function HomePage() {
     if (profile && !profile.onboardedAt && training && !training.last) router.replace("/welcome");
   }, [profile, training, router]);
 
+  const nextBadge = coach?.achievements.filter((a) => !a.unlocked).sort((a, b) => b.progress - a.progress)[0];
+
   return (
     <AppShell tab="home" title={now ? greeting(new Date(now)) : " "} subtitle={now ? formatFullDate(new Date(now)) : " "}>
+      {/* The ink card: the one dark, bold element on the screen. */}
+      {open === undefined || !training || !coach ? (
+        <Skeleton className="h-56 rounded-xl" />
+      ) : (
+        <section aria-label="האימון של היום" className="flex flex-col gap-5 rounded-xl bg-accent p-5 text-on-accent shadow-pop">
+          <div className="flex items-center gap-4">
+            <WeekRing done={coach.thisWeek} goal={coach.weekGoal} />
+            <div className="flex min-w-0 flex-1 flex-col gap-1">
+              <span className="text-sm text-on-accent/70">{coach.thisWeek >= coach.weekGoal
+                  ? "היעד השבועי הושג"
+                  : coach.weekGoal - coach.thisWeek === 1
+                    ? "עוד אימון אחד ליעד השבועי"
+                    : `עוד ${coach.weekGoal - coach.thisWeek} אימונים ליעד השבועי`}</span>
+              <span className="flex items-center gap-1.5 text-sm font-semibold">
+                <Flame aria-hidden className="size-4 text-pr-soft" />
+                {coach.weekStreak > 0 ? `${coach.weekStreak} ${coach.weekStreak === 1 ? "שבוע" : "שבועות"} ברצף` : "רצף חדש מתחיל השבוע"}
+              </span>
+            </div>
+          </div>
+          <span aria-hidden className="h-px bg-on-accent/12" />
+          {open ? (
+            <div className="flex flex-col gap-4">
+              <div className="flex items-baseline justify-between">
+                <h2 className="text-[1.625rem] leading-tight font-bold tracking-tight">{open.name ?? "אימון חופשי"}</h2>
+                <span className="figure text-2xl">
+                  <bdi dir="ltr">{now ? formatDuration((now - new Date(open.startedAt).getTime()) / 1000) : ""}</bdi>
+                </span>
+              </div>
+              <Button variant="inverse" size="lg" fullWidth onClick={() => void start()}>
+                חזרה לאימון
+              </Button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1">
+                <span className="text-sm text-on-accent/70">האימון הבא</span>
+                <h2 className="text-[1.625rem] leading-tight font-bold tracking-tight">{training.next?.template.name ?? "אימון חופשי"}</h2>
+                {training.next && <p className="line-clamp-2 text-sm leading-relaxed text-on-accent/70">{training.next.items.map((i) => i.exercise.nameHe).join(", ")}</p>}
+              </div>
+              <Button variant="inverse" size="lg" fullWidth loading={pending} onClick={() => void start(training.next?.template.id)}>
+                התחלת אימון
+              </Button>
+            </div>
+          )}
+        </section>
+      )}
+
       {marks ? (
         <WeekStrip days={marks} selected={today} today={today} onSelect={(d) => router.push(d === today ? "/nutrition" : `/nutrition?date=${d}`)} />
       ) : (
@@ -86,37 +141,31 @@ export default function HomePage() {
         </button>
       </div>
 
-      {open === undefined || !training ? (
-        <Skeleton className="h-48 rounded-xl" />
-      ) : open ? (
-        <Panel className="flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-text-muted">אימון בתהליך</span>
-            <span className="figure text-2xl">
-              <bdi dir="ltr">{now ? formatDuration((now - new Date(open.startedAt).getTime()) / 1000) : ""}</bdi>
+      {coach && (
+        <Link href={`/learn/read?id=${coach.lesson.id}`} className="glass flex flex-col gap-2 rounded-lg p-5">
+          <span className="flex items-center gap-2 text-sm text-text-muted">
+            <BookOpen aria-hidden className="size-4" />
+            שיעור של דקה, {TOPIC_LABEL[coach.lesson.topic]}
+          </span>
+          <span className="text-lg font-semibold">{coach.lesson.title}</span>
+          <span className="line-clamp-2 text-sm leading-relaxed text-text-muted">{coach.lesson.body[0]}</span>
+        </Link>
+      )}
+
+      {nextBadge && (
+        <Link href="/achievements" className="glass flex items-center gap-4 rounded-lg p-4">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-pill bg-pr-soft text-pr">
+            <Award aria-hidden className="size-6" />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <span className="text-sm text-text-muted">ההישג הבא</span>
+            <span className="font-semibold">{nextBadge.title}</span>
+            <span className="well block h-1.5 overflow-hidden rounded-pill" role="progressbar" aria-label={nextBadge.title} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(nextBadge.progress * 100)}>
+              <span className="block h-full rounded-pill bg-pr" style={{ width: `${Math.max(4, nextBadge.progress * 100)}%` }} />
             </span>
-          </div>
-          <h2 className="text-xl">{open.name ?? "אימון חופשי"}</h2>
-          <Button size="lg" fullWidth onClick={() => void start()}>
-            חזרה לאימון
-          </Button>
-        </Panel>
-      ) : (
-        <Panel className="flex flex-col gap-4">
-          <div className="flex items-baseline justify-between gap-3">
-            <div className="flex flex-col gap-0.5">
-              <span className="text-sm text-text-muted">האימון הבא</span>
-              <h2 className="text-xl">{training.next?.template.name ?? "אימון חופשי"}</h2>
-            </div>
-            <Link href="/workouts" className="text-sm text-text-muted">
-              כל התבניות
-            </Link>
-          </div>
-          {training.next && <p className="text-sm leading-relaxed text-text-muted">{training.next.items.map((i) => i.exercise.nameHe).join(", ")}</p>}
-          <Button size="lg" fullWidth loading={pending} onClick={() => void start(training.next?.template.id)}>
-            התחלת אימון
-          </Button>
-        </Panel>
+          </span>
+          <ChevronLeft aria-hidden className="size-5 shrink-0 text-text-subtle" />
+        </Link>
       )}
 
       {training?.last && (
@@ -142,8 +191,9 @@ export default function HomePage() {
           hint={open ? undefined : "מתבנית או חופשי"}
           onClick={() => (open ? void start() : router.push("/workouts"))}
         />
-        <SheetAction icon={<Activity aria-hidden className="size-5" />} label="קרדיו" hint="בשלב הבא" disabled />
+        <SheetAction icon={<Activity aria-hidden className="size-5" />} label="קרדיו" hint="הליכה, ריצה, אופניים" onClick={() => router.push("/cardio")} />
         <SheetAction icon={<Scale aria-hidden className="size-5" />} label="שקילה" onClick={() => router.push("/body")} />
+        <SheetAction icon={<ImageIcon aria-hidden className="size-5" />} label="תמונת התקדמות" hint="פרטית, נשמרת רק בטלפון" onClick={() => router.push("/photos")} />
       </BottomSheet>
     </AppShell>
   );

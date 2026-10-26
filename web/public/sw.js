@@ -12,7 +12,7 @@ const CACHE = `app-${VERSION}`;
 const PAGES = [
   "/", "/welcome", "/workout", "/workouts", "/summary", "/history", "/history/view", "/exercises", "/exercises/view",
   "/templates/edit", "/nutrition", "/nutrition/add", "/nutrition/photo", "/nutrition/barcode", "/nutrition/goals",
-  "/progress", "/body", "/profile",
+  "/progress", "/body", "/profile", "/cardio", "/photos", "/learn", "/learn/read", "/achievements",
 ];
 
 self.addEventListener("install", (event) => {

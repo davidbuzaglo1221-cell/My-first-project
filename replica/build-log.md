@@ -1,6 +1,6 @@
 # Build log
 
-Data is local (IndexedDB, Dexie) behind `src/data/repo.ts` and `src/data/nutrition-repo.ts`, whose signatures the Supabase layer will keep. Tests: 39 unit tests (`npm test`), and an end-to-end run of every flow at 390 px and 1440 px, light and dark, with no console errors and no horizontal scroll. Screenshots: `replica/clone-screens/`.
+Data is local (IndexedDB, Dexie) behind `src/data/repo.ts` and `src/data/nutrition-repo.ts`, whose signatures the Supabase layer will keep. Tests: 52 unit tests (`npm test`), and an end-to-end run of every flow at 390 px and 1440 px, light and dark, with no console errors and no horizontal scroll. Screenshots: `replica/clone-screens/`.
 
 | ID | date | status | missing | harder than expected |
 | --- | --- | --- | --- | --- |
@@ -26,7 +26,15 @@ Data is local (IndexedDB, Dexie) behind `src/data/repo.ts` and `src/data/nutriti
 | S23 משקל | 2026-10-26 | done | measurements (waist etc.) | |
 | PWA | 2026-10-26 | done | | tested offline: pages open and a workout starts with no network |
 | S28 צילום ארוחה (fix) | 2026-10-26 | done | | leaving the screen mid-save dropped the last items; the save is now one transaction (found by repeating the e2e run) |
-| S01 הרשמה, S15–S17 ספריית תוכניות, S24–S25 תמונות וקרדיו, S28 הרגלים, S29 שיעורים, S32 | — | not started | | |
+| S04 בית (round 3) | 2026-10-26 | done | | one ink card for the day: weekly goal ring, streak, next workout; then eating, a lesson, the next achievement |
+| S06 יעד מוצע + סופרסטים | 2026-10-26 | done | | a Hebrew unit inside an LTR "100 × 6" run scrambled the order; written as words. The superset message replaced the record toast; records win |
+| S12 חגיגת סיום | 2026-10-26 | done | share card | |
+| S24 תמונות התקדמות | 2026-10-26 | done | | |
+| S25 קרדיו | 2026-10-26 | done | heart rate, GPS | |
+| S29 שיעורים, הישגים | 2026-10-26 | done | | |
+| — | 2026-10-26 | fix | | photo meal items could swap order (same-millisecond timestamps); timestamps are now strictly increasing |
+| S01 הרשמה, S15–S17 ספריית תוכניות, S28 הרגלים, S32 | — | not started | | |
 
 Round 1 parity (`parity.py`): 64.1, 19 of 31 must-haves.
 Round 2 parity: 79.3, 29 of 31 must-haves. Missing: sign-up and sync (needs a Supabase account), and the open exercise library (83 of 600+, licence check pending). 39 unit tests; the e2e run passes 5 times in a row.
+Round 3: 52 unit tests; the e2e run (32 steps) passes 5 times in a row.

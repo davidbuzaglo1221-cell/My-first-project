@@ -74,6 +74,7 @@ export function formatTime(iso: string): string {
 /** 3725 -> "שעה ו-2 דק׳", 1500 -> "25 דק׳". For summaries, not for running clocks. */
 export function formatDurationWords(totalSeconds: number): string {
   const m = Math.round(totalSeconds / 60);
+  if (m < 1) return "פחות מדקה";
   if (m < 60) return `${m} דק׳`;
   const h = Math.floor(m / 60);
   const rest = m % 60;

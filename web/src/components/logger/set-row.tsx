@@ -137,7 +137,7 @@ export function SetRow({
               : "well text-text-subtle/50 hover:text-text-muted",
           )}
         >
-          <Check aria-hidden className="size-5" strokeWidth={2.75} />
+          <Check aria-hidden className={cn("size-5", done && "animate-[pr-pop_var(--motion-base)_var(--ease-out)]")} strokeWidth={2.75} />
         </button>
         {isPr && done && (
           <span

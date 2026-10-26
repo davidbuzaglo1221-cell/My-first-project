@@ -12,7 +12,7 @@ feature,area,priority,original,clone,notes
 זמני מנוחה מדויקים (לא רק דקות שלמות),logger,should,yes,yes,5.4.0. ±15 s
 מקלדת מספרים מותאמת לרישום,logger,should,yes,yes,5.4.0
 הערות לאימון ולתרגיל,logger,should,yes,partial,exercise cues shown; no user notes yet
-סופרסטים,logger,should,yes,no,"אצלם בתשלום. schema ready, UI not yet"
+סופרסטים,logger,should,yes,yes,link with the next exercise; rest only after the round
 החלפת תרגיל באמצע אימון,logger,must,yes,yes,
 סוגי סט: חימום עבודה drop כושל,logger,should,yes,yes,tap the badge to cycle
 מחשבון פלטות,logger,could,yes,no,
@@ -42,14 +42,14 @@ Strength Score עם 5 תת-ציונים,progress,must,yes,yes,our own transparen
 רשימת שיאים אישיים,progress,should,yes,partial,"records in summary, history and exercise view; no single list"
 מדדי גוף: משקל ואחוז שומן עם גרף,body,must,yes,yes,"weigh-in, 7-day average, trend chart"
 היקפים (מותן חזה זרוע וכו'),body,could,yes,no,
-תמונות התקדמות פרטיות,body,should,yes,no,
-השוואת תמונות זו לצד זו,body,should,yes,no,5.14.1
-תיעוד קרדיו ידני,cardio,should,yes,no,
+תמונות התקדמות פרטיות,body,should,yes,yes,kept on the phone only
+השוואת תמונות זו לצד זו,body,should,yes,yes,before/after slider
+תיעוד קרדיו ידני,cardio,should,yes,yes,MET-based calorie estimate
 אשף תזונה: חישוב קלוריות ומאקרו לפי מטרה,nutrition,must,yes,yes,"Mifflin-St Jeor, explained on screen; tested"
 יעד יומי לחלבון ולסיבים,nutrition,must,yes,yes,"protein in the macro bars, fibre line under them"
 מעקב יומי מול היעדים (טבעות),nutrition,must,yes,yes,segmented calorie arc + three macro bars
 הרגלים יומיים עם רצפים,habits,could,yes,no,
-שיעורים על אימון ותזונה,lessons,could,yes,no,כתיבה מאפס בעברית
+שיעורים על אימון ותזונה,lessons,could,yes,yes,"14 one-minute lessons written in Hebrew, each with something to try today"
 "יחידות ק""ג או ליברות",settings,must,yes,yes,
 תחילת שבוע ראשון או שני,settings,should,yes,yes,5.4.0. בישראל ברירת מחדל ראשון
 ברירות מחדל למנוחה ולתרגילים,settings,could,yes,yes,5.4.0. rest default + auto timer toggle
@@ -73,9 +73,9 @@ Workout Circles: צ'אט קבוצתי עם חברים,social,could,yes,no,לשי
 רישום סט בנגיעה אחת כשחוזרים על הקודם,logger,must,no,yes,תוספת: יעד מהירות. tested
 התראת סיום מנוחה גם כשהמסך נעול (Web Push),logger,must,no,partial,תוספת: הבקשה הכי מבוקשת אצלם (682). wake lock keeps the screen on; push for a locked screen needs the backend
 בחירת ציוד זמין ותבניות שמתאימות אליו,templates,should,no,yes,onboarding equipment picks the exercises
-הצעות לשינוי אימון לפי התקדמות (עומס פרוגרסיבי),logger,should,no,no,תוספת: בקשה שלישית (464)
+הצעות לשינוי אימון לפי התקדמות (עומס פרוגרסיבי),logger,should,no,yes,"double progression target per exercise, with the reason"
 קלוריות משוערות לאימון,completion,could,no,no,תוספת: בקשה (285)
-גביעים ואבני דרך,progress,could,no,no,תוספת: בקשה (263)
+גביעים ואבני דרך,progress,could,no,yes,14 achievements from real data; weekly streak
 גרסת ווב,platform,must,no,yes,תוספת: בקשה (315). זו הפלטפורמה שלנו
 כל הפיצ'רים בחינם (בלי paywall),pricing,should,no,yes,תוספת: תלונה ידועה. לשימוש אישי
 ממשק פשוט עם פחות צעדים,ux,should,no,yes,תוספת: תלונה על ממשק מסובך

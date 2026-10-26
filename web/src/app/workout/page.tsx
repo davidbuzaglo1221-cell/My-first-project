@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Dumbbell, Plus, Replace, Trash2 } from "lucide-react";
+import { Dumbbell, Link2, Plus, Replace, Trash2, Unlink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BottomSheet, SheetAction } from "@/components/ui/bottom-sheet";
 import { EmptyState, Skeleton, Tag } from "@/components/ui/surface";
@@ -14,6 +14,9 @@ import { ExercisePicker } from "@/components/logger/exercise-picker";
 import { NumericKeypad } from "@/components/logger/numeric-keypad";
 import { RestTimer } from "@/components/logger/rest-timer";
 import { SET_KINDS, SetHeader, SetRow, type SetField } from "@/components/logger/set-row";
+import { CoachHint } from "@/components/logger/coach-hint";
+import { linkWithNext, unlinkSuperset } from "@/data/coach-repo";
+import { suggestNext } from "@/lib/coach";
 import {
   EmptyWorkoutError,
   addExerciseToWorkout,
@@ -29,7 +32,7 @@ import {
   updateSet,
   updateWorkout,
 } from "@/data/repo";
-import type { PreviousSet, WorkoutSet } from "@/data/types";
+import type { PreviousSet, WorkoutExercise, WorkoutSet } from "@/data/types";
 import { EQUIPMENT_LABEL, MUSCLE_LABEL } from "@/data/types";
 import { useOpenWorkout, useProfile } from "@/hooks/use-data";
 import { useNow } from "@/hooks/use-now";
@@ -63,6 +66,7 @@ export default function WorkoutPage() {
   const [finishOpen, setFinishOpen] = useState(false);
   const [discardOpen, setDiscardOpen] = useState(false);
   const [finishing, setFinishing] = useState(false);
+  const [applied, setApplied] = useState<Set<string>>(new Set());
 
   const units = profile?.units ?? "kg";
   const allSets = detail?.exercises.flatMap((x) => x.sets) ?? [];
@@ -135,7 +139,7 @@ export default function WorkoutPage() {
     setEditing(null);
   };
 
-  const toggleDone = async (set: WorkoutSet, prev: PreviousSet | null, restSec: number | null | undefined) => {
+  const toggleDone = async (set: WorkoutSet, prev: PreviousSet | null, we: WorkoutExercise, index: number) => {
     unlockAudio();
     setEditing(null);
     if (set.completedAt) return uncompleteSet(set.id);
@@ -147,7 +151,28 @@ export default function WorkoutPage() {
     if (r.isPr && r.weightKg && r.reps) {
       toast({ tone: "pr", message: `שיא אישי חדש: ${formatWeight(r.weightKg, units)} × ${r.reps}` });
     }
-    if (profile?.autoRestTimer !== false) startRest(set.kind === "warmup" ? 60 : (restSec ?? profile?.defaultRestSec ?? 120));
+    // In a superset, rest only after the round: while a later exercise in the group still has
+    // this set number to do, go straight to it.
+    if (we.supersetGroup != null) {
+      const group = detail.exercises.filter((x) => x.we.supersetGroup === we.supersetGroup);
+      const after = group.slice(group.findIndex((x) => x.we.id === we.id) + 1);
+      const pending = after.find((x) => x.sets[index] && !x.sets[index].completedAt);
+      if (pending) {
+        // A new record is the bigger news; it keeps the toast.
+        if (!r.isPr) toast({ tone: "success", message: `לסופרסט: ${pending.exercise.nameHe}` });
+        return;
+      }
+    }
+    if (profile?.autoRestTimer !== false) startRest(set.kind === "warmup" ? 60 : (we.restSec ?? profile?.defaultRestSec ?? 120));
+  };
+
+  // Superset letters in workout order: א, ב, ג.
+  const groups = [...new Set(detail.exercises.map((x) => x.we.supersetGroup).filter((g): g is number => g != null))];
+  const letter = (g: number | null | undefined) => (g == null ? undefined : "אבגדהוזחט"[groups.indexOf(g)] ?? undefined);
+
+  const applySuggestion = async (sets: WorkoutSet[], weightKg: number | null, reps: number) => {
+    for (const st of sets) if (!st.completedAt && st.kind !== "warmup") await updateSet(st.id, { weightKg, reps });
+    setApplied((a) => new Set(a).add(sets[0]?.workoutExerciseId ?? ""));
   };
 
   const finish = async () => {
@@ -212,10 +237,14 @@ export default function WorkoutPage() {
         {detail.exercises.map(({ we, exercise, sets }) => {
           const order = sets.map((s) => s.id);
           let workNo = 0;
+          const suggestion = sets.some((x) => !x.completedAt)
+            ? suggestNext({ previous: previous?.get(exercise.id) ?? [], repsMin: we.repsMin ?? null, repsMax: we.repsMax ?? null, equipment: exercise.equipment, units })
+            : null;
           return (
             <ExerciseCard
               key={we.id}
               name={exercise.nameHe}
+              supersetLabel={letter(we.supersetGroup)}
               tags={[MUSCLE_LABEL[exercise.primaryMuscle], EQUIPMENT_LABEL[exercise.equipment]]}
               note={exercise.instructionsHe ?? undefined}
               doneCount={sets.filter((s) => s.completedAt).length}
@@ -223,6 +252,14 @@ export default function WorkoutPage() {
               onAddSet={() => void addSet(we.id)}
               onMenu={() => setMenuFor(we.id)}
             >
+              {suggestion && (
+                <CoachHint
+                  suggestion={suggestion}
+                  units={units}
+                  applied={applied.has(we.id)}
+                  onApply={() => void applySuggestion(sets, suggestion.weightKg, suggestion.reps)}
+                />
+              )}
               <SetHeader units={units} />
               {sets.map((s, i) => {
                 if (s.kind !== "warmup") workNo += 1;
@@ -239,7 +276,7 @@ export default function WorkoutPage() {
                     units={units}
                     activeField={editing?.setId === s.id ? editing.field : null}
                     onFieldFocus={(f) => openField(s, f, order)}
-                    onToggleDone={() => void toggleDone(s, prev, we.restSec)}
+                    onToggleDone={() => void toggleDone(s, prev, we, i)}
                     onCycleKind={() => void updateSet(s.id, { kind: SET_KINDS[(SET_KINDS.indexOf(s.kind) + 1) % SET_KINDS.length] })}
                   />
                 );
@@ -296,6 +333,29 @@ export default function WorkoutPage() {
             setPicker({ mode: "replace", weId });
           }}
         />
+        {menuExercise && menuExercise.we.supersetGroup != null ? (
+          <SheetAction
+            icon={<Unlink aria-hidden className="size-5" />}
+            label="הוצאה מהסופרסט"
+            onClick={async () => {
+              const weId = menuFor!;
+              setMenuFor(null);
+              await unlinkSuperset(weId);
+            }}
+          />
+        ) : null}
+        {menuExercise && detail.exercises.at(-1)?.we.id !== menuExercise.we.id && (
+          <SheetAction
+            icon={<Link2 aria-hidden className="size-5" />}
+            label="סופרסט עם התרגיל הבא"
+            hint="מבצעים סט מכל אחד ברצף, ונחים רק בסוף הסבב"
+            onClick={async () => {
+              const weId = menuFor!;
+              setMenuFor(null);
+              await linkWithNext(weId);
+            }}
+          />
+        )}
         <SheetAction
           icon={<Trash2 aria-hidden className="size-5" />}
           label="הסרה מהאימון"
