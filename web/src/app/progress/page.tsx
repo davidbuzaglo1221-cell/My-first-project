@@ -6,6 +6,7 @@ import { ChevronLeft, LineChart as LineIcon } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
 import { EmptyState, Panel, Skeleton, Stat } from "@/components/ui/surface";
 import { BarChart } from "@/components/progress/charts";
+import { StrengthPanel } from "@/components/progress/strength-panel";
 import { getWeekMarks } from "@/data/nutrition-repo";
 import { exerciseHistory, listExercises, listFinishedWorkouts } from "@/data/repo";
 import { useProfile } from "@/hooks/use-data";
@@ -76,6 +77,7 @@ export default function ProgressPage() {
         />
       ) : (
         <>
+          <StrengthPanel units={units} />
           <div className="grid grid-cols-3 gap-2">
             <Stat label="אימונים בסך הכול" value={data.history.length} />
             <Stat label="השבוע" value={data.weeks.at(-1)!.count} hint="אימונים" />

@@ -10,6 +10,7 @@ import { Banner, Panel, Skeleton } from "@/components/ui/surface";
 import { OptionCard } from "@/components/onboarding/option-card";
 import { getLatestTarget, saveTargets } from "@/data/nutrition-repo";
 import { updateProfile } from "@/data/repo";
+import { logBodyweight } from "@/data/body-repo";
 import type { ActivityLevel, Goal, Pace, TargetInputs } from "@/data/types";
 import { computeTargets, localDateKey } from "@/lib/nutrition";
 import { formatNumber } from "@/lib/format";
@@ -167,7 +168,8 @@ export default function GoalsPage() {
               if (!r) return;
               setSaving(true);
               await saveTargets({ effectiveFrom: localDateKey(), calories: r.calories, protein: r.protein, carbs: r.carbs, fat: r.fat, fiber: r.fiber, method: "wizard", inputs });
-              await updateProfile({ goal: inputs.goal, bodyweightKg: inputs.weightKg });
+              await updateProfile({ goal: inputs.goal, sex: inputs.sex });
+              await logBodyweight(inputs.weightKg);
               router.replace("/nutrition");
             }}
           >

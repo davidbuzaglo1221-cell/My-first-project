@@ -135,7 +135,7 @@ export default function WorkoutPage() {
     setEditing(null);
   };
 
-  const toggleDone = async (set: WorkoutSet, prev: PreviousSet | null) => {
+  const toggleDone = async (set: WorkoutSet, prev: PreviousSet | null, restSec: number | null | undefined) => {
     unlockAudio();
     setEditing(null);
     if (set.completedAt) return uncompleteSet(set.id);
@@ -147,7 +147,7 @@ export default function WorkoutPage() {
     if (r.isPr && r.weightKg && r.reps) {
       toast({ tone: "pr", message: `שיא אישי חדש: ${formatWeight(r.weightKg, units)} × ${r.reps}` });
     }
-    if (profile?.autoRestTimer !== false) startRest(set.kind === "warmup" ? 60 : (profile?.defaultRestSec ?? 120));
+    if (profile?.autoRestTimer !== false) startRest(set.kind === "warmup" ? 60 : (restSec ?? profile?.defaultRestSec ?? 120));
   };
 
   const finish = async () => {
@@ -239,7 +239,7 @@ export default function WorkoutPage() {
                     units={units}
                     activeField={editing?.setId === s.id ? editing.field : null}
                     onFieldFocus={(f) => openField(s, f, order)}
-                    onToggleDone={() => void toggleDone(s, prev)}
+                    onToggleDone={() => void toggleDone(s, prev, we.restSec)}
                     onCycleKind={() => void updateSet(s.id, { kind: SET_KINDS[(SET_KINDS.indexOf(s.kind) + 1) % SET_KINDS.length] })}
                   />
                 );

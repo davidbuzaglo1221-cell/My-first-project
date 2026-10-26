@@ -8,15 +8,17 @@ import { AppShell } from "@/components/app/app-shell";
 import { FilterChip, SearchField } from "@/components/ui/field";
 import { Skeleton } from "@/components/ui/surface";
 import { listExercises } from "@/data/repo";
-import { EQUIPMENT_LABEL, MUSCLE_LABEL, type MuscleGroup } from "@/data/types";
+import { EQUIPMENT_LABEL, MUSCLE_LABEL, type Equipment, type MuscleGroup } from "@/data/types";
 
 const MUSCLES: MuscleGroup[] = ["chest", "back", "legs", "shoulders", "arms", "core"];
+const EQUIPMENT: Equipment[] = ["barbell", "dumbbell", "machine", "cable", "bodyweight", "kettlebell"];
 
 /** S09: the exercise library. */
 export default function ExercisesPage() {
   const [query, setQuery] = useState("");
   const [muscles, setMuscles] = useState<MuscleGroup[]>([]);
-  const results = useLiveQuery(() => listExercises({ query, muscles }), [query, muscles.join(",")]);
+  const [equipment, setEquipment] = useState<Equipment[]>([]);
+  const results = useLiveQuery(() => listExercises({ query, muscles, equipment }), [query, muscles.join(","), equipment.join(",")]);
 
   return (
     <AppShell tab="workouts" title="ספריית תרגילים" back={{ href: "/workouts", label: "אימונים" }}>
@@ -25,6 +27,13 @@ export default function ExercisesPage() {
         {MUSCLES.map((m) => (
           <FilterChip key={m} selected={muscles.includes(m)} onToggle={() => setMuscles((x) => (x.includes(m) ? x.filter((y) => y !== m) : [...x, m]))}>
             {MUSCLE_LABEL[m]}
+          </FilterChip>
+        ))}
+      </div>
+      <div className="-mx-4 -mt-2 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]" role="group" aria-label="סינון לפי ציוד">
+        {EQUIPMENT.map((e) => (
+          <FilterChip key={e} selected={equipment.includes(e)} onToggle={() => setEquipment((x) => (x.includes(e) ? x.filter((y) => y !== e) : [...x, e]))}>
+            {EQUIPMENT_LABEL[e]}
           </FilterChip>
         ))}
       </div>

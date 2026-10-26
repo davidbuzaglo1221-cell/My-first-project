@@ -67,6 +67,10 @@ function Today() {
             values={{ protein: day.totals.protein, carbs: day.totals.carbs, fat: day.totals.fat }}
             targets={{ protein: day.targets.protein, carbs: day.targets.carbs, fat: day.targets.fat }}
           />
+          <p className="num -mt-2 text-sm text-text-subtle">
+            סיבים: <span className="font-semibold text-text">{formatNumber(day.totals.fiber ?? 0, 0)}</span>/{formatNumber(day.targets.fiber, 0)} ג׳
+            {day.entries.some((e) => e.fiber == null) && " (לא לכל הפריטים יש נתון)"}
+          </p>
           {day.targets.isDefault && (
             <Link href="/nutrition/goals" className="well flex items-center gap-2 rounded-md px-4 py-3 text-sm">
               <span className="flex-1">היעדים כרגע כלליים. כדאי לחשב יעדים אישיים לפי הגוף והמטרה שלך.</span>

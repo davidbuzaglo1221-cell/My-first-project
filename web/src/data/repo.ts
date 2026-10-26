@@ -185,7 +185,15 @@ export async function startWorkout(opts: { templateId?: string } = {}): Promise<
     });
     for (const [i, { item }] of (template?.items ?? []).entries()) {
       const weId = uuid();
-      await db().workoutExercises.add({ id: weId, workoutId: id, exerciseId: item.exerciseId, position: i, supersetGroup: item.supersetGroup, notes: null });
+      await db().workoutExercises.add({
+        id: weId,
+        workoutId: id,
+        exerciseId: item.exerciseId,
+        position: i,
+        supersetGroup: item.supersetGroup,
+        notes: null,
+        restSec: item.targetRestSec,
+      });
       await db().sets.bulkAdd(
         Array.from({ length: item.targetSets }, (_, p) => emptySet(id, weId, p)),
       );
@@ -228,11 +236,13 @@ export async function discardWorkout(id: string): Promise<void> {
 }
 
 export async function deleteWorkout(id: string): Promise<void> {
+  const exerciseIds = [...new Set((await db().workoutExercises.where("workoutId").equals(id).toArray()).map((w) => w.exerciseId))];
   await db().transaction("rw", db().workouts, db().workoutExercises, db().sets, async () => {
     await db().sets.where("workoutId").equals(id).delete();
     await db().workoutExercises.where("workoutId").equals(id).delete();
     await db().workouts.delete(id);
   });
+  for (const exerciseId of exerciseIds) await recomputeRecords(exerciseId);
 }
 
 export async function updateWorkout(id: string, patch: Partial<Pick<Workout, "name" | "notes" | "rating" | "restEndsAt" | "restTotalSec">>) {
@@ -436,4 +446,115 @@ export async function exerciseHistory(exerciseId: string): Promise<{ workout: Wo
     }),
   );
   return rows.filter((r): r is NonNullable<typeof r> => !!r).sort((a, b) => b.workout.startedAt.localeCompare(a.workout.startedAt));
+}
+
+// ---------- template editing -------------------------------------------------
+
+export type TemplateItemInput = {
+  exerciseId: string;
+  targetSets: number;
+  targetRepsMin: number | null;
+  targetRepsMax: number | null;
+  targetRestSec: number | null;
+};
+
+/** Creates (no id) or replaces a template's name and its exercises, in order. Returns the id. */
+export async function saveTemplate(input: { id?: string; name: string; items: TemplateItemInput[] }): Promise<string> {
+  const id = input.id ?? uuid();
+  await db().transaction("rw", db().templates, db().templateExercises, async () => {
+    const existing = input.id ? await db().templates.get(input.id) : undefined;
+    const position = existing?.position ?? (await db().templates.count());
+    await db().templates.put({
+      id,
+      userId: USER,
+      name: input.name.trim(),
+      notes: existing?.notes ?? null,
+      position,
+      createdAt: existing?.createdAt ?? now(),
+    });
+    await db().templateExercises.where("templateId").equals(id).delete();
+    await db().templateExercises.bulkAdd(
+      input.items.map((it, i) => ({
+        id: uuid(),
+        templateId: id,
+        exerciseId: it.exerciseId,
+        position: i,
+        supersetGroup: null,
+        targetSets: Math.min(20, Math.max(1, Math.round(it.targetSets))),
+        targetRepsMin: it.targetRepsMin,
+        targetRepsMax: it.targetRepsMax != null && it.targetRepsMin != null ? Math.max(it.targetRepsMin, it.targetRepsMax) : it.targetRepsMax,
+        targetRestSec: it.targetRestSec,
+      })),
+    );
+  });
+  return id;
+}
+
+/** Deletes a template. Past workouts keep their sets; they just lose the link. */
+export async function deleteTemplate(id: string): Promise<void> {
+  await db().transaction("rw", db().templates, db().templateExercises, db().workouts, async () => {
+    await db().templateExercises.where("templateId").equals(id).delete();
+    await db().templates.delete(id);
+    await db().workouts.where("templateId").equals(id).modify({ templateId: null });
+  });
+}
+
+// ---------- editing history ------------------------------------------------------
+
+/**
+ * Re-marks records for one exercise in time order: a set is a record when its estimated 1RM
+ * beats every earlier one (the very first lift is not). Run after editing or deleting history,
+ * so a corrected typo cannot leave a false record behind.
+ */
+export async function recomputeRecords(exerciseId: string): Promise<void> {
+  const weIds = (await db().workoutExercises.where("exerciseId").equals(exerciseId).toArray()).map((w) => w.id);
+  if (!weIds.length) return;
+  const sets = (await db().sets.where("workoutExerciseId").anyOf(weIds).toArray())
+    .filter((s) => s.completedAt)
+    .sort((a, b) => a.completedAt!.localeCompare(b.completedAt!));
+  let best: number | null = null;
+  const changes: { id: string; isPr: boolean }[] = [];
+  for (const s of sets) {
+    const e = s.kind !== "warmup" && s.weightKg && s.reps ? estimateOneRepMax(s.weightKg, s.reps) : null;
+    const isPr = e != null && best != null && e > best + 0.01;
+    if (e != null && (best == null || e > best)) best = e;
+    if (isPr !== s.isPr) changes.push({ id: s.id, isPr });
+  }
+  await Promise.all(changes.map((c) => db().sets.update(c.id, { isPr: c.isPr })));
+}
+
+/** Corrects a set in a finished workout, then fixes the records it affects. */
+export async function editPastSet(setId: string, patch: { weightKg?: number | null; reps?: number | null; kind?: WorkoutSet["kind"] }): Promise<void> {
+  const set = await db().sets.get(setId);
+  if (!set) return;
+  const we = await db().workoutExercises.get(set.workoutExerciseId);
+  await db().sets.update(setId, { ...patch, updatedAt: now() });
+  if (we) await recomputeRecords(we.exerciseId);
+}
+
+/** Removes one set from a finished workout (the exercise goes too when it was its last set). */
+export async function deletePastSet(setId: string): Promise<void> {
+  const set = await db().sets.get(setId);
+  if (!set) return;
+  const we = await db().workoutExercises.get(set.workoutExerciseId);
+  await db().sets.delete(setId);
+  if (we && (await db().sets.where("workoutExerciseId").equals(we.id).count()) === 0) await db().workoutExercises.delete(we.id);
+  if (we) await recomputeRecords(we.exerciseId);
+}
+
+// ---------- onboarding ----------------------------------------------------------
+
+/** Replaces the starter templates with a generated plan. Templates the user made are kept. */
+export async function applyPlan(templates: { name: string; items: { slug: string; sets: number; repsMin: number; repsMax: number; restSec: number }[] }[]): Promise<void> {
+  const bySlug = new Map((await db().exercises.toArray()).map((e) => [e.slug, e.id]));
+  const starters = await db().templates.filter((t) => t.userId === null).toArray();
+  for (const t of starters) await deleteTemplate(t.id);
+  for (const t of templates) {
+    await saveTemplate({
+      name: t.name,
+      items: t.items
+        .filter((it) => bySlug.has(it.slug))
+        .map((it) => ({ exerciseId: bySlug.get(it.slug)!, targetSets: it.sets, targetRepsMin: it.repsMin, targetRepsMax: it.repsMax, targetRestSec: it.restSec })),
+    });
+  }
 }

@@ -2,6 +2,7 @@ import Dexie, { type EntityTable } from "dexie";
 import { SEED_EXERCISES, SEED_TEMPLATES } from "./seed";
 import { SEED_FOODS } from "./food-seed";
 import type {
+  BodyMetric,
   Exercise,
   Food,
   FoodLog,
@@ -14,6 +15,21 @@ import type {
   WorkoutSet,
   WorkoutTemplate,
 } from "./types";
+
+function seedExercises(): Exercise[] {
+  return SEED_EXERCISES.map((e) => ({
+    id: crypto.randomUUID(),
+    userId: null,
+    slug: e.slug,
+    nameHe: e.nameHe,
+    aliasesHe: e.aliasesHe ?? [],
+    primaryMuscle: e.muscle,
+    equipment: e.equipment,
+    tracking: e.equipment === "bodyweight" || e.equipment === "pullup_bar" ? "reps" : "weight_reps",
+    isUnilateral: e.unilateral ?? false,
+    instructionsHe: e.cue ?? null,
+  }));
+}
 
 /** Library foods get stable ids, so re-seeding updates rows instead of duplicating them. */
 function seedFoods(): Food[] {
@@ -44,6 +60,7 @@ export class LocalDb extends Dexie {
   foodLogs!: EntityTable<FoodLog, "id">;
   mealPhotos!: EntityTable<MealPhoto, "id">;
   targets!: EntityTable<NutritionTarget, "id">;
+  bodyMetrics!: EntityTable<BodyMetric, "id">;
 
   constructor() {
     super("training-app");
@@ -65,19 +82,17 @@ export class LocalDb extends Dexie {
         targets: "id, effectiveFrom",
       })
       .upgrade((tx) => tx.table("foods").bulkPut(seedFoods()));
+    // v3: bodyweight log.
+    this.version(3).stores({ bodyMetrics: "id, &date" });
+    // v4: the exercise library grew; existing installs get the new ones by slug.
+    this.version(4)
+      .stores({})
+      .upgrade(async (tx) => {
+        const have = new Set((await tx.table("exercises").toArray()).map((e: Exercise) => e.slug));
+        await tx.table("exercises").bulkAdd(seedExercises().filter((e) => !have.has(e.slug)));
+      });
     this.on("populate", (tx) => {
-      const exercises: Exercise[] = SEED_EXERCISES.map((e) => ({
-        id: crypto.randomUUID(),
-        userId: null,
-        slug: e.slug,
-        nameHe: e.nameHe,
-        aliasesHe: e.aliasesHe ?? [],
-        primaryMuscle: e.muscle,
-        equipment: e.equipment,
-        tracking: e.equipment === "bodyweight" || e.equipment === "pullup_bar" ? "reps" : "weight_reps",
-        isUnilateral: e.unilateral ?? false,
-        instructionsHe: e.cue ?? null,
-      }));
+      const exercises = seedExercises();
       tx.table("exercises").bulkAdd(exercises);
       tx.table("foods").bulkPut(seedFoods());
       const bySlug = new Map(exercises.map((e) => [e.slug, e.id]));

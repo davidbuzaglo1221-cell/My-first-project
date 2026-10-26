@@ -22,10 +22,22 @@ function ThemeSync() {
   return null;
 }
 
+/** Registers the offline service worker (production only; in dev it would cache stale code). */
+function ServiceWorker() {
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.register(`/sw.js?v=${process.env.NEXT_PUBLIC_BUILD_ID}`).catch(() => {
+      // Not supported here (private mode, old browser): the app still works online.
+    });
+  }, []);
+  return null;
+}
+
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ToastProvider>
       <ThemeSync />
+      <ServiceWorker />
       {children}
     </ToastProvider>
   );

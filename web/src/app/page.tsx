@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Activity, Barcode, Camera, ChevronLeft, Dumbbell, Plus, Scale, Search } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
@@ -39,6 +39,11 @@ export default function HomePage() {
       .sort((a, b) => a.last.localeCompare(b.last) || a.t.template.position - b.t.template.position)[0]?.t;
     return { next, last: history[0] };
   }, []);
+
+  // First visit: the short setup. Anyone who already trained is never sent there.
+  useEffect(() => {
+    if (profile && !profile.onboardedAt && training && !training.last) router.replace("/welcome");
+  }, [profile, training, router]);
 
   return (
     <AppShell tab="home" title={now ? greeting(new Date(now)) : " "} subtitle={now ? formatFullDate(new Date(now)) : " "}>
@@ -138,7 +143,7 @@ export default function HomePage() {
           onClick={() => (open ? void start() : router.push("/workouts"))}
         />
         <SheetAction icon={<Activity aria-hidden className="size-5" />} label="קרדיו" hint="בשלב הבא" disabled />
-        <SheetAction icon={<Scale aria-hidden className="size-5" />} label="שקילה" hint="בשלב הבא" disabled />
+        <SheetAction icon={<Scale aria-hidden className="size-5" />} label="שקילה" onClick={() => router.push("/body")} />
       </BottomSheet>
     </AppShell>
   );

@@ -16,9 +16,17 @@ const log = (...a) => console.log('✓', ...a);
   const shot = async (name, full = false) => { await page.waitForTimeout(350); await overflow(name); await page.screenshot({ path: `${out}/${name}.png`, fullPage: full }); };
   const keypad = async (digits) => { for (const k of digits) await page.locator('[role=group][aria-label^="מקלדת"] button', { hasText: new RegExp(`^${k === '.' ? '\\.' : k}$`) }).first().click(); };
 
-  // Home, empty
+  // First visit: onboarding builds the plan and the targets
   await page.goto(BASE + '/', { waitUntil: 'networkidle' });
-  await shot('S04-home-empty'); log('home');
+  await page.waitForURL('**/welcome'); await shot('S02-welcome'); log('first visit goes to onboarding');
+  await page.getByRole('radio', { name: /בניית שריר/ }).click(); await page.getByRole('button', { name: 'המשך' }).click();
+  await page.getByRole('radio', { name: /בינוני/ }).click(); await page.getByRole('button', { name: 'המשך' }).click();
+  await page.getByRole('radio', { name: '3', exact: true }).click(); await page.getByRole('button', { name: 'המשך' }).click();
+  await page.getByRole('radio', { name: /חדר כושר/ }).click(); await page.getByRole('button', { name: 'המשך' }).click();
+  await page.getByLabel('משקל').fill('80'); await page.getByRole('button', { name: 'לתוכנית' }).click();
+  await page.getByText('התוכנית שלך').first().waitFor(); await shot('S03-plan');
+  await page.getByRole('button', { name: 'מתחילים' }).click(); await page.waitForURL(BASE + '/');
+  await page.getByText('גוף מלא A').first().waitFor(); await shot('S04-home-empty'); log('onboarding: plan + targets');
 
   // Workout 1 from template A: log the squat sets with the keypad
   await page.goto(BASE + '/workouts'); await page.getByRole('button', { name: 'התחלה' }).first().click();
@@ -55,16 +63,40 @@ const log = (...a) => console.log('✓', ...a);
   await page.goto(BASE + '/history'); await shot('S20-history'); log('history');
   await page.locator('a[href^="/history/view"]').first().click(); await page.getByText('מחיקת האימון').first().waitFor();
   await shot('S21-workout-detail', true);
+  // Fix a past set: the record follows
+  await page.getByRole('button', { name: /^עריכת סט 2/ }).first().click();
+  await page.getByRole('dialog').getByLabel(/משקל/).fill('110'); await page.getByRole('button', { name: 'שמירת התיקון' }).click();
+  await page.getByText('110 × 5').first().waitFor(); log('past set edited, records recomputed');
   await page.getByRole('link', { name: 'סקוואט עם מוט' }).click(); await page.getByText('1RM משוער לאורך זמן').first().waitFor();
   await shot('S10-exercise'); log('exercise detail');
   await page.goto(BASE + '/exercises'); await page.getByLabel('חיפוש תרגיל').fill('בנץ'); await page.getByText('לחיצת חזה במוט').first().waitFor();
   await shot('S09-exercises'); log('exercise search by alias');
 
+  // Template editor with a custom exercise
+  await page.goto(BASE + '/templates/edit'); await page.getByLabel('שם התבנית').fill('בוקר קצר');
+  await page.getByRole('button', { name: 'הוספת תרגיל' }).click(); await page.getByLabel('חיפוש תרגיל').fill('סקוואט עם מוט');
+  await page.getByRole('dialog').getByRole('button', { name: /סקוואט עם מוט/ }).first().click();
+  await page.getByRole('dialog').waitFor({ state: 'detached' });
+  await page.getByRole('button', { name: 'הוספת תרגיל' }).click(); await page.getByLabel('חיפוש תרגיל').fill('לנדמיין רואו');
+  await page.getByRole('group', { name: 'שריר עיקרי' }).getByRole('button', { name: 'רגליים' }).click(); await page.getByRole('group', { name: 'ציוד' }).getByRole('button', { name: 'מוט', exact: true }).click();
+  await page.getByRole('button', { name: 'יצירה והוספה' }).click(); await page.getByRole('dialog').waitFor({ state: 'detached' });
+  await page.getByRole('button', { name: 'עוד סטים' }).first().click();
+  await page.getByRole('button', { name: 'הזזת לנדמיין רואו למעלה' }).click();
+  await shot('S14-template-editor', true);
+  await page.getByRole('button', { name: 'שמירת התבנית' }).click(); await page.waitForURL('**/workouts');
+  await page.getByText('בוקר קצר').first().waitFor(); log('template created with a custom exercise');
+
+  // Weigh-in and strength score
+  await page.goto(BASE + '/body'); await page.getByRole('button', { name: 'שמירה' }).click(); await page.getByText('השקילה נשמרה').first().waitFor();
+  await shot('S23-body'); log('weigh-in');
+  await page.goto(BASE + '/progress'); await page.getByText('מה השתנה השבוע').first().waitFor();
+  await shot('S19-strength', true); log('strength score');
+
   // Nutrition goals
   await page.goto(BASE + '/nutrition/goals'); await page.getByText('יעד יומי').first().waitFor();
   await page.getByLabel('משקל').fill('82'); await page.getByRole('radio', { name: /ירידה בשומן/ }).click();
   await shot('S26-goals', true);
-  await page.getByRole('button', { name: 'שמירת היעדים' }).click(); await page.waitForURL('**/nutrition'); log('goals saved');
+  await page.getByRole('button', { name: 'שמירת היעדים' }).click(); await page.waitForURL((u) => u.pathname === '/nutrition'); log('goals saved');
 
   // Search + amount sheet
   await page.goto(BASE + '/nutrition/add?meal=breakfast'); await page.getByLabel('חיפוש מזון').fill('קוטג');
@@ -76,7 +108,7 @@ const log = (...a) => console.log('✓', ...a);
 
   // Quick add
   await page.goto(BASE + '/nutrition/add?meal=snack&tab=quick'); await page.getByLabel('מה זה?').fill('חטיף חלבון'); await page.getByLabel('קלוריות').fill('200'); await page.getByLabel('חלבון').fill('20');
-  await page.getByRole('button', { name: 'הוספה לנשנושים' }).click(); await page.waitForURL('**/nutrition**'); log('quick add');
+  await page.getByRole('button', { name: 'הוספה לנשנושים' }).click(); await page.waitForURL((u) => u.pathname === '/nutrition'); log('quick add');
 
   // Photo flow with a mocked recognition response
   await page.route('**/api/food-photo', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, result: {
@@ -93,7 +125,7 @@ const log = (...a) => console.log('✓', ...a);
   await page.getByText('חזה עוף עם אורז וסלט').first().waitFor();
   await page.getByRole('group', { name: 'כמות אורז לבן בגרם' }).getByRole('button', { name: /פחות/ }).click();
   await shot('S28-photo-review', true); log('photo review (mocked AI)');
-  await page.getByRole('button', { name: /הוספה לארוחת צהריים/ }).click(); await page.waitForURL('**/nutrition**');
+  await page.getByRole('button', { name: /הוספה לארוחת צהריים/ }).click(); await page.waitForURL((u) => u.pathname === '/nutrition');
   await page.getByText('חזה עוף בגריל').first().waitFor(); log('photo items saved with thumbnail');
 
   // Barcode with mocked Open Food Facts
@@ -102,7 +134,7 @@ const log = (...a) => console.log('✓', ...a);
   await page.goto(BASE + '/nutrition/barcode?meal=snack'); await page.getByLabel('מספר הברקוד').fill('7290000000001');
   await page.getByRole('button', { name: 'חיפוש' }).click(); await page.getByRole('dialog').getByText('יוגורט חלבון וניל').first().waitFor();
   await shot('S29-barcode-found');
-  await page.getByRole('button', { name: 'הוספה לנשנושים' }).click(); await page.waitForURL('**/nutrition**'); log('barcode product logged');
+  await page.getByRole('button', { name: 'הוספה לנשנושים' }).click(); await page.waitForURL((u) => u.pathname === '/nutrition'); log('barcode product logged');
 
   await page.goto(BASE + '/nutrition'); await page.getByText('חזה עוף בגריל').first().waitFor();
   await shot('S27-nutrition-today'); await shot('S27-nutrition-today-full', true); log('nutrition today');
@@ -122,7 +154,7 @@ const log = (...a) => console.log('✓', ...a);
 
   // Reload keeps the open workout (local-first)
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto(BASE + '/workouts'); await page.getByRole('button', { name: 'אימון חופשי, בלי תבנית' }).click(); await page.waitForURL('**/workout');
+  await page.goto(BASE + '/workouts'); await page.getByRole('button', { name: 'אימון חופשי', exact: true }).click(); await page.waitForURL('**/workout');
   await page.reload(); await page.getByText('אימון חופשי').first().waitFor(); log('open workout survives reload');
 
   console.log('\nerrors:', errors.length ? errors : 'none');

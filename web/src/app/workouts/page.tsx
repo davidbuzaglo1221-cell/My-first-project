@@ -43,10 +43,13 @@ export default function WorkoutsPage() {
             return (
               <Panel key={template.id} className="flex flex-col gap-4">
                 <div className="flex items-baseline justify-between gap-3">
-                  <h3 className="text-xl font-bold">{template.name}</h3>
-                  <span className="shrink-0 text-xs text-text-subtle">
-                    {last ? `לאחרונה: ${formatRelativeDay(last.workout.startedAt)}` : "עוד לא בוצע"}
-                  </span>
+                  <div className="flex min-w-0 flex-col">
+                    <h3 className="truncate text-xl font-bold">{template.name}</h3>
+                    <span className="text-xs text-text-subtle">{last ? `לאחרונה: ${formatRelativeDay(last.workout.startedAt)}` : "עוד לא בוצע"}</span>
+                  </div>
+                  <Link href={`/templates/edit?id=${template.id}`} className="shrink-0 text-sm text-text-muted hover:text-text">
+                    עריכה
+                  </Link>
                 </div>
                 <p className="text-sm leading-relaxed text-text-muted">{items.map((i) => i.exercise.nameHe).join(", ")}</p>
                 <Button variant={open ? "secondary" : "primary"} fullWidth loading={pending} disabled={!!open} onClick={() => void start(template.id)}>
@@ -56,9 +59,14 @@ export default function WorkoutsPage() {
             );
           })
         )}
-        <Button variant="ghost" fullWidth disabled={!!open} onClick={() => void start()}>
-          אימון חופשי, בלי תבנית
-        </Button>
+        <div className="grid grid-cols-2 gap-2">
+          <Button variant="secondary" disabled={!!open} onClick={() => void start()}>
+            אימון חופשי
+          </Button>
+          <Link href="/templates/edit" className="glass flex h-11 items-center justify-center rounded-md font-semibold">
+            תבנית חדשה
+          </Link>
+        </div>
       </section>
 
       <nav aria-label="עוד" className="glass flex flex-col rounded-lg">

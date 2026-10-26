@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/field";
 import { Banner, Panel, Skeleton } from "@/components/ui/surface";
 import { GramsStepper, MacroLine, MealPicker } from "@/components/nutrition/controls";
-import { logCustom, savePhoto } from "@/data/nutrition-repo";
+import { logPhotoMeal } from "@/data/nutrition-repo";
 import { MEAL_LABEL, type Meal } from "@/data/types";
 import { base64Of, resizeImage } from "@/lib/image";
 import { getAppToken } from "@/lib/local-settings";
@@ -127,19 +127,17 @@ function PhotoLog() {
   const save = async () => {
     if (!photo || items.length === 0) return;
     setSaving(true);
-    const photoId = await savePhoto(photo.thumb);
-    for (const i of items) {
-      await logCustom({
-        date,
-        meal,
+    await logPhotoMeal({
+      date,
+      meal,
+      photoDataUrl: photo.thumb,
+      items: items.map((i) => ({
         nameHe: i.name_he,
         grams: i.grams,
         macros: { kcal: i.kcal, protein: i.protein_g, carbs: i.carbs_g, fat: i.fat_g, fiber: null },
-        source: "photo",
-        photoId,
         confidence: i.confidence,
-      });
-    }
+      })),
+    });
     router.replace(`/nutrition?date=${date}`);
   };
 

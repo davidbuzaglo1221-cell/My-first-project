@@ -1,6 +1,6 @@
 import type { Equipment, MuscleGroup } from "./types";
 
-// Our own starter library: names, aliases and cues written for this app, in Hebrew.
+// Our own starter library (83 exercises): names, aliases and cues written for this app, in Hebrew.
 // Slugs are stable keys, so the real library import can update these rows instead of duplicating them.
 type SeedExercise = {
   slug: string;
@@ -51,6 +51,53 @@ export const SEED_EXERCISES: SeedExercise[] = [
   { slug: "hanging-leg-raise", nameHe: "הרמות רגליים בתלייה", muscle: "core", equipment: "pullup_bar" },
   { slug: "cable-crunch", nameHe: "כפיפות בטן בכבל", muscle: "core", equipment: "cable" },
   { slug: "kb-swing", nameHe: "סווינג בקטלבל", muscle: "full_body", equipment: "kettlebell" },
+
+  // v2 additions
+  { slug: "hack-squat", nameHe: "האק סקוואט", muscle: "legs", equipment: "machine" },
+  { slug: "smith-squat", nameHe: "סקוואט בסמית'", muscle: "legs", equipment: "smith" },
+  { slug: "db-rdl", nameHe: "דדליפט רומני עם משקולות", muscle: "legs", equipment: "dumbbell" },
+  { slug: "step-up", nameHe: "עלייה על ספסל", muscle: "legs", equipment: "dumbbell", unilateral: true },
+  { slug: "reverse-lunge", nameHe: "מכרע אחורי", muscle: "legs", equipment: "dumbbell", unilateral: true },
+  { slug: "seated-leg-curl", nameHe: "כפיפת ברכיים בישיבה", muscle: "legs", equipment: "machine" },
+  { slug: "hip-abduction", nameHe: "הרחקת ירכיים במכונה", muscle: "legs", equipment: "machine" },
+  { slug: "glute-bridge", nameHe: "גשר עכוז", muscle: "legs", equipment: "bodyweight" },
+  { slug: "bodyweight-squat", nameHe: "סקוואט במשקל גוף", muscle: "legs", equipment: "bodyweight" },
+  { slug: "seated-calf-raise", nameHe: "הרמות עקבים בישיבה", muscle: "legs", equipment: "machine" },
+  { slug: "trap-bar-deadlift", nameHe: "דדליפט במוט משושה", muscle: "back", equipment: "trap_bar" },
+  { slug: "sumo-deadlift", nameHe: "דדליפט סומו", muscle: "back", equipment: "barbell" },
+  { slug: "chin-up", nameHe: "מתח באחיזה הפוכה", muscle: "back", equipment: "pullup_bar" },
+  { slug: "assisted-pull-up", nameHe: "מתח בעזרה", muscle: "back", equipment: "machine" },
+  { slug: "t-bar-row", nameHe: "חתירת T", muscle: "back", equipment: "barbell" },
+  { slug: "chest-supported-row", nameHe: "חתירה בשכיבה על ספסל משופע", muscle: "back", equipment: "dumbbell" },
+  { slug: "straight-arm-pulldown", nameHe: "פולאובר בכבל", muscle: "back", equipment: "cable" },
+  { slug: "back-extension", nameHe: "פשיטת גב", aliasesHe: ["היפר אקסטנשן"], muscle: "back", equipment: "bench" },
+  { slug: "shrug", nameHe: "הרמת כתפיים", aliasesHe: ["שראגס"], muscle: "back", equipment: "dumbbell" },
+  { slug: "incline-bench-press", nameHe: "לחיצת חזה בשיפוע במוט", muscle: "chest", equipment: "barbell" },
+  { slug: "machine-chest-press", nameHe: "לחיצת חזה במכונה", muscle: "chest", equipment: "machine" },
+  { slug: "pec-deck", nameHe: "פרפר במכונה", aliasesHe: ["פק דק"], muscle: "chest", equipment: "machine" },
+  { slug: "db-fly", nameHe: "פרפר עם משקולות", muscle: "chest", equipment: "dumbbell" },
+  { slug: "decline-push-up", nameHe: "שכיבות סמיכה רגליים למעלה", muscle: "chest", equipment: "bodyweight" },
+  { slug: "arnold-press", nameHe: "לחיצת ארנולד", muscle: "shoulders", equipment: "dumbbell" },
+  { slug: "machine-shoulder-press", nameHe: "לחיצת כתפיים במכונה", muscle: "shoulders", equipment: "machine" },
+  { slug: "cable-lateral-raise", nameHe: "הרחקה לצד בכבל", muscle: "shoulders", equipment: "cable", unilateral: true },
+  { slug: "front-raise", nameHe: "הרמה קדמית", muscle: "shoulders", equipment: "dumbbell" },
+  { slug: "upright-row", nameHe: "חתירה אנכית", muscle: "shoulders", equipment: "ez_bar" },
+  { slug: "pike-push-up", nameHe: "שכיבות סמיכה פייק", muscle: "shoulders", equipment: "bodyweight" },
+  { slug: "preacher-curl", nameHe: "כפיפת מרפקים בכיסא כומר", muscle: "arms", equipment: "ez_bar" },
+  { slug: "cable-curl", nameHe: "כפיפת מרפקים בכבל", muscle: "arms", equipment: "cable" },
+  { slug: "incline-db-curl", nameHe: "כפיפת מרפקים בשיפוע", muscle: "arms", equipment: "dumbbell" },
+  { slug: "close-grip-bench", nameHe: "לחיצת חזה באחיזה צרה", muscle: "arms", equipment: "barbell" },
+  { slug: "rope-pushdown", nameHe: "פשיטת מרפקים בחבל", muscle: "arms", equipment: "cable" },
+  { slug: "bench-dip", nameHe: "מקבילים על ספסל", muscle: "arms", equipment: "bench" },
+  { slug: "side-plank", nameHe: "פלאנק צד", muscle: "core", equipment: "bodyweight" },
+  { slug: "ab-wheel", nameHe: "גלגלת בטן", muscle: "core", equipment: "other" },
+  { slug: "crunch", nameHe: "כפיפות בטן", muscle: "core", equipment: "bodyweight" },
+  { slug: "russian-twist", nameHe: "טוויסט רוסי", muscle: "core", equipment: "bodyweight" },
+  { slug: "dead-bug", nameHe: "דד באג", muscle: "core", equipment: "bodyweight" },
+  { slug: "farmers-walk", nameHe: "הליכת חקלאי", muscle: "full_body", equipment: "dumbbell" },
+  { slug: "kb-goblet-squat", nameHe: "סקוואט גביע בקטלבל", muscle: "legs", equipment: "kettlebell" },
+  { slug: "burpee", nameHe: "ברפי", muscle: "full_body", equipment: "bodyweight" },
+  { slug: "band-pull-apart", nameHe: "פתיחת גומייה", muscle: "shoulders", equipment: "band" },
 ];
 
 // Two starting templates, so the first visit has something to start from.

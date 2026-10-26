@@ -13,6 +13,8 @@ import { Providers } from "@/components/app/providers";
 export const metadata: Metadata = {
   title: "אימונים ותזונה",
   description: "תיעוד אימוני כוח, התקדמות ותזונה, בעברית",
+  appleWebApp: { capable: true, title: "אימונים", statusBarStyle: "default" },
+  icons: { apple: "/icons/apple-touch-icon.png", icon: "/icons/icon-192.png" },
 };
 
 export const viewport: Viewport = {

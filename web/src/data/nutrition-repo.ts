@@ -235,3 +235,21 @@ export async function saveTargets(input: Omit<NutritionTarget, "id">): Promise<v
 }
 
 export type { TargetInputs };
+
+/**
+ * Saves a recognised meal in one transaction: the photo and every item, or nothing.
+ * Leaving the screen mid-save can no longer drop the last items.
+ */
+export async function logPhotoMeal(input: {
+  date: string;
+  meal: Meal;
+  photoDataUrl: string;
+  items: { nameHe: string; grams: number; macros: Macros; confidence: FoodLog["confidence"] }[];
+}): Promise<void> {
+  await db().transaction("rw", db().mealPhotos, db().foodLogs, async () => {
+    const photoId = await savePhoto(input.photoDataUrl);
+    for (const i of input.items) {
+      await logCustom({ date: input.date, meal: input.meal, nameHe: i.nameHe, grams: i.grams, macros: i.macros, source: "photo", photoId, confidence: i.confidence });
+    }
+  });
+}

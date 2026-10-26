@@ -8,6 +8,7 @@ import {
   getWeekMarks,
   logCustom,
   logFood,
+  logPhotoMeal,
   saveTargets,
   savePhoto,
   searchFoods,
@@ -113,5 +114,24 @@ describe("formulas", () => {
 
   it("scales per-100 g values", () => {
     expect(scale({ kcal: 165, protein: 31, carbs: 0, fat: 3.6, fiber: 0 }, 150)).toEqual({ kcal: 248, protein: 46.5, carbs: 0, fat: 5.4, fiber: 0 });
+  });
+});
+
+describe("photo meal", () => {
+  it("saves the photo and every item together, sharing one photo", async () => {
+    await logPhotoMeal({
+      date: "2026-10-26",
+      meal: "lunch",
+      photoDataUrl: "data:image/jpeg;base64,AAAA",
+      items: [
+        { nameHe: "עוף", grams: 160, macros: { kcal: 264, protein: 50, carbs: 0, fat: 6, fiber: null }, confidence: "high" },
+        { nameHe: "אורז", grams: 180, macros: { kcal: 234, protein: 5, carbs: 50, fat: 0.5, fiber: null }, confidence: "medium" },
+        { nameHe: "סלט", grams: 150, macros: { kcal: 45, protein: 1, carbs: 6, fat: 2, fiber: null }, confidence: "low" },
+      ],
+    });
+    const day = await getDayLog("2026-10-26");
+    expect(day.byMeal.lunch.map((e) => e.nameHe)).toEqual(["עוף", "אורז", "סלט"]);
+    expect(new Set(day.entries.map((e) => e.photoId)).size).toBe(1);
+    expect(await db().mealPhotos.count()).toBe(1);
   });
 });

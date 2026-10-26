@@ -9,9 +9,11 @@ import { AppShell } from "@/components/app/app-shell";
 import { Button } from "@/components/ui/button";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Panel, Skeleton, Stat } from "@/components/ui/surface";
-import { deleteWorkout, getWorkoutDetail, getWorkoutSummary } from "@/data/repo";
+import { deletePastSet, deleteWorkout, editPastSet, getWorkoutDetail, getWorkoutSummary } from "@/data/repo";
+import { TextField } from "@/components/ui/field";
+import type { WorkoutSet } from "@/data/types";
 import { useProfile } from "@/hooks/use-data";
-import { formatDurationWords, formatFullDate, formatNumber, formatTime, formatWeight, toDisplayWeight, unitLabel } from "@/lib/format";
+import { formatDurationWords, formatFullDate, formatNumber, formatTime, formatWeight, fromDisplayWeight, toDisplayWeight, unitLabel, type Units } from "@/lib/format";
 import { cn } from "@/lib/cn";
 
 const KIND_LABEL = { warmup: "חימום", work: "", drop: "ירידה", failure: "כשל" } as const;
@@ -27,6 +29,7 @@ function Detail() {
     return detail && summary ? { detail, summary } : null;
   }, [id]);
   const [confirm, setConfirm] = useState(false);
+  const [editing, setEditing] = useState<{ set: WorkoutSet; name: string } | null>(null);
 
   if (data === undefined) return <Skeleton className="h-96 rounded-lg" />;
   if (!data) {
@@ -67,7 +70,13 @@ function Detail() {
               {sets.map((s) => {
                 if (s.kind !== "warmup") n += 1;
                 return (
-                  <li key={s.id} className={cn("flex items-center gap-3 rounded-sm px-2 py-1.5", s.isPr && "bg-pr-soft")}>
+                  <li key={s.id}>
+                    <button
+                      type="button"
+                      onClick={() => setEditing({ set: s, name: exercise.nameHe })}
+                      aria-label={`עריכת סט ${s.kind === "warmup" ? "חימום" : n} ב${exercise.nameHe}`}
+                      className={cn("flex w-full items-center gap-3 rounded-sm px-2 py-1.5 text-start hover:bg-surface-2", s.isPr && "bg-pr-soft")}
+                    >
                     <span className="num w-6 text-center text-sm text-text-subtle">{s.kind === "warmup" ? "ח" : n}</span>
                     <span className="figure flex-1 text-lg">
                       <bdi dir="ltr">
@@ -81,6 +90,7 @@ function Detail() {
                         שיא
                       </span>
                     )}
+                    </button>
                   </li>
                 );
               })}
@@ -88,6 +98,9 @@ function Detail() {
           </Panel>
         );
       })}
+
+      <p className="text-center text-xs text-text-subtle">נגיעה בסט פותחת עריכה. השיאים מתעדכנים לבד.</p>
+      <EditSetSheet editing={editing} units={units} onClose={() => setEditing(null)} />
 
       <Button variant="ghost" icon={<Trash2 aria-hidden className="size-4" />} className="self-center text-danger" onClick={() => setConfirm(true)}>
         מחיקת האימון
@@ -120,6 +133,50 @@ function Detail() {
         <span />
       </BottomSheet>
     </>
+  );
+}
+
+function EditSetSheet({ editing, units, onClose }: { editing: { set: WorkoutSet; name: string } | null; units: Units; onClose: () => void }) {
+  return (
+    <BottomSheet open={!!editing} onOpenChange={(o) => !o && onClose()} title={editing ? `תיקון סט: ${editing.name}` : ""}>
+      {editing && <EditSetBody key={editing.set.id} set={editing.set} units={units} onClose={onClose} />}
+    </BottomSheet>
+  );
+}
+
+function EditSetBody({ set, units, onClose }: { set: WorkoutSet; units: Units; onClose: () => void }) {
+  const [weight, setWeight] = useState(set.weightKg != null ? String(Number(toDisplayWeight(set.weightKg, units).toFixed(2))) : "");
+  const [reps, setReps] = useState(set.reps != null ? String(set.reps) : "");
+  const num = (v: string) => (v.trim() === "" ? null : Number(v.replace(",", ".")));
+  return (
+    <form
+      className="flex flex-col gap-4 px-2 pb-2"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        const w = num(weight);
+        await editPastSet(set.id, { weightKg: w == null ? null : fromDisplayWeight(w, units), reps: num(reps) == null ? null : Math.round(num(reps)!) });
+        onClose();
+      }}
+    >
+      <div className="grid grid-cols-2 gap-2">
+        <TextField label={`משקל (${unitLabel(units)})`} inputMode="decimal" value={weight} onChange={(e) => setWeight(e.target.value.replace(/[^\d.,]/g, ""))} />
+        <TextField label="חזרות" inputMode="numeric" value={reps} onChange={(e) => setReps(e.target.value.replace(/\D/g, ""))} />
+      </div>
+      <Button type="submit" size="lg" fullWidth>
+        שמירת התיקון
+      </Button>
+      <Button
+        variant="ghost"
+        fullWidth
+        className="text-danger"
+        onClick={async () => {
+          await deletePastSet(set.id);
+          onClose();
+        }}
+      >
+        מחיקת הסט
+      </Button>
+    </form>
   );
 }
 

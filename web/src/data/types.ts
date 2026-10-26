@@ -22,6 +22,17 @@ export interface Profile {
   bodyweightKg: number | null;
   defaultRestSec: number;
   autoRestTimer: boolean;
+  /** Set by onboarding or the goals wizard; used by the strength standards. */
+  sex?: "male" | "female" | null;
+  /** First-run flow finished or skipped. */
+  onboardedAt?: string | null;
+}
+
+export interface BodyMetric {
+  id: string;
+  date: string; // YYYY-MM-DD, one entry per day (a second weigh-in replaces the first)
+  measuredAt: string;
+  weightKg: number;
 }
 
 export interface Exercise {
@@ -81,6 +92,8 @@ export interface WorkoutExercise {
   position: number;
   supersetGroup: number | null;
   notes: string | null;
+  /** Rest after each set, from the template; null = the profile default. */
+  restSec?: number | null;
 }
 
 export interface WorkoutSet {

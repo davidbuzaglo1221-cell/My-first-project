@@ -5,8 +5,13 @@ import {
   WorkoutAlreadyOpenError,
   addExerciseToWorkout,
   addSet,
+  applyPlan,
   completeSet,
+  deleteTemplate,
   deleteWorkout,
+  editPastSet,
+  getTemplateDetail,
+  saveTemplate,
   finishWorkout,
   getOpenWorkout,
   getWorkoutDetail,
@@ -18,6 +23,7 @@ import {
   startWorkout,
   updateSet,
 } from "./repo";
+import { generatePlan } from "@/lib/plans";
 
 async function squatId() {
   return (await listExercises({ query: "סקוואט עם מוט" }))[0].id;
@@ -144,5 +150,70 @@ describe("history", () => {
     const tid = await saveWorkoutAsTemplate(id, "רגליים שלי");
     const t = (await listTemplates()).find((x) => x.template.id === tid)!;
     expect(t.items[0].item).toMatchObject({ targetSets: 2, targetRepsMin: 5, targetRepsMax: 8 });
+  });
+});
+
+describe("editing history and templates", () => {
+  it("fixing a typo removes the false record and promotes the real one", async () => {
+    await loggedSquats([[100, 5]]);
+    const typo = await loggedSquats([[1000, 5]]); // meant 100
+    const later = await loggedSquats([[105, 5]]);
+    const typoSet = (await getWorkoutDetail(typo))!.exercises[0].sets[0];
+    expect(typoSet.isPr).toBe(true);
+    expect((await getWorkoutDetail(later))!.exercises[0].sets[0].isPr).toBe(false);
+
+    await editPastSet(typoSet.id, { weightKg: 100 });
+    expect((await getWorkoutDetail(typo))!.exercises[0].sets[0].isPr).toBe(false);
+    expect((await getWorkoutDetail(later))!.exercises[0].sets[0].isPr).toBe(true);
+  });
+
+  it("deleting a workout re-marks the records after it", async () => {
+    await loggedSquats([[100, 5]]);
+    const big = await loggedSquats([[120, 5]]);
+    const mid = await loggedSquats([[110, 5]]);
+    expect((await getWorkoutDetail(mid))!.exercises[0].sets[0].isPr).toBe(false);
+    await deleteWorkout(big);
+    expect((await getWorkoutDetail(mid))!.exercises[0].sets[0].isPr).toBe(true);
+  });
+
+  it("saves, reorders and deletes a template; its rest reaches the workout", async () => {
+    const squat = await squatId();
+    const bench = (await listExercises({ query: "לחיצת חזה במוט" }))[0].id;
+    const id = await saveTemplate({
+      name: "שלי",
+      items: [
+        { exerciseId: squat, targetSets: 4, targetRepsMin: 5, targetRepsMax: 3, targetRestSec: 180 },
+        { exerciseId: bench, targetSets: 3, targetRepsMin: 8, targetRepsMax: 10, targetRestSec: 120 },
+      ],
+    });
+    let t = (await getTemplateDetail(id))!;
+    expect(t.items.map((i) => i.exercise.id)).toEqual([squat, bench]);
+    expect(t.items[0].item.targetRepsMax).toBe(5); // max never below min
+    await saveTemplate({ id, name: "שלי", items: [t.items[1], t.items[0]].map(({ item }) => ({ ...item })) });
+    t = (await getTemplateDetail(id))!;
+    expect(t.items.map((i) => i.exercise.id)).toEqual([bench, squat]);
+
+    const w = await startWorkout({ templateId: id });
+    expect((await getWorkoutDetail(w))!.exercises.map((x) => x.we.restSec)).toEqual([120, 180]);
+    await deleteWorkout(w);
+    await deleteTemplate(id);
+    expect(await getTemplateDetail(id)).toBeUndefined();
+  });
+
+  it("the library has 80+ exercises", async () => {
+    expect((await listExercises()).length).toBeGreaterThanOrEqual(80);
+  });
+});
+
+describe("onboarding plan", () => {
+  it("replaces the starter templates and keeps the user's own", async () => {
+    const mine = await saveTemplate({ name: "שלי", items: [{ exerciseId: await squatId(), targetSets: 3, targetRepsMin: 5, targetRepsMax: 8, targetRestSec: 120 }] });
+    const plan = generatePlan({ days: 4, equipment: "gym", experience: "intermediate", goal: "build_muscle" });
+    await applyPlan(plan.templates);
+    const names = (await listTemplates()).map((t) => t.template.name);
+    expect(names).toEqual(expect.arrayContaining(["שלי", "עליון A", "תחתון A", "עליון B", "תחתון B"]));
+    expect(names).not.toContain("גוף מלא A");
+    expect((await listTemplates()).find((t) => t.template.name === "עליון A")!.items).toHaveLength(6);
+    expect(await getTemplateDetail(mine)).toBeDefined();
   });
 });
