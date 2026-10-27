@@ -14,6 +14,7 @@ import type { ActivityLevel, Goal } from "@/data/types";
 import { computeTargets, localDateKey } from "@/lib/nutrition";
 import { generatePlan, type EquipmentAccess, type Experience } from "@/lib/plans";
 import { formatNumber } from "@/lib/format";
+import { IS_ARTIFACT } from "@/lib/runtime";
 
 const STEPS = 5;
 
@@ -143,7 +144,7 @@ export default function WelcomePage() {
           <h1 id="q5" className="text-[1.75rem] leading-tight font-bold tracking-tight">
             קצת עליך
           </h1>
-          <p className="-mt-2 text-sm text-text-muted">לחישוב יעדי הקלוריות והחלבון, ולציון הכוח. נשמר בטלפון בלבד.</p>
+          <p className="-mt-2 text-sm text-text-muted">לחישוב יעדי הקלוריות והחלבון, ולציון הכוח. {IS_ARTIFACT ? "נשמר בחשבון שלך, פרטי." : "נשמר בטלפון בלבד."}</p>
           <Segmented label="מין" value={sex} onChange={setSex} fullWidth options={[{ value: "male", label: "גבר" }, { value: "female", label: "אישה" }]} />
           <div className="grid grid-cols-3 gap-2">
             <TextField label="גיל" inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value.replace(/\D/g, ""))} />

@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
 import { FoodPhotoResult, type FoodPhotoResponse } from "@/lib/food-photo-schema";
+import { cleanItems, MEAL_PHOTO_SYSTEM as SYSTEM } from "@/lib/food-photo-prompt";
 
 // Estimates the foods in a meal photo with Claude (vision + structured output).
 // Server-only: the API key never reaches the browser.
@@ -18,17 +19,7 @@ const Body = z.object({
   hint: z.string().max(300).optional(),
 });
 
-const SYSTEM = `You estimate the nutrition of a meal from one photo, for a Hebrew-language food diary used in Israel.
 
-Return every distinct food you can see as its own item. Name items in natural Israeli Hebrew, the way people order or cook them (for example "חזה עוף בגריל", "אורז לבן", "סלט ירקות", "חומוס", "פיתה"). Give the dish a short Hebrew name.
-
-Estimate the edible weight in grams of each item as served (cooked weight for cooked foods), using visual cues for scale: a standard dinner plate is about 26 cm across, a fork about 19 cm, a pita about 16 cm. Then give calories, protein, carbohydrates and fat for that weight, consistent with typical values per 100 g; calories should roughly equal 4×protein + 4×carbs + 9×fat.
-
-Include cooking fat only when you can see the food was fried or dressed, and say so in the notes. Do not invent hidden items. If a portion is partly hidden or the scale is unclear, lower the confidence for that item rather than guessing confidently.
-
-If the user adds a note (for example "בלי שמן" or "2 ביצים"), trust it over the photo.
-
-If the photo does not show food or drink, set is_food to false and return no items. Write notes_he in one or two short Hebrew sentences, addressed to the user: what to check or correct. Leave it empty when there is nothing worth saying.`;
 
 function json(body: FoodPhotoResponse, status: number) {
   return Response.json(body, { status });
@@ -81,19 +72,7 @@ export async function POST(request: Request) {
     const parsed = response.parsed_output;
     if (!parsed) return json({ ok: false, error: "unreadable" }, 502);
 
-    // Clean up model numbers: no negatives, sensible rounding.
-    const items = parsed.items
-      .map((i) => ({
-        ...i,
-        name_he: i.name_he.trim(),
-        grams: Math.max(0, Math.round(i.grams)),
-        kcal: Math.max(0, Math.round(i.kcal)),
-        protein_g: Math.max(0, Math.round(i.protein_g * 10) / 10),
-        carbs_g: Math.max(0, Math.round(i.carbs_g * 10) / 10),
-        fat_g: Math.max(0, Math.round(i.fat_g * 10) / 10),
-      }))
-      .filter((i) => i.name_he && (i.kcal > 0 || i.grams > 0));
-
+    const items = cleanItems(parsed.items);
     return json({ ok: true, result: { ...parsed, items } }, 200);
   } catch (error) {
     if (error instanceof Anthropic.AuthenticationError) return json({ ok: false, error: "bad_key" }, 503);

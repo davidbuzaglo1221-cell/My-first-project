@@ -11,11 +11,23 @@ import { Panel, Skeleton } from "@/components/ui/surface";
 import { useToast } from "@/components/ui/toast";
 import { db } from "@/data/db";
 import { BackupError, exportBackup, restoreBackup } from "@/data/backup";
+import { useSyncStatus, wipeCloud } from "@/data/sync";
+import { saveFile } from "@/lib/food-ai";
+import { IS_ARTIFACT } from "@/lib/runtime";
+import { cn } from "@/lib/cn";
 import { updateProfile } from "@/data/repo";
 import { useProfile } from "@/hooks/use-data";
 import { getAppToken, setAppToken } from "@/lib/local-settings";
 
-function Row({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function Row({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="flex flex-col gap-2.5">
       <div>
@@ -24,6 +36,47 @@ function Row({ label, hint, children }: { label: string; hint?: string; children
       </div>
       {children}
     </div>
+  );
+}
+
+const SYNC_TEXT = {
+  synced: {
+    dot: "bg-success",
+    text: "הנתונים שמורים בחשבון Claude שלך, ומופיעים בכל מכשיר שבו פותחים את האפליקציה.",
+  },
+  saving: {
+    dot: "bg-warning",
+    text: "שומרים את השינויים האחרונים בחשבון Claude…",
+  },
+  connecting: { dot: "bg-warning", text: "מתחברים לחשבון Claude…" },
+  offline: {
+    dot: "bg-danger",
+    text: "אין כרגע חיבור לחשבון. השינויים שמורים במכשיר ויישלחו כשהחיבור יחזור.",
+  },
+  full: {
+    dot: "bg-danger",
+    text: "המקום בחשבון התמלא. כדאי למחוק תמונות התקדמות ישנות.",
+  },
+  local: {
+    dot: "bg-text-subtle",
+    text: "הנתונים שמורים במכשיר הזה בלבד. כדאי לשמור גיבוי פעם בשבוע, למשל ב-iCloud או ב-Google Drive.",
+  },
+} as const;
+
+function StorageNote() {
+  const status = useSyncStatus();
+  const s = SYNC_TEXT[IS_ARTIFACT ? status : "local"];
+  return (
+    <p
+      className="flex items-start gap-2.5 text-sm text-text-muted"
+      role="status"
+    >
+      <span
+        aria-hidden
+        className={cn("mt-1.5 size-2 shrink-0 rounded-pill", s.dot)}
+      />
+      {s.text}
+    </p>
   );
 }
 
@@ -38,13 +91,11 @@ export default function ProfilePage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const exportData = async () => {
-    const blob = new Blob([await exportBackup()], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `training-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const ok = await saveFile(
+      `training-backup-${new Date().toISOString().slice(0, 10)}.json`,
+      await exportBackup(),
+    );
+    if (!ok) toast({ tone: "danger", message: "שמירת הקובץ לא אושרה" });
   };
 
   const restore = async () => {
@@ -55,7 +106,13 @@ export default function ProfilePage() {
       toast({ tone: "success", message: "הגיבוי שוחזר" });
     } catch (e) {
       setRestoreText(null);
-      toast({ tone: "danger", message: e instanceof BackupError ? e.message : "השחזור נכשל. הנתונים לא השתנו." });
+      toast({
+        tone: "danger",
+        message:
+          e instanceof BackupError
+            ? e.message
+            : "השחזור נכשל. הנתונים לא השתנו.",
+      });
     }
   };
 
@@ -95,7 +152,9 @@ export default function ProfilePage() {
               <Segmented
                 label="תחילת השבוע"
                 value={profile.weekStartsOn}
-                onChange={(weekStartsOn) => void updateProfile({ weekStartsOn })}
+                onChange={(weekStartsOn) =>
+                  void updateProfile({ weekStartsOn })
+                }
                 fullWidth
                 options={[
                   { value: "sun", label: "ראשון" },
@@ -110,16 +169,30 @@ export default function ProfilePage() {
               <Segmented
                 label="מנוחה בין סטים"
                 value={String(profile.defaultRestSec)}
-                onChange={(v) => void updateProfile({ defaultRestSec: Number(v) })}
+                onChange={(v) =>
+                  void updateProfile({ defaultRestSec: Number(v) })
+                }
                 fullWidth
-                options={["60", "90", "120", "180"].map((v) => ({ value: v, label: v === "60" ? "1:00" : v === "90" ? "1:30" : v === "120" ? "2:00" : "3:00" }))}
+                options={["60", "90", "120", "180"].map((v) => ({
+                  value: v,
+                  label:
+                    v === "60"
+                      ? "1:00"
+                      : v === "90"
+                        ? "1:30"
+                        : v === "120"
+                          ? "2:00"
+                          : "3:00",
+                }))}
               />
             </Row>
             <Row label="טיימר מנוחה אוטומטי" hint="מתחיל לבד כשמסמנים סט">
               <Segmented
                 label="טיימר מנוחה אוטומטי"
                 value={profile.autoRestTimer ? "on" : "off"}
-                onChange={(v) => void updateProfile({ autoRestTimer: v === "on" })}
+                onChange={(v) =>
+                  void updateProfile({ autoRestTimer: v === "on" })
+                }
                 fullWidth
                 options={[
                   { value: "on", label: "פעיל" },
@@ -130,41 +203,54 @@ export default function ProfilePage() {
           </Panel>
 
           <nav aria-label="יעדים" className="glass flex flex-col rounded-lg">
-            <Link href="/nutrition/goals" className="flex items-center gap-3 px-4 py-4">
+            <Link
+              href="/nutrition/goals"
+              className="flex items-center gap-3 px-4 py-4"
+            >
               <span className="flex-1 font-medium">יעדי תזונה</span>
               <ChevronLeft aria-hidden className="size-4 text-text-subtle" />
             </Link>
           </nav>
 
-          <Panel className="flex flex-col gap-3">
-            <form
-              className="flex flex-col gap-3"
-              onSubmit={(e) => {
-                e.preventDefault();
-                setAppToken(token);
-                toast({ tone: "success", message: "קוד הגישה נשמר" });
-              }}
-            >
-              <TextField
-                label="קוד גישה לזיהוי מתמונה"
-                hint="רק אם הוגדר APP_ACCESS_TOKEN בשרת. נשמר בטלפון הזה בלבד."
-                type="password"
-                autoComplete="off"
-                value={token}
-                onChange={(e) => setToken(e.target.value)}
-              />
-              <Button type="submit" variant="secondary">
-                שמירת הקוד
-              </Button>
-            </form>
-          </Panel>
+          {!IS_ARTIFACT && (
+            <Panel className="flex flex-col gap-3">
+              <form
+                className="flex flex-col gap-3"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setAppToken(token);
+                  toast({ tone: "success", message: "קוד הגישה נשמר" });
+                }}
+              >
+                <TextField
+                  label="קוד גישה לזיהוי מתמונה"
+                  hint="רק אם הוגדר APP_ACCESS_TOKEN בשרת. נשמר בטלפון הזה בלבד."
+                  type="password"
+                  autoComplete="off"
+                  value={token}
+                  onChange={(e) => setToken(e.target.value)}
+                />
+                <Button type="submit" variant="secondary">
+                  שמירת הקוד
+                </Button>
+              </form>
+            </Panel>
+          )}
 
           <Panel className="flex flex-col gap-3">
-            <p className="text-sm text-text-muted">כל הנתונים שמורים בטלפון הזה בלבד. כדאי לשמור גיבוי פעם בשבוע, למשל ב-iCloud או ב-Google Drive.</p>
-            <Button variant="secondary" icon={<Download aria-hidden className="size-4" />} onClick={() => void exportData()}>
+            <StorageNote />
+            <Button
+              variant="secondary"
+              icon={<Download aria-hidden className="size-4" />}
+              onClick={() => void exportData()}
+            >
               שמירת גיבוי לקובץ
             </Button>
-            <Button variant="secondary" icon={<Upload aria-hidden className="size-4" />} onClick={() => fileRef.current?.click()}>
+            <Button
+              variant="secondary"
+              icon={<Upload aria-hidden className="size-4" />}
+              onClick={() => fileRef.current?.click()}
+            >
               שחזור מגיבוי
             </Button>
             <input
@@ -180,7 +266,12 @@ export default function ProfilePage() {
                 if (file) setRestoreText(await file.text());
               }}
             />
-            <Button variant="ghost" className="text-danger" icon={<Trash2 aria-hidden className="size-4" />} onClick={() => setConfirmDelete(true)}>
+            <Button
+              variant="ghost"
+              className="text-danger"
+              icon={<Trash2 aria-hidden className="size-4" />}
+              onClick={() => setConfirmDelete(true)}
+            >
               מחיקת כל הנתונים
             </Button>
           </Panel>
@@ -189,13 +280,17 @@ export default function ProfilePage() {
             open={restoreText != null}
             onOpenChange={(o) => !o && setRestoreText(null)}
             title="לשחזר מהגיבוי?"
-            description="הנתונים שבטלפון עכשיו יוחלפו בנתונים מהקובץ."
+            description="הנתונים הנוכחיים יוחלפו בנתונים מהקובץ."
             footer={
               <div className="flex flex-col gap-2">
                 <Button size="lg" fullWidth onClick={() => void restore()}>
                   שחזור
                 </Button>
-                <Button variant="ghost" fullWidth onClick={() => setRestoreText(null)}>
+                <Button
+                  variant="ghost"
+                  fullWidth
+                  onClick={() => setRestoreText(null)}
+                >
                   ביטול
                 </Button>
               </div>
@@ -208,7 +303,11 @@ export default function ProfilePage() {
             open={confirmDelete}
             onOpenChange={setConfirmDelete}
             title="למחוק את כל הנתונים?"
-            description="כל האימונים, היומן, התמונות והיעדים יימחקו מהטלפון. אי אפשר לשחזר, אלא מקובץ ייצוא."
+            description={
+              IS_ARTIFACT
+                ? "כל האימונים, היומן, התמונות והיעדים יימחקו מהמכשיר ומהחשבון. אי אפשר לשחזר, אלא מקובץ גיבוי."
+                : "כל האימונים, היומן, התמונות והיעדים יימחקו מהטלפון. אי אפשר לשחזר, אלא מקובץ ייצוא."
+            }
             footer={
               <div className="flex flex-col gap-2">
                 <Button
@@ -216,15 +315,21 @@ export default function ProfilePage() {
                   size="lg"
                   fullWidth
                   onClick={async () => {
+                    await wipeCloud();
                     await db().delete();
                     // A full reload on purpose: it reopens a fresh database and re-seeds the library.
+                    if (IS_ARTIFACT) window.location.reload();
                     // eslint-disable-next-line @next/next/no-location-assign-relative-destination
-                    window.location.assign("/");
+                    else window.location.assign("/");
                   }}
                 >
                   מחיקת הכול
                 </Button>
-                <Button variant="ghost" fullWidth onClick={() => setConfirmDelete(false)}>
+                <Button
+                  variant="ghost"
+                  fullWidth
+                  onClick={() => setConfirmDelete(false)}
+                >
                   ביטול
                 </Button>
               </div>

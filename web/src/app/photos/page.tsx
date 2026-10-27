@@ -9,9 +9,10 @@ import { Segmented } from "@/components/ui/field";
 import { EmptyState, Panel, Skeleton } from "@/components/ui/surface";
 import { addProgressPhoto, deleteProgressPhoto, listProgressPhotos } from "@/data/coach-repo";
 import type { Pose, ProgressPhoto } from "@/data/types";
-import { resizeImage } from "@/lib/image";
+import { resizeImageUnder } from "@/lib/image";
 import { formatFullDate } from "@/lib/format";
 import { cn } from "@/lib/cn";
+import { IS_ARTIFACT } from "@/lib/runtime";
 
 const POSE: Record<Pose, string> = { front: "חזית", side: "צד", back: "גב" };
 const short = new Intl.DateTimeFormat("he-IL", { day: "numeric", month: "short" });
@@ -69,13 +70,13 @@ export default function PhotosPage() {
         onChange={async (e) => {
           const f = e.target.files?.[0];
           if (!f) return;
-          await addProgressPhoto(pose, await resizeImage(f, 1080, 0.8));
+          await addProgressPhoto(pose, await resizeImageUnder(f, 1080, 230_000));
           e.target.value = "";
         }}
       />
       <p className="flex items-center gap-2 text-sm text-text-muted">
         <Lock aria-hidden className="size-4 shrink-0" />
-        התמונות נשמרות בטלפון הזה בלבד ולא נשלחות לשום מקום.
+        {IS_ARTIFACT ? "התמונות פרטיות: נשמרות בחשבון Claude שלך, וגלויות רק לך." : "התמונות נשמרות בטלפון הזה בלבד ולא נשלחות לשום מקום."}
       </p>
       <Segmented label="תנוחה" value={pose} onChange={(p) => { setPose(p); setPicked([]); }} fullWidth options={(["front", "side", "back"] as Pose[]).map((p) => ({ value: p, label: POSE[p] }))} />
       <Button size="lg" fullWidth icon={<Camera aria-hidden className="size-5" />} onClick={() => input.current?.click()}>

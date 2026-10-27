@@ -1,0 +1,201 @@
+// End-to-end run of the in-chat build (dist-artifact/app.html) inside a stand-in for the Claude
+// viewer: the page is wrapped the way the Artifact tool wraps it, and window.claude serves db
+// (kept here in Node, so a "second phone" can read it), user, sample (canned answers) and downloads.
+// Run: npm run build:artifact && node e2e-artifact.cjs
+const { chromium } = require('playwright');
+const fs = require('fs');
+const path = require('path');
+
+const out = path.join(__dirname, '..', 'replica', 'clone-screens');
+const page0 = fs.readFileSync(path.join(__dirname, 'dist-artifact', 'app.html'), 'utf8');
+const skeleton = `<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body>${page0}</body></html>`;
+
+const store = new Map(); // path -> body
+const calls = { sample: [], downloads: [] };
+const writes = new Map();
+
+const MEAL = { is_food: true, dish_name_he: 'עוף עם אורז', items: [
+  { name_he: 'חזה עוף בגריל', grams: 150, kcal: 248, protein_g: 46, carbs_g: 0, fat_g: 5.4, confidence: 'high' },
+  { name_he: 'אורז לבן', grams: 180, kcal: 234, protein_g: 4.3, carbs_g: 51, fat_g: 0.5, confidence: 'medium' } ], notes_he: '' };
+const LABEL = { barcode: '7290000000017', name_he: 'יוגורט חלבון', brand: 'מותג', per100: { kcal: 70, protein: 10, carbs: 6, fat: 0.5, fiber: null }, serving_grams: 200, found_table: true, notes_he: '' };
+
+const fakeClaude = () => {
+  const call = (op, ...args) => window.__db(op, ...args);
+  const query = (p, filters = [], order = null, n = 1000) => ({
+    where: (f, op, v) => query(p, [...filters, [f, op, v]], order, n),
+    orderBy: (f, dir = 'asc') => query(p, filters, [f, dir], n),
+    limit: (k) => query(p, filters, order, k),
+    get: async () => {
+      const rows = await call('query', p, filters, order, n);
+      return { docs: rows.map(([id, d]) => ({ id, exists: true, data: () => d, metadata: {} })), size: rows.length, empty: !rows.length, docChanges: () => [] };
+    },
+    onSnapshot(next) { this.get().then((s) => next({ ...s, docChanges: () => s.docs.map((doc) => ({ type: 'added', doc })) })); return () => {}; },
+  });
+  const db = {
+    collection: (p) => Object.assign(query(p), {
+      doc: (id) => ({
+        get: async () => { const d = await call('get', `${p}/${id}`); return { id, exists: !!d, data: () => d ?? undefined }; },
+        set: (d) => call('set', `${p}/${id}`, d),
+        delete: () => call('delete', `${p}/${id}`),
+      }),
+    }),
+  };
+  const blobsOk = (opts) => Array.isArray(opts?.images) && opts.images.every((b) => b instanceof Blob && b.size > 100);
+  const sample = Object.assign(async () => ({ text: '' }), {
+    json: async (prompt, opts) => {
+      const kind = prompt.includes('nutrition table') ? 'label' : 'meal';
+      await window.__note('sample', { kind, images: blobsOk(opts), tier: opts?.modelTier });
+      await new Promise((r) => setTimeout(r, 300));
+      return kind === 'label' ? window.__LABEL : window.__MEAL;
+    },
+    limits: async () => ({ maxPromptBytes: 262144, images: { maxCount: 5, maxInputBytes: 20e6, mediaTypes: ['image/jpeg'] } }),
+  });
+  const caps = {
+    db, sample,
+    user: { id: async () => 'u_test', isOwner: () => true },
+    downloads: { save: async ({ filename, data }) => window.__note('downloads', { filename, size: (data.size ?? data.length) }) },
+  };
+  window.claude = { use: async (name) => (name in caps ? caps[name] : null) };
+};
+
+async function phone(browser, name) {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, locale: 'he-IL', hasTouch: true, isMobile: true });
+  await ctx.exposeFunction('__db', async (op, p, ...a) => {
+    if (op === 'get') return store.get(p) ?? null;
+    if (op === 'set') { writes.set(p, (writes.get(p) ?? 0) + 1); if (JSON.stringify(a[0]).length > 262144) throw { code: 'invalid_argument', message: 'too big' }; store.set(p, a[0]); return; }
+    if (op === 'delete') { store.delete(p); return; }
+    if (op === 'query') {
+      const [filters, order, n] = a;
+      let rows = [...store].filter(([k]) => k.startsWith(p + '/') && k.split('/').length === p.split('/').length + 1)
+        .map(([k, d]) => [k.split('/').pop(), d])
+        .filter(([, d]) => filters.every(([f, op, v]) => (op === '>' ? String(d[f]) > String(v) : d[f] === v)));
+      if (order) rows.sort(([, x], [, y]) => (x[order[0]] > y[order[0]] ? 1 : x[order[0]] < y[order[0]] ? -1 : 0) * (order[1] === 'desc' ? -1 : 1));
+      return rows.slice(0, n);
+    }
+  });
+  await ctx.exposeFunction('__note', (k, v) => void calls[k].push(v));
+  await ctx.addInitScript(`window.__MEAL=${JSON.stringify(MEAL)};window.__LABEL=${JSON.stringify(LABEL)};(${fakeClaude})();`);
+  await ctx.route('https://artifact.test/**', (r) => r.fulfill({ contentType: 'text/html; charset=utf-8', body: skeleton }));
+  const page = await ctx.newPage();
+  const errors = allErrors;
+  page.on('crash', () => allErrors.push(name + ': CRASH at ' + new Date().toISOString()));
+  page.on('pageerror', (e) => errors.push(`${name}: ${e.message}`));
+  page.on('console', (m) => m.type() === 'error' && errors.push(`${name}: ${m.text()}`));
+  await page.goto('https://artifact.test/');
+  return { ctx, page, errors };
+}
+
+const log = async (s) => { let m = ''; try { m = ' [heap ' + Math.round((await cur.evaluate(() => performance.memory.usedJSHeapSize)) / 1e6) + ' MB, dom ' + (await cur.evaluate(() => document.getElementsByTagName('*').length)) + ']'; } catch {} console.log('✓ ' + s + m); };
+const jpeg = async (browser, hue) => { const p = await browser.newPage(); await p.setViewportSize({ width: 800, height: 600 }); await p.setContent(`<body style="margin:0;background:hsl(${hue} 50% 60%)"><div style="margin:100px auto;width:400px;height:400px;border-radius:50%;background:hsl(${hue} 40% 35%)"></div></body>`); const b = await p.screenshot({ type: 'jpeg' }); await p.close(); return { name: 'p.jpg', mimeType: 'image/jpeg', buffer: b }; };
+let cur = null;
+const allErrors = [];
+const shot = (page, name) => page.screenshot({ path: `${out}/${name}.png` });
+
+(async () => {
+  const browser = await chromium.launch({ args: ['--disable-dev-shm-usage'] });
+  const a = await phone(browser, 'phone A');
+  const { page } = a; cur = page;
+
+  // Onboarding, the same answers as the web run
+  const keypad = async (digits) => { for (const d of digits) await page.locator('[role=group][aria-label^="מקלדת"]').getByRole('button', { name: d, exact: true }).click(); };
+  await page.getByText('מה המטרה העיקרית?').waitFor({ timeout: 20000 });
+  await shot(page, 'A01-welcome'); log('first visit goes to onboarding');
+  await page.getByRole('radio', { name: /בניית שריר/ }).click(); await page.getByRole('button', { name: 'המשך' }).click();
+  await page.getByRole('radio', { name: /בינוני/ }).click(); await page.getByRole('button', { name: 'המשך' }).click();
+  await page.getByRole('radio', { name: '3', exact: true }).click(); await page.getByRole('button', { name: 'המשך' }).click();
+  await page.getByRole('radio', { name: /חדר כושר/ }).click(); await page.getByRole('button', { name: 'המשך' }).click();
+  await page.getByLabel('משקל').fill('80'); await page.getByRole('button', { name: 'לתוכנית' }).click();
+  await page.getByText('התוכנית שלך').first().waitFor();
+  await page.getByRole('button', { name: 'מתחילים' }).click();
+  await page.getByText('גוף מלא A').first().waitFor(); await shot(page, 'A01-home'); log('onboarding: plan + targets');
+
+  // A workout from the plan
+  await page.getByRole('link', { name: 'אימונים' }).first().click(); await page.getByRole('button', { name: 'התחלה' }).first().click();
+  await page.getByText('סקוואט עם מוט').first().waitFor();
+  await page.getByRole('button', { name: /^משקל, סט 1:/ }).first().click();
+  await keypad('60'); await page.getByRole('button', { name: 'הבא', exact: true }).click(); await keypad('8');
+  await page.locator('[role=group][aria-label^="מקלדת"]').getByRole('button', { name: 'סגירה' }).click();
+  await page.getByRole('checkbox', { name: 'סימון סט 1 כהושלם' }).first().click();
+  await page.getByRole('timer').first().waitFor();
+  await shot(page, 'A02-logger');
+  await page.locator('header').getByRole('button', { name: 'סיום' }).click();
+  await page.getByRole('button', { name: 'סיום ושמירה' }).click();
+  await page.getByText('אימון מספר').first().waitFor();
+  await shot(page, 'A02-summary'); log('workout logged and finished');
+  await page.getByRole('button', { name: 'סיום', exact: true }).click();
+  await page.getByText('האימון האחרון').first().waitFor();
+
+  // Meal from a photo (Claude answers through sample)
+  await page.getByRole('link', { name: 'תזונה' }).first().click();
+  await page.getByRole('link', { name: /צילום/ }).first().click();
+  await page.locator('input[type=file][capture=environment]').setInputFiles(await jpeg(browser, 30));
+  await page.getByText('חזה עוף בגריל').first().waitFor();
+  if (!calls.sample.find((c) => c.kind === 'meal' && c.images)) throw new Error('meal photo did not reach Claude as an image');
+  await shot(page, 'A03-photo-meal');
+  await page.getByRole('button', { name: /^הוספה ל/ }).click();
+  await page.waitForFunction(() => location.hash === '#nutrition');
+  await page.getByText('חזה עוף בגריל').first().waitFor(); log('photo meal recognised by Claude and saved');
+
+  // A product from a label photo
+  await page.getByRole('link', { name: /ברקוד/ }).first().click();
+  await page.locator('input[type=file][multiple]').setInputFiles(await jpeg(browser, 200));
+  await page.getByRole('dialog').getByText('יוגורט חלבון').first().waitFor();
+  await shot(page, 'A04-label');
+  await page.getByRole('dialog').getByRole('button', { name: /^הוספה ל/ }).click();
+  await page.getByText('יוגורט חלבון').first().waitFor(); log('product read from its label');
+  // Next time the barcode alone finds it
+  await page.getByRole('link', { name: /ברקוד/ }).first().click();
+  await page.getByLabel('מספר הברקוד').fill(LABEL.barcode);
+  await page.getByRole('button', { name: 'חיפוש' }).click();
+  await page.getByRole('dialog').getByText('יוגורט חלבון').first().waitFor(); log('saved product found by its barcode');
+  await page.keyboard.press('Escape');
+  if (process.env.PROBE) { const cdp = await page.context().newCDPSession(page); await cdp.send('Performance.enable'); for (let i = 0; i < 8; i++) { await new Promise((r) => setTimeout(r, 3000)); const m = Object.fromEntries((await cdp.send('Performance.getMetrics')).metrics.map((x) => [x.name, x.value])); console.log('probe', i, Math.round(m.JSHeapUsedSize / 1e6), 'MB heap', m.Nodes, 'nodes', Math.round(m.TaskDuration*10)/10, 's task', m.LayoutCount, 'layouts', m.RecalcStyleCount, 'styles'); } }
+
+  // Progress photo
+  // In-app navigation only, the way the viewer moves around.
+  const tab = (pg, name) => pg.locator('nav').getByRole('link', { name, exact: true }).click();
+  await page.locator('header').getByRole('link', { name: 'תזונה' }).click();
+  await tab(page, 'התקדמות'); await page.getByRole('link', { name: 'תמונות', exact: true }).click();
+  await page.locator('input[type=file]').first().setInputFiles(await jpeg(browser, 120));
+  await page.locator('ul[aria-label="תמונות"] img').first().waitFor();
+  await new Promise((r) => setTimeout(r, 2500));
+  const pp = [...store.keys()].find((k) => k.includes('/pp.'));
+  if (!pp) { console.log([...store.keys()].map((k) => k.split('/').pop()), await page.evaluate(() => localStorage.getItem('sync-dirty'))); throw new Error('progress photo did not reach the cloud copy'); }
+  log(`progress photo kept (${Math.round(JSON.stringify(store.get(pp)).length / 1024)} KB in its document)`);
+
+  // Profile: synced, backup offered through downloads
+  await tab(page, 'פרופיל');
+  await page.getByText('הנתונים שמורים בחשבון Claude שלך').waitFor({ timeout: 15000 });
+  await shot(page, 'A05-profile-synced');
+  await page.getByRole('button', { name: 'שמירת גיבוי לקובץ' }).click();
+  await page.waitForTimeout(500);
+  if (!calls.downloads.length || calls.downloads[0].size < 1000) throw new Error('backup was not offered');
+  log('backup offered as a file');
+
+  // The cloud copy is grouped and private
+  const keys = [...store.keys()];
+  if (!keys.every((k) => k.startsWith('data/users/u_test/'))) throw new Error('data outside the private path');
+  const big = keys.filter((k) => JSON.stringify(store.get(k)).length > 250000);
+  if (big.length) throw new Error('oversized docs ' + big);
+  log(`cloud copy: ${keys.length} documents under data/users/<id>/`);
+
+  // A second phone: empty browser, same account -> everything is there
+  const b = await phone(browser, 'phone B'); cur = b.page;
+  await b.page.getByText('האימון האחרון').first().waitFor({ timeout: 20000 });
+  await tab(b.page, 'תזונה');
+  await b.page.getByText('חזה עוף בגריל').first().waitFor();
+  await b.page.getByText('יוגורט חלבון').first().waitFor();
+  await tab(b.page, 'אימונים'); await b.page.getByRole('link', { name: /היסטוריית אימונים/ }).first().click();
+  await b.page.getByText('גוף מלא A').first().waitFor();
+  await shot(b.page, 'A06-second-phone'); log('second phone opens with all the data');
+
+  // Back gesture
+  await tab(b.page, 'היום'); await b.page.waitForFunction(() => location.hash === '#home'); await tab(b.page, 'תזונה');
+  await b.page.waitForFunction(() => location.hash === '#nutrition'); await b.page.goBack();
+  await b.page.waitForFunction(() => location.hash === '#home'); log('back gesture returns to the previous screen');
+
+  const errors = [...a.errors, ...b.errors].filter((e) => !/favicon/.test(e));
+  console.log('\nerrors:', errors.length ? errors : 'none');
+  await browser.close();
+  if (errors.length) process.exit(1);
+})().catch(async (e) => { await cur?.screenshot({ path: '/tmp/fail.png' }).catch(() => {}); console.error('page errors:', allErrors.slice(0, 5)); console.error('FAILED:', e.message.split('\n').slice(0, 8).join('\n')); process.exit(1); });

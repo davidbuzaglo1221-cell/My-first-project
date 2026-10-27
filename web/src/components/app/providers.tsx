@@ -26,7 +26,8 @@ function ThemeSync() {
 /** Registers the offline service worker (production only; in dev it would cache stale code). */
 function ServiceWorker() {
   useEffect(() => {
-    if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return;
+    // Not in the chat: the artifact frame has no service workers, and Claude serves the page.
+    if (process.env.NODE_ENV !== "production" || process.env.NEXT_PUBLIC_TARGET === "artifact" || !("serviceWorker" in navigator)) return;
     navigator.serviceWorker.register(`/sw.js?v=${process.env.NEXT_PUBLIC_BUILD_ID}`).catch(() => {
       // Not supported here (private mode, old browser): the app still works online.
     });

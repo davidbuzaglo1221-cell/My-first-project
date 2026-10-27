@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { ScanLine } from "lucide-react";
+import { Camera, ScanLine } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/ui/field";
@@ -11,10 +11,14 @@ import { AmountSheet } from "@/components/nutrition/sheets";
 import { createFood, getFoodByBarcode, logFood } from "@/data/nutrition-repo";
 import type { Food, Meal } from "@/data/types";
 import { lookupBarcode } from "@/lib/openfoodfacts";
+import { readProductPhotos } from "@/lib/food-ai";
+import { IS_ARTIFACT } from "@/lib/runtime";
 import { localDateKey, mealForTime } from "@/lib/nutrition";
 
 // BarcodeDetector is in Chrome on Android, not yet in Safari on iPhone: typing the number is the fallback.
-type Detector = { detect: (source: CanvasImageSource) => Promise<{ rawValue: string }[]> };
+type Detector = {
+  detect: (source: CanvasImageSource) => Promise<{ rawValue: string }[]>;
+};
 declare global {
   interface Window {
     BarcodeDetector?: new (opts: { formats: string[] }) => Detector;
@@ -22,18 +26,75 @@ declare global {
 }
 
 type Status = "idle" | "looking" | "not_found" | "error";
+type ReadStatus = "idle" | "reading" | "no_table" | "not_allowed" | "failed";
+
+const READ_TEXT: Record<Exclude<ReadStatus, "idle" | "reading">, string> = {
+  no_table:
+    "לא הצלחנו לקרוא טבלת ערכים תזונתיים. כדאי לצלם אותה מקרוב, ישר ובאור טוב.",
+  not_allowed:
+    "כדי לקרוא את התווית צריך לאשר לאפליקציה להשתמש ב-Claude. אפשר לנסות שוב ולאשר בחלון שנפתח.",
+  failed: "הקריאה לא הצליחה. אפשר לנסות שוב, או למלא את הערכים ידנית.",
+};
 
 function Scanner() {
   const router = useRouter();
   const params = useSearchParams();
   const date = params.get("date") ?? localDateKey();
-  const [meal, setMeal] = useState<Meal>((params.get("meal") as Meal) || mealForTime());
+  const [meal, setMeal] = useState<Meal>(
+    (params.get("meal") as Meal) || mealForTime(),
+  );
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [camera, setCamera] = useState<"off" | "on" | "unsupported" | "denied">("off");
+  const [camera, setCamera] = useState<"off" | "on" | "unsupported" | "denied">(
+    "off",
+  );
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [food, setFood] = useState<Food | null>(null);
-  const [newFood, setNewFood] = useState({ name: "", kcal: "", protein: "", carbs: "", fat: "" });
+  const [newFood, setNewFood] = useState({
+    name: "",
+    kcal: "",
+    protein: "",
+    carbs: "",
+    fat: "",
+  });
+  const photoRef = useRef<HTMLInputElement>(null);
+  const [read, setRead] = useState<ReadStatus>("idle");
+  const [readNote, setReadNote] = useState("");
+
+  // In the chat there is no product database to call and no live camera: Claude reads the package
+  // itself (the nutrition table, and the barcode so the product is found instantly next time).
+  const readPhotos = async (files: FileList | null) => {
+    if (!files?.length) return;
+    setRead("reading");
+    setReadNote("");
+    setStatus("idle");
+    const r = await readProductPhotos([...files].slice(0, 4));
+    if (!r.ok) {
+      setRead(
+        r.error === "no_table"
+          ? "no_table"
+          : r.error === "not_allowed"
+            ? "not_allowed"
+            : "failed",
+      );
+      return;
+    }
+    const p = r.product;
+    const known = p.barcode ? await getFoodByBarcode(p.barcode) : undefined;
+    setFood(
+      known ??
+        (await createFood({
+          nameHe: p.nameHe,
+          brand: p.brand,
+          barcode: p.barcode ?? (code.length >= 8 ? code : null),
+          per100: p.per100,
+          servings: p.servings,
+          source: "user",
+        })),
+    );
+    setReadNote(p.notes);
+    setRead("idle");
+  };
 
   const find = useCallback(async (barcode: string) => {
     const clean = barcode.replace(/\D/g, "");
@@ -47,12 +108,18 @@ function Scanner() {
         setStatus("idle");
         return;
       }
+      if (IS_ARTIFACT) {
+        setStatus("not_found");
+        return;
+      }
       const p = await lookupBarcode(clean);
       if (!p) {
         setStatus("not_found");
         return;
       }
-      setFood(await createFood({ ...p, barcode: clean, source: "openfoodfacts" }));
+      setFood(
+        await createFood({ ...p, barcode: clean, source: "openfoodfacts" }),
+      );
       setStatus("idle");
     } catch {
       setStatus("error");
@@ -65,10 +132,14 @@ function Scanner() {
     let stream: MediaStream | null = null;
     let stopped = false;
     let timer: ReturnType<typeof setTimeout>;
-    const detector = new window.BarcodeDetector!({ formats: ["ean_13", "ean_8", "upc_a", "upc_e"] });
+    const detector = new window.BarcodeDetector!({
+      formats: ["ean_13", "ean_8", "upc_a", "upc_e"],
+    });
     (async () => {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+        });
         if (!videoRef.current || stopped) return;
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
@@ -99,11 +170,58 @@ function Scanner() {
 
   return (
     <>
-      {camera === "on" ? (
+      {IS_ARTIFACT ? (
+        <>
+          <input
+            ref={photoRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            multiple
+            className="sr-only"
+            tabIndex={-1}
+            aria-hidden
+            onChange={(e) => {
+              void readPhotos(e.target.files);
+              e.target.value = "";
+            }}
+          />
+          <Button
+            size="lg"
+            fullWidth
+            icon={<Camera aria-hidden className="size-5" />}
+            loading={read === "reading"}
+            onClick={() => photoRef.current?.click()}
+          >
+            {read === "reading" ? "קוראים את התווית…" : "צילום המוצר"}
+          </Button>
+          <p className="text-sm text-text-muted">
+            צלמו את טבלת הערכים התזונתיים, ואם אפשר גם את הברקוד. אפשר לבחור כמה
+            תמונות יחד. Claude יקרא את הערכים, והמוצר יישמר לפעם הבאה.
+          </p>
+          {read !== "idle" && read !== "reading" && (
+            <Banner tone="warning">{READ_TEXT[read]}</Banner>
+          )}
+          {readNote && !food && <Banner tone="info">{readNote}</Banner>}
+        </>
+      ) : camera === "on" ? (
         <div className="relative overflow-hidden rounded-xl bg-overlay">
-          <video ref={videoRef} muted playsInline className="aspect-[4/3] w-full object-cover" aria-label="מצלמה לסריקת ברקוד" />
-          <div aria-hidden className="pointer-events-none absolute inset-x-10 top-1/2 h-0.5 -translate-y-1/2 rounded-pill bg-success shadow-[0_0_12px_var(--c-success)]" />
-          <button type="button" onClick={() => setCamera("off")} className="glass-raised absolute end-3 bottom-3 h-10 rounded-pill px-4 text-sm font-semibold">
+          <video
+            ref={videoRef}
+            muted
+            playsInline
+            className="aspect-[4/3] w-full object-cover"
+            aria-label="מצלמה לסריקת ברקוד"
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-10 top-1/2 h-0.5 -translate-y-1/2 rounded-pill bg-success shadow-[0_0_12px_var(--c-success)]"
+          />
+          <button
+            type="button"
+            onClick={() => setCamera("off")}
+            className="glass-raised absolute end-3 bottom-3 h-10 rounded-pill px-4 text-sm font-semibold"
+          >
             סגירה
           </button>
         </div>
@@ -112,13 +230,27 @@ function Scanner() {
           size="lg"
           fullWidth
           icon={<ScanLine aria-hidden className="size-5" />}
-          onClick={() => setCamera(typeof window !== "undefined" && window.BarcodeDetector ? "on" : "unsupported")}
+          onClick={() =>
+            setCamera(
+              typeof window !== "undefined" && window.BarcodeDetector
+                ? "on"
+                : "unsupported",
+            )
+          }
         >
           סריקה במצלמה
         </Button>
       )}
-      {camera === "unsupported" && <Banner tone="info">הדפדפן הזה לא סורק ברקודים במצלמה. אפשר להקליד את המספר שמתחת לפסים.</Banner>}
-      {camera === "denied" && <Banner tone="warning">אין גישה למצלמה. אפשר לאשר בהגדרות הדפדפן, או להקליד את המספר.</Banner>}
+      {!IS_ARTIFACT && camera === "unsupported" && (
+        <Banner tone="info">
+          הדפדפן הזה לא סורק ברקודים במצלמה. אפשר להקליד את המספר שמתחת לפסים.
+        </Banner>
+      )}
+      {!IS_ARTIFACT && camera === "denied" && (
+        <Banner tone="warning">
+          אין גישה למצלמה. אפשר לאשר בהגדרות הדפדפן, או להקליד את המספר.
+        </Banner>
+      )}
 
       <form
         className="flex items-end gap-2"
@@ -127,13 +259,30 @@ function Scanner() {
           void find(code);
         }}
       >
-        <TextField className="flex-1" label="מספר הברקוד" inputMode="numeric" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} placeholder="7290000000000" maxLength={14} />
-        <Button type="submit" size="lg" disabled={code.length < 8} loading={status === "looking"}>
+        <TextField
+          className="flex-1"
+          label="מספר הברקוד"
+          inputMode="numeric"
+          value={code}
+          onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+          placeholder="7290000000000"
+          maxLength={14}
+        />
+        <Button
+          type="submit"
+          size="lg"
+          disabled={code.length < 8}
+          loading={status === "looking"}
+        >
           חיפוש
         </Button>
       </form>
 
-      {status === "error" && <Banner tone="danger">החיפוש נכשל. צריך חיבור לרשת כדי לחפש מוצר חדש.</Banner>}
+      {status === "error" && (
+        <Banner tone="danger">
+          החיפוש נכשל. צריך חיבור לרשת כדי לחפש מוצר חדש.
+        </Banner>
+      )}
       {status === "not_found" && (
         <form
           className="glass flex flex-col gap-4 rounded-lg p-5"
@@ -142,7 +291,13 @@ function Scanner() {
             const f = await createFood({
               nameHe: newFood.name,
               barcode: code,
-              per100: { kcal: num(newFood.kcal), protein: num(newFood.protein), carbs: num(newFood.carbs), fat: num(newFood.fat), fiber: null },
+              per100: {
+                kcal: num(newFood.kcal),
+                protein: num(newFood.protein),
+                carbs: num(newFood.carbs),
+                fat: num(newFood.fat),
+                fiber: null,
+              },
             });
             setStatus("idle");
             setFood(f);
@@ -150,9 +305,19 @@ function Scanner() {
         >
           <div>
             <h2 className="text-lg">המוצר עוד לא במאגר</h2>
-            <p className="text-sm text-text-muted">אפשר להוסיף אותו מהתווית (ערכים ל-100 גרם). בפעם הבאה הוא יימצא מיד.</p>
+            <p className="text-sm text-text-muted">
+              {IS_ARTIFACT
+                ? "הכי מהיר: צילום המוצר למעלה. או למלא מהתווית (ערכים ל-100 גרם). בפעם הבאה הוא יימצא מיד."
+                : "אפשר להוסיף אותו מהתווית (ערכים ל-100 גרם). בפעם הבאה הוא יימצא מיד."}
+            </p>
           </div>
-          <TextField label="שם המוצר" value={newFood.name} onChange={(e) => setNewFood({ ...newFood, name: e.target.value })} required maxLength={80} />
+          <TextField
+            label="שם המוצר"
+            value={newFood.name}
+            onChange={(e) => setNewFood({ ...newFood, name: e.target.value })}
+            required
+            maxLength={80}
+          />
           <div className="grid grid-cols-2 gap-2">
             {(
               [
@@ -162,16 +327,37 @@ function Scanner() {
                 ["fat", "שומן"],
               ] as const
             ).map(([k, label]) => (
-              <TextField key={k} label={label} inputMode="decimal" value={newFood[k]} onChange={(e) => setNewFood({ ...newFood, [k]: e.target.value.replace(/[^\d.,]/g, "") })} required={k === "kcal"} />
+              <TextField
+                key={k}
+                label={label}
+                inputMode="decimal"
+                value={newFood[k]}
+                onChange={(e) =>
+                  setNewFood({
+                    ...newFood,
+                    [k]: e.target.value.replace(/[^\d.,]/g, ""),
+                  })
+                }
+                required={k === "kcal"}
+              />
             ))}
           </div>
-          <Button type="submit" fullWidth disabled={!newFood.name.trim() || !num(newFood.kcal)}>
+          <Button
+            type="submit"
+            fullWidth
+            disabled={!newFood.name.trim() || !num(newFood.kcal)}
+          >
             שמירת המוצר
           </Button>
         </form>
       )}
 
-      <p className="text-xs text-text-subtle">מוצרים חדשים נמצאים ב-Open Food Facts, מאגר פתוח (רישיון ODbL). אחרי פעם אחת הם נשמרים בטלפון.</p>
+      {!IS_ARTIFACT && (
+        <p className="text-xs text-text-subtle">
+          מוצרים חדשים נמצאים ב-Open Food Facts, מאגר פתוח (רישיון ODbL). אחרי
+          פעם אחת הם נשמרים בטלפון.
+        </p>
+      )}
 
       <AmountSheet
         food={food}
@@ -190,7 +376,11 @@ function Scanner() {
 
 export default function BarcodePage() {
   return (
-    <AppShell title="ברקוד" back={{ href: "/nutrition", label: "תזונה" }} bottomSpace={false}>
+    <AppShell
+      title="ברקוד"
+      back={{ href: "/nutrition", label: "תזונה" }}
+      bottomSpace={false}
+    >
       <Suspense fallback={<Skeleton className="h-60 rounded-xl" />}>
         <Scanner />
       </Suspense>

@@ -11,10 +11,10 @@ import { Banner, Panel, Skeleton } from "@/components/ui/surface";
 import { GramsStepper, MacroLine, MealPicker } from "@/components/nutrition/controls";
 import { logPhotoMeal } from "@/data/nutrition-repo";
 import { MEAL_LABEL, type Meal } from "@/data/types";
-import { base64Of, resizeImage } from "@/lib/image";
-import { getAppToken } from "@/lib/local-settings";
+import { analyzeMealPhoto } from "@/lib/food-ai";
+import { resizeImage } from "@/lib/image";
 import { localDateKey, mealForTime } from "@/lib/nutrition";
-import type { FoodPhotoError, FoodPhotoItem, FoodPhotoResponse } from "@/lib/food-photo-schema";
+import type { FoodPhotoError, FoodPhotoItem } from "@/lib/food-photo-schema";
 import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/cn";
 
@@ -29,6 +29,7 @@ const ERROR_TEXT: Record<FoodPhotoError | "network" | "not_food", string> = {
   unreadable: "לא הצלחנו לקרוא את התוצאה. אפשר לנסות שוב.",
   busy: "יותר מדי בקשות כרגע. אפשר לנסות שוב בעוד דקה.",
   upstream: "שירות הזיהוי לא זמין כרגע. אפשר לנסות שוב או להוסיף מהחיפוש.",
+  not_allowed: "כדי לזהות אוכל מתמונה צריך לאשר לאפליקציה להשתמש ב-Claude. אפשר לנסות שוב ולאשר בחלון שנפתח.",
   network: "אין חיבור לרשת. זיהוי מתמונה צריך אינטרנט; אפשר להוסיף מהחיפוש גם בלי חיבור.",
   not_food: "לא זוהה אוכל בתמונה. אפשר לצלם שוב, קרוב יותר לצלחת.",
 };
@@ -59,38 +60,28 @@ function PhotoLog() {
   const analyse = async (p: { upload: string }, note: string) => {
     setState("loading");
     setError(null);
-    try {
-      const res = await fetch("/api/food-photo", {
-        method: "POST",
-        headers: { "content-type": "application/json", "x-app-token": getAppToken() },
-        body: JSON.stringify({ image: base64Of(p.upload), mediaType: "image/jpeg", hint: note || undefined }),
-      });
-      const data = (await res.json()) as FoodPhotoResponse;
-      if (!data.ok) {
-        setError(data.error);
-        setState("error");
-        return;
-      }
-      if (!data.result.is_food || data.result.items.length === 0) {
-        setError("not_food");
-        setState("error");
-        return;
-      }
-      setDish(data.result.dish_name_he);
-      setNotes(data.result.notes_he);
-      setItems(
-        data.result.items.map((i, n) => ({
-          ...i,
-          key: `${n}-${i.name_he}`,
-          baseGrams: i.grams || 100,
-          base: { kcal: i.kcal, protein_g: i.protein_g, carbs_g: i.carbs_g, fat_g: i.fat_g },
-        })),
-      );
-      setState("done");
-    } catch {
-      setError("network");
+    const data = await analyzeMealPhoto(p.upload, note);
+    if (!data.ok) {
+      setError(data.error);
       setState("error");
+      return;
     }
+    if (!data.result.is_food || data.result.items.length === 0) {
+      setError("not_food");
+      setState("error");
+      return;
+    }
+    setDish(data.result.dish_name_he);
+    setNotes(data.result.notes_he);
+    setItems(
+      data.result.items.map((i, n) => ({
+        ...i,
+        key: `${n}-${i.name_he}`,
+        baseGrams: i.grams || 100,
+        base: { kcal: i.kcal, protein_g: i.protein_g, carbs_g: i.carbs_g, fat_g: i.fat_g },
+      })),
+    );
+    setState("done");
   };
 
   const onFile = async (file: File | undefined) => {
@@ -174,6 +165,7 @@ function PhotoLog() {
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-overlay/25 text-white" role="status">
               <Sparkles aria-hidden className="size-7 animate-pulse" />
               <span className="font-semibold">מזהים את המנה</span>
+              <span className="text-sm opacity-85">זה לוקח עד חצי דקה</span>
             </div>
           )}
           <button

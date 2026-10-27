@@ -67,6 +67,7 @@ export class LocalDb extends Dexie {
   cardio!: EntityTable<CardioSession, "id">;
   progressPhotos!: EntityTable<ProgressPhoto, "id">;
   lessonReads!: EntityTable<LessonRead, "id">;
+  _sync!: EntityTable<{ id: string; rev: number }, "id">;
 
   constructor() {
     super("training-app");
@@ -99,6 +100,8 @@ export class LocalDb extends Dexie {
         const have = new Set((await tx.table("exercises").toArray()).map((e: Exercise) => e.slug));
         await tx.table("exercises").bulkAdd(seedExercises().filter((e) => !have.has(e.slug)));
       });
+    // v6: what the cloud copy (the artifact build) last saw of each group of rows.
+    this.version(6).stores({ _sync: "id" });
     this.on("populate", (tx) => {
       const exercises = seedExercises();
       tx.table("exercises").bulkAdd(exercises);

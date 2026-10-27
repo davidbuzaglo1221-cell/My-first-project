@@ -1,4 +1,5 @@
 import { db } from "./db";
+import { afterLocalReplace } from "./sync";
 
 // A backup is one JSON file with every table, photos included (they are stored as data URLs).
 // Restoring replaces everything on this phone, in one transaction: a bad file changes nothing.
@@ -7,9 +8,12 @@ export const BACKUP_FORMAT = "training-backup";
 
 export async function exportBackup(): Promise<string> {
   const d = db();
-  const tables = Object.fromEntries(await Promise.all(d.tables.map(async (t) => [t.name, await t.toArray()] as const)));
+  const tables = Object.fromEntries(await Promise.all(dataTables().map(async (t) => [t.name, await t.toArray()] as const)));
   return JSON.stringify({ format: BACKUP_FORMAT, version: d.verno, exportedAt: new Date().toISOString(), tables });
 }
+
+/** Every table but the sync bookkeeping (names starting with "_"). */
+const dataTables = () => db().tables.filter((t) => !t.name.startsWith("_"));
 
 export class BackupError extends Error {}
 
@@ -21,7 +25,7 @@ export async function restoreBackup(text: string): Promise<{ rows: number }> {
     throw new BackupError("הקובץ אינו קובץ גיבוי של האפליקציה.");
   }
   const d = db();
-  const known = new Set(d.tables.map((t) => t.name));
+  const known = new Set(dataTables().map((t) => t.name));
   // Files from before the format field had the tables at the top level.
   const p = parsed as { format?: string; tables?: Record<string, unknown> } & Record<string, unknown>;
   const tables = p?.format === BACKUP_FORMAT ? p.tables : p;
@@ -30,13 +34,14 @@ export async function restoreBackup(text: string): Promise<{ rows: number }> {
   }
   const entries = Object.entries(tables).filter(([name, rows]) => known.has(name) && Array.isArray(rows)) as [string, object[]][];
   let rows = 0;
-  await d.transaction("rw", d.tables, async () => {
-    for (const t of d.tables) await t.clear();
+  await d.transaction("rw", dataTables(), async () => {
+    for (const t of dataTables()) await t.clear();
     for (const [name, list] of entries) {
       await d.table(name).bulkPut(list);
       rows += list.length;
     }
   });
+  await afterLocalReplace();
   return { rows };
 }
 

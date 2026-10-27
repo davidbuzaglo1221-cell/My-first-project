@@ -30,6 +30,7 @@ export type FoodPhotoError =
   | "refused"
   | "unreadable"
   | "busy"
-  | "upstream";
+  | "upstream"
+  | "not_allowed"; // in the chat: Claude was not allowed for this page
 
 export type FoodPhotoResponse = { ok: true; result: FoodPhotoResult } | { ok: false; error: FoodPhotoError };

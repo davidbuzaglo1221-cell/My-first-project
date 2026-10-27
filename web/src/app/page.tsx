@@ -19,6 +19,7 @@ import { useStartWorkout } from "@/hooks/use-start-workout";
 import { localDateKey } from "@/lib/nutrition";
 import { TOPIC_LABEL } from "@/lib/lessons";
 import { formatDuration, formatDurationWords, formatFullDate, formatRelativeDay, greeting, startOfWeek } from "@/lib/format";
+import { IS_ARTIFACT } from "@/lib/runtime";
 
 /**
  * S04: today at a glance. One ink card carries the day's training (the week's goal, the streak,
@@ -193,7 +194,7 @@ export default function HomePage() {
         />
         <SheetAction icon={<Activity aria-hidden className="size-5" />} label="קרדיו" hint="הליכה, ריצה, אופניים" onClick={() => router.push("/cardio")} />
         <SheetAction icon={<Scale aria-hidden className="size-5" />} label="שקילה" onClick={() => router.push("/body")} />
-        <SheetAction icon={<ImageIcon aria-hidden className="size-5" />} label="תמונת התקדמות" hint="פרטית, נשמרת רק בטלפון" onClick={() => router.push("/photos")} />
+        <SheetAction icon={<ImageIcon aria-hidden className="size-5" />} label="תמונת התקדמות" hint={IS_ARTIFACT ? "פרטית, גלויה רק לך" : "פרטית, נשמרת רק בטלפון"} onClick={() => router.push("/photos")} />
       </BottomSheet>
     </AppShell>
   );

@@ -2,7 +2,13 @@
 
 אפליקציית אימונים ותזונה בעברית: יומן אימונים עם יעדים מוצעים, שיאים וסופרסטים, יומן אוכל עם זיהוי מתמונה וברקוד, משקל גוף, תמונות התקדמות, קרדיו, שיעורים והישגים. הקוד נמצא בתיקייה `web`.
 
-## העלאה לאוויר (Vercel, חינם, כ-5 דקות)
+## האפליקציה בתוך Claude (בלי שרת ובלי מפתח)
+
+האפליקציה מפורסמת כ-artifact בחשבון Claude: https://claude.ai/artifact/6qSJpjP4Xm1gx1Eei94ypv
+הנתונים נשמרים בחשבון Claude (פרטיים), מסתנכרנים בין מכשירים, וזיהוי האוכל מתמונה נעשה על ידי Claude עצמו.
+בנייה מחדש: `cd web && npm run build:artifact` (יוצר `dist-artifact/app.html`), ובדיקה: `node e2e-artifact.cjs`.
+
+## העלאה לשרת משלך (Vercel, לא חובה)
 
 1. נכנסים ל-https://vercel.com/signup ובוחרים **Continue with GitHub**.
 2. **Add New → Project**, ובוחרים את המאגר `My-first-project` (אם הוא לא מופיע: **Adjust GitHub App Permissions** ומאשרים גישה אליו).
