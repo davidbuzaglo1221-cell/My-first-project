@@ -2,6 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { ToastProvider } from "@/components/ui/toast";
+import { requestPersistentStorage } from "@/data/backup";
 import { useProfile } from "@/hooks/use-data";
 
 /** Applies the theme from settings and remembers it for the next page load. */
@@ -29,6 +30,8 @@ function ServiceWorker() {
     navigator.serviceWorker.register(`/sw.js?v=${process.env.NEXT_PUBLIC_BUILD_ID}`).catch(() => {
       // Not supported here (private mode, old browser): the app still works online.
     });
+    // The data lives only on this phone; ask the browser not to clear it.
+    void requestPersistentStorage();
   }, []);
   return null;
 }

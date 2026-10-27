@@ -6,8 +6,8 @@ import { FoodPhotoResult, type FoodPhotoResponse } from "@/lib/food-photo-schema
 // Estimates the foods in a meal photo with Claude (vision + structured output).
 // Server-only: the API key never reaches the browser.
 //   ANTHROPIC_API_KEY  required
-//   APP_ACCESS_TOKEN   optional; when set, requests must send it in `x-app-token`,
-//                      so a deployed URL cannot be used to spend the key by strangers.
+//   APP_ACCESS_TOKEN   requests must send it in `x-app-token`, so a deployed URL cannot be
+//                      used to spend the key by strangers. Required on Vercel; optional locally.
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -39,6 +39,9 @@ export async function POST(request: Request) {
     return json({ ok: false, error: "not_configured" }, 503);
   }
   const required = process.env.APP_ACCESS_TOKEN;
+  if (!required && process.env.VERCEL) {
+    return json({ ok: false, error: "not_configured" }, 503);
+  }
   if (required && request.headers.get("x-app-token") !== required) {
     return json({ ok: false, error: "unauthorized" }, 401);
   }

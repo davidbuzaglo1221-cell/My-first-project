@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { ChevronLeft, Download, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
+import { ChevronLeft, Download, Trash2, Upload } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
 import { Button } from "@/components/ui/button";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
@@ -10,6 +10,7 @@ import { Segmented, TextField } from "@/components/ui/field";
 import { Panel, Skeleton } from "@/components/ui/surface";
 import { useToast } from "@/components/ui/toast";
 import { db } from "@/data/db";
+import { BackupError, exportBackup, restoreBackup } from "@/data/backup";
 import { updateProfile } from "@/data/repo";
 import { useProfile } from "@/hooks/use-data";
 import { getAppToken, setAppToken } from "@/lib/local-settings";
@@ -33,16 +34,29 @@ export default function ProfilePage() {
   const [token, setToken] = useState(getAppToken);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
+  const [restoreText, setRestoreText] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+
   const exportData = async () => {
-    const d = db();
-    const dump = Object.fromEntries(await Promise.all(d.tables.map(async (t) => [t.name, await t.toArray()] as const)));
-    const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), ...dump }, null, 2)], { type: "application/json" });
+    const blob = new Blob([await exportBackup()], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `training-data-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `training-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const restore = async () => {
+    if (restoreText == null) return;
+    try {
+      await restoreBackup(restoreText);
+      setRestoreText(null);
+      toast({ tone: "success", message: "הגיבוי שוחזר" });
+    } catch (e) {
+      setRestoreText(null);
+      toast({ tone: "danger", message: e instanceof BackupError ? e.message : "השחזור נכשל. הנתונים לא השתנו." });
+    }
   };
 
   return (
@@ -146,14 +160,49 @@ export default function ProfilePage() {
           </Panel>
 
           <Panel className="flex flex-col gap-3">
-            <p className="text-sm text-text-muted">כל הנתונים שמורים כרגע בטלפון הזה בלבד. כדאי לייצא גיבוי מדי פעם.</p>
+            <p className="text-sm text-text-muted">כל הנתונים שמורים בטלפון הזה בלבד. כדאי לשמור גיבוי פעם בשבוע, למשל ב-iCloud או ב-Google Drive.</p>
             <Button variant="secondary" icon={<Download aria-hidden className="size-4" />} onClick={() => void exportData()}>
-              ייצוא כל הנתונים
+              שמירת גיבוי לקובץ
             </Button>
+            <Button variant="secondary" icon={<Upload aria-hidden className="size-4" />} onClick={() => fileRef.current?.click()}>
+              שחזור מגיבוי
+            </Button>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              aria-hidden
+              tabIndex={-1}
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                e.target.value = "";
+                if (file) setRestoreText(await file.text());
+              }}
+            />
             <Button variant="ghost" className="text-danger" icon={<Trash2 aria-hidden className="size-4" />} onClick={() => setConfirmDelete(true)}>
               מחיקת כל הנתונים
             </Button>
           </Panel>
+
+          <BottomSheet
+            open={restoreText != null}
+            onOpenChange={(o) => !o && setRestoreText(null)}
+            title="לשחזר מהגיבוי?"
+            description="הנתונים שבטלפון עכשיו יוחלפו בנתונים מהקובץ."
+            footer={
+              <div className="flex flex-col gap-2">
+                <Button size="lg" fullWidth onClick={() => void restore()}>
+                  שחזור
+                </Button>
+                <Button variant="ghost" fullWidth onClick={() => setRestoreText(null)}>
+                  ביטול
+                </Button>
+              </div>
+            }
+          >
+            <span />
+          </BottomSheet>
 
           <BottomSheet
             open={confirmDelete}

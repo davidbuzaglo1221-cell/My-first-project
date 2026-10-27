@@ -172,6 +172,14 @@ const log = (...a) => console.log('✓', ...a);
   await shot('S27-nutrition-dark'); await page.goto(BASE + '/'); await shot('S04-home-dark'); log('dark theme');
   await page.goto(BASE + '/profile'); await page.getByRole('radio', { name: 'בהיר' }).click(); await page.waitForTimeout(600);
 
+  // Backup, wipe one table's worth of change, restore: the diary comes back
+  const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'שמירת גיבוי לקובץ' }).click()]);
+  const backupPath = `${out}/../backup-e2e.json`; await dl.saveAs(backupPath);
+  await page.evaluate(() => new Promise((res, rej) => { const r = indexedDB.open('training-app'); r.onsuccess = () => { const t = r.result.transaction('foodLogs', 'readwrite'); t.objectStore('foodLogs').clear(); t.oncomplete = () => { r.result.close(); res(); }; t.onerror = rej; }; r.onerror = rej; }));
+  await page.locator('input[type=file]').setInputFiles(backupPath); await page.getByRole('dialog').getByRole('button', { name: 'שחזור', exact: true }).click();
+  await page.getByText('הגיבוי שוחזר').waitFor();
+  await page.goto(BASE + '/nutrition'); await page.getByText('חזה עוף בגריל').first().waitFor(); require('fs').unlinkSync(backupPath); log('backup and restore');
+
   // Desktop width
   await page.setViewportSize({ width: 1440, height: 900 }); await page.goto(BASE + '/'); await page.waitForTimeout(500);
   await overflow('desktop home'); await page.screenshot({ path: `${out}/S04-home-1440.png` }); log('1440 width');
