@@ -1,0 +1,11 @@
+{
+  "name": "ASCEND",
+  "short_name": "ASCEND",
+  "lang": "he",
+  "dir": "rtl",
+  "display": "standalone",
+  "start_url": "/",
+  "background_color": "#0b0a10",
+  "theme_color": "#0b0a10",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
