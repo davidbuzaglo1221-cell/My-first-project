@@ -1,16 +1,47 @@
 // Short lessons, written for this app. Each one: the idea, why it matters, and one thing to try.
 // Kept practical and conservative; no medical advice.
 
+export type Topic = "training" | "nutrition" | "recovery" | "learning" | "habits" | "personal";
+
+/** How strong the evidence behind a lesson is. Said plainly on the lesson page. */
+export type Evidence = "strong" | "moderate" | "practical";
+
 export type Lesson = {
   id: string;
-  topic: "training" | "nutrition" | "recovery";
+  topic: Topic;
   title: string;
+  /** The idea in a few short paragraphs. */
   body: string[];
+  /** Deeper sections after the intro. Optional. */
+  sections?: { heading: string; paragraphs: string[] }[];
   tryToday: string;
   minutes: number;
+  evidence?: Evidence;
+  /** Only sources that were checked. Never filled in from memory. */
+  sources?: { text: string; url?: string }[];
+  /** A PubMed search the reader can run to check the claim themselves. */
+  verify?: string;
 };
 
-export const TOPIC_LABEL: Record<Lesson["topic"], string> = { training: "אימון", nutrition: "תזונה", recovery: "התאוששות" };
+export const TOPIC_LABEL: Record<Topic, string> = {
+  training: "אימון",
+  nutrition: "תזונה",
+  recovery: "התאוששות",
+  learning: "למידה",
+  habits: "הרגלים",
+  personal: "התפתחות אישית",
+};
+
+export const EVIDENCE_LABEL: Record<Evidence, string> = {
+  strong: "ראיות חזקות: הרבה ניסויים ומטא-אנליזות",
+  moderate: "ראיות בינוניות: יש מחקרים, אבל גם ביקורת או פערים",
+  practical: "הנחיה מעשית: ניסיון וראיות חלקיות, לא הוכחה סופית",
+};
+
+/** A PubMed search page for a query, so the reader can check the claim. */
+export function pubmedSearchUrl(query: string): string {
+  return `https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(query)}`;
+}
 
 export const LESSONS: Lesson[] = [
   {
@@ -180,6 +211,281 @@ export const LESSONS: Lesson[] = [
     ],
     tryToday: "צלמו את עצמכם בסט אחד של התרגיל המרכזי והסתכלו על עומק התנועה.",
     minutes: 1,
+  },
+  {
+    id: "spaced-practice",
+    topic: "learning",
+    title: "למידה מפוזרת יותר משינון צפוף",
+    body: [
+      "כשלומדים משהו בכמה פעמים מפוזרות לאורך זמן, הזיכרון נשאר טוב יותר מאשר כשלומדים את אותו חומר בבת אחת לפני המבחן. זה נקרא שימור מפוזר (distributed practice) או אפקט המרווח (spacing effect).",
+      "מטא-אנליזה של Cepeda ועמיתיו (2006) סיכמה 317 ניסויים בנושא, וזיהתה את האפקט שוב ושוב בזיכרון מילולי. בפשטות: לא מספיק ללמוד הרבה, צריך לחזור על החומר במרווחים.",
+    ],
+    sections: [
+      {
+        heading: "מה עושים בפועל",
+        paragraphs: [
+          "לדוגמה: חוזרים על החומר אחרי יום, אחרי שלושה ימים, ואחרי שבוע. ככל שהחומר מתייצב, המרווחים יכולים להתארך.",
+          "כדאי לחזור גם על חומר שכבר נראה מוכר, כי ההרגשה של „זה מוכר” לא אומרת שנשמר בזיכרון.",
+        ],
+      },
+      {
+        heading: "המלכודת",
+        paragraphs: [
+          "שינון צפוף, כמו לקרוא שוב ושוב בלילה לפני מבחן, מרגיש כמו למידה כי החומר נשמע מוכר. אבל הזיכרון לטווח ארוך נשאר חלש יותר. ההרגשה של „אני יודע” בזמן הקריאה מטעה.",
+        ],
+      },
+    ],
+    tryToday: "בחרו נושא שלמדתם השבוע, והחזירו אותו לזיכרון עכשיו בלי לקרוא מחדש.",
+    minutes: 3,
+    evidence: "strong",
+    sources: [
+      {
+        text: "Cepeda, Pashler, Vul, Wixted & Rohrer (2006), Psychological Bulletin 132(3), 354–380",
+        url: "https://pubmed.ncbi.nlm.nih.gov/16719566/",
+      },
+    ],
+    verify: "distributed practice[tiab] AND (meta-analysis[pt] OR review[pt])",
+  },
+  {
+    id: "retrieval-practice",
+    topic: "learning",
+    title: "לשלוף מהזיכרון, לא רק לקרוא",
+    body: [
+      "הדרך היעילה ללמוד היא לנסות לשלוף את המידע מהזיכרון לפני שמסתכלים בתשובה: שואלים, עונים, ורק אחר כך בודקים.",
+      "הניסיון מראה שהשליפה עצמה מחזקת את הזיכרון יותר מעוד קריאה של אותו טקסט. מכאן השם: שליפה כתרגול (retrieval practice).",
+    ],
+    sections: [
+      {
+        heading: "איך זה נראה",
+        paragraphs: [
+          "לסכם בלי להסתכל: סוגרים את הספר וכותבים מה זוכרים. לשאול שאלות ולענות עליהן בקול. להשתמש בכרטיסיות.",
+          "טעות בשליפה היא חלק מהלמידה, כי היא מראה בדיוק מה חסר.",
+        ],
+      },
+      {
+        heading: "גבולות",
+        paragraphs: [
+          "השיטה עובדת הכי טוב כשיש בסיס מסוים בחומר. אם אין שום הבנה, קודם צריך הסבר, ואחר כך שליפה.",
+        ],
+      },
+    ],
+    tryToday: "לפני שפותחים את הספר או הסיכום, כתבו בשתי דקות מה זכור לכם מהנושא.",
+    minutes: 3,
+    evidence: "moderate",
+    verify: "retrieval practice[tiab] AND (learning[tiab] OR memory[tiab])",
+  },
+  {
+    id: "implementation-intentions",
+    topic: "learning",
+    title: "תוכנית של „כש… אז אעשה…”",
+    body: [
+      "הרבה יעדים נכשלים לא בגלל חוסר רצון, אלא כי לא ברור מתי ואיפה עושים את הצעד הבא. תוכנית מסוג „אם-אז” (implementation intention) מחברת בין מצב מסוים לבין פעולה.",
+      "מטא-אנליזה של Gollwitzer ו-Sheeran (2006) כללה 94 בדיקות עצמאיות, ומצאה השפעה בינונית-גדולה על השגת יעדים (d = 0.65).",
+    ],
+    sections: [
+      {
+        heading: "דוגמה",
+        paragraphs: [
+          "במקום „אתחיל להתאמן יותר”, כותבים: „כשאחזור מהעבודה, אלבש בגדי ספורט מיד ואלך לחדר הכושר.”",
+        ],
+      },
+      {
+        heading: "מה זה לא",
+        paragraphs: [
+          "זו לא הבטחה. ההשפעה משתנה בין תחומים, וחלק גדול מהמחקרים נערך בניסויים קצרים. התוכנית עוזרת להתחיל, אבל לא מחליפה את העבודה עצמה.",
+        ],
+      },
+    ],
+    tryToday: "כתבו תוכנית אחת בפורמט „כש… אז…” לדבר שאתם דוחים כבר שבוע.",
+    minutes: 3,
+    evidence: "strong",
+    sources: [
+      {
+        text: "Gollwitzer & Sheeran (2006), Advances in Experimental Social Psychology 38, 69–119",
+        url: "https://doi.org/10.1016/S0065-2601(06)38002-1",
+      },
+    ],
+    verify: "implementation intentions[tiab] AND meta-analysis[pt]",
+  },
+  {
+    id: "sleep-memory",
+    topic: "learning",
+    title: "שינה ושמירה על מה שלמדתם",
+    body: [
+      "שינה היא לא רק מנוחה לגוף. במהלך השינה המוח מעבד ומחזק חלק מהזיכרונות שנוצרו במהלך היום. זה נקרא לעיתים גיבוש זיכרון (memory consolidation).",
+      "סקירה של Walker ו-Stickgold (2004) ב-Neuron מציגה את הראיות לתפקיד השינה בלמידה ובזיכרון. מטא-אנליזה משנת 2021, שסקרה מחקרים משנים 1970 עד 2020, מצאה שחוסר שינה לילה שלם פוגע בזיכרון, והפגיעה גדולה יותר כשחסרה שינה לפני הלמידה.",
+    ],
+    sections: [
+      {
+        heading: "מה זה אומר ביום-יום",
+        paragraphs: [
+          "לפני מבחן או הצגה חשובה, שינה לילה שלם בדרך כלל עדיפה על לימוד עד הבוקר.",
+        ],
+      },
+      {
+        heading: "מה עדיין לא ברור",
+        paragraphs: [
+          "יש ביקורת על חלק מהמסגרת התיאורטית ועל חלק מעיצובי הניסויים. הרעיון הכללי שהשינה משפיעה על הזיכרון נתמך, אבל גודל האפקט המדויק עדיין נבדק.",
+        ],
+      },
+      {
+        heading: "כשיש בעיה",
+        paragraphs: [
+          "אם יש קושי קבוע להירדם או להישאר ישן, זה נושא לרופא ולא לפתרון עצמי.",
+        ],
+      },
+    ],
+    tryToday: "אם יש מבחן או פגישה חשובה מחר, תכננו לישון מוקדם הלילה, ולא להישאר ערים כדי ללמוד עוד.",
+    minutes: 3,
+    evidence: "moderate",
+    sources: [
+      {
+        text: "Walker & Stickgold (2004), Neuron: Sleep-dependent learning and memory consolidation",
+        url: "https://pubmed.ncbi.nlm.nih.gov/15450165/",
+      },
+      { text: "מטא-אנליזה משנת 2021 על חוסר שינה וזיכרון (מחקרים מ-1970 עד 2020)" },
+    ],
+    verify: "sleep deprivation[tiab] AND memory[tiab] AND meta-analysis[pt]",
+  },
+  {
+    id: "habit-formation",
+    topic: "habits",
+    title: "כמה זמן לוקח להפוך משהו להרגל",
+    body: [
+      "אחד המספרים הנפוצים הוא 21 ימים, אבל הוא לא מבוסס. מחקר של Lally ועמיתיה (2010) עקב אחרי 96 סטודנטים שאימצו התנהגות בריאה אחת, לביצוע יומי, במשך 84 ימים.",
+      "החציון של הזמן עד שההתנהגות הפכה לאוטומטית היה 66 ימים, אבל הטווח רחב מאוד: בין 18 ל-254 ימים. חלק מהאנשים הגיעו לזה מהר, ואחרים לא הגיעו לכך בתוך תקופת המעקב.",
+    ],
+    sections: [
+      {
+        heading: "מה זה אומר לכם",
+        paragraphs: [
+          "אל תמדדו את עצמכם לפי 21 יום. אם אחרי שבועיים עדיין קשה, זה נורמלי. לתכנון, העקביות היומיומית שימושית יותר מהמספר עצמו.",
+        ],
+      },
+      {
+        heading: "על מה המספר נשען",
+        paragraphs: [
+          "הנתון נשען על מדגם קטן, על התנהגויות פשוטות, ועל הערכה של מודל שרץ מעבר לתקופת המעקב בפועל. ביקורת אחת טוענת שהחציון מייצג רק את מי שהצליחו. מחקרים נוספים מצאו טווחים דומים, אבל זו מדידה אחת, לא חוק.",
+        ],
+      },
+    ],
+    tryToday: "בחרו הרגל אחד קטן, וסמנו ביומן כמה ימים ברצף עשיתם אותו.",
+    minutes: 3,
+    evidence: "practical",
+    sources: [
+      {
+        text: "Lally, van Jaarsveld, Potts & Wardle (2010), European Journal of Social Psychology",
+      },
+    ],
+    verify: "habit formation[tiab] AND (automaticity[tiab] OR daily[tiab])",
+  },
+  {
+    id: "environment-cues",
+    topic: "habits",
+    title: "לשנות את הסביבה לפני שמשנים את עצמך",
+    body: [
+      "הרבה הרגלים מתחילים מסימן בסביבה: הטלפון על השולחן, השוקולד ליד הכניסה למטבח, הנעליים מחוץ לדלת. כשהסימן קיים, הפעולה מגיעה כמעט בלי החלטה.",
+      "כדי להקטין הרגל לא רצוי, אפשר להוסיף חיכוך: להרחיק, להסתיר, להקשות על ההתחלה. כדי לבנות הרגל רצוי, מקלים על ההתחלה ומשאירים את הסימן גלוי.",
+    ],
+    sections: [
+      {
+        heading: "שתי שאלות לפני כל הרגל",
+        paragraphs: [
+          "מה הסימן שמפעיל את ההרגל? ומה הדבר הקטן ביותר שאפשר לעשות מיד אחריו?",
+        ],
+      },
+      {
+        heading: "הערה כנה",
+        paragraphs: [
+          "הראיות על עיצוב סביבה בהרגלים מבוססות בעיקר על ניסויים ותצפיות קטנות יותר. זו הנחיה מעשית שמתאימה לרוב האנשים, לא הבטחה.",
+        ],
+      },
+    ],
+    tryToday: "העבירו דבר אחד שאתם רוצים לעשות יותר ממנו (למשל בקבוק מים) לאזור שרואים כל יום.",
+    minutes: 3,
+    evidence: "practical",
+    verify: "habit[tiab] AND (cue[tiab] OR context[tiab]) AND behavior[tiab]",
+  },
+  {
+    id: "clear-goals",
+    topic: "personal",
+    title: "מטרה מדויקת במקום כוונה טובה",
+    body: [
+      "„אני רוצה להיות יותר פנוי” היא כוונה, לא מטרה. מטרה טובה מתארת מה ייראה אחרת כשהיא מושגת, ומתי בודקים.",
+      "תיאוריית הגדרת המטרות (goal-setting theory), שפותחה על ידי Locke ו-Latham, מציעה שמטרות ספציפיות ומאתגרות מביאות ביצועים טובים יותר ממטרות כלליות כמו „תעשה כמיטב יכולתך”. זו תיאוריה מוכרת שנבדקה הרבה, אבל כאן לא צוטט מאמר ספציפי.",
+    ],
+    sections: [
+      {
+        heading: "מבנה פשוט",
+        paragraphs: [
+          "מטרה, מה ייראה כשתושג, תאריך בדיקה, והצעד הבא השבוע. לדוגמה: „עד סוף החודש אשלח שלוש הצעות עבודה. הצעד הבא: לכתוב את ההצעה הראשונה ביום שלישי.”",
+        ],
+      },
+      {
+        heading: "כשהמטרה לא זזה",
+        paragraphs: [
+          "בודקים אם המטרה גדולה מדי, או אם הצעד הבא לא מוגדר. לפעמים צריך לפרק את המטרה, לא לוותר עליה.",
+        ],
+      },
+    ],
+    tryToday: "כתבו מטרה אחת במבנה: מה ייראה אחרת, מתי בודקים, ומה הצעד הבא השבוע.",
+    minutes: 3,
+    evidence: "practical",
+    verify: "goal setting theory[tiab] AND meta-analysis[pt]",
+  },
+  {
+    id: "self-compassion",
+    topic: "personal",
+    title: "ביקורת עצמית שמלמדת, לא שוברת",
+    body: [
+      "אחרי כישלון, הרבה אנשים עונים לעצמם בקשיחות, ומקווים שזה יניע אותם. זה עשוי לעבוד לזמן קצר, אבל לעיתים קרובות זה מעלה פחד מכישלון ונטייה להימנע.",
+      "מחקרים על חמלה עצמית (self-compassion) מצאו שאנשים שמדברים לעצמם בחמלה אחרי כישלון נוטים יותר לרצות לתקן ולנסות שוב. הממצאים מעניינים, אבל גודל האפקט והקשר לתוצאות אמיתיות עדיין נבדקים.",
+    ],
+    sections: [
+      {
+        heading: "מה אפשר לעשות",
+        paragraphs: [
+          "לשאול: מה הייתי אומר לחבר שהיה במקומי? ואז לכתוב את אותו משפט לעצמי. לבדוק מה הצעד הקטן הבא, ולא מה הטעות אומרת עליי כאדם.",
+        ],
+      },
+      {
+        heading: "חמלה אינה פטור",
+        paragraphs: [
+          "חמלה עצמית לא אומרת להתעלם מהטעות. היא מאפשרת להסתכל עליה בבהירות ולתקן.",
+        ],
+      },
+    ],
+    tryToday: "בפעם הבאה שאתם מרגישים ביקורת עצמית חזקה, כתבו משפט אחד שהייתם אומרים לחבר טוב במצב דומה.",
+    minutes: 3,
+    evidence: "practical",
+    verify: "self-compassion[tiab] AND motivation[tiab]",
+  },
+  {
+    id: "asking-feedback",
+    topic: "personal",
+    title: "לבקש משוב שאפשר לעבוד איתו",
+    body: [
+      "הרבה אנשים מקבלים משוב כללי כמו „היה טוב” או „לא הבנתי”, וזה לא מלמד כלום. משוב טוב מתאר התנהגות מסוימת ואת ההשפעה שלה.",
+      "במקום „מה דעתך עליי?” אפשר לשאול: „באיזה רגע בפגישה הרגשת שהאמירה שלי לא ברורה?”. שאלה ממוקדת מקבלת תשובה שאפשר לפעול לפיה.",
+    ],
+    sections: [
+      {
+        heading: "שלושה חלקים לבקשה",
+        paragraphs: [
+          "מה אתם מנסים לשפר, מתי זה קורה, ומה הייתם רוצים שיקרה במקום.",
+        ],
+      },
+      {
+        heading: "להקשיב בלי להתגונן",
+        paragraphs: [
+          "בזמן המשוב, שואלים רק שאלות הבהרה. ההחלטה מה לעשות באה אחר כך, לבד.",
+        ],
+      },
+    ],
+    tryToday: "בקשו משוב ממוקד אחד השבוע מאדם אחד, על רגע מסוים ולא על האישיות שלכם.",
+    minutes: 3,
+    evidence: "practical",
+    verify: "feedback seeking[tiab] AND performance[tiab]",
   },
 ];
 
