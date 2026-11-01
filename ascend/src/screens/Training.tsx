@@ -280,7 +280,7 @@ function LessonPage({ id }: { id: string }) {
                       type="button"
                       className="toggle"
                       aria-pressed={isChosen}
-                      style={show && isRight ? { borderColor: "rgba(95,211,166,0.5)" } : show && isChosen ? { borderColor: "rgba(240,138,138,0.5)" } : undefined}
+                      style={show && isRight ? { borderColor: "#141312" } : show && isChosen ? { borderColor: "#9a3f32" } : undefined}
                       onClick={() => answer(q.id, oi)}
                     >
                       <span>{opt}</span>

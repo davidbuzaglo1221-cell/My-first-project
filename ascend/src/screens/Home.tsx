@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Card, Icon, ProgressBar, Empty, toast } from "../components/ui";
+import { Card, Icon, Empty, Ring, toast } from "../components/ui";
 import { AREA_LABEL } from "../content/actions";
 import { lessonById } from "../content/lessons";
 import { buildDailyPlan } from "../lib/plan";
@@ -55,16 +55,17 @@ export function Home() {
         <p className="text-2">{progressMessage(doneCount, plan.actions.length, !!day?.checkIn)}</p>
       </header>
 
-      <Card tone="accent">
-        <div className="row between" style={{ marginBottom: 10 }}>
-          <div>
-            <h2>תוכנית היום</h2>
-            <span className="small muted">{plan.totalMinutes} דקות מתוך {plan.budget} שבחרת</span>
+      <Card className="ink">
+        <div className="row" style={{ gap: 18, alignItems: "center" }}>
+          <Ring value={plan.actions.length ? (doneCount / plan.actions.length) * 100 : 0} label="התקדמות בתוכנית היום" />
+          <div className="stack" style={{ gap: 4, minWidth: 0 }}>
+            <span className="eyebrow">תוכנית היום</span>
+            <h2 style={{ color: "var(--cream)" }}>{doneCount === plan.actions.length && plan.actions.length > 0 ? "הכול בוצע" : "הצעד הבא"}</h2>
+            <span className="small" style={{ opacity: 0.75 }}>{plan.totalMinutes} מתוך {plan.budget} דקות · {doneCount}/{plan.actions.length} הושלמו</span>
           </div>
-          <span className="pill accent num">{doneCount}/{plan.actions.length}</span>
         </div>
-        <ProgressBar value={plan.actions.length ? (doneCount / plan.actions.length) * 100 : 0} label="התקדמות בתוכנית היום" />
-        <div className="stack" style={{ marginTop: 12 }}>
+      </Card>
+      <div className="stack" style={{ marginTop: -6 }}>
           {plan.actions.map((a) => {
             const done = doneIds.includes(a.id);
             return (
@@ -83,8 +84,7 @@ export function Home() {
               לא נכללו היום: {plan.skippedAreas.map((x) => AREA_LABEL[x]).join(", ")}. הזמן שבחרת לא מספיק עבורם. אפשר להגדיל את הזמן בפרופיל.
             </p>
           ) : null}
-        </div>
-      </Card>
+      </div>
 
       <section className="stack" aria-labelledby="score">
         <div className="section-title">
@@ -121,7 +121,7 @@ export function Home() {
           {week.map((w) => (
             <div key={w.d} className="stack" style={{ gap: 6, justifyItems: "center", flex: 1 }}>
               <span className="small muted num">{shortLabel(w.d)}</span>
-              <span style={{ width: 14, height: 14, borderRadius: 999, background: w.active ? "var(--accent)" : "rgba(255,255,255,0.08)", boxShadow: w.d === today && w.active ? "0 0 0 3px var(--accent-soft)" : "none" }} aria-label={w.active ? "יום פעיל" : "אין רישום"} />
+              <span style={{ width: 14, height: 14, borderRadius: 999, background: w.active ? "var(--ink)" : "var(--cream-2)", boxShadow: w.d === today && w.active ? "0 0 0 3px var(--soft)" : "none" }} aria-label={w.active ? "יום פעיל" : "אין רישום"} />
             </div>
           ))}
         </div>

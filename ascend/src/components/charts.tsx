@@ -21,7 +21,7 @@ export function LineChart({ labels, series, min = 1, max = 5, height = 160 }: { 
     <svg className="chart" viewBox={`0 0 ${w} ${height}`} role="img" aria-label={`גרף: ${series.map((s) => s.label).join(", ")}`}>
       {ticks.map((t) => (
         <g key={t}>
-          <line x1={padL} x2={w - padR} y1={y(t)} y2={y(t)} stroke="rgba(255,255,255,0.06)" />
+          <line x1={padL} x2={w - padR} y1={y(t)} y2={y(t)} stroke="rgba(20,19,18,0.08)" />
           <text x={2} y={y(t) + 4}>{Math.round(t * 10) / 10}</text>
         </g>
       ))}
@@ -71,7 +71,7 @@ export function BarStrip({ labels, values, color = "var(--accent)" }: { labels: 
     <svg className="chart" viewBox={`0 0 ${w} ${h + 18}`} role="img" aria-label="ימים עם פעילות גופנית">
       {values.map((v, i) => (
         <g key={i}>
-          <rect x={4 + i * (bw + 4)} y={v ? 6 : h - 10} width={bw} height={v ? h - 16 : 4} rx={3} fill={v ? color : "rgba(255,255,255,0.08)"} />
+          <rect x={4 + i * (bw + 4)} y={v ? 6 : h - 10} width={bw} height={v ? h - 16 : 4} rx={3} fill={v ? color : "rgba(20,19,18,0.12)"} />
         </g>
       ))}
       {labels.map((l, i) => (i % Math.ceil(n / 6) === 0 || i === n - 1 ? <text key={i} x={4 + i * (bw + 4) + bw / 2} y={h + 14} textAnchor="middle">{shortLabel(l)}</text> : null))}

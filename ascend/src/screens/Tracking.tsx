@@ -71,11 +71,11 @@ export function Tracking() {
             <div className="stack" style={{ gap: 10 }}>
               <div className="row between"><h2>שינה ואנרגיה</h2><span className="small muted num">{avg.count} ימים</span></div>
               <LineChart labels={labels} height={150} min={1} max={5} series={[
-                { label: "אנרגיה", color: "#a78bfa", values: series.map((c) => c?.energy ?? null) },
-                { label: "לחץ", color: "#f08a8a", values: series.map((c) => c?.stress ?? null) },
-                { label: "מצב רוח", color: "#5fd3a6", values: series.map((c) => c?.mood ?? null) },
+                { label: "אנרגיה", color: "#141312", values: series.map((c) => c?.energy ?? null) },
+                { label: "לחץ", color: "#9a3f32", values: series.map((c) => c?.stress ?? null) },
+                { label: "מצב רוח", color: "#8a8478", values: series.map((c) => c?.mood ?? null) },
               ]} />
-              <Legend series={[{ label: "אנרגיה", color: "#a78bfa", values: [] }, { label: "לחץ", color: "#f08a8a", values: [] }, { label: "מצב רוח", color: "#5fd3a6", values: [] }]} />
+              <Legend series={[{ label: "אנרגיה", color: "#141312", values: [] }, { label: "לחץ", color: "#9a3f32", values: [] }, { label: "מצב רוח", color: "#8a8478", values: [] }]} />
             </div>
           </Card>
 
@@ -83,7 +83,7 @@ export function Tracking() {
             <div className="stack" style={{ gap: 10 }}>
               <h2>שעות שינה</h2>
               <LineChart labels={labels} height={130} min={0} max={Math.max(9, ...series.map((c) => c?.sleepHours ?? 0), state.profile?.sleepTarget ?? 0)} series={[
-                { label: "שעות שינה", color: "#8b5cf6", values: series.map((c) => c?.sleepHours ?? null) },
+                { label: "שעות שינה", color: "#141312", values: series.map((c) => c?.sleepHours ?? null) },
               ]} />
               <p className="small text-2">ממוצע בתקופה: <span className="num">{avg.sleepHours ?? "—"}</span> שעות · יעד שהגדרת: <span className="num">{state.profile?.sleepTarget}</span> שעות</p>
             </div>
@@ -101,7 +101,7 @@ export function Tracking() {
             <Card>
               <div className="stack" style={{ gap: 10 }}>
                 <h2>משקל</h2>
-                <LineChart labels={labels} height={130} min={Math.min(...weights.filter((w): w is number => w !== null)) - 1} max={Math.max(...weights.filter((w): w is number => w !== null)) + 1} series={[{ label: "משקל", color: "#e7b35c", values: weights }]} />
+                <LineChart labels={labels} height={130} min={Math.min(...weights.filter((w): w is number => w !== null)) - 1} max={Math.max(...weights.filter((w): w is number => w !== null)) + 1} series={[{ label: "משקל", color: "#6f6a60", values: weights }]} />
                 <p className="hint small">המשקל מוצג כפי שנרשם. תנודות יומיות הן נורמליות ואינן מדד לבדו.</p>
               </div>
             </Card>

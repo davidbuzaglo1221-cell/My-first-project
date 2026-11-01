@@ -32,6 +32,7 @@ const coachApiPlugin: PluginOption = {
 };
 
 export default defineConfig({
+  base: "./",
   plugins: [react(), coachApiPlugin],
   server: { port: 5173 },
 });

@@ -140,3 +140,19 @@ export function ConfirmButton({ label, confirmLabel, onConfirm, className = "btn
     </button>
   );
 }
+
+export function Ring({ value, label }: { value: number; label: string }) {
+  const r = 40;
+  const len = 2 * Math.PI * r;
+  const pct = Math.max(0, Math.min(100, value));
+  return (
+    <div className="ring" role="img" aria-label={`${label}: ${Math.round(pct)}%`}>
+      <svg viewBox="0 0 100 100" aria-hidden>
+        <circle className="track" cx="50" cy="50" r={r} fill="none" strokeWidth="9" />
+        <circle className="bar" cx="50" cy="50" r={r} fill="none" strokeWidth="9" strokeLinecap="round"
+          strokeDasharray={len} strokeDashoffset={len * (1 - pct / 100)} />
+      </svg>
+      <div className="label">{Math.round(pct)}%</div>
+    </div>
+  );
+}
