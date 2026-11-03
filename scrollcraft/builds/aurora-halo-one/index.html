@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AURORA · Halo One (אתר קונספט)</title>
+<meta name="description" content="אתר קונספט לדמו בלבד. AURORA ו-Halo One הם שמות דמיוניים. זו לא חנות פעילה.">
+<style>
+  :root {
+    --bg: #07060a;
+    --ink: #e9e4dc;
+    --ink-2: #a29c93;
+    --line: rgba(233, 228, 220, 0.14);
+    --accent: #a583ff;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); color: var(--ink); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    font-family: system-ui, "Segoe UI", Arial, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+
+  /* ---------- פתיחה ---------- */
+  .hero {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.2rem, 3vh, 2rem);
+    padding: 6rem 1.25rem 3rem;
+    text-align: center;
+  }
+  .eyebrow {
+    margin: 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.28em;
+    color: var(--ink-2);
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(2.8rem, 8.5vw, 7rem);
+    font-weight: 600;
+    line-height: 1.06;
+    text-wrap: balance;
+  }
+  .btn {
+    display: inline-block;
+    padding: 0.95rem 2.1rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--ink);
+    text-decoration: none;
+    font-size: 1rem;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .btn:hover { border-color: var(--accent); background: rgba(165, 131, 255, 0.08); }
+  .note { margin: 0; font-size: 0.85rem; color: var(--ink-2); }
+
+  /* ---------- האוזניות (SVG בשכבות) ---------- */
+  .halo {
+    width: min(70vw, 420px);
+    height: auto;
+    overflow: visible;
+    filter: drop-shadow(0 40px 60px rgba(0, 0, 0, 0.7));
+  }
+  .halo-wrap {
+    width: min(78vw, 380px);
+    transition: transform 0.6s ease-out;
+    will-change: transform;
+  }
+  .hero .halo-wrap { animation: float 9s ease-in-out infinite; }
+  @keyframes float {
+    0%, 100% { translate: 0 0; }
+    50% { translate: 0 -10px; }
+  }
+
+  /* שכבות: כל אחת זזה לפי --p (0 = מחוברת, 1 = מפורקת) */
+  .layer { transform-box: view-box; }
+  .band   { transform: translateY(calc(var(--p, 0) * -72px)); }
+  .cup-l  { transform: translate(calc(var(--p, 0) * -70px), calc(var(--p, 0) * 16px)); }
+  .cup-r  { transform: translate(calc(var(--p, 0) * 70px), calc(var(--p, 0) * 16px)); }
+  .pad-l  { transform: translate(calc(var(--p, 0) * -120px), calc(var(--p, 0) * 28px)); }
+  .pad-r  { transform: translate(calc(var(--p, 0) * 120px), calc(var(--p, 0) * 28px)); }
+  .glow   { opacity: calc(0.45 + var(--p, 0) * 0.55); }
+  .core-l { transform: translate(calc(var(--p, 0) * -150px), calc(var(--p, 0) * 40px)); opacity: calc(var(--p, 0)); }
+  .core-r { transform: translate(calc(var(--p, 0) * 150px), calc(var(--p, 0) * 40px)); opacity: calc(var(--p, 0)); }
+
+  /* ---------- מבנה הסצנות ---------- */
+  .scene { position: relative; }
+  .inside { height: 320vh; }
+  .quiet  { height: 230vh; }
+  .details { height: 300vh; }
+  .stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    padding: 0 1.25rem;
+  }
+  .stage > * { grid-area: 1 / 1; }
+
+  .caption {
+    position: absolute;
+    bottom: clamp(2rem, 8vh, 5rem);
+    inset-inline: 1.25rem;
+    margin: 0;
+    text-align: center;
+  }
+  .caption h2 { margin: 0; font-size: clamp(1.8rem, 4.5vw, 3.2rem); font-weight: 500; }
+  .caption p { margin: 0.6rem auto 0; max-width: 34ch; color: var(--ink-2); }
+  .caption small { display: block; margin-top: 0.5rem; color: var(--ink-2); opacity: 0.7; }
+
+  .quiet .halo { opacity: clamp(0, calc(1 - var(--p, 0) * 2.4), 1); }
+  .big {
+    z-index: 1;
+    margin: 0;
+    max-width: 16ch;
+    font-size: clamp(2.4rem, 7vw, 6rem);
+    font-weight: 600;
+    line-height: 1.15;
+    text-align: center;
+    text-wrap: balance;
+    opacity: clamp(0, calc((var(--p, 1) - 0.35) * 4), 1);
+  }
+
+  .stack {
+    width: min(92vw, 640px);
+    display: grid;
+    gap: clamp(1.4rem, 4vh, 2.6rem);
+  }
+  .kicker { margin: 0; font-size: 0.95rem; letter-spacing: 0.2em; font-weight: 400; color: var(--ink-2); text-align: center; }
+  .detail {
+    opacity: clamp(0, calc((var(--p, 1) - var(--k, 0) * 0.28) * 5), 1);
+  }
+  .detail h3 { margin: 0 0 0.3rem; font-size: clamp(1.5rem, 3.6vw, 2.4rem); font-weight: 500; }
+  .detail p { margin: 0; max-width: 36ch; color: var(--ink-2); font-size: clamp(1rem, 2.2vw, 1.15rem); }
+  /* לסירוגין: פרט אחד מימין, השני משמאל, השלישי מימין (RTL) */
+  .detail { width: min(100%, 26em); }
+  .detail:nth-of-type(odd)  { margin-inline: auto 0; text-align: start; }
+  .detail:nth-of-type(even) { margin-inline: 0 auto; text-align: end; }
+
+  /* ---------- סיום ---------- */
+  .end {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.4rem;
+    padding: 5rem 1.25rem;
+    text-align: center;
+  }
+  .end h2 { margin: 0; font-size: clamp(2rem, 5vw, 3.6rem); font-weight: 500; }
+
+  footer {
+    padding: 2rem 1.25rem 3rem;
+    text-align: center;
+    border-top: 1px solid var(--line);
+  }
+  footer p { margin: 0 auto; max-width: 60ch; font-size: 0.85rem; color: var(--ink-2); }
+
+  /* ---------- תנועה מופחתת: הכל גלוי וסטטי ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .hero .halo-wrap { animation: none; }
+    .halo-wrap { transition: none; }
+    .inside, .quiet, .details { height: auto; }
+    .stage { position: static; height: auto; padding: 6rem 1.25rem; display: flex; flex-direction: column; align-items: center; gap: 2.5rem; }
+    .stage > * { grid-area: auto; }
+    .caption { position: static; }
+    .quiet .halo { opacity: 0.35; }
+    .big { opacity: 1; padding: 0 0 4rem; }
+    .detail { opacity: 1; }
+    .stack { padding: 3rem 0; }
+  }
+
+  /* ---------- טלפון ---------- */
+  @media (max-width: 480px) {
+    .caption small { display: none; }
+    .stack { gap: 1.2rem; }
+    .detail p { font-size: 0.98rem; }
+  }
+</style>
+</head>
+<body id="top">
+
+<!-- הגדרת האוזניות פעם אחת; נעשה בה שימוש חוזר עם <use> -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="gBand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#2d2834"/>
+      <stop offset="0.5" stop-color="#d9d2c6"/>
+      <stop offset="1" stop-color="#2d2834"/>
+    </linearGradient>
+    <radialGradient id="gCup" cx="0.35" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#3a3544"/>
+      <stop offset="0.6" stop-color="#15131b"/>
+      <stop offset="1" stop-color="#0b0a0f"/>
+    </radialGradient>
+    <radialGradient id="gPad" cx="0.4" cy="0.35" r="0.8">
+      <stop offset="0" stop-color="#5a5366"/>
+      <stop offset="1" stop-color="#1c1a23"/>
+    </radialGradient>
+    <radialGradient id="gGlow">
+      <stop offset="0" stop-color="#a583ff" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#a583ff" stop-opacity="0"/>
+    </radialGradient>
+
+    <g id="halo">
+      <circle class="layer glow" cx="200" cy="200" r="230" fill="url(#gGlow)"/>
+      <ellipse cx="200" cy="352" rx="150" ry="16" fill="#000" opacity="0.55"/>
+
+      <g class="layer band">
+        <path d="M 74 214 C 74 56, 326 56, 326 214" fill="none" stroke="url(#gBand)" stroke-width="22" stroke-linecap="round"/>
+        <path d="M 80 200 C 84 74, 316 74, 320 200" fill="none" stroke="#ffffff" stroke-opacity="0.18" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="200" cy="62" r="4" fill="#a583ff"/>
+      </g>
+
+      <g class="layer cup-l">
+        <rect x="28" y="168" width="92" height="160" rx="46" fill="url(#gCup)" stroke="#34303d" stroke-width="2"/>
+      </g>
+      <g class="layer cup-r">
+        <rect x="280" y="168" width="92" height="160" rx="46" fill="url(#gCup)" stroke="#34303d" stroke-width="2"/>
+      </g>
+
+      <g class="layer pad-l">
+        <ellipse cx="74" cy="250" rx="30" ry="50" fill="url(#gPad)"/>
+        <ellipse cx="74" cy="250" rx="30" ry="50" fill="none" stroke="#a583ff" stroke-opacity="0.35" stroke-width="1"/>
+      </g>
+      <g class="layer pad-r">
+        <ellipse cx="326" cy="250" rx="30" ry="50" fill="url(#gPad)"/>
+        <ellipse cx="326" cy="250" rx="30" ry="50" fill="none" stroke="#a583ff" stroke-opacity="0.35" stroke-width="1"/>
+      </g>
+
+      <!-- נקודת האור הסגולה: מופיעה רק כשהשכבות נפרדות -->
+      <g class="layer core-l">
+        <circle cx="74" cy="250" r="9" fill="#a583ff" opacity="0.8"/>
+      </g>
+      <g class="layer core-r">
+        <circle cx="326" cy="250" r="9" fill="#a583ff" opacity="0.8"/>
+      </g>
+    </g>
+  </defs>
+</svg>
+
+<main>
+  <!-- 1. פתיחה -->
+  <section class="hero" aria-labelledby="h1">
+    <p class="eyebrow">AURORA · Halo One</p>
+    <div class="halo-wrap" id="heroWrap">
+      <svg class="halo" viewBox="-80 -40 560 430" role="img" aria-label="איור של אוזניות Halo One">
+        <use href="#halo"/>
+      </svg>
+    </div>
+    <h1 id="h1">תנמיך את העולם.</h1>
+    <a class="btn" href="#inside">לגלות את העיצוב</a>
+    <p class="note">אתר קונספט לדמו בלבד. זו לא חנות פעילה.</p>
+  </section>
+
+  <!-- 2. מבט מבפנים: השכבות נפרדות בגלילה ומתחברות שוב בחזרה -->
+  <section class="scene inside" id="inside" data-scene aria-labelledby="h-inside">
+    <div class="stage">
+      <svg class="halo" viewBox="-80 -40 560 430" aria-hidden="true" focusable="false">
+        <use href="#halo"/>
+      </svg>
+      <div class="caption">
+        <h2 id="h-inside">מבט מבפנים</h2>
+        <p>כל שכבה במקומה. גוללים למטה והן נפרדות לאט, וגוללים חזרה והן חוזרות למקומן.</p>
+        <small>המחשה עיצובית, לא שרטוט הנדסי.</small>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. רגע של שקט -->
+  <section class="scene quiet" data-scene aria-label="רגע של שקט">
+    <div class="stage">
+      <svg class="halo" viewBox="-80 -40 560 430" aria-hidden="true" focusable="false">
+        <use href="#halo"/>
+      </svg>
+      <p class="big">רגע אחד. רק שלך.</p>
+    </div>
+  </section>
+
+  <!-- 4. פרטי העיצוב -->
+  <section class="scene details" data-scene aria-labelledby="h-details">
+    <div class="stage">
+      <div class="stack">
+        <h2 class="kicker" id="h-details">שלושה פרטים</h2>
+        <article class="detail" style="--k:0">
+          <h3>כרית שקטה</h3>
+          <p>עור רך שנשען על הראש בלי לחץ על נקודה אחת.</p>
+        </article>
+        <article class="detail" style="--k:1">
+          <h3>מבנה מאוזן</h3>
+          <p>כל שכבה במקומה, והמשקל מתחלק בין שני הצדדים.</p>
+        </article>
+        <article class="detail" style="--k:2">
+          <h3>כיוון אחד</h3>
+          <p>כפתור אחד, תגובה אחת. בלי לחפש את הדרך.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. סיום: האוזניות שלמות שוב -->
+  <section class="end" aria-labelledby="h-end">
+    <svg class="halo" viewBox="-80 -40 560 430" aria-hidden="true" focusable="false" style="--p:0">
+      <use href="#halo"/>
+    </svg>
+    <h2 id="h-end">שלמות, כמו בהתחלה.</h2>
+    <a class="btn" href="#top">לחוות שוב</a>
+  </section>
+</main>
+
+<footer>
+  <p>AURORA ו-Halo One הם שמות דמיוניים לאתר קונספט. זו לא חנות פעילה, ואין כאן רכישה או איסוף פרטים.</p>
+</footer>
+
+<script>
+(() => {
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  // במצב תנועה מופחתת: הפירוק מוצג כתמונה סטטית, והשאר מוצג דרך ה-CSS.
+  if (reduce.matches) {
+    document.getElementById('inside').querySelector('.halo').style.setProperty('--p', '0.7');
+    return;
+  }
+
+  // בכל סצנה: 0 בתחילת הגלילה ו-1 בסופה. הערך נשלח כ־--p, וה-CSS עושה את השאר.
+  const scenes = [...document.querySelectorAll('[data-scene]')];
+  scenes.forEach((s) => { s.cur = 0; s.target = 0; });
+
+  function measure() {
+    for (const s of scenes) {
+      const r = s.getBoundingClientRect();
+      const range = s.offsetHeight - window.innerHeight;
+      s.target = range > 0 ? clamp(-r.top / range) : 0;
+    }
+  }
+
+  function frame() {
+    measure();
+    for (const s of scenes) {
+      // מעבר חלק: הערך הנוכחי מתקרב ליעד בכל פריים
+      s.cur += (s.target - s.cur) * 0.12;
+      if (Math.abs(s.target - s.cur) < 0.0005) s.cur = s.target;
+      s.style.setProperty('--p', s.cur.toFixed(4));
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // תגובה עדינה לעכבר, רק במחשב עם עכבר
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    const hero = document.querySelector('.hero');
+    const wrap = document.getElementById('heroWrap');
+    hero.addEventListener('pointermove', (e) => {
+      const r = hero.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width) * 2 - 1;
+      const y = ((e.clientY - r.top) / r.height) * 2 - 1;
+      wrap.style.transform = `perspective(900px) rotateY(${x * 8}deg) rotateX(${-y * 6}deg)`;
+    });
+    hero.addEventListener('pointerleave', () => { wrap.style.transform = ''; });
+  }
+})();
+</script>
+</body>
+</html>
