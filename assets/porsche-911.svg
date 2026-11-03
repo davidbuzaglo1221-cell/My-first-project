@@ -31,67 +31,68 @@
       <feGaussianBlur stdDeviation="2.5"/>
     </filter>
     <clipPath id="bodyClip">
-      <path d="M110 530 C110 490 115 445 150 425 C180 408 220 395 260 372 C330 330 420 262 520 250 C580 242 640 240 680 248 C740 262 790 310 820 352 C900 368 980 380 1040 396 C1090 410 1115 445 1115 480 C1115 515 1100 532 1075 534 L1000 536 L830 540 L380 540 L200 540 C150 540 110 540 110 530 Z"/>
+      <path d="M128 560 L128 470 C128 438 140 418 170 412 C230 404 300 390 380 370 C450 352 520 344 600 342 L690 342 C750 350 800 390 835 438 C920 452 980 462 1010 466 C1050 470 1076 490 1082 520 C1088 548 1086 572 1074 582 L900 590 L380 590 L150 590 C132 590 128 578 128 560 Z"/>
     </clipPath>
   </defs>
 
   <!-- Studio background -->
   <rect width="1200" height="720" fill="url(#bg)"/>
-  <rect y="600" width="1200" height="120" fill="url(#floor)"/>
-  <line x1="0" y1="600" x2="1200" y2="600" stroke="#2f3646" stroke-width="2"/>
+  <rect y="632" width="1200" height="88" fill="url(#floor)"/>
+  <line x1="0" y1="632" x2="1200" y2="632" stroke="#2f3646" stroke-width="2"/>
 
   <!-- Ground shadow -->
-  <ellipse cx="600" cy="640" rx="560" ry="18" fill="#000" opacity="0.6" filter="url(#blur)"/>
+  <ellipse cx="620" cy="642" rx="580" ry="16" fill="#000" opacity="0.6" filter="url(#blur)"/>
 
   <!-- Body -->
-  <path d="M110 530 C110 490 115 445 150 425 C180 408 220 395 260 372 C330 330 420 262 520 250 C580 242 640 240 680 248 C740 262 790 310 820 352 C900 368 980 380 1040 396 C1090 410 1115 445 1115 480 C1115 515 1100 532 1075 534 L1000 536 L830 540 L380 540 L200 540 C150 540 110 540 110 530 Z" fill="url(#body)"/>
+  <path d="M128 560 L128 470 C128 438 140 418 170 412 C230 404 300 390 380 370 C450 352 520 344 600 342 L690 342 C750 350 800 390 835 438 C920 452 980 462 1010 466 C1050 470 1076 490 1082 520 C1088 548 1086 572 1074 582 L900 590 L380 590 L150 590 C132 590 128 578 128 560 Z" fill="url(#body)"/>
 
   <g clip-path="url(#bodyClip)">
     <!-- Lower side shadow -->
-    <rect x="90" y="500" width="1040" height="60" fill="#4a0612" opacity="0.45"/>
-    <!-- Shoulder highlights -->
-    <path d="M520 254 C600 244 660 246 700 256 C740 268 780 300 812 348 C880 362 960 374 1040 398" fill="none" stroke="#ffffff" stroke-width="9" opacity="0.35" filter="url(#soft)"/>
-    <path d="M270 380 C330 344 400 290 480 262" fill="none" stroke="#ffffff" stroke-width="6" opacity="0.25" filter="url(#soft)"/>
-    <!-- Fender line -->
-    <path d="M640 440 C720 426 800 424 880 438" fill="none" stroke="#5a0816" stroke-width="3" opacity="0.6"/>
+    <rect x="110" y="548" width="1000" height="50" fill="#4a0612" opacity="0.45"/>
+    <!-- Roof and deck highlights -->
+    <path d="M330 390 C400 362 480 350 560 346" fill="none" stroke="#ffffff" stroke-width="8" opacity="0.3" filter="url(#soft)"/>
+    <path d="M610 346 L690 346 C750 354 790 390 820 430" fill="none" stroke="#ffffff" stroke-width="7" opacity="0.3" filter="url(#soft)"/>
+    <!-- Haunch and fender lines -->
+    <path d="M250 478 C300 466 380 466 430 478" fill="none" stroke="#5a0816" stroke-width="3" opacity="0.6"/>
+    <path d="M880 492 C930 474 990 472 1040 486" fill="none" stroke="#5a0816" stroke-width="3" opacity="0.6"/>
   </g>
 
-  <!-- Greenhouse glass (sloped 911 windshield and rear window) -->
-  <path d="M292 370 C350 312 430 266 520 262 C580 258 640 258 690 264 C735 272 770 306 808 356 L640 346 L320 378 Z" fill="url(#glass)" stroke="#0a0c12" stroke-width="3"/>
-  <path d="M400 318 C440 292 480 276 520 272" fill="none" stroke="#ffffff" stroke-width="5" opacity="0.35" stroke-linecap="round"/>
-  <!-- B-pillar and door line -->
-  <path d="M612 344 L604 530" fill="none" stroke="#5a0816" stroke-width="4"/>
-  <path d="M612 344 L604 530" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.25" transform="translate(3,0)"/>
-  <!-- Door handle -->
-  <rect x="520" y="420" width="52" height="8" rx="4" fill="#1a1a1a"/>
+  <!-- Greenhouse glass: sloped windshield and rear window -->
+  <path d="M300 400 C380 370 460 354 540 350 L680 350 C742 360 792 398 826 446 C760 456 700 462 640 466 L440 478 L330 468 Z" fill="url(#glass)" stroke="#0a0c12" stroke-width="3"/>
+  <path d="M400 380 C440 364 490 356 530 354" fill="none" stroke="#ffffff" stroke-width="5" opacity="0.35" stroke-linecap="round"/>
 
-  <!-- Side mirror -->
-  <path d="M800 356 Q818 340 830 356 L816 368 Z" fill="#a50c24" stroke="#4a0612" stroke-width="2"/>
+  <!-- Door shut line and handle -->
+  <path d="M612 466 L606 590" fill="none" stroke="#5a0816" stroke-width="4"/>
+  <path d="M612 466 L606 590" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.25" transform="translate(3,0)"/>
+  <rect x="520" y="516" width="50" height="8" rx="4" fill="#1a1a1a"/>
 
-  <!-- Rear spoiler -->
-  <path d="M190 398 L246 370 L254 380 L200 408 Z" fill="#1a1a1a"/>
+  <!-- Side mirror at the base of the windshield -->
+  <path d="M826 450 Q840 436 854 446 L848 462 Z" fill="#a50c24" stroke="#4a0612" stroke-width="2"/>
+
+  <!-- Rear spoiler lip at the back of the deck -->
+  <path d="M178 414 L214 402 L217 410 L181 422 Z" fill="#1a1a1a"/>
 
   <!-- Rear light bar -->
-  <path d="M116 446 L190 418 L192 434 L120 462 Z" fill="#ff2a2a"/>
-  <path d="M116 446 L190 418 L192 434 L120 462 Z" fill="#ffffff" opacity="0.25" transform="translate(0,-2)"/>
-  <path d="M112 448 L196 414" stroke="#ff4d4d" stroke-width="10" opacity="0.35" filter="url(#soft)"/>
+  <path d="M132 470 L186 432 L190 446 L137 484 Z" fill="#ff2a2a"/>
+  <path d="M132 470 L186 432 L190 446 L137 484 Z" fill="#ffffff" opacity="0.25" transform="translate(0,-2)"/>
+  <path d="M128 472 L192 430" stroke="#ff4d4d" stroke-width="10" opacity="0.35" filter="url(#soft)"/>
 
-  <!-- Round headlight on the fender top -->
-  <circle cx="1080" cy="466" r="24" fill="#0d1017"/>
-  <circle cx="1080" cy="466" r="19" fill="#e9f3ff"/>
-  <circle cx="1080" cy="466" r="19" fill="none" stroke="#7d8fa8" stroke-width="2"/>
-  <circle cx="1073" cy="459" r="5" fill="#ffffff" opacity="0.9"/>
-  <circle cx="1080" cy="466" r="32" fill="#cfe6ff" opacity="0.18" filter="url(#blur)"/>
+  <!-- Round headlight on the front fender -->
+  <circle cx="1028" cy="486" r="20" fill="#0d1017"/>
+  <circle cx="1028" cy="486" r="16" fill="#e9f3ff"/>
+  <circle cx="1028" cy="486" r="16" fill="none" stroke="#7d8fa8" stroke-width="2"/>
+  <circle cx="1022" cy="480" r="4" fill="#ffffff" opacity="0.9"/>
+  <circle cx="1028" cy="486" r="28" fill="#cfe6ff" opacity="0.18" filter="url(#blur)"/>
 
   <!-- Front lower intake -->
-  <path d="M1080 508 L1112 500 L1106 522 L1078 526 Z" fill="#111318"/>
+  <path d="M1058 552 L1080 544 L1078 562 L1056 568 Z" fill="#111318"/>
 
   <!-- Wheel arches -->
-  <circle cx="290" cy="562" r="92" fill="#050505"/>
-  <circle cx="900" cy="562" r="92" fill="#050505"/>
+  <circle cx="348" cy="556" r="92" fill="#050505"/>
+  <circle cx="892" cy="556" r="92" fill="#050505"/>
 
   <!-- Rear wheel -->
-  <g transform="translate(290,562)">
+  <g transform="translate(348,556)">
     <circle r="76" fill="#0c0c0e"/>
     <circle r="66" fill="#16181c"/>
     <circle r="52" fill="url(#rim)"/>
@@ -108,7 +109,7 @@
   </g>
 
   <!-- Front wheel -->
-  <g transform="translate(900,562)">
+  <g transform="translate(892,556)">
     <circle r="76" fill="#0c0c0e"/>
     <circle r="66" fill="#16181c"/>
     <circle r="52" fill="url(#rim)"/>
@@ -125,8 +126,8 @@
   </g>
 
   <!-- Wheel arch lip shadow -->
-  <path d="M190 548 A 100 100 0 0 1 390 548" fill="none" stroke="#000" stroke-width="4" opacity="0.5"/>
-  <path d="M800 548 A 100 100 0 0 1 1000 548" fill="none" stroke="#000" stroke-width="4" opacity="0.5"/>
+  <path d="M256 556 A 92 92 0 0 1 440 556" fill="none" stroke="#000" stroke-width="4" opacity="0.5"/>
+  <path d="M800 556 A 92 92 0 0 1 984 556" fill="none" stroke="#000" stroke-width="4" opacity="0.5"/>
 
   <!-- Title -->
   <text x="60" y="78" font-family="Helvetica, Arial, sans-serif" font-size="30" font-weight="700" fill="#f2f4f8" letter-spacing="3">PORSCHE 911</text>
