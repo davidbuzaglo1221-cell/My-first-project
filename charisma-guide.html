@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מדריך כריזמה וזוגיות</title>
+<style>
+:root{
+  --bg:#faf7f5; --card:#ffffff; --ink:#2a2226; --muted:#6e6269;
+  --accent:#b5476a; --accent-2:#e9c9d4; --ok:#2f7d5b; --line:#eadfe3;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b1619; --card:#251e22; --ink:#f3ecef; --muted:#b7a9b0;
+    --accent:#e27a9a; --accent-2:#4a2f3a; --ok:#6fcf9f; --line:#3a2e34;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b1619; --card:#251e22; --ink:#f3ecef; --muted:#b7a9b0;
+  --accent:#e27a9a; --accent-2:#4a2f3a; --ok:#6fcf9f; --line:#3a2e34;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",Arial,"Heebo",sans-serif;line-height:1.7;font-size:17px}
+header{padding:32px 16px 16px;text-align:center}
+h1{margin:0 0 6px;font-size:28px}
+header p{margin:0;color:var(--muted)}
+nav{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);display:flex;gap:6px;overflow-x:auto;padding:10px 12px;z-index:5}
+nav button{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer;font:inherit;font-size:15px}
+nav button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+main{max-width:720px;margin:0 auto;padding:16px}
+section{display:none;animation:fade .25s ease}
+section.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin:12px 0}
+h2{font-size:22px;margin:8px 0 12px;color:var(--accent)}
+h3{font-size:18px;margin:14px 0 6px}
+.say{background:var(--accent-2);border-radius:12px;padding:10px 14px;margin:8px 0;font-style:italic}
+.tip{color:var(--muted);font-size:15px}
+ul{padding-right:20px;margin:6px 0}
+li{margin:4px 0}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.check:last-child{border-bottom:none}
+.check input{margin-top:6px;width:20px;height:20px;accent-color:var(--ok);flex:0 0 auto}
+.check.done span{text-decoration:line-through;color:var(--muted)}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress div{height:100%;background:var(--ok);width:0;transition:width .3s}
+.q{font-weight:600;margin-bottom:8px}
+.opts button{display:block;width:100%;text-align:right;margin:6px 0;padding:10px 14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;cursor:pointer;font:inherit}
+.opts button.right{border-color:var(--ok);background:rgba(47,125,91,.12)}
+.opts button.wrong{border-color:#c0392b;background:rgba(192,57,43,.1)}
+.explain{color:var(--muted);margin-top:8px;display:none}
+.explain.show{display:block}
+textarea{width:100%;min-height:90px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:10px;font:inherit}
+.btn{margin-top:8px;padding:9px 16px;border-radius:10px;border:none;background:var(--accent);color:#fff;font:inherit;cursor:pointer}
+.step{display:flex;gap:12px;align-items:flex-start;margin:10px 0}
+.num{flex:0 0 32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700}
+.warn{border-right:4px solid #c0392b;padding-right:12px}
+footer{text-align:center;color:var(--muted);font-size:14px;padding:24px 16px 40px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>כריזמה, פלירטוט וזוגיות</h1>
+  <p>מדריך פרקטי לעצמך. פתח, תרגל, חזור.</p>
+</header>
+
+<nav id="nav">
+  <button data-target="principles" class="active">עקרונות</button>
+  <button data-target="stages">שלבים</button>
+  <button data-target="practice">תרגולים</button>
+  <button data-target="quiz">שאלות</button>
+  <button data-target="phone">טלפון</button>
+  <button data-target="cues">קריאת סימנים</button>
+  <button data-target="self">עבודה על עצמך</button>
+</nav>
+
+<main>
+
+<section id="principles" class="active">
+  <h2>עקרונות יסוד</h2>
+  <div class="card">
+    <p>כריזמה היא לא מאגר משפטים. זו תשומת לב שלמה, נוכחות ורצון אמיתי להכיר את האדם מולך. הפרטים החיצוניים נובעים מזה.</p>
+    <div class="step"><div class="num">1</div><div><b>קשב מלא.</b> כשאתה מדבר איתה, תהיה שם באמת. הטלפון בצד, העיניים עליה.</div></div>
+    <div class="step"><div class="num">2</div><div><b>סקרנות אמיתית.</b> שאל שאלות פתוחות, והקשב לתשובה כדי לשאול את השאלה הבאה.</div></div>
+    <div class="step"><div class="num">3</div><div><b>ביטחון שקט.</b> אתה לא צריך להוכיח כלום. אתה יכול להגיד "לא" ולהיות בסדר עם זה.</div></div>
+    <div class="step"><div class="num">4</div><div><b>הומור ושובבות.</b> לצחוק יחד על דברים קטנים, בלי ללעוג לאף אחד.</div></div>
+    <div class="step"><div class="num">5</div><div><b>ישירות עם חום.</b> להגיד מה אתה רוצה, ולתת לה מרחב לענות בחופשיות.</div></div>
+    <p class="warn tip">כריזמה לא עובדת כטכניקה שמפעילים על אדם. אם אתה מרגיש שאתה "עובד" על מישהי, כנראה שהיא לא מרגישה את זה כמשהו טוב.</p>
+  </div>
+</section>
+
+<section id="stages">
+  <h2>שלבים בקשר</h2>
+
+  <div class="card">
+    <h3>היכרות ראשונה</h3>
+    <ul>
+      <li>ההתחלה היא מה שאתה מביא לשיחה, לא מה שאתה אומר עליך.</li>
+      <li>שאל על משהו שהיא אוהבת, לא על מה שהיא עושה בעבודה.</li>
+      <li>תן מחמאה ספציפית: "יש לך דרך מצחיקה לספר סיפורים" עובד יותר מ"את יפה".</li>
+    </ul>
+    <div class="say">"מה הדבר הכי מוזר שאת אוהבת ואף אחד לא מבין?"</div>
+  </div>
+
+  <div class="card">
+    <h3>קשר מתחיל</h3>
+    <ul>
+      <li>תן לה מקום לרצות אותך. אל תבנה הכל סביב "להוכיח" את עצמך.</li>
+      <li>תזמן מפגשים מתוכננים עם רעיון, לא רק "מה נעשה היום".</li>
+      <li>תשאיר קצת ציפייה: לא לענות מיד על הכל, לא להתאמץ בלי הפסקה.</li>
+    </ul>
+    <div class="say">"יש לי רעיון, אבל אני לא אספר לך עד שלא תגידי כן."</div>
+  </div>
+
+  <div class="card">
+    <h3>קשר זוגי</h3>
+    <ul>
+      <li>הבעיה המרכזית בקשרים ארוכים היא שגרה, לא חוסר מילים.</li>
+      <li>תגיד לה מה אתה מעריך בה כל יום. זה לא צריך להיות גדול.</li>
+      <li>שמור על משחק ועל רגע של הפתעה, גם כשאתם יודעים הכל אחד על השני.</li>
+    </ul>
+    <div class="say">"לא הפסקתי לחשוב על זה שאת צוחקת כשאת מתביישת."</div>
+  </div>
+
+  <div class="card">
+    <h3>נישואים</h3>
+    <ul>
+      <li>קשב רגשי הוא הכלי העיקרי: לשים לב לאיך שהיא מרגישה, לא רק למה שהיא אומרת.</li>
+      <li>יחד עם זה: פרטיות, הומור, ורגעים רק שלכם.</li>
+      <li>אם יש בעיה בחדר השינה, לדבר עליה מחוץ לחדר, בשקט, בלי לחץ.</li>
+    </ul>
+    <div class="say">"אני רוצה להבין מה עוזר לך להרגיש קרוב אליי בזמן האחרון."</div>
+  </div>
+</section>
+
+<section id="practice">
+  <h2>תרגולים</h2>
+  <p class="tip">סמן כל תרגול כשביצעת. ההתקדמות נשמרת בדפדפן הזה.</p>
+  <div class="progress"><div id="bar"></div></div>
+  <div class="card" id="checks">
+    <label class="check"><input type="checkbox" data-id="t1"><span>שיחה של 10 דקות בלי טלפון, עם שאלות פתוחות בלבד.</span></label>
+    <label class="check"><input type="checkbox" data-id="t2"><span>לתת מחמאה ספציפית אחת, על משהו שהיא עשתה או אמרה.</span></label>
+    <label class="check"><input type="checkbox" data-id="t3"><span>לשים לב לשאלה שלה וענות עליה לפני שמשנים נושא.</span></label>
+    <label class="check"><input type="checkbox" data-id="t4"><span>להגיד "לא" לדבר קטן שאתה לא רוצה, בחביבות, ולראות שהכל בסדר.</span></label>
+    <label class="check"><input type="checkbox" data-id="t5"><span>לספר סיפור קצר ומצחיק על עצמך, בלי לגזים.</span></label>
+    <label class="check"><input type="checkbox" data-id="t6"><span>לשאול אותה מה היא צריכה כרגע, ולהקשיב בלי להציע פתרון.</span></label>
+    <label class="check"><input type="checkbox" data-id="t7"><span>להתחיל מפגש עם רעיון קטן ומפתיע.</span></label>
+    <label class="check"><input type="checkbox" data-id="t8"><span>לשים לב לשפת הגוף שלה בשיחה ולהתאים את הקצב.</span></label>
+    <label class="check"><input type="checkbox" data-id="t9"><span>לומר לה משהו שאתה מעריך בה, ולא לחכות לסיבה.</span></label>
+    <label class="check"><input type="checkbox" data-id="t10"><span>לבקש את דעתה בנושא שמעניין אותך, ולשמוע בלי לשפוט.</span></label>
+  </div>
+</section>
+
+<section id="quiz">
+  <h2>שאלות ותשובות</h2>
+  <div id="quizbox"></div>
+</section>
+
+<section id="phone">
+  <h2>שיחת טלפון</h2>
+  <div class="card">
+    <h3>מבנה שיחה טובה</h3>
+    <div class="step"><div class="num">1</div><div><b>פתיחה חמה:</b> "היי, מה שלומך? אני שמח שאת מדברת איתי."</div></div>
+    <div class="step"><div class="num">2</div><div><b>שאלה על משהו שקרה:</b> "מה קרה היום שעשה לך חיוך?"</div></div>
+    <div class="step"><div class="num">3</div><div><b>להקשיב ולהעמיק:</b> "למה זה היה חשוב לך?" "מה הרגשת אז?"</div></div>
+    <div class="step"><div class="num">4</div><div><b>לשתף משהו שלך:</b> סיפור קצר, לא וידוי ארוך.</div></div>
+    <div class="step"><div class="num">5</div><div><b>לסיים עם תוכנית קטנה:</b> "נדבר מחר? אני רוצה לשמוע מה קרה עם העניין הזה."</div></div>
+    <p class="tip">שיחה טובה לא נמדדת באורכה. מה שחשוב הוא שהיא תרגיש שנשמעה ושיש לה סיבה לחכות לשיחה הבאה.</p>
+  </div>
+</section>
+
+<section id="cues">
+  <h2>קריאת סימנים והסכמה</h2>
+  <div class="card">
+    <h3>סימני משיכה ופתיחות</h3>
+    <ul>
+      <li>היא מתקרבת, נשענת, ומחפשת קשר עין.</li>
+      <li>היא שואלת עליך שאלות ומחזירה הומור.</li>
+      <li>היא נשארת בשיחה גם כשיש סיבה לסיים.</li>
+    </ul>
+    <h3>סימנים להאט או לעצור</h3>
+    <ul>
+      <li>תשובות קצרות, מבט הצידה, שינוי נושא.</li>
+      <li>גוף מתכווץ, נסוגה, או שותקת פתאום.</li>
+      <li>"אולי", "לא בטוחה", או "בוא נראה".</li>
+    </ul>
+    <p class="warn">כשיש ספק, עצור או האט. זה תמיד הצעד הנכון. אצל מי שמרגיש בטוח ומכובד, אין צורך לשכנע.</p>
+  </div>
+</section>
+
+<section id="self">
+  <h2>עבודה על עצמך</h2>
+  <div class="card">
+    <p>כתוב תשובות לשאלות האלה, לעצמך. אין תשובות נכונות.</p>
+    <h3>1. מתי אני מרגיש הכי חי בזוגיות?</h3>
+    <textarea data-key="j1"></textarea>
+    <h3>2. מה אני מפחד שיקרה אם אהיה יותר ישיר?</h3>
+    <textarea data-key="j2"></textarea>
+    <h3>3. מה היא עושה שגורם לי להרגיש קרוב אליה?</h3>
+    <textarea data-key="j3"></textarea>
+    <h3>4. מה אני רוצה שהיא תדע עליי?</h3>
+    <textarea data-key="j4"></textarea>
+  </div>
+</section>
+
+</main>
+
+<footer>המדריך הזה הוא כלי לעצמך. אין בו נוסחאות, וכל שינוי אמיתי נעשה לאט ובהדרגה.</footer>
+
+<script>
+(function(){
+  var ls = {
+    get: function(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+    set: function(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  };
+
+  // Navigation
+  var buttons = document.querySelectorAll('#nav button');
+  function show(id){
+    document.querySelectorAll('section').forEach(function(s){ s.classList.toggle('active', s.id===id); });
+    buttons.forEach(function(b){ b.classList.toggle('active', b.dataset.target===id); });
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  buttons.forEach(function(b){ b.addEventListener('click', function(){ show(b.dataset.target); }); });
+
+  // Practice checklist
+  var boxes = document.querySelectorAll('#checks input[type=checkbox]');
+  var saved = {};
+  try { saved = JSON.parse(ls.get('charisma-checks') || '{}'); } catch(e){ saved = {}; }
+  function updateBar(){
+    var done = 0;
+    boxes.forEach(function(b){ if(b.checked) done++; });
+    document.getElementById('bar').style.width = (done / boxes.length * 100) + '%';
+  }
+  boxes.forEach(function(b){
+    b.checked = !!saved[b.dataset.id];
+    b.parentElement.classList.toggle('done', b.checked);
+    b.addEventListener('change', function(){
+      saved[b.dataset.id] = b.checked;
+      b.parentElement.classList.toggle('done', b.checked);
+      ls.set('charisma-checks', JSON.stringify(saved));
+      updateBar();
+    });
+  });
+  updateBar();
+
+  // Journal
+  document.querySelectorAll('textarea[data-key]').forEach(function(t){
+    t.value = ls.get('charisma-' + t.dataset.key) || '';
+    t.addEventListener('input', function(){ ls.set('charisma-' + t.dataset.key, t.value); });
+  });
+
+  // Quiz
+  var questions = [
+    {q:'היא נראית עסוקה ולא עונה בהודעה. מה הכי נכון?',
+     o:['לשלוח עוד שלוש הודעות כדי לוודא','לחכות ולהמשיך את היום שלך','לשאול אם משהו עשה לה כעס'],
+     a:1, e:'לתת לה מרחב זה סימן של ביטחון. הודעה נוספת מיד יוצרת לחץ.'},
+    {q:'שיחה עמוקה התחילה לשתוק. מה לעשות?',
+     o:['לשנות נושא מהר','לשאול שאלה פתוחה על משהו קטן','להציע לסיים'],
+     a:1, e:'שאלה פתוחה קטנה מחזירה את השיחה בלי להעמיד אותה במבחן.'},
+    {q:'רוצה לומר מחמאה. מה עדיף?',
+     o:['"את מקסימה"','"אהבתי איך שצחקת על הבדיחה ההיא"','"את יפה מאוד"'],
+     a:1, e:'מחמאה על פעולה או הבעה ספציפית נשמעת כנה יותר ונותנת לה משהו להתייחס אליו.'},
+    {q:'היא אומרת "לא עכשיו" בזמן שאתם מתחממים. מה הכי נכון?',
+     o:['לשכנע אותה שהיא בטוחה','לקבל את זה בחום, לשאול מה היא צריכה, ולא לכעוס','לחכות עד שתשנה את דעתה'],
+     a:1, e:'"לא" הוא תשובה מלאה. קבלה ללא כעס בונה אמון, והיא תרצה לחזור אליך.'},
+    {q:'רוצה להיות יותר כריזמטי. מה הכי משמעותי?',
+     o:['לשנן משפטים מוכנים','קשב אמיתי, סקרנות וביטחון שקט','לדבר יותר בכל שיחה'],
+     a:1, e:'כריזמה נובעת מנוכחות וקשב. משפטים מוכנים נשמעים מלאכותיים מהר.'}
+  ];
+  var qbox = document.getElementById('quizbox');
+  questions.forEach(function(item, i){
+    var card = document.createElement('div');
+    card.className = 'card';
+    var qEl = document.createElement('div');
+    qEl.className = 'q';
+    qEl.textContent = (i+1) + '. ' + item.q;
+    card.appendChild(qEl);
+    var opts = document.createElement('div');
+    opts.className = 'opts';
+    var exp = document.createElement('div');
+    exp.className = 'explain';
+    exp.textContent = item.e;
+    item.o.forEach(function(text, j){
+      var btn = document.createElement('button');
+      btn.textContent = text;
+      btn.addEventListener('click', function(){
+        if(exp.classList.contains('show')) return;
+        btn.classList.add(j===item.a ? 'right' : 'wrong');
+        opts.querySelectorAll('button')[item.a].classList.add('right');
+        exp.classList.add('show');
+      });
+      opts.appendChild(btn);
+    });
+    card.appendChild(opts);
+    card.appendChild(exp);
+    qbox.appendChild(card);
+  });
+})();
+</script>
+</body>
+</html>
