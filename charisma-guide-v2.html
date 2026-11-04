@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מדריך כריזמה וזוגיות, גרסה מורחבת</title>
+<style>
+:root{--bg:#faf7f5;--card:#fff;--ink:#2a2226;--muted:#6e6269;--accent:#b5476a;--accent-2:#f3e3e9;--ok:#2f7d5b;--warn:#b03a2e;--line:#eadfe3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1619;--card:#251e22;--ink:#f3ecef;--muted:#b7a9b0;--accent:#e27a9a;--accent-2:#3d2b33;--ok:#6fcf9f;--warn:#e7877b;--line:#3a2e34}}
+:root[data-theme="dark"]{--bg:#1b1619;--card:#251e22;--ink:#f3ecef;--muted:#b7a9b0;--accent:#e27a9a;--accent-2:#3d2b33;--ok:#6fcf9f;--warn:#e7877b;--line:#3a2e34}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Segoe UI",Arial,"Heebo",sans-serif;line-height:1.75;font-size:17px}
+header{padding:28px 16px 14px;text-align:center}
+h1{margin:0 0 6px;font-size:27px}
+header p{margin:0;color:var(--muted)}
+nav{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line);display:flex;gap:6px;overflow-x:auto;padding:10px 12px;z-index:5;-webkit-overflow-scrolling:touch}
+nav button{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer;font:inherit;font-size:15px}
+nav button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+main{max-width:720px;margin:0 auto;padding:12px 16px 40px}
+section{display:none}
+section.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin:12px 0}
+h2{font-size:22px;margin:6px 0 10px;color:var(--accent)}
+h3{font-size:18px;margin:16px 0 6px}
+h4{font-size:16px;margin:12px 0 4px;color:var(--muted)}
+.say{background:var(--accent-2);border-radius:12px;padding:10px 14px;margin:8px 0;font-style:italic}
+.tip{color:var(--muted);font-size:15px}
+.do{border-right:4px solid var(--ok);padding:6px 12px;margin:8px 0;background:rgba(47,125,91,.07);border-radius:8px}
+.dont{border-right:4px solid var(--warn);padding:6px 12px;margin:8px 0;background:rgba(176,58,46,.07);border-radius:8px}
+ul{padding-right:20px;margin:6px 0}
+li{margin:5px 0}
+.step{display:flex;gap:12px;align-items:flex-start;margin:10px 0}
+.num{flex:0 0 30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700;font-size:15px}
+.check{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.check:last-child{border-bottom:none}
+.check input{margin-top:6px;width:20px;height:20px;accent-color:var(--ok);flex:0 0 auto}
+.check.done span{text-decoration:line-through;color:var(--muted)}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.progress div{height:100%;background:var(--ok);width:0;transition:width .3s}
+.q{font-weight:600;margin-bottom:8px}
+.opts button{display:block;width:100%;text-align:right;margin:6px 0;padding:10px 14px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;cursor:pointer;font:inherit}
+.opts button.right{border-color:var(--ok);background:rgba(47,125,91,.12)}
+.opts button.wrong{border-color:var(--warn);background:rgba(176,58,46,.1)}
+.explain{color:var(--muted);margin-top:8px;display:none}
+.explain.show{display:block}
+textarea{width:100%;min-height:90px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:10px;font:inherit}
+table{width:100%;border-collapse:collapse;font-size:15px;margin:8px 0}
+th,td{border:1px solid var(--line);padding:8px;text-align:right;vertical-align:top}
+th{background:var(--accent-2)}
+footer{text-align:center;color:var(--muted);font-size:14px;padding:20px 16px 36px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>כריזמה, פלירטוט וזוגיות</h1>
+  <p>מדריך מורחב: להבין, לתרגל, ולהיות נוכח גם כשהשני בלחץ.</p>
+</header>
+
+<nav id="nav">
+  <button data-target="start" class="active">התחלה</button>
+  <button data-target="principles">עקרונות</button>
+  <button data-target="reading">קריאת מצב</button>
+  <button data-target="stages">שלבים</button>
+  <button data-target="flirt">פלירטוט</button>
+  <button data-target="stress">כשהיא בלחץ</button>
+  <button data-target="fear">פחד מנטישה</button>
+  <button data-target="talk">שיחה וטלפון</button>
+  <button data-target="self">עבודה על עצמך</button>
+  <button data-target="mistakes">טעויות</button>
+  <button data-target="plan">תוכנית 4 שבועות</button>
+  <button data-target="help">עזרה מקצועית</button>
+  <button data-target="quiz">חידון</button>
+</nav>
+
+<main>
+
+<section id="start" class="active">
+  <h2>איך להשתמש במדריך</h2>
+  <div class="card">
+    <p>המדריך בנוי כך שתקרא פרק אחד בכל פעם, תתרגל, ותחזור לחומר. לא צריך לזכור הכל. מה שחשוב הוא לתרגל את ההרגלים הקטנים עד שהם נהיים טבעיים.</p>
+    <h3>שלושה כללי זהב</h3>
+    <div class="step"><div class="num">1</div><div><b>הקשב לפני שאתה פועל.</b> כל מה שמוצע כאן עובד רק אם אתה קורא את האדם מולך.</div></div>
+    <div class="step"><div class="num">2</div><div><b>רצון הוא לא אישור.</b> גם אם אתה רוצה מאוד, התשובה שלה קובעת.</div></div>
+    <div class="step"><div class="num">3</div><div><b>יציבות מנצחת בטווח הארוך.</b> בן זוג רגוע ונוכח הוא כריזמטי יותר מאשר מישהו שמנסה להרשים.</div></div>
+  </div>
+</section>
+
+<section id="principles">
+  <h2>עקרונות יסוד</h2>
+  <div class="card">
+    <h3>1. נוכחות</h3>
+    <p>כשאתה איתה, אתה איתה. טלפון בצד, מבט על העיניים, שאלה אחת שמחכה לתשובה.</p>
+    <h3>2. סקרנות</h3>
+    <p>שאל שאלות פתוחות והמשך מהתשובה: "ומה קרה אחר כך?" "איך זה הרגיש?"</p>
+    <h3>3. ביטחון שקט</h3>
+    <p>אתה לא צריך להוכיח כלום. אתה יכול לומר "לא" ולהיות בסדר. אנשים נמשכים לביטחון רגוע, לא לחוסר ביטחון מוסתר.</p>
+    <h3>4. הומור</h3>
+    <p>צחוק משותף על דברים קטנים יוצר קרבה. לא לצחוק על חשבונה, ואם היא מחזירה לך הומור, זה סימן טוב.</p>
+    <h3>5. ישירות עם חום</h3>
+    <p>אתה יכול להגיד מה אתה רוצה בלי לעקוף, ובאותו משפט לתת לה מרחב: "אני רוצה לקרב אותך אליי, ואת תחליטי מה נוח לך."</p>
+    <div class="dont">כריזמה היא לא טכניקה להפעלת אדם. אם אתה מרגיש שאתה "עובד" עליה, היא כנראה תרגיש את זה, ואמון נשבר מהר יותר משהוא נבנה.</div>
+  </div>
+</section>
+
+<section id="reading">
+  <h2>קריאת מצב</h2>
+  <div class="card">
+    <p>לפני כל פעולה, שאל את עצמך: באיזה מצב היא נמצאת עכשיו? המצב קובע מה מתאים.</p>
+    <table>
+      <tr><th>מצב</th><th>איך נראה</th><th>מה מתאים</th></tr>
+      <tr><td>פתוחה וקרובה</td><td>מחזירה הומור, נשענת, שואלת שאלות</td><td>אפשר להתקדם, להציע, לשחק</td></tr>
+      <tr><td>נייטרלית</td><td>עונה, אבל לא יוזמת</td><td>שיחה, סקרנות, בלי לחץ</td></tr>
+      <tr><td>בלחץ או עייפה</td><td>קצרה, מתוחה, עסוקה במשהו אחר</td><td>להקל, לשאול מה צריך, לדחות ולא להציע סקס</td></tr>
+      <tr><td>נסגרת</td><td>הולכת הצידה, שותקת, "אולי", "לא עכשיו"</td><td>להרגיע, להחזיר מרחב, לא להתעקש</td></tr>
+    </table>
+    <p class="tip">אם אתה לא בטוח באיזה מצב היא נמצאת, שאל. "את רוצה לדבר על זה, או שאת צריכה רגע?" זה יעיל יותר מלנחש.</p>
+  </div>
+</section>
+
+<section id="stages">
+  <h2>שלבים בקשר</h2>
+
+  <div class="card">
+    <h3>היכרות ראשונה</h3>
+    <ul>
+      <li>שאל על משהו שהיא אוהבת, לא על מה שהיא עושה בעבודה.</li>
+      <li>תן מחמאה ספציפית: "אהבתי איך שסיפרת את הסיפור הזה" עובד יותר מ"את יפה".</li>
+      <li>השאר קצת סקרנות: לא לספר הכל, לא לענות על כל שאלה מיד.</li>
+    </ul>
+    <div class="say">"מה הדבר הכי מוזר שאת אוהבת ואנשים לא מבינים?"</div>
+  </div>
+
+  <div class="card">
+    <h3>קשר מתחיל</h3>
+    <ul>
+      <li>תזמן מפגשים עם רעיון ולא רק "מה נעשה היום".</li>
+      <li>תן לה מקום להחליט גם כן. אם כל התכנון שלך, היא תרגיש שהיא רק מגיבה.</li>
+      <li>שמור על משחק: הפתעה קטנה, שיחה עם הומור, כמה ימים בלי לדבר על הכל.</li>
+    </ul>
+    <div class="say">"יש לי רעיון, אבל אני לא אספר לך עד שתגידי שאת רוצה לשמוע."</div>
+  </div>
+
+  <div class="card">
+    <h3>קשר ארוך</h3>
+    <ul>
+      <li>הבעיה הנפוצה היא שגרה, לא חוסר מילים.</li>
+      <li>תגיד לה מה אתה מעריך בה, כל יום, גם בדברים קטנים.</li>
+      <li>תשתף אותה בחוויות חדשות, כדי שיהיה משהו חדש לדבר עליו.</li>
+    </ul>
+    <div class="say">"לא הפסקתי לחשוב היום על איך שצחקת על הבדיחה ההיא."</div>
+  </div>
+
+  <div class="card">
+    <h3>נישואים</h3>
+    <ul>
+      <li>קשב רגשי הוא הכלי המרכזי. לשים לב לאיך שהיא מרגישה, לא רק למה שהיא אומרת.</li>
+      <li>פרטיות ורגעים רק שלכם, בלי ילדים, טלפונים או חובות.</li>
+      <li>אם יש קושי בחדר השינה, לדבר עליו מחוץ לחדר, בשקט, בלי לחץ ובלי האשמה.</li>
+    </ul>
+    <div class="say">"אני רוצה להבין מה עוזר לך להרגיש קרובה אליי בזמן האחרון."</div>
+  </div>
+</section>
+
+<section id="flirt">
+  <h2>פלירטוט וטיזינג</h2>
+
+  <div class="card">
+    <h3>פלירטוט הוא משחק הדדי</h3>
+    <p>פלירטוט טוב נבנה על "דחיפה ומשיכה": אתה נותן משהו, היא מחזירה, ואתה משחק איתה. אם היא לא משחקת, זה סימן לעצור או להאט, לא לשכנע.</p>
+    <h4>כלים שעובדים</h4>
+    <ul>
+      <li><b>שובבות עדינה:</b> "את חושבת שאת יכולה לנצח אותי בזה?"</li>
+      <li><b>קריאה חוזרת (callback):</b> הזכרת משהו שהיא אמרה לפני שבוע. זה מראה שאתה באמת מקשיב.</li>
+      <li><b>הפתעה קטנה:</b> שאלה לא צפויה, סיפור קצר, או הזמנה ספונטנית.</li>
+      <li><b>מבט ומגע קצר:</b> הנחת יד על הגב, שיער מהפנים, מגע קל בזרוע בזמן שהיא מספרת.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>טיזינג: ציפייה ולא דחיפה</h3>
+    <p>טיזינג הוא להשאיר דברים פתוחים: לדחות, לתת רמז, להשאיר סקרנות. הוא עובד כשיש הסכמה ברורה שכולם נהנים מהמשחק.</p>
+    <div class="say">"אני לא אגיד לך עוד כלום עד שתשאלי אותי בצורה יפה."</div>
+    <div class="say">"אני חושב על מה שדיברנו אתמול, ואני לא בטוח שאני מוכן לשתף עוד."</div>
+  </div>
+
+  <div class="card">
+    <h3>סולם ההתקדמות במגע ובשיחה</h3>
+    <p>השתמש בסולם הזה כמפה. לפני כל שלב, בדוק הסכמה במילים פשוטות: "את רוצה להמשיך?"</p>
+    <table>
+      <tr><th>רמה</th><th>מה זה</th><th>מתי</th></tr>
+      <tr><td>1</td><td>שיחה, הומור, מבטים</td><td>תמיד</td></tr>
+      <tr><td>2</td><td>מגע רגיל: יד, חיבוק, ישיבה קרובה</td><td>כשהיא מחזירה מגע או נשענת</td></tr>
+      <tr><td>3</td><td>נשיקות והתחממות</td><td>כשיש סימנים ברורים שהיא רוצה</td></tr>
+      <tr><td>4</td><td>מגע אינטימי בלי חדירה</td><td>אחרי שיחה על מה שנוח ומה לא</td></tr>
+      <tr><td>5</td><td>חדירה ושאר מיניות מלאה</td><td>רק כשהיא מוכנה, רגועה, ומביעה רצון</td></tr>
+    </table>
+    <p class="tip">אם היא עוצרת בשלב כלשהו, אתה חוזר לשלב קודם. זה לא כישלון. זה חלק מהמשחק בטוח.</p>
+  </div>
+
+  <div class="card">
+    <h3>דיבור מיני, בהדרגה</h3>
+    <div class="do">עבוד על מה שהיא רוצה לשמוע. שאל בשאלה פשוטה: "אהבת כשדיברתי אליך כך פעם?" והקשב לתשובה.</div>
+    <div class="do">תאר את מה שאתה רוצה ואיך הרגשת, ולא דרישות. "אני אוהב כשאת נשענת אליי" טוב יותר מ"תעשי X".</div>
+    <div class="dont">אל תשתמש בדיבור מיני כשהיא בלחץ, עייפה, או סגורה. זה ייראה כמו לחץ, לא כמו חום.</div>
+  </div>
+</section>
+
+<section id="stress">
+  <h2>כשהיא בלחץ</h2>
+  <div class="card">
+    <p>כשאדם בלחץ, המוח נכנס למצב הישרדות והגוף מתכווץ. בנקודה הזאת אין פלירטוט שיעבוד. מה שעובד הוא להפחית את הלחץ.</p>
+
+    <h3>מה לעשות</h3>
+    <div class="step"><div class="num">1</div><div><b>הורד את הציפיות.</b> "אין לנו מה לעשות היום. רק להיות יחד."</div></div>
+    <div class="step"><div class="num">2</div><div><b>שאל מה היא צריכה.</b> "את רוצה לדבר על זה, שאני אקשיב, או שתעדיפי שקט?"</div></div>
+    <div class="step"><div class="num">3</div><div><b>הציע מגע לא מיני.</b> חיבוק, עיסוי כתפיים, לשבת ליד ולהישען. זה מחזק קשר בלי לחץ.</div></div>
+    <div class="step"><div class="num">4</div><div><b>הרגע את הלחץ הקשור לסקס.</b> "אנחנו לא צריכים לעשות כלום הלילה, ואני לא אלחץ."</div></div>
+    <div class="step"><div class="num">5</div><div><b>תן לה זמן.</b> אנשים בלחץ צריכים לחוות ביטחון לפני שהם חוזרים לרגש.</div></div>
+
+    <h3>מה לא לעשות</h3>
+    <div class="dont">לא להתעקש, לא לשאול "למה את לא רוצה", לא לשחק פגוע או מתוסכל.</div>
+    <div class="dont">לא לשלוח הודעות מתוסכלות או ללחוץ על התשובה "לא עכשיו".</div>
+    <div class="dont">לא להציע "אולי זה יעזור לך להירגע", כי זה מעביר את הלחץ לחדר השינה.</div>
+  </div>
+</section>
+
+<section id="fear">
+  <h2>פחד מנטישה</h2>
+  <div class="card">
+    <p>פחד שאתה "תעזוב" אחרי אינטימיות הוא פחד מוכר. הוא לא נפתר במשפט אחד, אלא בהתנהגות עקבית לאורך זמן.</p>
+
+    <h3>מה לומר (ולהתכוון לזה)</h3>
+    <div class="say">"אני לא הולך לשום מקום בגלל סקס. אני רוצה אותך, ואני רוצה שתרגישי בטוחה איתי."</div>
+    <div class="say">"אני יודע שזה מפחיד אותך. אני לא רוצה שתרגישי לחץ, ואני מוכן לחכות."</div>
+
+    <h3>מה לעשות בפועל</h3>
+    <ul>
+      <li>להיות אותו בן אדם בכל מצב: לא להתרחק אחרי אינטימיות.</li>
+      <li>לשאול אותה מה היא צריכה כדי להרגיש בטוחה, ולבצע את זה.</li>
+      <li>לא לענות לחרדה שלה בכעס. להגיד "אני שומע אותך" ולהמשיך.</li>
+    </ul>
+    <div class="dont">לא להבטיח דברים שאתה לא בטוח שתוכל לקיים. אמון נבנה מהבטחות קטנות שמתקיימות.</div>
+  </div>
+</section>
+
+<section id="talk">
+  <h2>שיחה ושיחות טלפון</h2>
+
+  <div class="card">
+    <h3>שיחה טובה: מבנה פשוט</h3>
+    <div class="step"><div class="num">1</div><div><b>פתיחה חמה:</b> "היי, מה שלומך? שמח שדיברנו."</div></div>
+    <div class="step"><div class="num">2</div><div><b>שאלה על משהו שקרה:</b> "מה קרה היום שעשה לך חיוך?"</div></div>
+    <div class="step"><div class="num">3</div><div><b>הקשבה והעמקה:</b> "למה זה היה חשוב לך?" "מה הרגשת?"</div></div>
+    <div class="step"><div class="num">4</div><div><b>שיתוף שלך:</b> סיפור קצר ולא וידוי ארוך.</div></div>
+    <div class="step"><div class="num">5</div><div><b>סגירה עם המשך:</b> "נדבר מחר? אני רוצה לשמוע איך הלך."</div></div>
+  </div>
+
+  <div class="card">
+    <h3>שאלות שעובדות</h3>
+    <ul>
+      <li>"מה הכי טוב שקרה לך השבוע?"</li>
+      <li>"מה את עושה כשאת צריכה להירגע?"</li>
+      <li>"אם היית יכולה לנסוע לכל מקום מחר, לאן?"</li>
+      <li>"מה משהו שאת עדיין חושבת עליו מהילדות?"</li>
+    </ul>
+  </div>
+</section>
+
+<section id="self">
+  <h2>עבודה על עצמך</h2>
+
+  <div class="card">
+    <h3>בטחון וויסות רגשי</h3>
+    <ul>
+      <li>כשאתה מתוסכל, קח הפסקה של דקה לפני שאתה מגיב.</li>
+      <li>שים לב מתי אתה מתחיל לדחוף, ותשאל את עצמך למה אתה צריך את התשובה עכשיו.</li>
+      <li>תרגל נשימה איטית לפני שיחות קשות.</li>
+    </ul>
+    <h3>נוכחות ושפת גוף</h3>
+    <ul>
+      <li>ישיבה זקופה ורגועה, מבט ישיר ורך.</li>
+      <li>דבר לאט יותר ממה שנוח לך, בלי להתחיל משפטים בהתנצלות.</li>
+    </ul>
+    <h3>הומור וסקרנות</h3>
+    <ul>
+      <li>קרא ספרים או צפה בתכנים על שיחה, הומור ונוכחות, ותרגל משהו אחד בשבוע.</li>
+      <li>נסה לגלות דברים חדשים על אנשים, כדי שתהיה לך סקרנות אמיתית.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>מחברת אישית</h3>
+    <p>ענה על השאלות האלה, לעצמך. אין תשובות נכונות.</p>
+    <h4>1. מתי אני מרגיש הכי מחובר אליה?</h4>
+    <textarea data-key="j1"></textarea>
+    <h4>2. מה אני מפחד שיקרה אם אהיה יותר ישיר או יותר פגיע?</h4>
+    <textarea data-key="j2"></textarea>
+    <h4>3. מה אני עושה כשאני מרגיש מתוסכל? מה אני רוצה לעשות במקום?</h4>
+    <textarea data-key="j3"></textarea>
+    <h4>4. מה היא אומרת או עושה שגורם לי להרגיש שאני רצוי?</h4>
+    <textarea data-key="j4"></textarea>
+  </div>
+</section>
+
+<section id="mistakes">
+  <h2>טעויות נפוצות</h2>
+  <div class="card">
+    <div class="dont"><b>לדחוף לסקס כשהיא בלחץ.</b> זה משדר "אני לא מקשיב", וקשה לבנות מחדש את האמון.</div>
+    <div class="dont"><b>להשתמש במשפטים מוכנים.</b> הם נשמעים מלאכותיים. עדיף לדבר בשפה שלך.</div>
+    <div class="dont"><b>להתעלם מסימנים.</b> תשובה קצרה או מבט הצידה הם מידע חשוב.</div>
+    <div class="dont"><b>לשאול "למה" בלחץ.</b> זה נשמע כמו האשמה.</div>
+    <div class="dont"><b>לנסות לשנות אותה.</b> כריזמה טובה משנה את הדינמיקה שלך, לא את האדם השני.</div>
+    <div class="dont"><b>להפוך את הכל לתחרות.</b> לא צריך להצליח בכל רגע.</div>
+  </div>
+</section>
+
+<section id="plan">
+  <h2>תוכנית 4 שבועות</h2>
+  <div class="card">
+    <h3>שבוע 1: קשב</h3>
+    <p>בכל שיחה, שאל שאלה אחת נוספת והקשב עד הסוף לפני שאתה עונה.</p>
+    <h3>שבוע 2: מחמאות וזיכרון</h3>
+    <p>תן מחמאה ספציפית אחת ביום, והזכר דבר שהיא אמרה לפני כמה ימים.</p>
+    <h3>שבוע 3: משחק בטוח</h3>
+    <p>פלירטוט קל ומשחקי הומור, עם סימנים ברורים שהיא נהנית. לעצור כשהיא נסוגה.</p>
+    <h3>שבוע 4: שיחה על הקשר</h3>
+    <p>ערב אחד של שיחה פתוחה: מה אנחנו אוהבים, מה חסר לנו, ומה כל אחד רוצה מהשני. בלי מטרה לסקס.</p>
+  </div>
+</section>
+
+<section id="help">
+  <h2>עזרה מקצועית</h2>
+  <div class="card">
+    <p>יש דברים שאין להם פתרון במדריך כזה, וזה בסדר לפנות לעזרה.</p>
+    <ul>
+      <li><b>טיפול זוגי:</b> מטפל זוגי יכול לעזור לשניכם לדבר על הפחד, על הציפיות ועל הקשר.</li>
+      <li><b>מטפלת מיניות:</b> מי שמתמחה בהתכווצות, בחרדה מינית ובקושי בחדירה.</li>
+      <li><b>פיזיותרפיסטית של רצפת האגן:</b> אם ההתכווצות לא נשלטת או כואבת, היא יכולה לתת כלים ממוקדים. מומלץ לפנות גם לגינקולוגית.</li>
+    </ul>
+    <p class="tip">פנייה לעזרה היא סימן של אחריות ודאגה לקשר, לא של כישלון.</p>
+  </div>
+</section>
+
+<section id="quiz">
+  <h2>חידון</h2>
+  <div id="quizbox"></div>
+</section>
+
+</main>
+
+<footer>המדריך הזה הוא כלי לעצמך. התקדמות אמיתית נעשית לאט, בהקשבה ובכבוד לשני הצדדים.</footer>
+
+<script>
+(function(){
+  var store = {
+    get: function(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+    set: function(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  };
+
+  // Navigation
+  var buttons = document.querySelectorAll('#nav button');
+  function show(id){
+    document.querySelectorAll('section').forEach(function(s){ s.classList.toggle('active', s.id===id); });
+    buttons.forEach(function(b){ b.classList.toggle('active', b.dataset.target===id); });
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  buttons.forEach(function(b){ b.addEventListener('click', function(){ show(b.dataset.target); }); });
+
+  // Journal
+  document.querySelectorAll('textarea[data-key]').forEach(function(t){
+    t.value = store.get('charisma2-' + t.dataset.key) || '';
+    t.addEventListener('input', function(){ store.set('charisma2-' + t.dataset.key, t.value); });
+  });
+
+  // Quiz
+  var questions = [
+    {q:'היא עונה בקצרה ונראית עסוקה. מה הכי נכון?',
+     o:['לשלוח הודעה נוספת כדי לוודא','לתת לה מרחב ולהמשיך את היום שלך','לשאול אם עשית משהו לא בסדר'],
+     a:1, e:'מרחב הוא ביטחון. הודעה נוספת מיד יוצרת לחץ.'},
+    {q:'שיחה עמוקה התחילה לשתוק. מה לעשות?',
+     o:['לשנות נושא מהר','לשאול שאלה פתוחה קטנה על משהו שהיא אמרה','להציע לסיים את היום'],
+     a:1, e:'שאלה קטנה מחזירה את השיחה בלי להעמיד אותה במבחן.'},
+    {q:'רוצה לומר מחמאה. מה הכי טוב?',
+     o:['"את מקסימה"','"אהבתי איך שצחקת על הבדיחה הזאת"','"את יפה מאוד"'],
+     a:1, e:'מחמאה על פעולה ספציפית נשמעת כנה ומזמינה תגובה.'},
+    {q:'היא אומרת "לא עכשיו" כשאתם מתחממים. מה הכי נכון?',
+     o:['לשכנע אותה שהיא בטוחה','לקבל את זה בחום, לשאול מה היא צריכה, ולא לכעוס','לחכות עד שהיא תשנה את דעתה'],
+     a:1, e:'"לא" הוא תשובה מלאה. קבלה בלי כעס בונה אמון, והיא תרצה לחזור אליך.'},
+    {q:'היא בלחץ בעבודה ולא מוכנה לאינטימיות הלילה. מה הכי עוזר?',
+     o:['להציע משהו שיעזור לה להירגע במיניות','להציע חיבוק ולשאול מה היא צריכה','לדבר על זה שאתם לא מתקדמים'],
+     a:1, e:'הקלה על הלחץ והחזרת ביטחון הם מה שמאפשר לחיבור לחזור, לא לחץ.'},
+    {q:'איזה מהבאים הוא סימן לעצור או להאט?',
+     o:['היא מחזירה הומור ומחייכת','היא עונה "אולי" ומסיטה מבט','היא נשענת אליך ושואלת שאלות'],
+     a:1, e:'"אולי" ומבט הצידה הם סימנים של חוסר נוחות. עצור והחזר מרחב.'}
+  ];
+  var qbox = document.getElementById('quizbox');
+  questions.forEach(function(item, i){
+    var card = document.createElement('div');
+    card.className = 'card';
+    var qEl = document.createElement('div');
+    qEl.className = 'q';
+    qEl.textContent = (i+1) + '. ' + item.q;
+    card.appendChild(qEl);
+    var opts = document.createElement('div');
+    opts.className = 'opts';
+    var exp = document.createElement('div');
+    exp.className = 'explain';
+    exp.textContent = item.e;
+    item.o.forEach(function(text, j){
+      var btn = document.createElement('button');
+      btn.textContent = text;
+      btn.addEventListener('click', function(){
+        if(exp.classList.contains('show')) return;
+        btn.classList.add(j===item.a ? 'right' : 'wrong');
+        opts.querySelectorAll('button')[item.a].classList.add('right');
+        exp.classList.add('show');
+      });
+      opts.appendChild(btn);
+    });
+    card.appendChild(opts);
+    card.appendChild(exp);
+    qbox.appendChild(card);
+  });
+})();
+</script>
+</body>
+</html>
