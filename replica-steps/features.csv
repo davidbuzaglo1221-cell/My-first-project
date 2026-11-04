@@ -1,0 +1,19 @@
+feature,area,priority,original,clone,notes
+Show today's steps against a daily goal (ring),today,must,yes,no,listings 1 2 4
+"Default 10,000-step goal and custom goal",goals,must,yes,no,listings 2 4
+Step data from the platform health store (HealthKit or Health Connect),data,must,yes,no,listings 1 5
+Permission handling when motion or health access is denied,onboarding,must,yes,no,
+Daily history: browse past days,history,must,yes,no,listing 1
+"Weekly, monthly and yearly charts",history,must,yes,no,listings 1 3 5
+Goal-reached notification,notifications,must,yes,no,listing 3
+Distance and calories per day,today,should,yes,no,roundup 6
+Weekly report notification,notifications,should,yes,no,listing 3
+Streak counter,today,should,yes,no,listing 2
+"Home-screen widgets (today, streak)",widgets,should,yes,no,listing 2
+Tap a chart bar for day detail,history,should,yes,no,listing 5
+Units setting (metric or imperial),settings,should,yes,no,
+Live step count during workouts,workouts,could,yes,no,listing 2
+Apple Watch complication,watch,could,yes,no,listing 2
+Pro: full history and yearly trends for a paid plan,monetisation,could,yes,no,listings 3 4
+Step-counter algorithm copied from the original,engine,must,yes,skip,use the platform's own step API; never copy another app's logic
+"Original app icon, artwork and copy",brand,must,yes,skip,rebrand later with replica-brand
