@@ -1,0 +1,1090 @@
+<title>מסעו של השומן</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800&family=Secular+One&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single cinema frame (16:10) with overlaid chapter cards, subtitles and auto-hiding transport; molecule key and numbers below. Deliberately single dark look. */
+:root{
+  --bg:#03060b; --bg2:#08111d; --panel:#0b1626; --line:#1a2e45;
+  --ink:#eaf4ff; --muted:#8ea4bd; --cyan:#4fd6ff; --cyan2:#a9ecff;
+  --red:#ff4d5e; --orange:#ff9a3c; --fat:#ffc35a;
+  --display:"Secular One","Assistant",system-ui,sans-serif;
+  --body:"Assistant",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);font-size:16px;line-height:1.55;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;
+  background:radial-gradient(1400px 700px at 75% -15%,#0d2340 0%,transparent 60%),radial-gradient(900px 500px at 0% 110%,#2a1206 0%,transparent 60%),var(--bg)}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:6px 24px}
+.brand{font-family:var(--mono);letter-spacing:.38em;font-size:11px;color:var(--cyan);text-transform:uppercase}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(24px,3.6vw,38px);line-height:1.1;margin:4px 0 0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--orange)}
+.lede{color:var(--muted);max-width:50ch;margin:0;font-size:15px}
+
+/* ---------- cinema ---------- */
+.cinema{position:relative;background:#000;border-radius:18px;overflow:hidden;box-shadow:0 40px 120px -40px #000,0 0 0 1px #1c3550,0 0 80px -30px #4fd6ff55}
+.cinema:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center;background:#000}
+.cinema:fullscreen .frame{width:min(100vw,calc(100vh * 1.6129));margin:0 auto}
+.frame{position:relative;width:100%;aspect-ratio:1000/620;max-width:100%;overflow:hidden;background:#02040a;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.frame>svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.frame text{direction:rtl;font-family:var(--body);font-weight:700}
+.frame .mono{font-family:var(--mono);direction:ltr;font-weight:500}
+.dof{filter:blur(7px);pointer-events:none;mix-blend-mode:screen}
+.grain{position:absolute;inset:0;width:100%;height:100%;opacity:.11;mix-blend-mode:overlay;pointer-events:none}
+.vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,#000a 100%)}
+.flash{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 50%,#d9f7ffcc,#4fd6ff55 35%,transparent 70%);mix-blend-mode:screen}
+.lb{position:absolute;left:0;right:0;background:#000;pointer-events:none;z-index:3}
+.lb.t{top:0}.lb.b{bottom:0}
+.hit{cursor:pointer}
+.hit:hover{filter:brightness(1.4)}
+.chip{position:absolute;top:14px;right:16px;z-index:4;font-size:12px;letter-spacing:.02em;color:#cfeeff;opacity:.75;pointer-events:none;text-shadow:0 1px 6px #000}
+.chip b{color:var(--orange);font-weight:500;font-family:var(--mono);letter-spacing:.15em}
+.card{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center}
+.card .num{font-family:var(--mono);font-size:clamp(11px,1.4vw,14px);letter-spacing:.6em;color:var(--orange);margin-inline-end:-.6em}
+.card .ttl{font-family:var(--display);font-size:clamp(26px,6vw,68px);line-height:1.05;margin-top:6px;text-shadow:0 4px 40px #000,0 0 30px #4fd6ff44;white-space:nowrap}
+.card .rule{height:1px;margin-top:14px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+.card .sub{font-size:clamp(11px,1.5vw,16px);color:#bcd6ee;margin-top:10px;letter-spacing:.04em}
+.finale{position:absolute;inset:0 0 auto 0;z-index:4;padding:5.5% 7% 0;text-align:center;pointer-events:none}
+.finale h2{font-family:var(--display);font-weight:400;margin:0;font-size:clamp(18px,3.7vw,42px);line-height:1.15;text-wrap:balance;text-shadow:0 4px 30px #000}
+.finale h2 span{background:linear-gradient(90deg,#9ff0ff,#4fd6ff 40%,#ffb37a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.finale p{margin:10px auto 0;max-width:60ch;color:#c9dbef;font-size:clamp(11px,1.45vw,16px);line-height:1.5;text-shadow:0 1px 10px #000}
+.subs-in{position:absolute;left:0;right:0;bottom:7%;z-index:4;display:flex;justify-content:center;pointer-events:none;padding:0 8%}
+.subs-in p,.subs-out p{margin:0;text-align:center;text-wrap:balance;max-width:58ch}
+.subs-in p{font-size:clamp(15px,1.9vw,22px);font-weight:600;line-height:1.45;text-shadow:0 2px 3px #000,0 0 18px #000,0 0 40px #000c}
+.w{display:inline-block;transition:none;white-space:pre}
+.subs-out{display:none;padding:12px 14px 4px;min-height:70px;align-items:center;justify-content:center;background:#060c15}
+.subs-out p{font-size:16px;line-height:1.5;font-weight:600}
+/* poster + end */
+.poster{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(6px,1.4vw,14px);text-align:center;background:radial-gradient(ellipse at 50% 55%,#02060c55,#010307ee 75%);cursor:pointer}
+.poster .pre{font-family:var(--mono);font-size:clamp(9px,1.2vw,12px);letter-spacing:.5em;color:var(--cyan);margin-inline-end:-.5em}
+.poster .big{font-family:var(--display);font-size:clamp(28px,6.6vw,76px);line-height:1;text-shadow:0 0 50px #4fd6ff55}
+.poster .big em{font-style:normal;display:block;font-size:.5em;color:var(--orange);margin-top:.25em}
+.pbtn{width:clamp(54px,8vw,86px);height:clamp(54px,8vw,86px);border-radius:50%;border:1px solid #9fe6ffaa;background:radial-gradient(circle at 35% 30%,#7fe4ff,#1f8fbf);display:grid;place-items:center;box-shadow:0 0 0 10px #4fd6ff1a,0 0 60px #4fd6ff88;cursor:pointer;margin-top:4px}
+.pbtn svg{width:42%;height:42%;fill:#02131d;transform:translateX(6%)}
+.pbtn:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.poster small{color:var(--muted);font-size:clamp(10px,1.2vw,13px)}
+/* transport */
+.hud{position:absolute;left:0;right:0;bottom:0;z-index:5;padding:28px 16px 12px;background:linear-gradient(180deg,transparent,#000c 60%);transition:opacity .45s,transform .45s}
+.hud.hide{opacity:0;transform:translateY(8px);pointer-events:none}
+.bar{position:relative;height:18px;display:flex;align-items:center;cursor:pointer;touch-action:none}
+.bar .rail{position:absolute;inset-inline:0;height:3px;border-radius:3px;background:#ffffff26;overflow:hidden}
+.bar .fill{position:absolute;inset-block:0;inset-inline-start:0;background:linear-gradient(270deg,#4fd6ff,#ff9a3c)}
+.bar:hover .rail{height:5px}
+.bar .tick{position:absolute;width:2px;height:9px;background:#ffffff80;border-radius:1px;transform:translateX(50%)}
+.bar .knob{position:absolute;width:13px;height:13px;border-radius:50%;background:#fff;box-shadow:0 0 12px #4fd6ff;transform:translateX(50%)}
+.row{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}
+.ib{display:inline-flex;align-items:center;gap:6px;min-height:36px;min-width:36px;justify-content:center;padding:0 8px;border-radius:9px;border:0;background:transparent;cursor:pointer;color:#e6f3ff;font-size:13px}
+.ib:hover{background:#ffffff14}
+.ib:focus-visible,.bar:focus-visible,.ctx button:focus-visible,.legend button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.ib svg{width:20px;height:20px;fill:currentColor}
+.ib.off{opacity:.5}
+.ib.on{color:var(--orange)}
+.time{font-family:var(--mono);font-size:12px;color:#b9cce0;font-variant-numeric:tabular-nums;direction:ltr;padding:0 6px}
+.chap{font-size:13px;color:#cfe3f6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 auto}
+.spd{font-family:var(--mono);font-size:12px;border:1px solid #ffffff33;border-radius:7px;padding:0 8px;min-height:28px}
+.grow{flex:1}
+.ctx{display:flex;flex-wrap:wrap;gap:6px;padding:12px 2px 0}
+.ctx button{font-size:13px;color:var(--ink);background:#0d1c2e;border:1px solid #213c5a;border-radius:999px;padding:4px 12px;cursor:pointer}
+.ctx button:hover{border-color:var(--cyan)}
+.ctx .step{display:inline-flex;align-items:center;gap:6px;opacity:.45;transition:opacity .3s,border-color .3s,background .3s}
+.ctx .step i{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--orange)}
+.ctx .step.on{opacity:1;border-color:var(--orange);background:#2a1a0c}
+.ctx .step.done{opacity:.8}
+.note{font-size:12px;color:var(--muted);margin:6px 2px 0}
+.info{position:fixed;z-index:30;left:max(16px,env(safe-area-inset-left,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(410px,calc(100vw - 32px));background:#0a1526f4;border:1px solid #2c5378;border-radius:16px;padding:18px 20px 14px;box-shadow:0 24px 70px #000d;backdrop-filter:blur(10px)}
+.info .k{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--orange)}
+.info h3{font-family:var(--display);font-weight:400;font-size:22px;margin:2px 0 8px;color:var(--cyan2)}
+.info p{margin:0 0 14px;font-size:15px;color:#d8e6f5;line-height:1.6}
+.info button{font-size:14px;border-radius:9px;padding:7px 16px;cursor:pointer;border:0;background:var(--cyan);color:#03131d;font-weight:700}
+.below{display:grid;grid-template-columns:1.2fr 1fr;gap:18px}
+.cardx{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 20px;min-width:0}
+.cardx h2{font-family:var(--display);font-weight:400;font-size:20px;margin:0 0 12px}
+.legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.legend button{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--ink);background:#08121f;border:1px solid #1d3550;border-radius:10px;padding:6px 10px;cursor:pointer;text-align:start}
+.legend button:hover{border-color:var(--cyan)}
+.legend svg{width:44px;height:28px;flex:none}
+.facts{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:9px;font-size:15px}
+.facts li{display:flex;gap:12px}
+.facts b{font-family:var(--mono);font-weight:500;color:var(--orange);min-width:60px;direction:ltr;text-align:right}
+.src{color:var(--muted);font-size:12px;margin:12px 0 0}
+@media (max-width:799px){
+  .hud{position:static;background:#060c15;padding:6px 12px 10px}
+  .hud.hide{opacity:1;transform:none;pointer-events:auto}
+  .subs-in{display:none}.subs-out{display:flex}
+  .chip{top:8px;right:10px;font-size:9px}
+  .below{grid-template-columns:1fr}
+  .chap{display:none}
+}
+@media (prefers-reduced-motion:reduce){.hud{transition:none}}
+</style>
+
+<div class="wrap" dir="rtl" lang="he">
+  <header>
+    <div>
+      <div class="brand">Gavriel Fitness · Science Lab</div>
+      <h1>מסעו של השומן <em>אל מחוץ לגוף</em></h1>
+    </div>
+    <p class="lede">סרט מדעי אינטראקטיבי של 75 שניות: מה קורה לשומן בזמן אימון, ולאן הולכים האטומים שלו. אפשר לעצור בכל רגע וללחוץ על כל מולקולה.</p>
+  </header>
+  <div id="root"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/htm@3.1.1/dist/htm.umd.js"></script>
+<script>
+const FJ_DATA = /*__FJ_DATA__*/{"timing":null,"audio":null,"narration":false,"words":null}/*__END__*/;
+</script>
+<script>
+(function(){
+const {useState,useEffect,useRef,useCallback} = React;
+const html = htm.bind(React.createElement);
+
+/* ---------- math ---------- */
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const ss=(a,b,x)=>{const k=clamp((x-a)/(b-a));return k*k*(3-2*k)};
+const lerp=(a,b,k)=>a+(b-a)*k;
+const h=(i)=>{const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)};
+const frac=(x)=>x-Math.floor(x);
+const TAU=Math.PI*2;
+const camT=(fx,fy,s,tx=0,ty=0)=>`translate(${fx+tx} ${fy+ty}) scale(${s}) translate(${-fx} ${-fy})`;
+const f1=(p)=>p[0].toFixed(1)+','+p[1].toFixed(1);
+const P=(pts)=>pts.map(f1).join(' ');
+const mid=(p,q,k=.5)=>[lerp(p[0],q[0],k),lerp(p[1],q[1],k)];
+let FS=1;
+let openInfo=()=>{};
+
+/* ---------- content & timing ---------- */
+const SPEC=[10,13,11,15,14,12];
+const DUR=(FJ_DATA.timing&&FJ_DATA.timing.length===6)?FJ_DATA.timing:SPEC;
+const SCENES=[
+ {title:'הגוף מתחיל להתאמן',sub:'השרירים דורשים אנרגיה',short:'אימון',exit:{x:525,y:262,s:3.4},
+  narr:'כשאנחנו מתחילים להתאמן, השרירים שלנו זקוקים לאנרגיה כדי להתכווץ. אחד ממקורות האנרגיה שהגוף יכול לנצל הוא השומן המאוחסן.',
+  ctx:[['דופק ועצימות עולים','heart'],['דרישת ATP עולה','atp'],['דלק: שומן וגם פחמימות','muscle']]},
+ {title:'פירוק השומן בתא',sub:'ליפוליזה',short:'ליפוליזה',exit:{x:330,y:330,s:2.4},
+  narr:'בזמן פעילות גופנית, שינויים באותות ההורמונליים ובדרישות האנרגיה יכולים להגביר את פירוק השומן המאוחסן. בתהליך שנקרא ליפוליזה, טריגליצרידים מתפרקים לחומצות שומן ולגליצרול.',
+  ctx:[['אדרנלין ↑ · אינסולין ↓','adrenaline'],['ATGL ← HSL ← MGL','lipase'],['טריגליצריד','tg'],['גליצרול','glycerol']]},
+ {title:'המסע אל השרירים',sub:'דרך מחזור הדם',short:'בדם',exit:{x:600,y:545,s:3},
+  narr:'חומצות השומן משתחררות למחזור הדם ומגיעות לרקמות שזקוקות לאנרגיה, ובהן השרירים הפעילים.',
+  ctx:[['חומצות שומן חופשיות','fa'],['נישאות על אלבומין','albumin'],['כניסה לשריר דרך CD36','cd36']]},
+ {title:'תחנת הכוח של התא',sub:'בתוך המיטוכונדריה',short:'מיטוכונדריה',exit:{x:110,y:165,s:2.6},
+  narr:'בתוך התאים, חומצות השומן עוברות חמצון. האנרגיה המשתחררת מאפשרת לגוף לייצר ATP, המטבע האנרגטי של התא. בתהליך נוצרים גם פחמן דו־חמצני ומים.',
+  steps:[[2,'בטא־אוקסידציה','betaox'],[5,'מעגל קרבס','krebs'],[8,'שרשרת מעבר אלקטרונים','etc'],[10.5,'חמצן','o2'],[12,'ATP · CO₂ · H₂O · חום','atp']]},
+ {title:'השומן יוצא דרך הריאות',sub:'הדרך החוצה',short:'ריאות',exit:{x:500,y:310,s:0.72},
+  narr:'והנה החלק המפתיע: רוב המסה של השומן שעבר חמצון עוזבת את הגוף בסופו של דבר דרך הריאות, בצורת פחמן דו־חמצני. חלק נוסף יוצא בצורת מים.',
+  ctx:[['CO₂ נישא כביקרבונט','bicarb'],['דיפוזיה בנאדיות','alveolus'],['≈84% מהמסה נשפת','mass'],['מים: שתן, זיעה, נשימה','h2o']]},
+ {title:'גילוי הסוד',sub:'לאן נעלם השומן?',short:'הסוד',
+  narr:'כשאנחנו מאבדים שומן, הוא לא הופך לשריר ולא פשוט נעלם. האטומים שלו עוברים תהליכים כימיים, ורוב המסה עוזבת את הגוף דרך הנשימה. הפעילות הגופנית מגדילה את ההוצאה האנרגטית, אבל ירידה בשומן תלויה במאזן האנרגיה לאורך זמן.',
+  ctx:[['מאזן אנרגיה לאורך זמן','balance'],['גם פחמימות הן דלק','muscle'],['זיעה = מים, לא שומן','sweat']]},
+];
+let acc0=0;
+SCENES.forEach((s,i)=>{
+  s.start=acc0; s.end=acc0+DUR[i]; acc0=s.end; s.k=SPEC[i]/DUR[i];
+  const parts=s.narr.split(/(?<=[.:])\s+/);
+  const span=DUR[i]-1.4;
+  const ws=FJ_DATA.words&&FJ_DATA.words[i];
+  if(ws&&ws.length){ // exact word timings from the narration track
+    let wi=0; s.chunks=parts.map(p=>{const words=p.split(/\s+/).filter(Boolean); const c={text:p,words:words.map((w)=>{const e=ws[Math.min(wi,ws.length-1)]; wi++; return [w,e?e[1]:0]})}; c.t0=c.words[0][1]; c.t1=c.words[c.words.length-1][1]+.4; return c});
+  } else {
+    const tot=parts.reduce((a,p)=>a+p.length,0); let acc=0;
+    s.chunks=parts.map(p=>{const t0=acc/tot*span; acc+=p.length; const t1=acc/tot*span; let cc=0; const words=p.split(/\s+/).filter(Boolean); const wl=words.reduce((a,w)=>a+w.length+1,0);
+      return {text:p,t0,t1,words:words.map(w=>{const wt=t0+cc/wl*(t1-t0)*.92; cc+=w.length+1; return [w,wt]})}});
+  }
+});
+const TOTAL=acc0;
+const sceneAt=(t)=>{for(let i=SCENES.length-1;i>=0;i--) if(t>=SCENES[i].start) return i; return 0};
+
+const INFO={
+ muscle:['שריר שלד פעיל','בזמן מאמץ סיבי השריר מתכווצים שוב ושוב, וכל התכווצות צורכת ATP. כדי לחדש אותו השריר משתמש בפחמימות (גליקוגן וגלוקוז) וגם בשומן – מהמאגרים שבתוך השריר ומחומצות שומן שמגיעות בדם. היחס ביניהם תלוי בעצימות, במשך האימון, בתזונה ובמידת הכושר.'],
+ heart:['הלב','הלב מגביר קצב ונפח פעימה כדי להזרים יותר דם, חמצן ודלק לשרירים. דופק עולה משקף דרישת אנרגיה גבוהה יותר, אבל הוא לא מדד ישיר לכמות השומן שמתפרקת.'],
+ fat:['רקמת שומן','רקמת השומן היא מאגר האנרגיה הגדול בגוף. גם אצל אדם רזה מאוחסנות בה עשרות אלפי קילוקלוריות כטריגליצרידים. השומן לא נמס ולא יוצא דרך העור – הוא מתפרק כימית בתוך התאים.'],
+ vessel:['כלי דם','כלי הדם מובילים חמצן, גלוקוז וחומצות שומן אל השרירים, ומחזירים פחמן דו־חמצני אל הריאות. באימון כלי הדם בשרירים הפעילים מתרחבים וזרימת הדם אליהם גדלה פי כמה.'],
+ bone:['שלד','השלד נשאר יציב לאורך כל התהליך. הוא מוצג כאן רק כדי לעזור להתמצא בגוף השקוף.'],
+ adipocyte:['תא שומן (אדיפוציט)','רוב נפח התא הוא טיפת שומן אחת גדולה, והגרעין נדחק לשוליים. כשמאגרי השומן קטנים, התאים מתכווצים. מספר תאי השומן אצל מבוגרים נשאר יציב יחסית.'],
+ droplet:['טיפת שומן','הטיפה מורכבת בעיקר מטריגליצרידים, ועטופה בחלבונים (כמו פרילִיפין, הנקודות הסגולות) ששולטים בגישה של אנזימי הפירוק אליה.'],
+ adrenaline:['אדרנלין ואינסולין','במאמץ עולות רמות האדרנלין והנוראדרנלין. הם נקשרים לקולטנים בקרום תא השומן ומפעילים את אנזימי הליפוליזה. ירידה ברמת האינסולין במהלך אימון מקלה גם היא על פירוק השומן.'],
+ tg:['טריגליצריד','גליצרול אחד שאליו מחוברות שלוש חומצות שומן בקשרי אסטר. זו צורת האחסון העיקרית של שומן בגוף, ודחוסה מאוד באנרגיה: כ-9 קילוקלוריות לגרם.'],
+ glycerol:['גליצרול','שלד של שלושה פחמנים. אחרי הליפוליזה הוא עובר בדם בעיקר לכבד, ושם יכול לשמש לייצור גלוקוז.'],
+ fa:['חומצת שומן','שרשרת של פחמנים ומימנים (לרוב 16–18 פחמנים) עם קבוצה חומצית בקצה. זה הדלק שהשריר מחמצן במיטוכונדריה.'],
+ lipase:['אנזימי הליפוליזה','ATGL מפרק טריגליצריד לדי־גליצריד, HSL מפרק די־גליצריד למונו־גליצריד, ו-MGL משחרר את חומצת השומן האחרונה ואת הגליצרול. בכל שלב נצרכת מולקולת מים, ולכן זו הידרוליזה.'],
+ albumin:['אלבומין','החלבון הנפוץ ביותר בפלזמה. חומצות שומן כמעט לא מסיסות במים, ולכן הן נישאות בדם כשהן קשורות לאלבומין.'],
+ rbc:['תאי דם אדומים','נושאים חמצן על ההמוגלובין, ומסייעים בהובלת CO₂ – בעיקר בכך שהם ממירים אותו לביקרבונט בעזרת האנזים קרבוניק אנהידרז.'],
+ cd36:['חלבוני הובלה בקרום השריר','חלבונים כמו CD36 ו-FATP מכניסים חומצות שומן לתא השריר. במהלך אימון יותר מהם עוברים אל פני הקרום.'],
+ mito:['מיטוכונדריה','תחנות הכוח של התא. כאן מתבצעים בטא־אוקסידציה, מעגל קרבס ושרשרת מעבר האלקטרונים. אימון סיבולת מגדיל את מספר המיטוכונדריות ואת יכולתן לחמצן שומן.'],
+ betaox:['בטא־אוקסידציה','בכל סבב מנותקות 2 יחידות פחמן מחומצת השומן ונוצרת מולקולת אצטיל-CoA, יחד עם NADH ו-FADH₂. חומצה פלמיטית (16 פחמנים) עוברת 7 סבבים ויוצרת 8 אצטיל-CoA.'],
+ carnitine:['מעבורת הקרניטין','האנזימים CPT1 ו-CPT2 והמולקולה קרניטין מעבירים חומצות שומן ארוכות דרך הקרומים אל תוך המיטוכונדריה.'],
+ acetyl:['אצטיל-CoA','יחידה של 2 פחמנים שנכנסת למעגל קרבס. כאן נפגשים מסלולי הפירוק של שומן ושל פחמימות.'],
+ krebs:['מעגל קרבס','האצטיל מתחמצן עד הסוף. שני הפחמנים שלו יוצאים כשתי מולקולות CO₂ – זה הפחמן הדו־חמצני שתנשפו בהמשך. האלקטרונים נאספים על NADH ו-FADH₂.'],
+ etc:['שרשרת מעבר האלקטרונים','קומפלקסים I–IV בקרום הפנימי מעבירים אלקטרונים מ-NADH ו-FADH₂ ומנצלים את האנרגיה כדי לשאוב פרוטונים (H⁺) אל המרווח הבין־קרומי.'],
+ o2:['חמצן','חמצן הוא המקבל הסופי של האלקטרונים בקומפלקס IV: הוא מתחבר לאלקטרונים ולפרוטונים ויוצר מים. בלי חמצן השרשרת נעצרת, ולכן אספקת חמצן חיונית לחמצון שומן.'],
+ atp:['ATP','המטבע האנרגטי של התא. האנרגיה מניתוק הפוספט האחרון מפעילה את ראשי המיוזין שמושכים את סיבי האקטין, וכך השריר מתכווץ.'],
+ atpsyn:['ATP סינתאז','טורבינה מולקולרית. זרם הפרוטונים שחוזר אל המטריקס מסובב אותה, והיא מחברת פוספט ל-ADP ויוצרת ATP.'],
+ co2:['פחמן דו־חמצני','כל אטום פחמן של חומצת השומן יוצא בסוף כ-CO₂. אטומי החמצן שבו מגיעים מהמולקולות שפורקו ומהמים שבתא, ואילו החמצן שאנחנו שואפים נקשר בעיקר למים.'],
+ h2o:['מים מטבוליים','מים נוצרים בקומפלקס IV ובתגובות נוספות. הם מצטרפים לנוזלי הגוף ועוזבים דרך שתן, זיעה, אדי מים בנשימה ודרכים נוספות.'],
+ alveolus:['נאדיות הריאה','מאות מיליוני שקיקים זעירים עם דופן דקה במיוחד. ה-CO₂ מתפזר מהדם אל האוויר שבנאדית, והחמצן עובר בכיוון ההפוך.'],
+ bicarb:['ביקרבונט','רוב ה-CO₂ נישא בדם כיוני ביקרבונט (HCO₃⁻). חלק קשור להמוגלובין וחלק קטן מומס בפלזמה. בריאות התהליך מתהפך וה-CO₂ משתחרר לאוויר.'],
+ heat:['חום','רק חלק מהאנרגיה שבשומן נשמר כ-ATP ועבודת שריר, והשאר משתחרר כחום. לכן חם לנו באימון, וזה מה שמפעיל את ההזעה.'],
+ sweat:['זיעה','זיעה היא בעיקר מים ומלחים, והיא מקררת את הגוף. ירידה במשקל אחרי אימון מזיע היא בעיקר אובדן נוזלים שחוזר כששותים, לא שומן שנמס.'],
+ mass:['לאן הולכת המסה?','לפי חישוב של Meerman ו-Brown (BMJ, 2014): חמצון 10 ק״ג שומן דורש כ-29 ק״ג חמצן ויוצר כ-28 ק״ג CO₂ וכ-11 ק״ג מים. מתוך 10 הק״ג של השומן עצמו, כ-8.4 ק״ג יוצאים כ-CO₂ דרך הריאות וכ-1.6 ק״ג כמים.'],
+ balance:['מאזן אנרגיה','בזמן אימון הגוף שורף שומן, ובשעות אחרות הוא עשוי לאגור שומן. השינוי במאגרים לאורך שבועות וחודשים תלוי בהפרש בין האנרגיה שנצרכת מהמזון לזו שהגוף מוציא. נשימה מהירה לבדה לא מגבירה את פירוק השומן.'],
+};
+
+/* ---------- molecule primitives ---------- */
+const hitC=(r)=>html`<circle r=${r} fill="transparent"/>`;
+const clickP=(k)=>k?{className:'hit',onClick:(e)=>{e.stopPropagation();openInfo(k)}}:{};
+function CO2({x,y,s=1,rot=0,op=1,k='co2'}){
+  if(op<=0.01) return null;
+  return html`<g transform=${`translate(${x} ${y}) rotate(${rot}) scale(${s})`} opacity=${op} ...${clickP(k)}>
+    ${hitC(18)}<line x1="-13" y1="0" x2="13" y2="0" stroke="#d7e2ee" strokeWidth="3.4"/>
+    <circle cx="-13" r="6.5" fill="url(#aO)"/><circle r="7" fill="url(#aC)"/><circle cx="13" r="6.5" fill="url(#aO)"/></g>`;
+}
+function H2O({x,y,s=1,rot=0,op=1,k='h2o'}){
+  if(op<=0.01) return null;
+  return html`<g transform=${`translate(${x} ${y}) rotate(${rot}) scale(${s})`} opacity=${op} ...${clickP(k)}>
+    ${hitC(16)}<line x1="-10" y1="7" x2="0" y2="0" stroke="#d7e2ee" strokeWidth="2.6"/><line x1="10" y1="7" x2="0" y2="0" stroke="#d7e2ee" strokeWidth="2.6"/>
+    <circle cx="-10" cy="7" r="4.2" fill="url(#aH)"/><circle cx="10" cy="7" r="4.2" fill="url(#aH)"/><circle r="7" fill="url(#aO)"/></g>`;
+}
+function O2({x,y,s=1,rot=0,op=1}){
+  if(op<=0.01) return null;
+  return html`<g transform=${`translate(${x} ${y}) rotate(${rot}) scale(${s})`} opacity=${op} ...${clickP('o2')}>
+    ${hitC(16)}<circle cx="-5.5" r="6.5" fill="url(#aO)"/><circle cx="5.5" r="6.5" fill="url(#aO)"/></g>`;
+}
+function ATP({x,y,s=1,op=1,glow=0}){
+  if(op<=0.01) return null;
+  return html`<g transform=${`translate(${x} ${y}) scale(${s})`} opacity=${op} ...${clickP('atp')}>
+    ${hitC(20)}${glow>0&&html`<circle r="24" fill="url(#gSparkG)" opacity=${glow}/>`}
+    <line x1="-14" y1="0" x2="24" y2="0" stroke="#ffe2a0" strokeWidth="2"/>
+    <polygon points="-20,-5 -14,-8 -8,-5 -8,3 -14,6 -20,3" fill="#5a8cff"/>
+    <polygon points="-6,-4 -1,-7 4,-4 2,3 -4,3" fill="#cfd9ff"/>
+    <circle cx="9" r="4.2" fill="url(#aP)"/><circle cx="17" r="4.2" fill="url(#aP)"/><circle cx="25" r="4.2" fill="url(#aP)"/></g>`;
+}
+function FA({x,y,n=16,rot=0,s=1,op=1,a=0,seed=0,k='fa'}){
+  if(op<=0.01||n<=0) return null;
+  const pts=[]; for(let i=0;i<n;i++) pts.push([i*11,(i%2?6:0)+Math.sin(a*3+i*.7+seed)*1.6]);
+  return html`<g transform=${`translate(${x} ${y}) rotate(${rot}) scale(${s})`} opacity=${op} ...${clickP(k)}>
+    <rect x="-10" y="-12" width=${n*11+14} height="26" fill="transparent"/>
+    <polyline points=${P(pts)} fill="none" stroke="#ffcf7a" strokeWidth="3" strokeLinejoin="round"/>
+    ${pts.map((p,i)=>html`<circle key=${i} cx=${p[0]} cy=${p[1]} r="3.1" fill="url(#aC)"/>`)}
+    <circle cx="-7" cy="-5" r="4.4" fill="url(#aO)"/><circle cx="-7" cy="7" r="4.4" fill="url(#aO)"/></g>`;
+}
+function RBC({x,y,s=1,rot=0,tone=0,blur=false}){
+  const id=tone>0.5?'gRbcB':'gRbc';
+  return html`<g transform=${`translate(${x} ${y}) rotate(${rot}) scale(${s})`} ...${blur?{}:clickP('rbc')} filter=${blur?'url(#soft)':null}>
+    <ellipse rx="16" ry="10.5" fill=${`url(#${id})`}/><ellipse rx="8" ry="4.6" fill="#3a0010" opacity=".38"/><ellipse cx="-5" cy="-5" rx="6" ry="2.2" fill="#fff" opacity=".18"/></g>`;
+}
+function Albumin({x,y,s=1,a=0,fas=1,op=1}){
+  return html`<g transform=${`translate(${x} ${y}) rotate(${Math.sin(a*1.3+x*.01)*12}) scale(${s})`} opacity=${op} ...${clickP('albumin')}>
+    <circle cx="0" cy="0" r="22" fill="url(#gAlb)"/><circle cx="-19" cy="9" r="15" fill="url(#gAlb)"/><circle cx="17" cy="11" r="16" fill="url(#gAlb)"/>
+    <ellipse cx="-6" cy="-10" rx="9" ry="4" fill="#fff" opacity=".25"/>
+    ${fas>1&&html`<${FA} x=${-30} y=${16} n=${8} rot=${140} s=${.75} a=${a} seed=${2} k="albumin"/>`}</g>`;
+}
+function Enzyme({x,y,op,label}){
+  if(op<=0.01) return null;
+  return html`<g transform=${`translate(${x} ${y})`} opacity=${op} ...${clickP('lipase')}>
+    <path d="M-34,-6 C-38,-36 -6,-44 6,-30 L0,-12 L14,-16 C30,-34 46,-10 38,6 C48,26 22,44 2,34 C-16,46 -42,28 -34,-6 Z" fill="url(#gEnz)" stroke="#d6b8ff" strokeOpacity=".6" strokeWidth="1.5"/>
+    <ellipse cx="-14" cy="-18" rx="10" ry="5" fill="#fff" opacity=".22"/>
+    <text x="2" y="12" textAnchor="middle" fontSize=${15*Math.min(FS,1.4)} fill="#fff" className="mono">${label}</text></g>`;
+}
+function Lbl({x,y,tx,ty,text,op=1,k,size=15}){
+  if(op<=0.01) return null;
+  const left=tx<x; const fs=size*FS;
+  const len=Math.hypot(tx-x,ty-y); const dash=len*(1-clamp(op*1.4));
+  return html`<g opacity=${op} ...${clickP(k)} style=${{pointerEvents:op>.5?'auto':'none'}}>
+    <line x1=${x} y1=${y} x2=${tx} y2=${ty} stroke="#a9ecff" strokeWidth="1.2" strokeOpacity=".8" strokeDasharray=${len} strokeDashoffset=${dash}/>
+    <circle cx=${x} cy=${y} r="7" fill="none" stroke="#a9ecff" strokeOpacity=".5"/><circle cx=${x} cy=${y} r="3" fill="#e8fbff"/>
+    <line x1=${tx} y1=${ty} x2=${tx+(left?-1:1)*8} y2=${ty} stroke="#a9ecff" strokeWidth="1.2"/>
+    <text x=${tx+(left?-12:12)} y=${ty+fs*.35} fontSize=${fs} fill="#eaf6ff" textAnchor=${left?'start':'end'} stroke="#02060c" strokeWidth=${3.5} paintOrder="stroke">${text}</text></g>`;
+}
+function Tag({x,y,text,op=1,size=15,fill='#eaf6ff',anchor='middle',k}){
+  if(op<=0.01) return null;
+  return html`<text x=${x} y=${y} fontSize=${size*FS} fill=${fill} opacity=${op} textAnchor=${anchor} stroke="#02060c" strokeWidth="3.5" paintOrder="stroke" ...${clickP(k)}>${text}</text>`;
+}
+const BG=(id)=>html`<rect x="-1500" y="-1200" width="4000" height="3000" fill=${`url(#${id})`}/>`;
+
+/* ---------- body geometry ---------- */
+function capsule(p1,p2,r1,r2){
+  const dx=p2[0]-p1[0], dy=p2[1]-p1[1], l=Math.hypot(dx,dy)||1, nx=-dy/l, ny=dx/l;
+  const a1=[p1[0]+nx*r1,p1[1]+ny*r1], a2=[p2[0]+nx*r2,p2[1]+ny*r2], b2=[p2[0]-nx*r2,p2[1]-ny*r2], b1=[p1[0]-nx*r1,p1[1]-ny*r1];
+  return `M${f1(a1)} L${f1(a2)} A${r2} ${r2} 0 0 0 ${f1(b2)} L${f1(b1)} A${r1} ${r1} 0 0 0 ${f1(a1)}Z`;
+}
+function smooth(pts){
+  const n=pts.length; let d='';
+  for(let i=0;i<n;i++){const p0=pts[(i-1+n)%n],p1=pts[i],p2=pts[(i+1)%n],p3=pts[(i+2)%n];
+    if(i===0) d+='M'+f1(p1);
+    d+='C'+f1([p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6])+' '+f1([p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6])+' '+f1(p2)}
+  return d+'Z';
+}
+function pose(a,cx,gy){
+  const ph=TAU*1.35*a; const bob=-5*Math.abs(Math.cos(ph));
+  const H=[cx,gy-152+bob], S=[H[0]+16,H[1]-112], head=[S[0]+14,S[1]-38];
+  const legs=[0,1].map(i=>{const f=ph+i*Math.PI; const th=.5*Math.sin(f); const kb=.25+1.0*(.5+.5*Math.sin(f-1.9));
+    const K=[H[0]+76*Math.sin(th),H[1]+76*Math.cos(th)]; const a2=th-kb; const F=[K[0]+78*Math.sin(a2),K[1]+78*Math.cos(a2)];
+    const T=[F[0]+20*Math.cos(a2*.4),F[1]+4]; return {K,F,T}});
+  const arms=[0,1].map(i=>{const f=ph+i*Math.PI; const al=-.55*Math.sin(f); const E=[S[0]+50*Math.sin(al),S[1]+8+50*Math.cos(al)];
+    const a2=al+1.5; return {E,W:[E[0]+44*Math.sin(a2),E[1]+44*Math.cos(a2)]}});
+  const up=[(S[0]-H[0])/112.9,(S[1]-H[1])/112.9]; const n=[-up[1],up[0]];
+  const pt=(b,u,v)=>[b[0]+up[0]*u+n[0]*v,b[1]+up[1]*u+n[1]*v];
+  return {H,S,head,legs,arms,up,n,pt};
+}
+function Runner({a,cx=0,gy=0,xray=0,glow=0,reveal=9999,id='r',breath=null,lungGlow=0,skel=1}){
+  const p=pose(a,cx,gy), L=p.legs, A=p.arms, pt=p.pt;
+  const torso=smooth([pt(p.H,-10,-22),pt(p.H,-8,20),pt(p.H,40,16),pt(p.H,78,23),pt(p.S,-14,25),pt(p.S,2,16),pt(p.S,10,2),pt(p.S,6,-18),pt(p.S,-20,-23),pt(p.H,55,-17),pt(p.H,20,-25)]);
+  const shapes=(back)=>{const i=back?1:0; return [
+      capsule(p.S,A[i].E,8.5,6.5),capsule(A[i].E,A[i].W,6.5,4.8),
+      capsule(p.H,L[i].K,15.5,9.5),capsule(L[i].K,L[i].F,9.5,5.5),capsule(L[i].F,L[i].T,6.5,5)]};
+  const solidOp=1-.9*xray;
+  const body=(d,key,back)=>html`<g key=${key} opacity=${back?.72:1}>
+      ${solidOp>.02&&html`<path d=${d} fill=${back?'url(#gSuitB)':'url(#gSuit)'} opacity=${solidOp}/>`}
+      ${xray>.02&&html`<path d=${d} fill="url(#gGlass)" stroke="#8be6ff" strokeOpacity=${.3+.55*xray} strokeWidth="1.4" opacity=${xray}/>`}</g>`;
+  const neck=capsule(pt(p.S,0,4),[p.head[0]-4,p.head[1]+12],7,6.5);
+  const headD=smooth([[p.head[0]-20,p.head[1]-4],[p.head[0]-12,p.head[1]-22],[p.head[0]+6,p.head[1]-25],[p.head[0]+19,p.head[1]-12],[p.head[0]+21,p.head[1]+2],[p.head[0]+24,p.head[1]+6],[p.head[0]+17,p.head[1]+16],[p.head[0]+4,p.head[1]+22],[p.head[0]-12,p.head[1]+14]]);
+  const br = breath==null ? .5+.5*Math.sin(TAU*.35*a) : breath;
+  const beat=Math.pow(Math.max(0,Math.sin(TAU*2.3*a)),6);
+  const hc=pt(p.S,-48,10);
+  const mus=glow;
+  const mA=(.4+.6*glow)*xray;
+  const bone='#dbe9ff';
+  const spine=[]; for(let i=0;i<11;i++) spine.push(pt(p.H,8+i*12.5,-13+Math.sin(i*.45)*3));
+  const anat=xray>.01&&html`<g clipPath=${`url(#clip-${id})`} opacity=${xray}>
+     ${skel>0&&html`<g opacity=${.42*skel} ...${clickP('bone')}>
+       <polyline points=${P(spine)} fill="none" stroke=${bone} strokeWidth="3"/>
+       ${spine.map((s,i)=>html`<circle key=${'v'+i} cx=${s[0]} cy=${s[1]} r="2.6" fill=${bone}/>`)}
+       ${[0,1,2,3,4,5].map(k=>{const b=pt(p.S,-22-k*9,-12), c=pt(p.S,-10-k*9,24), e=pt(p.S,-34-k*10,20); return html`<path key=${'r'+k} d=${`M${f1(b)} Q${f1(c)} ${f1(e)}`} fill="none" stroke=${bone} strokeWidth="2"/>`})}
+       <ellipse cx=${pt(p.H,6,0)[0]} cy=${pt(p.H,6,0)[1]} rx="19" ry="11" fill="none" stroke=${bone} strokeWidth="2.5"/>
+       ${[0,1].map(i=>html`<g key=${'lb'+i} opacity=${i?.5:1}><line x1=${p.H[0]} y1=${p.H[1]} x2=${L[i].K[0]} y2=${L[i].K[1]} stroke=${bone} strokeWidth="4" strokeLinecap="round"/><line x1=${L[i].K[0]} y1=${L[i].K[1]} x2=${L[i].F[0]} y2=${L[i].F[1]} stroke=${bone} strokeWidth="3" strokeLinecap="round"/><circle cx=${L[i].K[0]} cy=${L[i].K[1]} r="4" fill=${bone}/><line x1=${p.S[0]} y1=${p.S[1]+6} x2=${A[i].E[0]} y2=${A[i].E[1]} stroke=${bone} strokeWidth="2.5" strokeLinecap="round"/><line x1=${A[i].E[0]} y1=${A[i].E[1]} x2=${A[i].W[0]} y2=${A[i].W[1]} stroke=${bone} strokeWidth="2" strokeLinecap="round"/></g>`)}
+       <circle cx=${p.head[0]} cy=${p.head[1]-3} r="17" fill="none" stroke=${bone} strokeWidth="2"/>
+     </g>`}
+     <g ...${clickP('vessel')}>
+       <path d=${`M${f1(hc)} Q${f1(pt(p.H,50,-6))} ${f1(pt(p.H,0,-4))}`} stroke="#ff4d5e" strokeWidth="4" fill="none" strokeDasharray="6 8" strokeDashoffset=${-a*70}/>
+       ${[0,1].map(i=>html`<polyline key=${'v'+i} points=${P([pt(p.H,0,-4),L[i].K,L[i].F])} stroke="#ff4d5e" strokeWidth="2.4" fill="none" strokeDasharray="5 7" strokeDashoffset=${-a*70} opacity=${i?.5:.9}/>`)}
+       ${[0,1].map(i=>html`<polyline key=${'w'+i} points=${P([[L[i].F[0]-4,L[i].F[1]],[L[i].K[0]-5,L[i].K[1]],[p.H[0]-4,p.H[1]],[hc[0]-8,hc[1]+4]])} stroke="#4a7dff" strokeWidth="2.2" fill="none" strokeDasharray="5 7" strokeDashoffset=${a*60} opacity=${i?.4:.75}/>`)}
+     </g>
+     <g ...${clickP('muscle')} opacity=${mA} filter=${glow>.3?'url(#bloom)':null}>
+       <path d=${capsule(mid(p.H,L[1].K,.1),mid(p.H,L[1].K,.86),11,7)} fill="url(#gMus)" opacity=".55"/>
+       <path d=${capsule(mid(L[1].K,L[1].F,.08),mid(L[1].K,L[1].F,.55),8,4)} fill="url(#gMus)" opacity=".55"/>
+       <path d=${capsule(p.S,mid(p.S,A[1].E,.85),6.5,4.5)} fill="url(#gMus)" opacity=".5"/>
+       <ellipse cx=${pt(p.H,6,-14)[0]} cy=${pt(p.H,6,-14)[1]} rx="13" ry="15" fill="url(#gMus)"/>
+       ${[0,1,2].map(k=>html`<g key=${'ab'+k}><rect x=${pt(p.H,26+k*15,13)[0]-6} y=${pt(p.H,26+k*15,13)[1]-6} width="7" height="11" rx="3" fill="url(#gMus)" opacity=".75"/><rect x=${pt(p.H,26+k*15,5)[0]-6} y=${pt(p.H,26+k*15,5)[1]-6} width="7" height="11" rx="3" fill="url(#gMus)" opacity=".75"/></g>`)}
+       <ellipse cx=${pt(p.S,-18,16)[0]} cy=${pt(p.S,-18,16)[1]} rx="9" ry="13" fill="url(#gMus)" opacity=".8"/>
+       <path d=${capsule(mid(p.H,L[0].K,.1),mid(p.H,L[0].K,.86),12,7.5)} fill="url(#gMus)"/>
+       <path d=${capsule(mid(L[0].K,L[0].F,.08),mid(L[0].K,L[0].F,.55),8.5,4)} fill="url(#gMus)"/>
+       <circle cx=${p.S[0]+2} cy=${p.S[1]+4} r="9" fill="url(#gMus)"/>
+       <path d=${capsule(p.S,mid(p.S,A[0].E,.85),7,5)} fill="url(#gMus)"/>
+       ${mus>.2&&[0,1,2,3].map(k=>{const q=mid(p.H,L[0].K,.2+k*.18); return html`<line key=${'fb'+k} x1=${q[0]-6} y1=${q[1]} x2=${q[0]+6} y2=${q[1]} stroke="#ffd9b0" strokeOpacity=${.35*mus} strokeWidth="1"/>`})}
+     </g>
+     <g ...${clickP('alveolus')} opacity=${.6+.4*lungGlow}>
+       <path d=${smooth([pt(p.S,-12,-4),pt(p.S,-24,-14),pt(p.S,-62-6*br,-12-3*br),pt(p.S,-70-6*br,2),pt(p.S,-50,6),pt(p.S,-14,4)])} fill="url(#gLung)"/>
+       <path d=${smooth([pt(p.S,-12,8),pt(p.S,-26,20+3*br),pt(p.S,-62-6*br,18+3*br),pt(p.S,-70-6*br,8),pt(p.S,-46,10),pt(p.S,-16,12)])} fill="url(#gLung)"/>
+       <line x1=${pt(p.S,-2,2)[0]} y1=${pt(p.S,-2,2)[1]} x2=${pt(p.S,-22,2)[0]} y2=${pt(p.S,-22,2)[1]} stroke="#ffc3d3" strokeWidth="3" opacity=".7"/>
+     </g>
+     <g transform=${`translate(${hc[0]} ${hc[1]}) scale(${.55+.08*beat})`} ...${clickP('heart')}>
+       <circle r="34" fill="url(#gSparkR)" opacity=${.3+.55*beat}/>
+       <path d="M0,14 C-22,-2 -20,-20 -8,-20 C-2,-20 0,-14 0,-11 C0,-14 2,-20 8,-20 C20,-20 22,-2 0,14 Z" fill="url(#gHeart)"/>
+       <ellipse cx="-8" cy="-12" rx="5" ry="3" fill="#fff" opacity=".35"/>
+     </g>
+     <g ...${clickP('fat')}>
+       ${[[30,18,9],[42,20,10],[54,18,8],[36,8,8],[48,9,7],[20,16,7],[64,16,6],[8,-20,9],[20,-23,8],[-4,-19,8]].map((c,i)=>{const q=pt(p.H,c[0],c[1]); return html`<circle key=${'f'+i} cx=${q[0]} cy=${q[1]} r=${c[2]} fill="url(#gFat)" opacity=".82"/>`})}
+       <path d=${capsule(mid(p.H,L[0].K,.12),mid(p.H,L[0].K,.8),5,3)} fill="url(#gFat)" opacity=".45"/>
+     </g>
+   </g>`;
+  return html`<g>
+    <defs><clipPath id=${`clip-${id}`}><rect x=${cx-400} y=${-2000} width="800" height=${reveal+2000}/></clipPath></defs>
+    ${shapes(true).map((d,i)=>body(d,'b'+i,true))}
+    ${body(torso,'torso')}
+    ${body(neck,'neck')}
+    ${body(headD,'head')}
+    ${anat}
+    ${shapes(false).map((d,i)=>body(d,'f'+i,false))}
+  </g>`;
+}
+function Treadmill({a,cx=0,gy=0,op=1,speed='10.0'}){
+  if(op<=.01) return null;
+  return html`<g opacity=${op}>
+    <ellipse cx=${cx} cy=${gy+36} rx="300" ry="26" fill="url(#gFloorGlow)"/>
+    <polygon points=${P([[cx-200,gy+4],[cx+175,gy+4],[cx+200,gy+28],[cx-225,gy+28]])} fill="url(#gDeck)" stroke="#3a6a94" strokeWidth="1.2"/>
+    <line x1=${cx-198} y1=${gy+5} x2=${cx+174} y2=${gy+5} stroke="#7fe4ff" strokeWidth="2.5" strokeDasharray="14 10" strokeDashoffset=${a*230} opacity=".6"/>
+    <line x1=${cx-224} y1=${gy+28} x2=${cx+199} y2=${gy+28} stroke="#4fd6ff" strokeWidth="1" opacity=".5"/>
+    <line x1=${cx+178} y1=${gy+6} x2=${cx+212} y2=${gy-150} stroke="url(#gPost)" strokeWidth="7" strokeLinecap="round"/>
+    <line x1=${cx+205} y1=${gy-120} x2=${cx+90} y2=${gy-112} stroke="#36618a" strokeWidth="5" strokeLinecap="round"/>
+    <rect x=${cx+182} y=${gy-180} width="80" height="34" rx="7" fill="#04101c" stroke="#7fe4ff" strokeOpacity=".7"/>
+    <text x=${cx+222} y=${gy-158} fontSize="14" fill="#9feaff" textAnchor="middle" className="mono">${speed} km/h</text>
+  </g>`;
+}
+
+/* ---------- scene 1 ---------- */
+function Scene1({lt,a}){
+  const scan=ss(1.4,5.4,lt), scanY=lerp(-20,480,scan);
+  const xray=ss(1.8,5.8,lt), glow=ss(4.5,9.5,lt);
+  const cam=lerp(.9,1.3,ss(0,10,lt));
+  const orbit=Math.sin(lt*.32);
+  const hr=Math.round(lerp(92,148,ss(.5,10,lt)));
+  const lo=ss(5.6,6.6,lt);
+  const p=pose(a,500,455);
+  const grid=[];
+  for(let i=-10;i<=10;i++){const x=500+i*80+orbit*40; grid.push(html`<line key=${'g'+i} x1=${500+i*14+orbit*8} y1="470" x2=${x*1.9-450} y2="760" stroke="#4fd6ff" strokeOpacity=".08"/>`)}
+  for(let j=0;j<7;j++){const y=475+j*j*7+j*8; grid.push(html`<line key=${'h'+j} x1="-300" y1=${y} x2="1300" y2=${y} stroke="#4fd6ff" strokeOpacity=${.04+.012*j}/>`)}
+  const rings=[0,1,2].map(i=>{const y=lerp(170,430,i/2)+Math.sin(a*.8+i)*8; return html`<ellipse key=${'rg'+i} cx="510" cy=${y} rx=${150+i*14} ry=${20+i*2} fill="none" stroke="#7fe4ff" strokeOpacity=${.22*xray} strokeWidth="1.2" strokeDasharray="3 9 40 9" strokeDashoffset=${a*(i%2?40:-40)}/>`});
+  return html`<g>${BG('bg1')}
+    <polygon points="430,-60 610,-60 760,500 270,500" fill="url(#gBeam)" opacity=${.55+.25*Math.sin(a*.7)}/>
+    <g transform=${camT(520,290,cam)}>
+      ${grid}
+      <ellipse cx="500" cy="300" rx="340" ry="290" fill="url(#gHalo)" opacity=${.5+.35*glow}/>
+      <${Treadmill} a=${a} cx=${500} gy=${455}/>
+      ${rings}
+      <${Runner} a=${a} cx=${500} gy=${455} xray=${xray} glow=${glow} reveal=${scanY} id="s1"/>
+      ${scan>0&&scan<1&&html`<g opacity=${Math.sin(scan*Math.PI)}>
+        <rect x="320" y=${scanY-60} width="380" height="60" fill="url(#gScanTrail)"/>
+        <ellipse cx="510" cy=${scanY} rx="165" ry="22" fill="none" stroke="#bff3ff" strokeWidth="2.5" filter="url(#bloom)"/></g>`}
+      <${Lbl} x=${pose(a,500,455).pt(p.S,-48,10)[0]} y=${p.pt(p.S,-48,10)[1]} tx=${p.S[0]+170} ty=${p.S[1]+5} text="לב" op=${lo} k="heart"/>
+      <${Lbl} x=${p.pt(p.H,42,20)[0]} y=${p.pt(p.H,42,20)[1]} tx=${p.H[0]+190} ty=${p.H[1]-30} text="רקמת שומן" op=${ss(6,7,lt)} k="fat"/>
+      <${Lbl} x=${mid(p.H,p.legs[0].K)[0]} y=${mid(p.H,p.legs[0].K)[1]} tx=${p.H[0]-180} ty=${p.H[1]+50} text="שרירים פעילים" op=${ss(6.4,7.4,lt)} k="muscle"/>
+      <${Lbl} x=${p.pt(p.S,-30,-20)[0]} y=${p.pt(p.S,-30,-20)[1]} tx=${p.H[0]-190} ty=${p.H[1]-110} text="ריאות" op=${ss(6.8,7.8,lt)} k="alveolus"/>
+    </g>
+    <g transform="translate(36 40)" opacity=${ss(.3,1.2,lt)}>
+      <rect width="200" height="82" rx="12" fill="#03101ccc" stroke="#2a4a6a"/>
+      <text x="184" y="25" fontSize="13" fill="#8ea4bd" textAnchor="start">דופק</text>
+      <text x="16" y="28" fontSize="21" fill="#ff7a86" className="mono">${hr}<tspan fontSize="11" fill="#8ea4bd"> bpm</tspan></text>
+      <polyline points=${P(Array.from({length:30},(_,i)=>{const x=16+i*2.6; const ph=frac(a*2.3-i*.035); return [x,46-(ph<.08?Math.sin(ph/.08*Math.PI)*9:0)]}))} fill="none" stroke="#ff7a86" strokeWidth="1.5"/>
+      <text x="184" y="60" fontSize="13" fill="#8ea4bd" textAnchor="start">דרישת אנרגיה</text>
+      <rect x="16" y="54" width="80" height="8" rx="4" fill="#132a44"/>
+      <rect x="16" y="54" width=${80*lerp(.18,.92,ss(0,9.5,lt))} height="8" rx="4" fill="url(#gBar)"/>
+    </g>
+  </g>`;
+}
+
+/* ---------- scene 2 ---------- */
+const CELLS=[[500,310],[720,310],[610,500],[390,500],[280,310],[390,120],[610,120],[830,120],[170,120],[830,500],[170,500],[940,310],[60,310]];
+function Scene2({lt,a}){
+  const zoom=lerp(1,6.5,Math.pow(ss(3.2,5.4,lt),1.6));
+  const opA=1-ss(4.3,5.3,lt), opB=ss(4.6,5.6,lt);
+  const sig=ss(1.4,3,lt);
+  const recA=[200,160,230,130,250,190];
+  const layerA=opA>0.01&&html`<g opacity=${opA} transform=${camT(500,310,zoom)}>
+    ${CELLS.map((c,i)=>{const R=113+2*Math.sin(a*1.1+i); const hero=i===0; const dr=R*.82;
+      return html`<g key=${i} ...${clickP('adipocyte')}>
+        <circle cx=${c[0]} cy=${c[1]} r=${R} fill="url(#gCyto)" stroke="#ffd58a" strokeOpacity=${hero?.9:.45} strokeWidth=${hero?3:2}/>
+        <circle cx=${c[0]} cy=${c[1]} r=${R-5} fill="none" stroke="#ffe7b8" strokeOpacity=".15" strokeWidth="1"/>
+        <circle cx=${c[0]+3} cy=${c[1]+2} r=${dr} fill="url(#gFat)" opacity=${.82+(hero?.18*sig:0)} ...${clickP('droplet')}/>
+        <ellipse cx=${c[0]-dr*.32} cy=${c[1]-dr*.38} rx=${dr*.3} ry=${dr*.16} transform=${`rotate(-32 ${c[0]-dr*.32} ${c[1]-dr*.38})`} fill="url(#gSpec)"/>
+        ${Array.from({length:hero?18:10},(_,j)=>{const th=j/(hero?18:10)*TAU+i; return html`<circle key=${'pl'+j} cx=${c[0]+3+dr*Math.cos(th)} cy=${c[1]+2+dr*Math.sin(th)} r="2.6" fill="#9a7cff" opacity=".75"/>`})}
+        <ellipse cx=${c[0]+R*.9*Math.cos(i*2.1)} cy=${c[1]+R*.9*Math.sin(i*2.1)} rx="10" ry="5" transform=${`rotate(${i*2.1*57.3+90} ${c[0]+R*.9*Math.cos(i*2.1)} ${c[1]+R*.9*Math.sin(i*2.1)})`} fill="url(#gNuc)"/>
+      </g>`})}
+    <path d="M-40,212 C120,190 260,236 400,214 S640,186 760,216 S940,204 1060,216" stroke="#d63048" strokeWidth="8" fill="none" opacity=".8" ...${clickP('vessel')}/>
+    <path d="M-40,212 C120,190 260,236 400,214 S640,186 760,216 S940,204 1060,216" stroke="#ff9aa8" strokeWidth="2" fill="none" opacity=".5" strokeDasharray="4 14" strokeDashoffset=${-a*40}/>
+    <path d="M-40,405 C140,420 300,392 500,410 S800,424 1060,402" stroke="#d63048" strokeWidth="6" fill="none" opacity=".6"/>
+    ${recA.map((ang,i)=>{const t0=.4+i*.28; const e=ss(t0,t0+1.4,lt); const th=ang*Math.PI/180; const tx=500+115*Math.cos(th), ty=310+115*Math.sin(th);
+      const sx=tx-260-40*i, sy=ty+(i%2?-80:70); const x=lerp(sx,tx,e), y=lerp(sy,ty,e)+Math.sin(a*3+i)*4*(1-e);
+      const rip=lt-(t0+1.4);
+      return html`<g key=${'h'+i}>
+        ${rip>0&&rip<1.6&&html`<circle cx=${tx} cy=${ty} r=${8+rip*40} fill="none" stroke="#7fe4ff" strokeOpacity=${1-rip/1.6} strokeWidth="2"/>`}
+        <g transform=${`translate(${x} ${y}) rotate(45)`} opacity=${ss(t0-.3,t0,lt)} ...${clickP('adrenaline')}><circle r="16" fill="url(#gSpark)" opacity=".7"/><rect x="-6" y="-6" width="12" height="12" fill="#bff3ff"/></g>
+      </g>`})}
+    <${Lbl} x=${560} y=${210} tx=${720} ty=${60} text="תא שומן" op=${ss(.5,1.3,lt)*(1-ss(3,3.5,lt))} k="adipocyte"/>
+    <${Lbl} x=${470} y=${330} tx=${300} ty=${285} text="טיפת שומן" op=${ss(1,1.8,lt)*(1-ss(3,3.5,lt))} k="droplet"/>
+    <${Lbl} x=${395} y=${240} tx=${235} ty=${200} text="אדרנלין נקשר לקולטן" op=${ss(1.8,2.4,lt)*(1-ss(3,3.5,lt))} k="adrenaline"/>
+  </g>`;
+  const ys=[215,310,405]; const cut=[6,8.3,10.6]; const names=['ATGL','HSL','MGL'];
+  const bcam=lerp(1.25,1,ss(4.6,7.5,lt));
+  const layerB=opB>0.01&&html`<g opacity=${opB} transform=${camT(450,310,bcam)}>
+    <rect x="-200" y="-200" width="1400" height="1000" fill="url(#gFatHaze)"/>
+    <g filter="url(#soft)">${[0,1,2,3,4,5,6,7].map(i=>html`<g key=${'bg'+i} opacity=".16" transform=${`translate(${frac(h(i)+a*.006)*1100-50} ${h(i+9)*620}) rotate(${h(i+3)*360}) scale(${1+h(i+4)})`}><polyline points="0,0 20,8 40,0 60,8 80,0 100,8" fill="none" stroke="#fff3c4" strokeWidth="4"/><polyline points="0,30 20,38 40,30 60,38 80,30" fill="none" stroke="#fff3c4" strokeWidth="4"/></g>`)}</g>
+    <g ...${clickP('glycerol')}>
+      <line x1="650" y1=${ys[0]} x2="650" y2=${ys[2]} stroke="#c7d3e0" strokeWidth="5"/>
+      ${ys.map((y,i)=>html`<circle key=${'g'+i} cx="650" cy=${y} r="11" fill="url(#aC)"/>`)}
+      ${ys.map((y,i)=>{const e=ss(cut[i],cut[i]+.5,lt); return html`<g key=${'oh'+i}><line x1="650" y1=${y} x2="612" y2=${y} stroke="#c7d3e0" strokeWidth="4"/><circle cx="612" cy=${y} r="10" fill="url(#aO)"/>${e>0&&html`<circle cx="604" cy=${y-12} r="5.5" fill="url(#aH)" opacity=${e}/>`}</g>`})}
+    </g>
+    ${ys.map((y,i)=>{
+      const c=cut[i]; const e=ss(c,c+2.2,lt);
+      const dx=-150*e - 40*e*i, dy=(i-1)*70*e + 18*e, rot=(i-1)*14*e;
+      const pts=[[578,y]]; for(let j=1;j<=15;j++) pts.push([578-25*j, y+(j%2?13:0)+Math.sin(a*2+j*.6+i)*3]);
+      return html`<g key=${'c'+i} transform=${`translate(${dx} ${dy}) rotate(${rot} 578 ${y})`} ...${clickP(lt>c?'fa':'tg')}>
+        <rect x="190" y=${y-30} width="400" height="55" fill="transparent"/>
+        ${lt<c&&html`<line x1="612" y1=${y} x2="578" y2=${y} stroke="#c7d3e0" strokeWidth="4"/>`}
+        <line x1="578" y1=${y} x2="578" y2=${y-30} stroke="#c7d3e0" strokeWidth="3"/><line x1="584" y1=${y} x2="584" y2=${y-30} stroke="#c7d3e0" strokeWidth="3"/>
+        <polyline points=${P(pts)} fill="none" stroke="#ffcf7a" strokeWidth="4.5" strokeLinejoin="round"/>
+        ${pts.map((p,j)=>html`<circle key=${j} cx=${p[0]} cy=${p[1]} r=${j?7.5:9} fill="url(#aC)"/>`)}
+        <circle cx="581" cy=${y-34} r="9.5" fill="url(#aO)"/>
+        ${e>0&&html`<g opacity=${ss(c,c+.5,lt)}><line x1="578" y1=${y} x2="600" y2=${y+10} stroke="#c7d3e0" strokeWidth="3"/><circle cx="602" cy=${y+12} r="9" fill="url(#aO)"/><circle cx="614" cy=${y+20} r="5.5" fill="url(#aH)"/></g>`}
+        <${Tag} x=${330} y=${y+44} text="חומצת שומן חופשית" op=${ss(c+1,c+1.8,lt)} size=${14} fill="#ffe2a8"/>
+      </g>`})}
+    ${ys.map((y,i)=>{const c=cut[i];
+      const app=ss(c-1.7,c-.15,lt), lv=ss(c+.5,c+1.8,lt);
+      const x=lerp(lerp(480,560,i/2),596,app)+lv*(-40), yy=lerp(y+170,y+34,app)+lv*150;
+      const op=ss(c-2,c-1.6,lt)*(1-ss(c+1.3,c+1.9,lt));
+      const fl=lt-c;
+      const wx=lerp(x-60,594,ss(c-1.2,c-.1,lt)), wy=lerp(yy+40,y+8,ss(c-1.2,c-.1,lt));
+      return html`<g key=${'e'+i}>
+        ${lt<c&&lt>c-1.6&&html`<${H2O} x=${wx} y=${wy} s=${1.1} op=${ss(c-1.6,c-1.2,lt)}/>`}
+        <${Enzyme} x=${x} y=${yy} op=${op} label=${names[i]}/>
+        ${fl>0&&fl<.9&&html`<g filter="url(#bloom)"><circle cx="596" cy=${y} r=${10+fl*70} fill="url(#gSparkG)" opacity=${1-fl/.9}/><circle cx="596" cy=${y} r=${4+fl*30} fill="none" stroke="#fff" strokeOpacity=${1-fl/.9} strokeWidth="2"/></g>`}
+      </g>`})}
+    <${Lbl} x=${650} y=${200} tx=${780} ty=${120} text="טריגליצריד" op=${ss(5.2,6,lt)*(1-ss(9,9.5,lt))} k="tg"/>
+    <${Lbl} x=${662} y=${310} tx=${800} ty=${310} text="גליצרול" op=${ss(11,11.8,lt)} k="glycerol"/>
+    <${Lbl} x=${578} y=${ys[0]+10} tx=${700} ty=${470} text="קשר אסטר" op=${ss(5.6,6.2,lt)*(1-ss(7.2,7.8,lt))} k="tg"/>
+    <g opacity=${ss(6.2,7,lt)}>
+      <rect x="230" y="548" width="540" height="42" rx="21" fill="#170c02d9" stroke="#ffb547" strokeOpacity=".5"/>
+      <${Tag} x=${500} y=${575} text="ליפוליזה: טריגליצריד + 3 H₂O ← גליצרול + 3 חומצות שומן" size=${15} fill="#ffe2a8" k="lipase"/>
+    </g>
+  </g>`;
+  return html`<g>${BG('bg2')}${layerA}${layerB}</g>`;
+}
+
+/* ---------- scene 3 ---------- */
+const vTop=(x)=>250+7*Math.sin(x/130), vBot=(x)=>392+7*Math.sin(x/150+1);
+function Scene3({lt,a}){
+  const albX=150+160*lt;
+  const camX=clamp(lerp(0,1000,ss(1.6,9.2,lt)),0,1000);
+  const alb=[albX, 320+8*Math.sin(a*2)];
+  let fa, faRot=0;
+  if(lt<2.2){const e=ss(0,2.2,lt); fa=[lerp(250,alb[0]-26,e)+Math.sin(a*4)*4*(1-e), lerp(150,alb[1]-28,e)]; faRot=lerp(70,-20,e)}
+  else if(lt<9){fa=[alb[0]-26,alb[1]-28]; faRot=-20}
+  else if(lt<10){const e=ss(9,10,lt); fa=[lerp(alb[0]-26,1600,e), lerp(alb[1]-28,440,e)]; faRot=lerp(-20,90,e)}
+  else {const e2=ss(10,11,lt); fa=[1600, 440+e2*80]; faRot=90}
+  const path=(fn)=>{let d=''; for(let x=-200;x<=2300;x+=50) d+=(d?'L':'M')+x+','+fn(x).toFixed(1); return d};
+  const vessel=path(vTop)+' '+(()=>{let d=''; for(let x=2300;x>=-200;x-=50) d+='L'+x+','+vBot(x).toFixed(1); return d})()+'Z';
+  const endo=[]; for(let x=-160;x<2300;x+=92){endo.push(html`<g key=${'en'+x}><ellipse cx=${x} cy=${vTop(x)+2} rx="44" ry="6" fill="#ffb3c0" opacity=".22"/><circle cx=${x+6} cy=${vTop(x)+2} r="3" fill="#c48cff" opacity=".5"/><ellipse cx=${x+40} cy=${vBot(x+40)-2} rx="44" ry="6" fill="#ffb3c0" opacity=".22"/><circle cx=${x+46} cy=${vBot(x+40)-2} r="3" fill="#c48cff" opacity=".5"/></g>`)}
+  return html`<g>${BG('bg3')}
+   <g transform=${`translate(${-camX*.4} 0)`} filter="url(#soft)" opacity=".35">
+     ${Array.from({length:8},(_,i)=>html`<circle key=${'bgc'+i} cx=${h(i+90)*2400-200} cy=${h(i+91)>.5?60:560} r=${60+h(i+92)*60} fill="url(#gCyto)"/>`)}
+   </g>
+   <g transform=${`translate(${-camX} 0)`}>
+    <g ...${clickP('adipocyte')}>
+      <circle cx="260" cy="40" r="175" fill="url(#gCyto)" stroke="#ffd58a" strokeOpacity=".7" strokeWidth="3"/>
+      <circle cx="262" cy="34" r="142" fill="url(#gFat)" opacity=".88"/>
+      <ellipse cx="210" cy="-20" rx="50" ry="22" fill="url(#gSpec)"/>
+      <circle cx="620" cy="20" r="150" fill="url(#gCyto)" stroke="#ffd58a" strokeOpacity=".4" strokeWidth="2"/>
+      <circle cx="620" cy="14" r="122" fill="url(#gFat)" opacity=".7"/>
+    </g>
+    <path d=${vessel} fill="url(#gBlood)" ...${clickP('vessel')}/>
+    ${endo}
+    <path d=${path(vTop)} stroke="#ff8fa0" strokeWidth="4" fill="none" opacity=".55"/>
+    <path d=${path(vBot)} stroke="#ff8fa0" strokeWidth="4" fill="none" opacity=".55"/>
+    ${Array.from({length:46},(_,i)=>{const sp=120*(.8+.4*h(i+5)); const x=frac(h(i)+a*sp/2400)*2400-150; const y=272+h(i+11)*96;
+      return html`<${RBC} key=${'r'+i} x=${x} y=${y} rot=${Math.sin(a+i)*30} s=${.85+.3*h(i+2)}/>`})}
+    ${Array.from({length:9},(_,i)=>{const x=frac(h(i+40)+a*130/2400)*2400-150; const y=290+h(i+60)*60; if(Math.abs(x-albX)<120) return null;
+      return html`<g key=${'al'+i}><${Albumin} x=${x} y=${y} a=${a} fas=${2} s=${.8}/><${FA} x=${x-20} y=${y-20} n=${9} rot=${-30} s=${.65} a=${a} seed=${i}/></g>`})}
+    ${Array.from({length:5},(_,i)=>{const t0=i*1.7+.6; const age=((lt-t0)%8.5+8.5)%8.5; if(age>2.4||lt<t0) return null; const sx=180+i*90;
+      return html`<${FA} key=${'fx'+i} x=${sx+age*30} y=${lerp(190,250,age/2.4)} n=${10} rot=${70} s=${.75} a=${a} seed=${i} op=${1-ss(1.8,2.4,age)}/>`})}
+    <g ...${clickP('muscle')}>
+      <rect x="1320" y="440" width="720" height="260" rx="40" fill="url(#gMuscle)" stroke="#ff9a7a" strokeOpacity=".6" strokeWidth="3"/>
+      ${Array.from({length:28},(_,i)=>html`<line key=${'st'+i} x1=${1350+i*24} y1="470" x2=${1350+i*24} y2="680" stroke=${i%2?'#ff6a5a':'#ffb3a0'} strokeOpacity=${i%2?.35:.18} strokeWidth=${i%2?8:3}/>`)}
+      <ellipse cx="1480" cy="560" rx="38" ry="18" fill="url(#gMito)" opacity=".9"/><ellipse cx="1760" cy="590" rx="42" ry="18" fill="url(#gMito)" opacity=".9"/>
+    </g>
+    ${[1450,1600,1750,1880].map((x,i)=>html`<g key=${'cd'+i} ...${clickP('cd36')}><rect x=${x-11} y="426" width="22" height="30" rx="6" fill="#7fe4ff" opacity=${i===1?.95:.6}/><rect x=${x-3} y="428" width="6" height="26" fill="#03101c"/></g>`)}
+    <circle cx=${fa[0]+20} cy=${fa[1]} r="46" fill="url(#gSpark)" opacity=".4"/>
+    <${Albumin} x=${alb[0]} y=${alb[1]} a=${a} s=${1.15}/>
+    <${FA} x=${fa[0]} y=${fa[1]} n=${12} rot=${faRot} s=${1} a=${a} seed=${7}/>
+    <${Lbl} x=${250} y=${150} tx=${80} ty=${120} text="תא שומן" op=${ss(.3,1,lt)*(1-ss(4,5,lt))} k="adipocyte"/>
+    <${Lbl} x=${fa[0]} y=${fa[1]-6} tx=${fa[0]+130} ty=${fa[1]-90} text="חומצת שומן" op=${ss(.6,1.3,lt)*(1-ss(3,3.6,lt))} k="fa"/>
+    <${Lbl} x=${alb[0]} y=${alb[1]+18} tx=${alb[0]-120} ty=${470} text="אלבומין נושא את חומצת השומן" op=${ss(2.6,3.4,lt)*(1-ss(8,8.6,lt))} k="albumin"/>
+    <${Lbl} x=${900} y=${375} tx=${980} ty=${500} text="נימי דם" op=${ss(4,5,lt)*(1-ss(7,7.6,lt))} k="vessel"/>
+    <${Lbl} x=${1600} y=${428} tx=${1760} ty=${385} text="טרנספורטר CD36" op=${ss(8.6,9.3,lt)} k="cd36"/>
+    <${Lbl} x=${1700} y=${520} tx=${1820} ty=${520} text="תא שריר פעיל" op=${ss(7.5,8.3,lt)} k="muscle"/>
+   </g>
+   <g transform=${`translate(${-camX*1.6} 0)`}>
+     ${Array.from({length:6},(_,i)=>html`<${RBC} key=${'fg'+i} blur=${true} x=${frac(h(i+300)+a*.11)*3200-300} y=${560+h(i+301)*70} rot=${20} s=${3+h(i+302)*1.4}/>`)}
+   </g>
+  </g>`;
+}
+
+/* ---------- scene 4 ---------- */
+const ETCP=[[175,448],[300,468],[425,446],[500,505],[575,452]];
+const along=(pts,u)=>{const n=pts.length-1; const f=clamp(u)*n; const i=Math.min(n-1,Math.floor(f)); const k=f-i; return [lerp(pts[i][0],pts[i+1][0],k),lerp(pts[i][1],pts[i+1][1],k)]};
+function Scene4({lt,a}){
+  const cam=lerp(1.35,1,ss(0,2.4,lt));
+  const step=lt<2?0:lt<5?1:lt<8?2:lt<10.5?3:lt<12?4:5;
+  const con=(.15+.85*ss(12.2,13.2,lt))*(.5+.5*Math.sin(TAU*1.3*a));
+  const w=100*(1-.14*con);
+  const sarc=[]; for(let k=-7;k<=7;k++){const z=500+k*w; sarc.push(html`<g key=${'s'+k}>
+     <line x1=${z} y1="34" x2=${z} y2="96" stroke="#7fe4ff" strokeWidth="3"/>
+     <rect x=${z+w/2-26} y="54" width="52" height="22" rx="5" fill="#ff5a5a" opacity=".8"/>
+     ${[44,58,72,86].map((y,j)=>html`<line key=${j} x1=${z} y1=${y} x2=${z+w/2-6} y2=${y} stroke="#ffd0c0" strokeOpacity=".55" strokeWidth="2"/>`)}
+     ${[44,58,72,86].map((y,j)=>html`<line key=${'b'+j} x1=${z+w} y1=${y} x2=${z+w/2+6} y2=${y} stroke="#ffd0c0" strokeOpacity=".55" strokeWidth="2"/>`)}</g>`)}
+  const Hx=lerp(1060,690,ss(2,3.1,lt));
+  const cuts=lt<3.2?0:Math.min(7,Math.floor((lt-3.2)/.5)+1);
+  const chainN=cuts>=7?0:16-2*cuts;
+  const units=[]; for(let k=0;k<8;k++){const tk=3.2+.5*Math.min(k,6); const e=(lt-tk)/1.5; if(lt<tk||e>1) continue;
+     const x=lerp(690,415,ss(0,1,e)), y=lerp(200,196,e)-Math.sin(e*Math.PI)*60;
+     units.push(html`<g key=${'u'+k} transform=${`translate(${x} ${y})`} opacity=${1-ss(.85,1,e)} ...${clickP('acetyl')}>${hitC(18)}<circle cx="-6" r="5.5" fill="url(#aC)"/><circle cx="6" r="5.5" fill="url(#aC)"/><rect x="12" y="-7" width="30" height="14" rx="7" fill="#ff9a3c"/><text x="27" y="4" fontSize="9" textAnchor="middle" fill="#2a1200" className="mono">CoA</text></g>`)}
+  const kr=[400,295], R=88; const rot=lt>=5?(lt-5)*95:0; const kg=ss(4.6,5.4,lt);
+  const co2s=[]; if(lt>=5.2){const n=Math.floor((lt-5.2)/.75); for(let k=Math.max(0,n-5);k<=n;k++){const te=5.2+.75*k; const e=(lt-te)/3.4; if(e<0||e>1) continue;
+     const x=lerp(322,40,e)+Math.sin(e*7+k)*10, y=lerp(250,150,e)+Math.cos(e*5+k)*12;
+     co2s.push(html`<${CO2} key=${'c'+k} x=${x} y=${y} rot=${e*200+k*40} op=${ss(0,.08,e)*(1-ss(.85,1,e))} s=${1.05}/>`)}}
+  const sparks=[]; const addSp=(t0,dt,from,to,key,col)=>{if(lt<t0) return; const n=Math.floor((lt-t0)/dt); for(let k=Math.max(0,n-4);k<=n;k++){const e=(lt-t0-k*dt)/1.3; if(e<0||e>1) continue; const p=[lerp(from[0],to[0],e),lerp(from[1],to[1],e)-Math.sin(e*Math.PI)*30]; sparks.push(html`<circle key=${key+k} cx=${p[0]} cy=${p[1]} r="5" fill=${col} opacity=${1-e*.6}/>`)}};
+  addSp(3.3,.5,[690,205],[300,455],'fd','#ffe066');
+  addSp(5.5,.6,[450,355],[175,435],'nd','#ffd24a');
+  const elec=lt>=8?Array.from({length:7},(_,k)=>{const u=frac((lt-8)*.5+k/7); const p=along(ETCP,u); return html`<g key=${'e'+k}><circle cx=${p[0]} cy=${p[1]} r="12" fill="url(#gSpark)"/><circle cx=${p[0]} cy=${p[1]} r="4" fill="#e9fdff"/></g>`}):null;
+  const dens=ss(8.3,11,lt)*(1-.35*ss(12,14,lt));
+  const protons=Array.from({length:44},(_,i)=>{if(i/44>dens) return null; const x=60+h(i+3)*880+Math.sin(a*1.5+i)*8, y=518+h(i+8)*58+Math.cos(a*1.7+i)*5; return html`<text key=${'p'+i} x=${x} y=${y} fontSize="12" fill="#ffe08a" opacity=".85" className="mono" textAnchor="middle">H+</text>`});
+  const pumps=lt>=8.3?[175,425,575].flatMap((px,j)=>Array.from({length:3},(_,k)=>{const e=frac((lt-8.3)*.8+k/3+j*.2); return html`<text key=${'pp'+j+k} x=${px+Math.sin(e*6)*6} y=${lerp(445,535,e)} fontSize="12" fill="#ffe08a" opacity=${1-e} className="mono" textAnchor="middle">H+</text>`})):null;
+  const backflow=lt>=12?Array.from({length:6},(_,k)=>{const e=frac((lt-12)*1.2+k/6); return html`<text key=${'bf'+k} x=${800+Math.sin(e*9+k)*4} y=${lerp(560,430,e)} fontSize="12" fill="#ffe08a" opacity=${1-e*.5} className="mono" textAnchor="middle">H+</text>`}):null;
+  const o2s=[]; const h2os=[]; if(lt>=10.5){const n=Math.floor((lt-10.5)/.9); for(let k=Math.max(0,n-3);k<=n;k++){const t0=10.5+.9*k; const e=(lt-t0)/1.3;
+     if(e>=0&&e<=1) o2s.push(html`<${O2} key=${'o'+k} x=${lerp(-20,560,e)} y=${lerp(330+k%3*20,430,e)} rot=${e*180} s=${1.2} op=${1-ss(.9,1,e)}/>`);
+     const e2=(lt-t0-1.3)/2; if(e2>=0&&e2<=1){h2os.push(html`<${H2O} key=${'w'+k} x=${lerp(575,650,e2)} y=${lerp(430,320,e2)} rot=${e2*90} op=${1-ss(.8,1,e2)} s=${1.15}/>`); h2os.push(html`<${H2O} key=${'v'+k} x=${lerp(575,515,e2)} y=${lerp(430,330,e2)} rot=${-e2*90} op=${1-ss(.8,1,e2)} s=${1.15}/>`)}}}
+  const atps=[]; if(lt>=12){const n=Math.floor((lt-12)/.3); for(let k=Math.max(0,n-6);k<=n;k++){const t0=12+.3*k; const e=(lt-t0)/1.4; if(e<0||e>1) continue; const tx=120+h(k+17)*780;
+     atps.push(html`<${ATP} key=${'a'+k} x=${lerp(800,tx,ss(0,1,e))} y=${lerp(385,80,e)-Math.sin(e*Math.PI)*40} op=${1-ss(.88,1,e)} glow=${.8}/>`)
+     if(e>.88) atps.push(html`<circle key=${'af'+k} cx=${tx} cy="70" r=${20+60*(e-.88)/.12} fill="url(#gSparkG)" opacity=${1-(e-.88)/.12}/>`)}}
+  const heat=lt>=12.3?Array.from({length:6},(_,k)=>{const x=150+k*130; const o=frac(a*.4+k*.17); let d=''; for(let j=0;j<=12;j++){const y=440-j*14-o*40; d+=(j?'L':'M')+(x+Math.sin(j*.9+a*4+k)*8).toFixed(1)+','+y.toFixed(1)} return html`<path key=${'ht'+k} d=${d} stroke="#ff7a3c" strokeWidth="3" fill="none" opacity=${.45*Math.sin(o*Math.PI)*ss(12.3,13,lt)} ...${clickP('heat')}/>`}):null;
+  const synRot=lt>=12?(lt-12)*420:lt>=11?(lt-11)*60:0;
+  const hi=(n)=>step===n?1:step>n?.75:.35;
+  return html`<g>${BG('bg4')}
+   <g transform=${camT(820,200,cam)}>
+    <g ...${clickP('muscle')}><rect x="-200" y="28" width="1400" height="74" fill="#2a0c10" opacity=".9"/>${sarc}</g>
+    <path d="M-200,128 Q500,92 1200,128" stroke="#ffae6a" strokeWidth="4" fill="none" opacity=".8" ...${clickP('mito')}/>
+    <path d="M-200,140 Q500,104 1200,140 L1200,468 L-200,468 Z" fill="url(#gMatrix)" ...${clickP('mito')}/>
+    <g filter="url(#soft)" opacity=".35">${Array.from({length:14},(_,i)=>html`<circle key=${'mb'+i} cx=${frac(h(i+200)+a*.01)*1000} cy=${170+h(i+201)*270} r=${3+h(i+202)*6} fill="#ffb070"/>`)}</g>
+    <rect x="-200" y="466" width="1400" height="30" fill="url(#bilayer)"/>
+    <rect x="-200" y="496" width="1400" height="92" fill="#1a0908"/>
+    <line x1="-200" y1="590" x2="1200" y2="590" stroke="#ffae6a" strokeWidth="4" opacity=".7"/>
+    <g ...${clickP('carnitine')}><rect x="868" y="112" width="26" height="40" rx="8" fill="#7fe4ff" opacity=".8"/><rect x="900" y="176" width="26" height="40" rx="8" fill="#7fe4ff" opacity=".6"/></g>
+    ${chainN>0&&html`<${FA} x=${Hx} y=${200} n=${chainN} s=${1.25} a=${a} k="betaox"/>`}
+    ${units}
+    <g ...${clickP('krebs')} opacity=${.45+.55*kg}>
+      <circle cx=${kr[0]} cy=${kr[1]} r=${R+30} fill="url(#gSparkO)" opacity=${.4*kg}/>
+      <g filter=${kg>.5?'url(#bloom)':null}><circle cx=${kr[0]} cy=${kr[1]} r=${R} fill="none" stroke="#ffb547" strokeWidth="4" strokeDasharray="18 10" transform=${`rotate(${rot} ${kr[0]} ${kr[1]})`}/></g>
+      ${Array.from({length:8},(_,i)=>{const t=(i/8)*TAU+rot*Math.PI/180; return html`<circle key=${i} cx=${kr[0]+R*Math.cos(t)} cy=${kr[1]+R*Math.sin(t)} r="9" fill=${i===0?'#ff9a3c':'#ffd08a'} stroke="#4a2200" strokeWidth="1.5"/>`})}
+      <${Tag} x=${kr[0]} y=${kr[1]+6} text="מעגל קרבס" size=${17} fill="#ffe2a8"/>
+    </g>
+    ${co2s}${sparks}
+    <g ...${clickP('etc')}>
+      <path d="M150,500 L150,420 L175,410 L200,420 L200,500 Z" fill="url(#gCx)" opacity=${hi(3)+.1}/>
+      <rect x="285" y="456" width="32" height="40" rx="8" fill="url(#gCx)" opacity=${hi(3)}/>
+      <rect x="398" y="430" width="54" height="72" rx="12" fill="url(#gCx)" opacity=${hi(3)+.1}/>
+      <circle cx="500" cy="510" r="11" fill="#ff7a8a"/>
+      <rect x="550" y="436" width="50" height="66" rx="12" fill="url(#gCx)" opacity=${hi(4)+.15}/>
+      ${['I','II','III','IV'].map((t,i)=>html`<text key=${t} x=${[175,301,425,575][i]} y=${[434,476,456,456][i]+8} fontSize="13" textAnchor="middle" fill="#02202c" className="mono">${t}</text>`)}
+    </g>
+    <g filter=${elec?'url(#bloom)':null}>${elec}</g>${pumps}${protons}${backflow}${o2s}${h2os}
+    <g ...${clickP('atpsyn')} opacity=${.5+.5*ss(11.5,12.2,lt)}>
+      <ellipse cx="800" cy="481" rx="34" ry="15" fill="#4ad0ff" opacity=".8"/>
+      ${Array.from({length:8},(_,i)=>{const t=i/8*TAU+synRot*Math.PI/180; return html`<circle key=${i} cx=${800+28*Math.cos(t)} cy=${481+11*Math.sin(t)} r="5" fill="#bff3ff" opacity=${.5+.5*Math.sin(t)}/>`})}
+      <rect x="795" y="420" width="10" height="56" fill="#9fe6ff"/>
+      ${Array.from({length:6},(_,i)=>{const t=i/6*TAU; return html`<circle key=${'f'+i} cx=${800+20*Math.cos(t)} cy=${400+14*Math.sin(t)} r="12" fill=${i%2?'#ffb547':'#ff8a3c'} stroke="#3a1800" strokeWidth="1.5"/>`})}
+    </g>
+    ${atps}${heat}
+    <${Tag} x=${980} y=${126} text="מעבורת הקרניטין" op=${ss(1.8,2.5,lt)*(1-ss(5,5.6,lt))} size=${14} anchor="start" k="carnitine"/>
+    <${Tag} x=${870} y=${246} text="בטא־אוקסידציה: 2 פחמנים בכל סבב" op=${ss(3,3.6,lt)*(1-ss(8,8.6,lt))} size=${15} fill="#ffe2a8" k="betaox"/>
+    <${Tag} x=${560} y=${168} text="אצטיל-CoA" op=${ss(3.6,4.2,lt)*(1-ss(7.5,8,lt))} size=${14} k="acetyl"/>
+    <${Tag} x=${170} y=${200} text="CO₂ נוצר כאן" op=${ss(5.8,6.4,lt)} size=${16} fill="#d7e2ee" k="co2"/>
+    <${Tag} x=${375} y=${420} text="NADH · FADH₂" op=${ss(5.6,6.2,lt)*(1-ss(9,9.5,lt))} size=${13} fill="#ffe066" k="krebs"/>
+    <${Tag} x=${375} y=${545} text="אלקטרונים ושאיבת פרוטונים" op=${ss(8.2,8.8,lt)*(1-ss(10.6,11,lt))} size=${15} fill="#bff3ff" k="etc"/>
+    <${Tag} x=${560} y=${395} text="O₂ + אלקטרונים + H⁺ ← H₂O" op=${ss(10.8,11.4,lt)*(1-ss(12.6,13,lt))} size=${15} fill="#ffd0d0" k="o2"/>
+    <${Tag} x=${905} y=${360} text="ATP סינתאז" op=${ss(11.6,12.2,lt)} size=${15} fill="#ffe2a8" anchor="start" k="atpsyn"/>
+    <${Tag} x=${980} y=${450} text="קרום פנימי" op=".7" size=${12} fill="#ffcfa0" anchor="start"/>
+    <${Tag} x=${980} y=${575} text="מרווח בין־קרומי" op=".7" size=${12} fill="#ffcfa0" anchor="start"/>
+    <${Tag} x=${500} y=${24} text="סיבי השריר מתכווצים בעזרת ATP" op=${ss(12.8,13.4,lt)} size=${14} fill="#bff3ff" k="atp"/>
+   </g>
+  </g>`;
+}
+
+/* ---------- scene 5 ---------- */
+function Scene5({lt,a}){
+  const opA=1-ss(4.2,5.2,lt), opB=ss(4.4,5.4,lt)*(1-ss(9.2,10.2,lt)), opC=ss(9.4,10.4,lt);
+  const camX=lerp(0,600,ss(0,4.6,lt));
+  const zA=lerp(1,2.2,ss(3.6,5.2,lt));
+  const mitos=[[150,540],[380,565],[620,530],[900,555],[1150,535],[1400,550]];
+  const A=opA>0.01&&html`<g opacity=${opA} transform=${camT(500,320,zA)}><g transform=${`translate(${-camX} 0)`}>
+    <rect x="-100" y="450" width="1800" height="260" rx="40" fill="url(#gMuscle)" stroke="#ff9a7a" strokeOpacity=".5" strokeWidth="3" ...${clickP('muscle')}/>
+    ${mitos.map((m,i)=>html`<ellipse key=${'m'+i} cx=${m[0]} cy=${m[1]} rx="46" ry="20" fill="url(#gMito)" ...${clickP('mito')}/>`)}
+    <rect x="-200" y="232" width="2000" height="160" fill="url(#gVein)" ...${clickP('bicarb')}/>
+    <line x1="-200" y1="232" x2="1800" y2="232" stroke="#c48cff" strokeWidth="4" opacity=".5"/><line x1="-200" y1="392" x2="1800" y2="392" stroke="#c48cff" strokeWidth="4" opacity=".5"/>
+    ${Array.from({length:40},(_,i)=>html`<${RBC} key=${'r'+i} x=${frac(h(i)+a*.06)*2100-200} y=${252+h(i+4)*120} rot=${Math.sin(a+i)*30} s=${.9}/>`)}
+    ${Array.from({length:34},(_,i)=>{const t0=(i/34)*4.6-.6; const age=lt-t0; if(age<0) return null; const m=mitos[i%6]; const up=ss(0,1.3,age);
+      const x=m[0]+(h(i)-.5)*40+Math.max(0,age-1.3)*150, y=lerp(m[1],270+h(i+3)*95,up);
+      const bic=i%3!==0&&age>1.6;
+      return bic?html`<g key=${'c'+i} ...${clickP('bicarb')}><text x=${x} y=${y} fontSize="15" fill="#e7d2ff" className="mono" textAnchor="middle" stroke="#1a0626" strokeWidth="3" paintOrder="stroke">HCO₃⁻</text></g>`:html`<${CO2} key=${'c'+i} x=${x} y=${y} rot=${age*60+i*20}/>`})}
+    <${Lbl} x=${380} y=${480} tx=${220} ty=${430} text="CO₂ יוצא מהשריר אל הדם" op=${ss(.3,1,lt)*(1-ss(3.4,4,lt))} k="co2"/>
+    <${Lbl} x=${780} y=${310} tx=${920} ty=${190} text="רוב ה-CO₂ נישא כביקרבונט (HCO₃⁻)" op=${ss(1.8,2.5,lt)} k="bicarb"/>
+  </g></g>`;
+  const cx=520, cy=300, r=185, cr=228;
+  const ap=(th,rr)=>[cx+rr*Math.cos(th*Math.PI/180), cy+rr*Math.sin(th*Math.PI/180)];
+  const s0=ap(170,cr), s1=ap(10,cr);
+  const lb=lt-4.6;
+  const B=opB>0.01&&html`<g opacity=${opB} transform=${camT(520,300,lerp(1.5,1,ss(4.4,6,lt)))}>
+    <g filter="url(#soft)">${[[150,170,130],[890,170,140],[170,540,120],[880,520,130],[40,380,90],[990,370,95]].map((c,i)=>html`<circle key=${'n'+i} cx=${c[0]} cy=${c[1]} r=${c[2]+3*Math.sin(TAU*.28*a)} fill="url(#gAlv)" stroke="#ff9cb8" strokeOpacity=".35" strokeWidth="5" opacity=".55"/>`)}</g>
+    <rect x="478" y="-80" width="84" height="210" fill="url(#gAlv)" stroke="#ff9cb8" strokeOpacity=".5" strokeWidth="5"/>
+    <circle cx=${cx} cy=${cy} r=${r+3*Math.sin(TAU*.28*a)} fill="url(#gAlv)" stroke="#ffb3c8" strokeOpacity=".75" strokeWidth="6" ...${clickP('alveolus')}/>
+    <ellipse cx=${cx-70} cy=${cy-90} rx="70" ry="30" transform=${`rotate(-30 ${cx-70} ${cy-90})`} fill="url(#gSpec)" opacity=".5"/>
+    <path d=${`M${s0[0]},${s0[1]} A${cr},${cr} 0 0 0 ${s1[0]},${s1[1]}`} stroke="url(#gCapArc)" strokeWidth="42" fill="none" strokeLinecap="round" opacity=".9" ...${clickP('vessel')}/>
+    ${Array.from({length:16},(_,i)=>{const u=frac(a*.07+i/16); const th=170-u*160; const p=ap(th,cr+(h(i)-.5)*16); return html`<${RBC} key=${'rb'+i} x=${p[0]} y=${p[1]} rot=${th+90} s=${.8} tone=${u}/>`})}
+    ${lb>0&&Array.from({length:Math.min(40,Math.floor(lb/.22))},(_,k)=>{const t0=k*.22; const e=(lb-t0)/2.8; if(e>1) return null; const th=150-h(k+30)*120;
+      const p1=ap(th,cr-6), p2=ap(th+(h(k)-.5)*20,95); const e1=ss(0,.42,e), e2=ss(.42,1,e);
+      const x=lerp(lerp(p1[0],p2[0],e1),520+(h(k+2)-.5)*50,e2), y=lerp(lerp(p1[1],p2[1],e1),-40,e2);
+      return html`<${CO2} key=${'k'+k} x=${x} y=${y} rot=${e*240+k*30} op=${1-ss(.9,1,e)}/>`})}
+    ${lb>0&&Array.from({length:Math.min(24,Math.floor(lb/.36))},(_,k)=>{const t0=k*.36+.15; const e=(lb-t0)/2.6; if(e>1||e<0) return null; const th=40+h(k+70)*100;
+      const p2=ap(th,cr); const e1=ss(0,.55,e), e2=ss(.55,1,e);
+      const x=lerp(520+(h(k+5)-.5)*40,lerp(cx+(p2[0]-cx)*.45,p2[0],e2),e1), y=lerp(-30,lerp(cy+(p2[1]-cy)*.45,p2[1],e2),e1);
+      return html`<${O2} key=${'q'+k} x=${x} y=${y} rot=${e*200} op=${1-ss(.9,1,e)}/>`})}
+    <${Lbl} x=${cx-120} y=${cy-60} tx=${200} ty=${70} text="נאדית ריאה (אוויר)" op=${ss(5.2,5.9,lt)} k="alveolus"/>
+    <${Lbl} x=${ap(120,cr)[0]} y=${ap(120,cr)[1]} tx=${170} ty=${590} text="נימי דם" op=${ss(5.6,6.3,lt)} k="vessel"/>
+    <${Lbl} x=${560} y=${40} tx=${720} ty=${40} text="CO₂ אל האוויר הנשוף" op=${ss(6.2,6.9,lt)} k="co2"/>
+    <${Lbl} x=${ap(60,150)[0]} y=${ap(60,150)[1]} tx=${830} ty=${380} text="O₂ אל הדם" op=${ss(6.8,7.5,lt)} k="o2"/>
+  </g>`;
+  const lc=lt-9.6; const per=3.4; const ph=frac(Math.max(0,lc)/per); const breath=ph<.45?1-ss(0,.45,ph):ss(.45,1,ph);
+  const rs=1.7, rtx=520, rty=690;
+  const pp=pose(a,0,0); const mouth=[rtx+(pp.head[0]+22)*rs, rty+(pp.head[1]+10)*rs];
+  const exh=[]; if(lc>0){const n=Math.floor(lc/.1); for(let k=Math.max(0,n-30);k<=n;k++){const t0=k*.1; const pk=frac(t0/per); if(pk>.42) continue; const e=(lc-t0)/2.6; if(e<0||e>1) continue;
+     const x=mouth[0]+e*330+(h(k)-.5)*e*80, y=mouth[1]-e*90+(h(k+3)-.5)*e*130;
+     exh.push(k%4===3?html`<${H2O} key=${'x'+k} x=${x} y=${y} rot=${e*120} op=${1-ss(.75,1,e)} s=${.9}/>`:html`<${CO2} key=${'x'+k} x=${x} y=${y} rot=${e*160+k*25} op=${1-ss(.75,1,e)} s=${.9}/>`)}}
+  const drops=[[pp.head[0]-8,pp.head[1]-6],[pp.S[0]-18,pp.S[1]+20],[pp.S[0]-20,pp.S[1]+70]].map((d,i)=>{const o=frac(a*.18+i*.33); return html`<path key=${'d'+i} transform=${`translate(${rtx+d[0]*rs} ${rty+d[1]*rs+o*30}) scale(1.3)`} d="M0,-8 C4,-2 6,2 6,5 A6,6 0 1 1 -6,5 C-6,2 -4,-2 0,-8Z" fill="#6ac8ff" opacity=${.85*Math.sin(o*Math.PI)} ...${clickP('sweat')}/>`});
+  const C=opC>0.01&&html`<g opacity=${opC} transform=${camT(520,300,lerp(1.3,1,ss(9.4,11,lt)))}>
+    <ellipse cx="560" cy="330" rx="420" ry="330" fill="url(#gHalo)" opacity=".6"/>
+    <g transform=${`translate(${rtx} ${rty}) scale(${rs})`}><${Runner} a=${a} xray=${1} glow=${.6} breath=${breath} lungGlow=${1} id="s5" skel=${.6}/></g>
+    <ellipse cx=${mouth[0]+70} cy=${mouth[1]-10} rx=${60+90*(1-breath)} ry=${30+40*(1-breath)} fill="url(#gBreath)" opacity=${ph<.5?.55*Math.sin(ph/.5*Math.PI):0}/>
+    ${exh}${drops}
+    <${Lbl} x=${mouth[0]+6} y=${mouth[1]} tx=${mouth[0]+120} ty=${mouth[1]-120} text="נשיפה: CO₂ ואדי מים" op=${ss(10.4,11,lt)} k="co2"/>
+    <${Lbl} x=${rtx+(pp.S[0]-18)*rs} y=${rty+(pp.S[1]+40)*rs} tx=${rtx-30} ty=${560} text="זיעה: מים ומלחים" op=${ss(11,11.6,lt)} k="sweat"/>
+    <g transform="translate(20 22)" opacity=${ss(10.8,11.6,lt)} ...${clickP('mass')}>
+      <rect width="330" height="190" rx="14" fill="#03101ce6" stroke="#2a4a6a"/>
+      <${Tag} x=${310} y=${30} text="לאן הולכת המסה של 10 ק״ג שומן?" size=${14} anchor="start" fill="#bff3ff"/>
+      <rect x="20" y="48" width="290" height="26" rx="6" fill="#0a1a2c"/>
+      <rect x=${20+290*(1-.84*ss(11.2,12.6,lt))} y="48" width=${290*.84*ss(11.2,12.6,lt)} height="26" rx="6" fill="url(#gCO2bar)"/>
+      <rect x="20" y="48" width=${290*.16*ss(12.2,13,lt)} height="26" rx="6" fill="#3a7bff"/>
+      <${Tag} x=${310} y=${100} text="8.4 ק״ג יוצאים כ-CO₂ דרך הריאות" size=${14} anchor="start" fill="#eaf6ff"/>
+      <${Tag} x=${310} y=${124} text="1.6 ק״ג יוצאים כמים" size=${14} anchor="start" fill="#9cc4ff"/>
+      <${Tag} x=${310} y=${148} text="שתן · זיעה · אדי נשימה" size=${12} anchor="start" fill="#8ea4bd"/>
+      <text x="20" y="176" fontSize="11" fill="#8ea4bd" className="mono">Meerman &amp; Brown, BMJ 2014</text>
+    </g>
+    <g opacity=${ss(12,12.8,lt)}>
+      <rect x="250" y="566" width="500" height="36" rx="18" fill="#03101ce6" stroke="#2a4a6a"/>
+      <text x="500" y="590" fontSize="14" textAnchor="middle" fill="#d7e2ee" className="mono">C₅₅H₁₀₄O₆ + 78 O₂ → 55 CO₂ + 52 H₂O + energy</text>
+    </g>
+  </g>`;
+  return html`<g>${BG('bg5')}${A}${B}${C}</g>`;
+}
+
+/* ---------- scene 6 ---------- */
+function Scene6({lt,a}){
+  const k=ss(0,3,lt); const s=lerp(1.45,.95,k);
+  const rOp=lerp(1,.2,ss(2.6,4.6,lt));
+  const panel=(i,x,title,sub,body,key)=>{const e=ss(2.4+i*.4,3.4+i*.4,lt); return html`<g key=${key} transform=${`translate(${x} ${308+(1-e)*40})`} opacity=${e} ...${clickP(key)}>
+     <rect width="290" height="222" rx="18" fill="#061424e8" stroke="#2f5a80" strokeWidth="1.5"/>
+     <rect x="1" y="1" width="288" height="60" rx="17" fill="url(#gPanelTop)"/>
+     ${body}
+     <${Tag} x=${145} y=${186} text=${title} size=${17} fill="#eaf6ff"/>
+     <${Tag} x=${145} y=${208} text=${sub} size=${12} fill="#8ea4bd"/></g>`};
+  const fr=lerp(70,46,ss(3,11.5,lt));
+  const fat=html`<g>
+     <circle cx="145" cy="92" r=${fr} fill="url(#gCyto)" stroke="#ffd58a" strokeWidth="2.5"/>
+     <circle cx="146" cy="93" r=${fr*.82} fill="url(#gFat)"/>
+     <ellipse cx=${146-fr*.28} cy=${93-fr*.32} rx=${fr*.25} ry=${fr*.13} fill="url(#gSpec)"/>
+     <ellipse cx=${145+fr*.9} cy="92" rx="5" ry="9" fill="url(#gNuc)"/>
+     ${[0,1,2,3].map(i=>{const e=frac(a*.35+i/4); const th=i*1.6+.4; return html`<${FA} key=${i} x=${145+(fr+8+e*50)*Math.cos(th)} y=${92+(fr+8+e*50)*Math.sin(th)} n=${7} rot=${th*57} s=${.6} op=${Math.sin(e*Math.PI)} a=${a}/>`})}</g>`;
+  const con=.5+.5*Math.sin(TAU*1.3*a); const w=58*(1-.15*con);
+  const mus=html`<g>
+     <rect x="20" y="60" width="250" height="64" rx="10" fill="#2a0c10"/>
+     ${[-2,-1,0,1,2].map(k=>{const z=145+k*w; return html`<g key=${k}><line x1=${z} y1="64" x2=${z} y2="120" stroke="#7fe4ff" strokeWidth="3"/><rect x=${z+w/2-16} y="80" width="32" height="18" rx="4" fill="#ff5a5a" opacity=".85"/></g>`})}
+     ${[0,1,2,3].map(i=>{const e=frac(a*.6+i/4); return html`<${ATP} key=${'a'+i} x=${50+i*62} y=${lerp(160,40,e)} s=${.8} op=${Math.sin(e*Math.PI)} glow=${.6}/>`})}</g>`;
+  const br=.5+.5*Math.sin(TAU*.28*a);
+  const lung=html`<g>
+     <rect x="139" y="18" width="12" height="44" rx="5" fill="#ffb3c8" opacity=".7"/>
+     <path d=${`M139,60 C${110-6*br},62 ${92-8*br},110 ${100-6*br},150 C112,160 136,150 140,130 Z`} fill="url(#gLung)"/>
+     <path d=${`M151,60 C${180+6*br},62 ${198+8*br},110 ${190+6*br},150 C178,160 154,150 150,130 Z`} fill="url(#gLung)"/>
+     ${[0,1,2,3,4].map(i=>{const e=frac(a*.4+i/5); return html`<${CO2} key=${i} x=${145+Math.sin(e*5+i)*16} y=${lerp(70,-6,e)} s=${.75} rot=${e*200} op=${Math.sin(e*Math.PI)}/>`})}</g>`;
+  return html`<g>${BG('bg6')}
+    <polygon points="420,-60 580,-60 720,640 280,640" fill="url(#gBeam)" opacity=".5"/>
+    <g opacity=${rOp} transform=${`translate(${lerp(520,500,k)} ${lerp(690,590,k)}) scale(${s})`}>
+      <${Treadmill} a=${a} op=${k}/>
+      <${Runner} a=${a} xray=${lerp(1,.6,k)} glow=${.7} id="s6"/>
+    </g>
+    ${panel(0,680,'תא השומן מתכווץ','התא נשאר, המאגר שבתוכו קטן',fat,'adipocyte')}
+    ${panel(1,355,'השריר מייצר ATP','האנרגיה מניעה את ההתכווצות',mus,'atp')}
+    ${panel(2,30,'הריאות פולטות CO₂','כאן יוצאת רוב המסה',lung,'co2')}
+    <text x="500" y="604" textAnchor="middle" fontSize="13" fill="#4fd6ff" className="mono" letterSpacing="6" opacity=${ss(8,9,lt)} style=${{direction:'ltr'}}>GAVRIEL FITNESS</text>
+  </g>`;
+}
+const SCENE_C=[Scene1,Scene2,Scene3,Scene4,Scene5,Scene6];
+
+/* ---------- defs ---------- */
+const rg=(id,stops,cx='50%',cy='50%',r='50%')=>html`<radialGradient id=${id} cx=${cx} cy=${cy} r=${r}>${stops.map((s,i)=>html`<stop key=${i} offset=${s[0]} stopColor=${s[1]} stopOpacity=${s[2]==null?1:s[2]}/>`)}</radialGradient>`;
+const lg=(id,stops,x2='0',y2='1')=>html`<linearGradient id=${id} x1="0" y1="0" x2=${x2} y2=${y2}>${stops.map((s,i)=>html`<stop key=${i} offset=${s[0]} stopColor=${s[1]} stopOpacity=${s[2]==null?1:s[2]}/>`)}</linearGradient>`;
+const DEFS=html`<defs>
+  <filter id="bloom" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4"/></filter>
+  ${rg('aC',[[0,'#f3f6fa'],[.45,'#8796a6'],[1,'#222a33']],'35%','32%','68%')}
+  ${rg('aO',[[0,'#ffd0c8'],[.45,'#ff3b3b'],[1,'#6a0510']],'35%','32%','68%')}
+  ${rg('aH',[[0,'#ffffff'],[.6,'#d3dce6'],[1,'#7d8a99']],'35%','32%','68%')}
+  ${rg('aP',[[0,'#fff6c8'],[.5,'#ffb800'],[1,'#6a4000']],'35%','32%','68%')}
+  ${rg('gFat',[[0,'#fff6c8'],[.4,'#ffc85e'],[.85,'#e47f1c'],[1,'#a24a0a',.95]],'40%','36%','62%')}
+  ${rg('gCyto',[[0,'#ffe9b0',.1],[.82,'#ffcf7a',.16],[1,'#ffd58a',.38]])}
+  ${rg('gSpec',[[0,'#ffffff',.75],[1,'#ffffff',0]])}
+  ${rg('gNuc',[[0,'#b6a8ff'],[1,'#4a36c8']])}
+  ${rg('gFatHaze',[[0,'#7a4310'],[.6,'#3a1c06'],[1,'#120801']])}
+  ${rg('gHeart',[[0,'#ffb0b8'],[.5,'#ff3048'],[1,'#7a0016']],'40%','35%','70%')}
+  ${rg('gLung',[[0,'#ffd0dc',.7],[1,'#ff6f98',.28]],'45%','40%','65%')}
+  ${rg('gMus',[[0,'#ffcf9a'],[.45,'#ff5a3c'],[1,'#a3122a']],'40%','35%','70%')}
+  ${rg('gSpark',[[0,'#f2feff',.95],[.35,'#4fd6ff',.55],[1,'#4fd6ff',0]])}
+  ${rg('gSparkG',[[0,'#fffbe0',.95],[.35,'#ffc340',.6],[1,'#ff9a3c',0]])}
+  ${rg('gSparkR',[[0,'#ff8090',.9],[1,'#ff4d5e',0]])}
+  ${rg('gSparkO',[[0,'#ffb547',.8],[1,'#ff9a3c',0]])}
+  ${rg('gHalo',[[0,'#1d4f7a',.55],[1,'#04070d',0]])}
+  ${rg('gFloorGlow',[[0,'#4fd6ff',.35],[1,'#4fd6ff',0]])}
+  ${rg('gAlb',[[0,'#d4ebff'],[.6,'#4b8dff'],[1,'#1a3488']],'35%','30%','70%')}
+  ${rg('gRbc',[[0,'#ff8a8a'],[.7,'#c8102e'],[1,'#5a000e']],'40%','35%','70%')}
+  ${rg('gRbcB',[[0,'#ffb0b0'],[.7,'#ff2a3a'],[1,'#a00018']],'40%','35%','70%')}
+  ${rg('gMito',[[0,'#ffb070'],[.6,'#d2542a'],[1,'#6a1a0a']])}
+  ${rg('gEnz',[[0,'#d9c9ff'],[.6,'#7a4dff'],[1,'#2e1180']],'40%','35%','70%')}
+  ${rg('gAlv',[[0,'#3a1830',.35],[.85,'#ff9cb8',.12],[1,'#ffb3c8',.32]])}
+  ${rg('gBreath',[[0,'#cfe9ff',.5],[1,'#cfe9ff',0]])}
+  ${lg('gSuit',[[0,'#b9d6ee'],[.35,'#6f97b8'],[1,'#2a4561']],'1','1')}
+  ${lg('gSuitB',[[0,'#7fa0bd'],[1,'#22394f']],'1','1')}
+  ${lg('gGlass',[[0,'#7fe4ff',.22],[.5,'#2a7fb0',.08],[1,'#7fe4ff',.18]],'1','0')}
+  ${lg('gBeam',[[0,'#7fe4ff',.16],[1,'#7fe4ff',0]])}
+  ${lg('gScanTrail',[[0,'#7fe4ff',0],[1,'#7fe4ff',.22]])}
+  ${lg('gDeck',[[0,'#173049'],[1,'#07111c']])}
+  ${lg('gPost',[[0,'#4b7aa6'],[1,'#1c3550']])}
+  ${lg('gPanelTop',[[0,'#4fd6ff',.10],[1,'#4fd6ff',0]])}
+  ${lg('gBlood',[[0,'#5a0712',.85],[.5,'#8a0f22',.75],[1,'#5a0712',.85]])}
+  ${lg('gVein',[[0,'#3a0c3a',.85],[.5,'#5a1450',.75],[1,'#3a0c3a',.85]])}
+  ${lg('gMuscle',[[0,'#5a1414'],[1,'#2a0808']])}
+  ${lg('gMatrix',[[0,'#3a1408'],[1,'#20090a']])}
+  ${lg('gCx',[[0,'#d0f7ff'],[1,'#2ea6d4']])}
+  ${lg('gBar',[[0,'#ff9a3c'],[1,'#ff4d5e']],'1','0')}
+  ${lg('gCO2bar',[[0,'#4fd6ff'],[1,'#a9ecff']],'1','0')}
+  <linearGradient id="gCapArc" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#5a1450"/><stop offset="1" stopColor="#c8102e"/></linearGradient>
+  ${rg('bg1',[[0,'#10284a'],[.55,'#050d1a'],[1,'#010308']],'55%','38%','78%')}
+  ${rg('bg2',[[0,'#2e1a06'],[.6,'#120a03'],[1,'#040201']],'50%','50%','78%')}
+  ${rg('bg3',[[0,'#300a14'],[.7,'#10040a'],[1,'#040103']],'50%','50%','80%')}
+  ${rg('bg4',[[0,'#2e1206'],[.7,'#100604'],[1,'#040202']],'50%','50%','80%')}
+  ${rg('bg5',[[0,'#201636'],[.7,'#0a0814'],[1,'#020207']],'50%','45%','80%')}
+  ${rg('bg6',[[0,'#123050'],[.6,'#06111e'],[1,'#010409']],'50%','40%','80%')}
+  <pattern id="bilayer" width="12" height="30" patternUnits="userSpaceOnUse">
+    <rect width="12" height="30" fill="#3a1a10"/>
+    <circle cx="6" cy="4" r="4" fill="#ffb27a"/><circle cx="6" cy="26" r="4" fill="#ffb27a"/>
+    <line x1="4.5" y1="8" x2="4.5" y2="14" stroke="#c87a4a" strokeWidth="1.3"/><line x1="7.5" y1="8" x2="7.5" y2="14" stroke="#c87a4a" strokeWidth="1.3"/>
+    <line x1="4.5" y1="16" x2="4.5" y2="22" stroke="#c87a4a" strokeWidth="1.3"/><line x1="7.5" y1="16" x2="7.5" y2="22" stroke="#c87a4a" strokeWidth="1.3"/>
+  </pattern>
+</defs>`;
+
+/* ---------- sound: soundtrack + optional browser narration ---------- */
+const NARR_TRACK=!!FJ_DATA.narration;
+const audio=FJ_DATA.audio?new Audio(FJ_DATA.audio):null;
+if(audio){audio.preload='auto'; try{audio.preservesPitch=true}catch(e){}}
+const TTS=!NARR_TRACK&&('speechSynthesis' in window);
+let heVoice=null;
+const loadVoices=()=>{if(!TTS) return; const vs=speechSynthesis.getVoices().filter(v=>/^(he|iw)/i.test(v.lang));
+  const score=(v)=>(/natural|neural|online|premium|enhanced/i.test(v.name)?10:0)+(/avri|asaf|male/i.test(v.name)?3:0)+(/google/i.test(v.name)?2:0)+(v.localService?0:1);
+  vs.sort((x,y)=>score(y)-score(x)); heVoice=vs[0]||null};
+if(TTS){loadVoices(); try{speechSynthesis.addEventListener('voiceschanged',loadVoices)}catch(e){}}
+const ttsBusy=()=>TTS&&(speechSynthesis.speaking||speechSynthesis.pending);
+const stopSpeech=()=>{if(TTS) try{speechSynthesis.cancel()}catch(e){}};
+function speakFrom(si,t,speed){
+  stopSpeech(); if(!TTS||!heVoice) return;
+  const sc=SCENES[si]; const lt=t-sc.start;
+  let ci=0; sc.chunks.forEach((c,i)=>{if(lt>=c.t0-.05) ci=i});
+  if(lt>(sc.end-sc.start)-1.6) return;
+  sc.chunks.slice(ci).forEach(c=>{const u=new SpeechSynthesisUtterance(c.text); u.lang='he-IL'; u.voice=heVoice; u.rate=clamp(speed*.95,.6,1.7); u.pitch=.85; speechSynthesis.speak(u)});
+}
+
+/* ---------- icons ---------- */
+const I={
+ play:html`<svg viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg>`,
+ pause:html`<svg viewBox="0 0 24 24"><path d="M6 4h4.5v16H6zM13.5 4H18v16h-4.5z"/></svg>`,
+ restart:html`<svg viewBox="0 0 24 24"><path d="M12 5V1.5L7 6.5l5 5V8a5 5 0 1 1-5 5H5a7 7 0 1 0 7-8z"/></svg>`,
+ music:html`<svg viewBox="0 0 24 24"><path d="M9 18.5a3 3 0 1 1-2-2.83V5l12-2.5v12a3 3 0 1 1-2-2.83V6.1L9 7.8z"/></svg>`,
+ voice:html`<svg viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg>`,
+ full:html`<svg viewBox="0 0 24 24"><path d="M4 9V4h5v2H6v3zm11-5h5v5h-2V6h-3zM6 15v3h3v2H4v-5zm12 0h2v5h-5v-2h3z"/></svg>`,
+};
+
+/* ---------- legend icons ---------- */
+const LEG=[
+ ['co2','פחמן דו־חמצני',html`<svg viewBox="-22 -14 44 28"><${CO2} x=${0} y=${0} k=${null}/></svg>`],
+ ['h2o','מים',html`<svg viewBox="-22 -14 44 28"><${H2O} x=${0} y=${-2} k=${null}/></svg>`],
+ ['o2','חמצן',html`<svg viewBox="-22 -14 44 28"><g><circle cx="-5.5" r="6.5" fill="url(#aO)"/><circle cx="5.5" r="6.5" fill="url(#aO)"/></g></svg>`],
+ ['atp','ATP',html`<svg viewBox="-24 -14 54 28"><g><line x1="-14" y1="0" x2="24" y2="0" stroke="#ffe2a0" strokeWidth="2"/><polygon points="-20,-5 -14,-8 -8,-5 -8,3 -14,6 -20,3" fill="#5a8cff"/><polygon points="-6,-4 -1,-7 4,-4 2,3 -4,3" fill="#cfd9ff"/><circle cx="9" r="4.2" fill="url(#aP)"/><circle cx="17" r="4.2" fill="url(#aP)"/><circle cx="25" r="4.2" fill="url(#aP)"/></g></svg>`],
+ ['fa','חומצת שומן',html`<svg viewBox="-12 -12 100 26"><${FA} x=${0} y=${0} n=${8} k=${null}/></svg>`],
+ ['albumin','אלבומין',html`<svg viewBox="-40 -26 80 52"><g><circle r="22" fill="url(#gAlb)"/><circle cx="-19" cy="9" r="15" fill="url(#gAlb)"/><circle cx="17" cy="11" r="16" fill="url(#gAlb)"/></g></svg>`],
+ ['lipase','ליפאזות',html`<svg viewBox="-46 -46 92 92"><path d="M-34,-6 C-38,-36 -6,-44 6,-30 L0,-12 L14,-16 C30,-34 46,-10 38,6 C48,26 22,44 2,34 C-16,46 -42,28 -34,-6 Z" fill="url(#gEnz)"/></svg>`],
+ ['krebs','מעגל קרבס',html`<svg viewBox="-20 -14 40 28"><circle r="11" fill="none" stroke="#ffb547" strokeWidth="3" strokeDasharray="6 4"/></svg>`],
+];
+
+/* ---------- grain ---------- */
+function useGrain(ref,activeRef){
+  useEffect(()=>{const c=ref.current; if(!c) return; const ctx=c.getContext('2d'); c.width=200; c.height=124; const img=ctx.createImageData(200,124); let raf, last=0;
+    const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const draw=(now)=>{if(now-last>42&&(activeRef.current||!last)){last=now; const d=img.data; for(let i=0;i<d.length;i+=4){const v=Math.random()*255; d[i]=d[i+1]=d[i+2]=v; d[i+3]=255} ctx.putImageData(img,0,0)} if(!reduce) raf=requestAnimationFrame(draw)};
+    raf=requestAnimationFrame(draw); return ()=>cancelAnimationFrame(raf)},[]);
+}
+
+/* ---------- app ---------- */
+function App(){
+  const [t,setT]=useState(0), [a,setA]=useState(0);
+  const [playing,setPlaying]=useState(false), [speed,setSpeedS]=useState(1);
+  const [voice,setVoice]=useState(true), [music,setMusic]=useState(true);
+  const [info,setInfo]=useState(null), [started,setStarted]=useState(false), [hasHe,setHasHe]=useState(!!heVoice);
+  const [ui,setUi]=useState(true);
+  const R=useRef({t:0,a:0,playing:false,speed:1,voice:true,music:true,sc:0,hold:0,resume:false,idle:0,vol:1});
+  const frameRef=useRef(null), cinemaRef=useRef(null), grainRef=useRef(null), barRef=useRef(null), playingRef=useRef(false);
+  useGrain(grainRef,playingRef);
+
+  useEffect(()=>{if(!TTS) return; const iv=setInterval(()=>{loadVoices(); setHasHe(!!heVoice)},1000); return ()=>clearInterval(iv)},[]);
+  useEffect(()=>{const el=frameRef.current; if(!el||!window.ResizeObserver) return; const ro=new ResizeObserver(()=>{FS=clamp(640/el.clientWidth,1,1.9)}); ro.observe(el); return ()=>ro.disconnect()},[]);
+
+  const syncAudio=(force)=>{if(!audio) return; const r=R.current; try{audio.playbackRate=r.speed; if(force||Math.abs(audio.currentTime-r.t)>.3) audio.currentTime=Math.min(r.t,(audio.duration||999)-.05)}catch(e){}};
+  const seek=useCallback((nt)=>{const r=R.current; nt=clamp(nt,0,TOTAL); r.t=nt; r.hold=0; setT(nt); const si=sceneAt(nt); r.sc=si; syncAudio(true); if(r.playing&&r.voice) speakFrom(si,nt,r.speed); else stopSpeech()},[]);
+  const play=useCallback(()=>{const r=R.current; setStarted(true); if(r.t>=TOTAL-.01){r.t=0;r.a=0;setT(0)} r.playing=true; playingRef.current=true; setPlaying(true); r.sc=sceneAt(r.t); r.idle=0;
+    if(audio){syncAudio(true); audio.volume=r.music?1:0; const pr=audio.play(); if(pr&&pr.catch) pr.catch(()=>{})}
+    if(r.voice) speakFrom(r.sc,r.t,r.speed)},[]);
+  const pause=useCallback(()=>{const r=R.current; r.playing=false; playingRef.current=false; setPlaying(false); stopSpeech(); if(audio) audio.pause(); setUi(true)},[]);
+  const toggle=useCallback(()=>{R.current.playing?pause():play()},[play,pause]);
+  const restart=useCallback(()=>{const r=R.current; r.t=0; r.a=0; setT(0); setA(0); r.sc=0; syncAudio(true); play()},[play]);
+  const cycleSpeed=()=>{const r=R.current; const list=[.5,.75,1,1.25,1.5,2]; const s=list[(list.indexOf(r.speed)+1)%list.length]; r.speed=s; setSpeedS(s); syncAudio(false); if(r.playing&&r.voice) speakFrom(sceneAt(r.t),r.t,s)};
+  const toggleVoice=()=>{const r=R.current; r.voice=!r.voice; setVoice(r.voice); if(!r.voice) stopSpeech(); else if(r.playing) speakFrom(sceneAt(r.t),r.t,r.speed)};
+  const toggleMusic=()=>{const r=R.current; r.music=!r.music; setMusic(r.music)};
+  const fullscreen=()=>{const el=cinemaRef.current; try{if(document.fullscreenElement) document.exitFullscreen(); else if(el.requestFullscreen) el.requestFullscreen().catch(()=>{})}catch(e){}};
+  const poke=()=>{R.current.idle=0; if(!ui) setUi(true)};
+
+  openInfo=(k)=>{if(!INFO[k]) return; const r=R.current; if(r.playing){r.resume=true; pause()} setInfo(k)};
+  const closeInfo=()=>{setInfo(null); if(R.current.resume){R.current.resume=false; play()}};
+
+  useEffect(()=>{
+    let raf, last=performance.now();
+    const loop=(now)=>{const dt=Math.min(.05,(now-last)/1000); last=now; const r=R.current;
+      if(r.playing){
+        r.a+=dt*r.speed; r.idle+=dt;
+        let nt=r.t+dt*r.speed; const si=sceneAt(r.t); const sc=SCENES[si]; const holdAt=sc.end-1.5;
+        let holding=false;
+        if(TTS&&r.voice&&si<SCENES.length-1&&ttsBusy()&&nt>=holdAt&&r.t<=holdAt+.01&&r.hold<14){r.hold+=dt; nt=Math.max(r.t,Math.min(nt,holdAt)); holding=true}
+        else if(nt<holdAt) r.hold=0;
+        if(nt>=TOTAL){nt=TOTAL; r.playing=false; playingRef.current=false; setPlaying(false); setUi(true)}
+        r.t=nt; setT(nt); setA(r.a);
+        if(audio){
+          const duck=TTS&&r.voice&&ttsBusy()?.45:1; const target=r.music?duck:0;
+          if(holding){ /* soundtrack keeps breathing under the narrator, re-aligned after */ }
+          else if(!audio.paused&&Math.abs(audio.currentTime-r.t)>.35&&r.t<TOTAL){r.vol=0; syncAudio(true)}
+          r.vol+=(target-r.vol)*Math.min(1,dt*6); try{audio.volume=clamp(r.vol)}catch(e){}
+        }
+        const ns=sceneAt(nt); if(ns!==r.sc){r.sc=ns; r.hold=0; if(r.voice) speakFrom(ns,nt,r.speed)}
+        if(r.idle>2.6) setUi(false);
+      }
+      raf=requestAnimationFrame(loop)};
+    raf=requestAnimationFrame(loop);
+    const key=(e)=>{if(e.target.closest&&e.target.closest('button,input,select')&&(e.key===' '||e.key==='Enter')) return;
+      if(e.key===' '||e.key==='k'){e.preventDefault(); toggle()} else if(e.key==='ArrowLeft') seek(R.current.t+5); else if(e.key==='ArrowRight') seek(R.current.t-5); else if(e.key==='Escape') setInfo(null); else if(e.key==='f') fullscreen();
+      R.current.idle=0; setUi(true)};
+    window.addEventListener('keydown',key);
+    window.__seek=(x)=>{R.current.a=x; setA(x); setStarted(true); seek(x)};
+    return ()=>{cancelAnimationFrame(raf); window.removeEventListener('keydown',key)};
+  },[]);
+
+  const si=sceneAt(t), sc=SCENES[si], ltR=t-sc.start, lts=ltR*sc.k;
+  let ci=0; sc.chunks.forEach((c,i)=>{if(ltR>=c.t0-.05) ci=i});
+  const chunk=sc.chunks[ci];
+  const subOp=ss(chunk.t0-.1,chunk.t0+.2,ltR)*(ci===sc.chunks.length-1?1-ss(DUR[si]-.5,DUR[si]-.1,ltR):1);
+  const T=.7;
+  const drift=`translate(${(Math.sin(a*.37)*3+Math.sin(a*.91)*1.5).toFixed(2)} ${(Math.cos(a*.29)*2.5+Math.sin(a*1.13)*1).toFixed(2)})`;
+  const layers=SCENES.map((s,i)=>{
+    if(t<s.start-T&&i>0) return null; if(t>s.end+T&&i<SCENES.length-1) return null;
+    const opIn=i===0?1:ss(s.start-T,s.start+T,t), opOut=i===SCENES.length-1?1:1-ss(s.end-T,s.end+T,t);
+    const inS=i===0?1:lerp(i===5?1.3:.8,1,ss(s.start-T,s.start+1.4,t));
+    const ex=s.exit; const exS=ex?lerp(1,ex.s,Math.pow(ss(s.end-1.4,s.end+T,t),1.5)):1;
+    const C=SCENE_C[i];
+    return html`<g key=${i} opacity=${opIn*opOut} transform=${ex?camT(ex.x,ex.y,exS):''}><g transform=${camT(500,310,inS)}><${C} lt=${(t-s.start)*s.k} a=${a}/></g></g>`;
+  });
+  const bokeh=Array.from({length:16},(_,i)=>html`<circle key=${i} cx=${frac(h(i)+a*.004*(h(i+40)-.4))*1000} cy=${frac(h(i+20)+a*.006*(h(i+60)-.5))*620} r=${3+h(i+80)*14} fill="url(#gSpark)" opacity=${.05+.08*h(i+9)}/>`);
+  const fg=Array.from({length:7},(_,i)=>{const tint=si===1||si===3?'#ffb35a':si===2?'#ff5a6a':'#7fe4ff'; return html`<circle key=${i} cx=${frac(h(i+500)+a*.02*(h(i+501)+.3))*1200-100} cy=${h(i+502)*620+Math.sin(a*.4+i)*20} r=${30+h(i+503)*50} fill=${tint} opacity=${.06+.05*h(i+504)}/>`});
+  const flash=SCENES.slice(1).reduce((m,s)=>Math.max(m,Math.exp(-Math.pow((t-s.start)/.28,2))),0)*.55;
+  const cardE=started?SCENES.reduce((m,s,i)=>{const st=s.start+(i===0?.15:.25); return Math.max(m, ss(st,st+.6,t)*(1-ss(st+2.1,st+2.7,t)))},0):0;
+  const cardI=si; const cs=SCENES[cardI]; const cst=cs.start+(cardI===0?.15:.25);
+  const wipe=ss(cst+.1,cst+.9,t); const sp=lerp(.16,.02,ss(cst,cst+1.6,t));
+  const lbH=cardE*7.5;
+  const fin=si===5?ss(4.4,5.4,lts):0, fin2=si===5?ss(6,7,lts):0;
+  const ended=started&&!playing&&t>=TOTAL-.01;
+  const mm=(x)=>{const m=Math.floor(x/60), s=Math.floor(x%60); return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')};
+  const scrub=(e)=>{const el=barRef.current; const rc=el.getBoundingClientRect(); const f=clamp((rc.right-e.clientX)/rc.width); seek(f*TOTAL)};
+  const onDown=(e)=>{e.stopPropagation(); e.currentTarget.setPointerCapture(e.pointerId); scrub(e)};
+  const onMove=(e)=>{if(e.currentTarget.hasPointerCapture&&e.currentTarget.hasPointerCapture(e.pointerId)) scrub(e)};
+  const barKey=(e)=>{if(e.key==='ArrowLeft'){e.preventDefault();e.stopPropagation();seek(t+5)} if(e.key==='ArrowRight'){e.preventDefault();e.stopPropagation();seek(t-5)}};
+  const words=(c,op)=>html`<p style=${{opacity:op}}>${c.words.map((w,i)=>{const o=ss(w[1]-.05,w[1]+.25,ltR); return html`<span key=${i} className="w" style=${{opacity:.25+.75*o,transform:`translateY(${(1-o)*4}px)`,filter:o<1?`blur(${((1-o)*2).toFixed(1)}px)`:'none'}}>${w[0]+(i<c.words.length-1?' ':'')}</span>`})}</p>`;
+  const narrLabel=NARR_TRACK?'קריינות':!TTS?'אין הקראה':!hasHe?'אין קול עברי':'קריינות';
+
+  return html`<div style=${{display:'flex',flexDirection:'column',gap:'0'}}>
+   <div className="cinema" ref=${cinemaRef} onPointerMove=${poke}>
+    <div className="frame" ref=${frameRef} onClick=${()=>{if(started&&!info){poke()}}}>
+      <svg viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid slice" aria-label="סרט: מסעו של השומן בגוף" role="img">
+        ${DEFS}
+        <rect width="1000" height="620" fill="#02040a"/>
+        <g transform=${drift}>${layers}</g>
+        <g style=${{pointerEvents:'none'}}>${bokeh}</g>
+      </svg>
+      <svg className="dof" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style=${{position:'absolute',inset:0,width:'100%',height:'100%'}}>${fg}</svg>
+      <canvas className="grain" ref=${grainRef}></canvas>
+      <div className="vig"></div>
+      <div className="flash" style=${{opacity:flash}}></div>
+      <div className="lb t" style=${{height:lbH+'%'}}></div><div className="lb b" style=${{height:lbH+'%'}}></div>
+      ${cardE>.01&&html`<div className="card" style=${{opacity:cardE}}>
+        <div className="num">פרק ${String(cardI+1).padStart(2,'0')}</div>
+        <div className="ttl" style=${{letterSpacing:sp+'em',clipPath:`inset(0 0 0 ${((1-wipe)*100).toFixed(1)}%)`}}>${cs.title}</div>
+        <div className="rule" style=${{width:(wipe*min(40,40))+'%'}}></div>
+        <div className="sub" style=${{opacity:ss(cst+.6,cst+1.2,t)}}>${cs.sub}</div></div>`}
+      <div className="finale" style=${{opacity:fin}} aria-hidden=${fin<.1}>
+        <h2>השומן לא נמס בזיעה — <span>רוב המסה שלו יוצאת דרך הנשימה!</span></h2>
+        <p style=${{opacity:fin2}}>ירידה מתמשכת במאגרי השומן דורשת מאזן אנרגיה מתאים לאורך זמן. הגוף משתמש במהלך אימון גם בפחמימות, ולא רק בשומן.</p>
+      </div>
+      ${started&&html`<div className="chip"><b>${String(si+1).padStart(2,'0')}</b> / 06 · ${sc.short}</div>`}
+      ${started&&cardE<.5&&html`<div className="subs-in" aria-live="polite">${words(chunk,subOp)}</div>`}
+      ${!started&&html`<div className="poster" onClick=${play}>
+        <div className="pre">Gavriel Fitness מציג</div>
+        <div className="big">מסעו של השומן<em>אל מחוץ לגוף</em></div>
+        <button className="pbtn" aria-label="הפעלה" onClick=${(e)=>{e.stopPropagation();play()}} autoFocus>${I.play}</button>
+        <small>75 שניות · מוזיקה מקורית · כתוביות בעברית · מומלץ עם אוזניות</small></div>`}
+      ${ended&&html`<div className="poster" onClick=${restart} style=${{background:'radial-gradient(ellipse at 50% 55%,#02060c66,#010307dd 75%)'}}>
+        <div className="pre">סוף</div>
+        <button className="pbtn" aria-label="צפייה חוזרת" onClick=${(e)=>{e.stopPropagation();restart()}}>${I.restart}</button>
+        <small>צפייה חוזרת · או לחצו על כל פרק בציר הזמן</small></div>`}
+    </div>
+    <div className="subs-out" aria-hidden="true">${started?words(chunk,subOp):html`<p style=${{color:'#8ea4bd',fontSize:'14px'}}>לחצו על הפעלה כדי להתחיל</p>`}</div>
+    <div className=${'hud'+(ui||!playing?'':' hide')}>
+      <div className="bar" ref=${barRef} onPointerDown=${onDown} onPointerMove=${onMove} tabIndex="0" role="slider" aria-label="ציר זמן" aria-valuemin="0" aria-valuemax=${Math.round(TOTAL)} aria-valuenow=${Math.round(t)} onKeyDown=${barKey}>
+        <div className="rail"><div className="fill" style=${{width:(t/TOTAL*100)+'%'}}></div></div>
+        ${SCENES.slice(1).map((s,i)=>html`<div key=${i} className="tick" style=${{insetInlineStart:`calc(${s.start/TOTAL*100}% - 1px)`}}></div>`)}
+        <div className="knob" style=${{insetInlineStart:`calc(${t/TOTAL*100}% - 6px)`}}></div>
+      </div>
+      <div className="row">
+        <button className="ib" onClick=${toggle} aria-label=${playing?'עצירה':'הפעלה'}>${playing?I.pause:I.play}</button>
+        <button className="ib" onClick=${restart} aria-label="מההתחלה">${I.restart}</button>
+        <span className="time">${mm(t)} / ${mm(TOTAL)}</span>
+        <span className="chap">פרק ${si+1} · ${sc.title}</span>
+        <span className="grow"></span>
+        <button className="ib spd" onClick=${cycleSpeed} aria-label="מהירות צפייה">${speed}×</button>
+        <button className=${'ib'+(music?'':' off')} onClick=${toggleMusic} aria-label=${music?'השתקת מוזיקה':'הפעלת מוזיקה'} disabled=${!audio} title="מוזיקה ואפקטים">${I.music}</button>
+        <button className=${'ib'+(voice&&(NARR_TRACK||hasHe)?'':' off')} onClick=${toggleVoice} disabled=${!NARR_TRACK&&(!TTS||!hasHe)} title=${NARR_TRACK?'קריינות':hasHe?'קריינות בקול המובנה של הדפדפן':'לא נמצא קול עברי בדפדפן; הכתוביות מוצגות תמיד'} aria-label=${narrLabel}>${I.voice}<span style=${{fontSize:'12px'}}>${narrLabel}</span></button>
+        <button className="ib" onClick=${fullscreen} aria-label="מסך מלא">${I.full}</button>
+      </div>
+    </div>
+    ${info&&html`<div className="info" role="dialog" aria-label=${INFO[info][0]}>
+      <div className="k">הסבר מדעי</div>
+      <h3>${INFO[info][0]}</h3><p>${INFO[info][1]}</p>
+      <button onClick=${closeInfo} autoFocus>${R.current.resume?'המשך צפייה':'סגירה'}</button></div>`}
+   </div>
+   <div className="ctx">
+     ${sc.steps?sc.steps.map((s,i)=>{const on=lts>=s[0]&&(i===sc.steps.length-1||lts<sc.steps[i+1][0]); const done=lts>=s[0]&&!on; return html`<button key=${i} className=${'step'+(on?' on':done?' done':'')} onClick=${()=>openInfo(s[2])}><i>${i+1}</i>${s[1]}</button>`})
+       :sc.ctx.map((c,i)=>html`<button key=${i} onClick=${()=>openInfo(c[1])}>${c[0]}</button>`)}
+   </div>
+   ${!NARR_TRACK&&html`<p className="note">הקריינות כרגע בקול המובנה של הדפדפן (אם קיים). המוזיקה ואפקטי הקול מקוריים ומסונכרנים לתמונה.</p>`}
+   <div className="below" style=${{marginTop:'18px'}}>
+    <section className="cardx">
+      <h2>מקרא · לחצו להסבר</h2>
+      <div className="legend">${LEG.map(l=>html`<button key=${l[0]} onClick=${()=>openInfo(l[0])}>${l[2]}<span>${l[1]}</span></button>`)}</div>
+    </section>
+    <section className="cardx">
+      <h2>המספרים מאחורי הסרט</h2>
+      <ul className="facts">
+        <li><b>≈84%</b><span>מהמסה של שומן שהתחמצן יוצאת כ-CO₂ דרך הריאות.</span></li>
+        <li><b>≈16%</b><span>יוצאת כמים: שתן, זיעה, אדי נשימה.</span></li>
+        <li><b>16C → 8</b><span>חומצה פלמיטית עוברת 7 סבבי בטא־אוקסידציה ויוצרת 8 אצטיל-CoA.</span></li>
+        <li><b>9 kcal</b><span>בכל גרם שומן, לעומת כ-4 בגרם פחמימה.</span></li>
+      </ul>
+      <p className="src">מקור החישוב: Meerman R, Brown AJ. When somebody loses weight, where does the fat go? BMJ 2014;349:g7257. הסרט מפשט תהליכים לצורכי הסבר.</p>
+    </section>
+   </div>
+  </div>`;
+}
+const min=Math.min;
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App}/>`);
+})();
+</script>
