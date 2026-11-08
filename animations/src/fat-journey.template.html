@@ -881,7 +881,7 @@ function filmSVG(t,a){
 const NARR_TRACK=!!FJ_DATA.narration;
 const audio=FJ_DATA.audio?new Audio(FJ_DATA.audio):null;
 if(audio){audio.preload='auto'; try{audio.preservesPitch=true}catch(e){}}
-const TTS=!NARR_TRACK&&('speechSynthesis' in window);
+const TTS=false; // owner's rule: never a synthetic browser voice; only a recorded human-quality narration track
 let heVoice=null;
 const loadVoices=()=>{if(!TTS) return; const vs=speechSynthesis.getVoices().filter(v=>/^(he|iw)/i.test(v.lang));
   const score=(v)=>(/natural|neural|online|premium|enhanced/i.test(v.name)?10:0)+(/avri|asaf|male/i.test(v.name)?3:0)+(/google/i.test(v.name)?2:0)+(v.localService?0:1);
@@ -1058,7 +1058,7 @@ function App(){
         <span className="grow"></span>
         <button className="ib spd" onClick=${cycleSpeed} aria-label="מהירות צפייה">${speed}×</button>
         <button className=${'ib'+(music?'':' off')} onClick=${toggleMusic} aria-label=${music?'השתקת מוזיקה':'הפעלת מוזיקה'} disabled=${!audio} title="מוזיקה ואפקטים">${I.music}</button>
-        <button className=${'ib'+(voice&&(NARR_TRACK||hasHe)?'':' off')} onClick=${toggleVoice} disabled=${!NARR_TRACK&&(!TTS||!hasHe)} title=${NARR_TRACK?'קריינות':hasHe?'קריינות בקול המובנה של הדפדפן':'לא נמצא קול עברי בדפדפן; הכתוביות מוצגות תמיד'} aria-label=${narrLabel}>${I.voice}<span style=${{fontSize:'12px'}}>${narrLabel}</span></button>
+        ${NARR_TRACK&&html`<button className=${'ib'+(voice?'':' off')} onClick=${toggleVoice} disabled=${!NARR_TRACK&&(!TTS||!hasHe)} title=${NARR_TRACK?'קריינות':hasHe?'קריינות בקול המובנה של הדפדפן':'לא נמצא קול עברי בדפדפן; הכתוביות מוצגות תמיד'} aria-label=${narrLabel}>${I.voice}<span style=${{fontSize:'12px'}}>${narrLabel}</span></button>`}
         <button className="ib" onClick=${fullscreen} aria-label="מסך מלא">${I.full}</button>
       </div>
     </div>
@@ -1071,7 +1071,7 @@ function App(){
      ${sc.steps?sc.steps.map((s,i)=>{const on=lts>=s[0]&&(i===sc.steps.length-1||lts<sc.steps[i+1][0]); const done=lts>=s[0]&&!on; return html`<button key=${i} className=${'step'+(on?' on':done?' done':'')} onClick=${()=>openInfo(s[2])}><i>${i+1}</i>${s[1]}</button>`})
        :sc.ctx.map((c,i)=>html`<button key=${i} onClick=${()=>openInfo(c[1])}>${c[0]}</button>`)}
    </div>
-   ${!NARR_TRACK&&html`<p className="note">הקריינות כרגע בקול המובנה של הדפדפן (אם קיים). המוזיקה ואפקטי הקול מקוריים ומסונכרנים לתמונה.</p>`}
+   ${!NARR_TRACK&&html`<p className="note">הגרסה הזו כוללת מוזיקה מקורית וכתוביות. קריינות אנושית תתווסף כשתוקלט.</p>`}
    <div className="below" style=${{marginTop:'18px'}}>
     <section className="cardx">
       <h2>מקרא · לחצו להסבר</h2>
