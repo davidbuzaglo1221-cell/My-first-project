@@ -239,95 +239,162 @@ def flow(t0, t1, amp=0.07, pulse=1.15):
 
 
 # ================================================================= the score
-# Scene 1 · 0-10 · D minor, heartbeat accelerates, scan
-sub(38, 0, 10.6, 0.10, 3, 1.2)
-pad([50, 57, 62, 65], 0, 10.8, 0.07, 3.5, 1.4, 800)
-hb = 1.0
-while hb < 9.6:
+# A clean cinematic cue: strings + piano motif + a gentle pulse. Sound effects are
+# deliberately sparse (heartbeat, a few glass glints, soft swells, one final hit).
+def strings(midis, t0, t1, amp=0.05, att=1.6, rel=1.8, bright=2400, trem=0.0):
+    n = int((M(t1) - M(t0)) * SR)
+    t = np.arange(n) / SR
+    l = np.zeros(n)
+    r = np.zeros(n)
+    for k, m in enumerate(midis):
+        f = note(m)
+        for j, cents in enumerate((-9, -2, 5, 11)):
+            ff = f * 2 ** (cents / 1200)
+            vib = 1 + 0.0025 * np.sin(2 * np.pi * (4.6 + 0.3 * j) * t + k + j)
+            ph = np.cumsum(ff * vib) / SR * 2 * np.pi + rng.uniform(0, 6.28)
+            s = np.zeros(n)
+            for hh in range(1, 13):
+                if f * hh > 7000:
+                    break
+                s += np.sin(hh * ph) / hh
+            g = (0.5 - 0.35 * (j - 1.5) / 1.5)
+            l += s * g
+            r += s * (1 - g)
+    e = env_adsr(n, att, rel) / len(midis)
+    if trem:
+        e *= 1 - trem * (0.5 + 0.5 * np.sin(2 * np.pi * 7 * t))
+    place(np.vstack([lp(l * e, bright, 4), lp(r * e, bright, 4)]), t0, gain=amp)
+
+
+def piano(t, m, amp=0.09, dur=3.2, pan=0.0):
+    n = int(dur * SR)
+    tt = np.arange(n) / SR
+    f = note(m)
+    s = np.zeros(n)
+    for hh in range(1, 9):
+        fh = f * hh * np.sqrt(1 + 0.0004 * hh * hh)
+        if fh > 9000:
+            break
+        s += np.sin(2 * np.pi * fh * tt) * np.exp(-tt * (0.7 + 0.5 * hh)) / hh ** 1.1
+    s += lp(rng.standard_normal(n), 2500) * np.exp(-tt * 90) * 0.04
+    s *= np.minimum(1, tt / 0.004) * env_adsr(n, 0, 0.4)
+    place(s, t, pan, amp)
+
+
+def motif(t0, notes, beat=0.714, amp=0.085, oct_low=True):
+    for i, m in enumerate(notes):
+        piano(t0 + i * beat, m, amp, pan=-0.25 + 0.15 * i)
+        if oct_low and i == 0:
+            piano(t0, m - 12, amp * 0.6, 4.0, -0.1)
+
+
+def kick(t, amp=0.18):
+    n = int(0.4 * SR)
+    tt = np.arange(n) / SR
+    f = 42 + 60 * np.exp(-tt * 28)
+    s = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 9)
+    place(lp(s, 300), t, gain=amp)
+
+
+def softbeat(t, amp=0.12):
+    for dt, g in ((0, 1.0), (0.17, 0.55)):
+        n = int(0.25 * SR)
+        tt = np.arange(n) / SR
+        f = 48 * np.exp(-tt * 5) + 32
+        s = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 16)
+        place(lp(s, 140), t + dt, gain=amp * g)
+
+
+def swell(t_end, dur=1.6, amp=0.05):
+    n = int(dur * SR)
+    k = np.linspace(0, 1, n)
+    x = lp(rng.standard_normal(n), 1400, 4) * k ** 3 * (1 - ss_(k, .93))
+    place(np.vstack([x, np.roll(x, 400)]), t_end - dur, gain=amp)
+
+
+def ss_(k, a):
+    return np.clip((k - a) / (1 - a), 0, 1)
+
+
+def glint(t, m=88, amp=0.025, pan=0.0):
+    bell(t, m, amp, 2.4, pan)
+    bell(t + 0.09, m + 7, amp * 0.6, 2.4, -pan)
+
+
+B = 0.714  # 84 BPM
+# --- 1 · 0-10 · D minor, the body wakes up
+sub(38, 0, 10.6, 0.09, 3, 1.2)
+strings([50, 53, 57, 62], 0, 10.7, 0.05, 3.0, 1.4, 1800)
+hb = 1.2
+while hb < 9.4:
     p = hb / 10
-    heartbeat(hb, 0.32 + 0.2 * p)
-    hb += 60 / (80 + 60 * p)
-for i in range(9):  # treadmill footfalls (soft)
-    pass
-riser(1.4, 4.0, 0.05, 400, 3000)
-for i, tt in enumerate(np.arange(1.6, 5.4, 0.48)):
-    bell(tt, 93 + (i % 3) * 2, 0.025, 0.6, pan=-0.4 + i * 0.1)
-for i, tt in enumerate((6.0, 6.4, 6.8, 7.2)):
-    bell(tt, (81, 84, 88, 86)[i], 0.05, 1.6, pan=(-.4, .3, -.2, .4)[i])
-whoosh(9.0, 1.8, 0.28, 200, 6000)
-
-# Scene 2 · 10-23 · warm Bb, hormone chimes, zoom, enzyme cuts
-pad([46, 53, 58, 62, 65], 9.8, 23.6, 0.075, 2.0, 1.5, 1100)
-sub(34, 9.8, 23.4, 0.09)
-for i in range(6):
-    bell(10 + 0.4 + i * 0.28 + 1.4, (77, 81, 84, 86, 89, 84)[i], 0.06, 2.0, pan=-0.6 + i * 0.22)
-whoosh(13.0, 2.4, 0.3, 120, 4000, 0.4, -0.4)
-riser(13.2, 2.0, 0.06, 300, 1800)
+    softbeat(hb, 0.10 + 0.05 * p)
+    hb += 60 / (78 + 50 * p)
+motif(1.6, [69, 74, 77, 76])
+motif(5.9, [69, 74, 72, 69], amp=0.075, oct_low=False)
+swell(10.0)
+# --- 2 · 10-23 · Bb -> F, inside the fat cell
+sub(34, 9.8, 16.6, 0.08)
+sub(29, 16.4, 23.4, 0.08)
+strings([46, 50, 53, 58, 62], 9.8, 16.8, 0.05, 1.6, 1.0, 2200)
+strings([41, 48, 53, 57, 60], 16.4, 23.6, 0.05, 1.0, 1.6, 2200)
+motif(10.5, [77, 74, 70, 72])
+motif(16.8, [69, 72, 77, 76], amp=0.075)
 for c in (16.0, 18.3, 20.6):
-    riser(c - 1.6, 1.6, 0.035, 600, 3000)
-    snip(c, 0.32)
-whoosh(22.0, 1.8, 0.28, 200, 5000)
-
-# Scene 3 · 23-34 · G minor, pulsatile blood flow
-pad([43, 50, 55, 58, 62], 22.8, 34.6, 0.07, 2.0, 1.5, 900)
-sub(31, 22.8, 34.4, 0.10)
-flow(23, 34.2, 0.09)
-bell(25.2, 79, 0.06, 2.0, 0.3)  # FA binds albumin
-bell(32.0, 74, 0.07, 2.4, -0.2)  # into transporter
-bell(33.0, 81, 0.05, 2.4, 0.2)
-whoosh(33.0, 1.9, 0.3, 150, 6000, -0.5, 0.5)
-
-# Scene 4 · 34-49 · energy: arpeggio grows with each step
-pad([50, 57, 62, 65, 69], 33.8, 49.6, 0.07, 1.8, 1.5, 1300, shimmer=0.15)
-sub(38, 33.8, 49.4, 0.11)
-arp = [62, 65, 69, 74, 72, 69, 65, 69]
-bpm = 112
-step = 60 / bpm / 2
-tt = 36.0
-i = 0
-while tt < 48.8:
+    glint(c, 86 + int((c - 16) * 2), 0.03, 0.3)
+swell(23.0)
+# --- 3 · 23-34 · G minor -> Bb, travelling in the blood
+sub(31, 22.8, 28.6, 0.09)
+sub(34, 28.4, 34.4, 0.09)
+strings([43, 50, 55, 58, 62], 22.8, 28.8, 0.05, 1.4, 1.2, 2000)
+strings([46, 53, 58, 62, 65], 28.4, 34.6, 0.05, 1.2, 1.5, 2300)
+for k in range(15):
+    softbeat(23.4 + k * B, 0.06)
+motif(23.5, [74, 70, 67, 69])
+motif(28.6, [70, 74, 77, 74], amp=0.07, oct_low=False)
+glint(32.6, 81, 0.03)
+swell(34.0)
+# --- 4 · 34-49 · power plant: Dm Bb F C, pulse builds
+prog = [([50, 57, 62, 65], 38), ([46, 53, 58, 62], 34), ([41, 53, 57, 60], 29), ([48, 52, 55, 60], 36)]
+for i, (ch, bass) in enumerate(prog):
+    t0 = 34 + i * 3.75
+    strings(ch, t0 - .2, t0 + 3.95, 0.05 + 0.006 * i, 0.8, 0.8, 2400 + 300 * i)
+    sub(bass, t0 - .2, t0 + 3.95, 0.09, 0.4, 0.6)
+arp = [62, 65, 69, 74, 69, 65]
+tt, i = 35.4, 0
+while tt < 48.6:
     lt = tt - 34
-    inten = 0.35 + 0.65 * min(1, max(0, (lt - 2) / 10))
-    m = arp[i % len(arp)] + (12 if lt > 12 and i % 4 == 0 else 0)
-    pluck(tt, m, 0.07 * inten, 0.6, pan=np.sin(i * 0.9) * 0.5)
-    tt += step
+    inten = 0.4 + 0.6 * min(1, max(0, (lt - 2) / 10))
+    ch = prog[min(3, int((tt - 34) / 3.75))][0]
+    m = sorted(ch)[1 + i % 3] + 12
+    pluck(tt, m, 0.05 * inten, 0.5, pan=np.sin(i * 0.9) * 0.4)
+    tt += B / 2
     i += 1
-for k in range(7):  # beta-ox cuts
-    zap(34 + 3.2 + 0.5 * k, 0.03, pan=0.5)
-    bell(34 + 3.2 + 0.5 * k, 84 + (k % 3), 0.025, 0.8, pan=0.5)
-for k in range(30):  # electrons
-    zap(42 + k * 0.2 + rng.uniform(0, .08), 0.022, pan=rng.uniform(-.6, .2))
-for k in range(int((15 - 12) / 0.3)):  # ATP
-    bell(46 + 0.3 * k + 1.3, 88 + (k % 4) * 2, 0.03, 0.9, pan=rng.uniform(-.7, .7))
-riser(46, 2.8, 0.06, 200, 2500)
-whoosh(48.0, 1.9, 0.3, 200, 6000, 0.5, -0.5)
-
-# Scene 5 · 49-63 · F major opens up, breathing
-pad([41, 48, 53, 57, 60, 64], 48.8, 63.6, 0.075, 2.5, 1.5, 1200, shimmer=0.12)
-sub(29, 48.8, 63.4, 0.10)
-flow(49, 53.6, 0.06, 1.25)
-whoosh(52.8, 2.6, 0.24, 120, 3500, 0.3, -0.3)
-for k in range(10):
-    bell(53.8 + k * 0.45, (72, 76, 79, 84)[k % 4], 0.03, 1.4, pan=-0.5 + (k % 5) * .25)
-whoosh(58.0, 2.4, 0.22, 150, 4000, -0.3, 0.3)
-lc = 0.0
-while 49 + 9.6 + lc < 63:
-    breath(49 + 9.6 + lc, 1.5, 0.12)
-    lc += 3.4
-riser(60.5, 2.5, 0.07, 200, 3000)
-whoosh(62.0, 1.8, 0.28, 200, 6000)
-
-# Scene 6 · 63-75 · reveal, resolve to D major
-pad([50, 57, 62, 66, 69], 62.8, 76, 0.065, 2.5, 3.5, 1200)
-riser(64.0, 3.4, 0.12, 150, 4000)
-boom(67.4, 0.55)
-pad([38, 50, 57, 62, 66, 69, 74], 67.3, 76, 0.09, 0.4, 4.5, 1800, shimmer=0.25)
-sub(38, 67.3, 76, 0.12, 0.2, 4)
-for i, m in enumerate((74, 78, 81, 86, 90)):
-    bell(67.45 + i * 0.09, m, 0.07, 3.2, pan=-0.6 + i * 0.3)
-for i, m in enumerate((81, 78, 74)):
-    bell(69.0 + i * 0.12, m, 0.045, 2.5, pan=0.4 - i * 0.4)
-bell(71.0, 86, 0.05, 3.5, 0)
+for k in range(int((48.6 - 40) / B)):
+    kick(40 + k * B, 0.10 + 0.01 * k)
+motif(36.0, [74, 77, 81, 79], amp=0.07)
+motif(43.5, [77, 81, 84, 81], amp=0.075, oct_low=False)
+swell(49.0, 2.2, 0.06)
+# --- 5 · 49-63 · out through the lungs: F C Dm Bb, open and airy
+prog5 = [([53, 57, 60, 65], 29), ([48, 55, 60, 64], 36), ([50, 57, 62, 65], 38), ([46, 53, 58, 62], 34)]
+for i, (ch, bass) in enumerate(prog5):
+    t0 = 49 + i * 3.5
+    strings(ch, t0 - .2, t0 + 3.7, 0.05, 1.0, 1.0, 2600)
+    sub(bass, t0 - .2, t0 + 3.7, 0.08, 0.6, 0.6)
+motif(49.5, [72, 77, 81, 79])
+motif(56.5, [74, 77, 81, 84], amp=0.075)
+glint(53.4, 84, 0.025, -0.3)
+glint(59.6, 88, 0.025, 0.3)
+# --- 6 · 63-75 · the reveal: tension on A, resolve to D major
+strings([45, 52, 57, 61, 64], 62.8, 67.6, 0.06, 1.2, 0.2, 2600, trem=0.35)
+sub(33, 62.8, 67.5, 0.09, 1.5, 0.2)
+riser(64.2, 3.2, 0.05, 200, 1800)
+boom(67.4, 0.32)
+strings([50, 57, 62, 66, 69, 74], 67.35, 76, 0.07, 0.25, 5.0, 3000)
+sub(38, 67.35, 76, 0.11, 0.1, 4.5)
+motif(67.45, [74, 78, 81, 86], amp=0.1)
+piano(70.4, 90, 0.06, 4.0, 0.2)
+piano(70.4, 81, 0.05, 4.0, -0.2)
 
 # ---------------------------------------------------------------- master
 ir_n = int(2.8 * SR)
@@ -337,7 +404,7 @@ irR = rng.standard_normal(ir_n) * np.exp(-ti * 2.4)
 irL, irR = lp(irL, 5000), lp(irR, 5000)
 irL[:int(.012 * SR)] = 0
 irR[:int(.017 * SR)] = 0
-wet = 0.22
+wet = 0.32
 L2 = L + wet * fftconvolve(L, irL)[:N] / np.sqrt(np.sum(irL ** 2))
 R2 = R + wet * fftconvolve(R, irR)[:N] / np.sqrt(np.sum(irR ** 2))
 mix = np.vstack([L2, R2])
@@ -367,7 +434,7 @@ mix = hp(mix, 28)
 # gentle bus compression + soft clip
 peak = np.max(np.abs(mix))
 mix = mix / peak * 0.9
-mix = np.tanh(mix * 1.3) / np.tanh(1.3)
+
 fade = int(1.5 * SR)
 mix[:, -fade:] *= np.linspace(1, 0, fade)
 mix[:, :int(0.05 * SR)] *= np.linspace(0, 1, int(0.05 * SR))

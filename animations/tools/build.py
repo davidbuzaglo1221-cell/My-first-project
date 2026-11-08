@@ -39,7 +39,7 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         wav, mp3 = os.path.join(tmp, 's.wav'), os.path.join(tmp, 's.mp3')
         subprocess.run([sys.executable, os.path.join(HERE, 'build_score.py'), wav], check=True, env=env)
-        subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', wav, '-c:a', 'libmp3lame', '-b:a', '128k', mp3], check=True)
+        subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', wav, '-af', 'loudnorm=I=-16:TP=-1.5:LRA=9', '-ar', '44100', '-c:a', 'libmp3lame', '-b:a', '128k', mp3], check=True)
         audio = 'data:audio/mpeg;base64,' + base64.b64encode(open(mp3, 'rb').read()).decode()
     data = {'timing': timing, 'audio': audio, 'narration': bool(narr), 'words': words}
     src = open(os.path.join(ROOT, 'src', 'fat-journey.template.html'), encoding='utf-8').read()

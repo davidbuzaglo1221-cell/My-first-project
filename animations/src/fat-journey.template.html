@@ -527,7 +527,7 @@ function Scene2({lt,a}){
     <${Lbl} x=${578} y=${ys[0]+10} tx=${700} ty=${470} text="קשר אסטר" op=${ss(5.6,6.2,lt)*(1-ss(7.2,7.8,lt))} k="tg"/>
     <g opacity=${ss(6.2,7,lt)}>
       <rect x="230" y="548" width="540" height="42" rx="21" fill="#170c02d9" stroke="#ffb547" strokeOpacity=".5"/>
-      <${Tag} x=${500} y=${575} text="ליפוליזה: טריגליצריד + 3 H₂O ← גליצרול + 3 חומצות שומן" size=${15} fill="#ffe2a8" k="lipase"/>
+      <${Tag} x=${500} y=${575} text="ליפוליזה: טריגליצריד + ⁦3 H₂O⁩ ← גליצרול + 3 חומצות שומן" size=${15} fill="#ffe2a8" k="lipase"/>
     </g>
   </g>`;
   return html`<g>${BG('bg2')}${layerA}${layerB}</g>`;
@@ -860,6 +860,23 @@ const DEFS=html`<defs>
   </pattern>
 </defs>`;
 
+
+/* ---------- film (shared by player and video renderer) ---------- */
+function filmSVG(t,a){
+  const T=.7;
+  const drift=`translate(${(Math.sin(a*.37)*3+Math.sin(a*.91)*1.5).toFixed(2)} ${(Math.cos(a*.29)*2.5+Math.sin(a*1.13)*1).toFixed(2)})`;
+  const layers=SCENES.map((s,i)=>{
+    if(t<s.start-T&&i>0) return null; if(t>s.end+T&&i<SCENES.length-1) return null;
+    const opIn=i===0?1:ss(s.start-T,s.start+T,t), opOut=i===SCENES.length-1?1:1-ss(s.end-T,s.end+T,t);
+    const inS=i===0?1:lerp(i===5?1.3:.8,1,ss(s.start-T,s.start+1.4,t));
+    const ex=s.exit; const exS=ex?lerp(1,ex.s,Math.pow(ss(s.end-1.4,s.end+T,t),1.5)):1;
+    const C=SCENE_C[i];
+    return html`<g key=${i} opacity=${opIn*opOut} transform=${ex?camT(ex.x,ex.y,exS):''}><g transform=${camT(500,310,inS)}><${C} lt=${(t-s.start)*s.k} a=${a}/></g></g>`;
+  });
+  const bokeh=Array.from({length:16},(_,i)=>html`<circle key=${i} cx=${frac(h(i)+a*.004*(h(i+40)-.4))*1000} cy=${frac(h(i+20)+a*.006*(h(i+60)-.5))*620} r=${3+h(i+80)*14} fill="url(#gSpark)" opacity=${.05+.08*h(i+9)}/>`);
+  return html`<g><rect width="1000" height="620" fill="#02040a"/><g transform=${drift}>${layers}</g><g style=${{pointerEvents:'none'}}>${bokeh}</g></g>`;
+}
+
 /* ---------- sound: soundtrack + optional browser narration ---------- */
 const NARR_TRACK=!!FJ_DATA.narration;
 const audio=FJ_DATA.audio?new Audio(FJ_DATA.audio):null;
@@ -976,16 +993,7 @@ function App(){
   const chunk=sc.chunks[ci];
   const subOp=ss(chunk.t0-.1,chunk.t0+.2,ltR)*(ci===sc.chunks.length-1?1-ss(DUR[si]-.5,DUR[si]-.1,ltR):1);
   const T=.7;
-  const drift=`translate(${(Math.sin(a*.37)*3+Math.sin(a*.91)*1.5).toFixed(2)} ${(Math.cos(a*.29)*2.5+Math.sin(a*1.13)*1).toFixed(2)})`;
-  const layers=SCENES.map((s,i)=>{
-    if(t<s.start-T&&i>0) return null; if(t>s.end+T&&i<SCENES.length-1) return null;
-    const opIn=i===0?1:ss(s.start-T,s.start+T,t), opOut=i===SCENES.length-1?1:1-ss(s.end-T,s.end+T,t);
-    const inS=i===0?1:lerp(i===5?1.3:.8,1,ss(s.start-T,s.start+1.4,t));
-    const ex=s.exit; const exS=ex?lerp(1,ex.s,Math.pow(ss(s.end-1.4,s.end+T,t),1.5)):1;
-    const C=SCENE_C[i];
-    return html`<g key=${i} opacity=${opIn*opOut} transform=${ex?camT(ex.x,ex.y,exS):''}><g transform=${camT(500,310,inS)}><${C} lt=${(t-s.start)*s.k} a=${a}/></g></g>`;
-  });
-  const bokeh=Array.from({length:16},(_,i)=>html`<circle key=${i} cx=${frac(h(i)+a*.004*(h(i+40)-.4))*1000} cy=${frac(h(i+20)+a*.006*(h(i+60)-.5))*620} r=${3+h(i+80)*14} fill="url(#gSpark)" opacity=${.05+.08*h(i+9)}/>`);
+  const film=filmSVG(t,a);
   const fg=Array.from({length:7},(_,i)=>{const tint=si===1||si===3?'#ffb35a':si===2?'#ff5a6a':'#7fe4ff'; return html`<circle key=${i} cx=${frac(h(i+500)+a*.02*(h(i+501)+.3))*1200-100} cy=${h(i+502)*620+Math.sin(a*.4+i)*20} r=${30+h(i+503)*50} fill=${tint} opacity=${.06+.05*h(i+504)}/>`});
   const flash=SCENES.slice(1).reduce((m,s)=>Math.max(m,Math.exp(-Math.pow((t-s.start)/.28,2))),0)*.55;
   const cardE=started?SCENES.reduce((m,s,i)=>{const st=s.start+(i===0?.15:.25); return Math.max(m, ss(st,st+.6,t)*(1-ss(st+2.1,st+2.7,t)))},0):0;
@@ -1007,9 +1015,7 @@ function App(){
     <div className="frame" ref=${frameRef} onClick=${()=>{if(started&&!info){poke()}}}>
       <svg viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid slice" aria-label="סרט: מסעו של השומן בגוף" role="img">
         ${DEFS}
-        <rect width="1000" height="620" fill="#02040a"/>
-        <g transform=${drift}>${layers}</g>
-        <g style=${{pointerEvents:'none'}}>${bokeh}</g>
+        ${film}
       </svg>
       <svg className="dof" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style=${{position:'absolute',inset:0,width:'100%',height:'100%'}}>${fg}</svg>
       <canvas className="grain" ref=${grainRef}></canvas>
@@ -1084,7 +1090,102 @@ function App(){
    </div>
   </div>`;
 }
+
+/* ---------- video renderer (used only by tools/render_video.js) ---------- */
+const PHR=SCENES.map((s,i)=>{
+  const raw=s.narr.split(/(?<=[,.:])\s+/); const out=[];
+  raw.forEach(r=>{const w=r.split(/\s+/).filter(Boolean); for(let j=0;j<w.length;){const left=w.length-j; const take=left<=5?left:(left<=8?Math.ceil(left/2):4); out.push(w.slice(j,j+take)); j+=take}});
+  const wt=(p)=>p.join(' ').length+7;
+  const tot=out.reduce((a,p)=>a+wt(p),0); const span=DUR[i]-1.0; let acc=.4;
+  return out.map(p=>{const d=wt(p)/tot*span; const ph={words:p,t0:acc,t1:acc+d}; acc+=d; return ph});
+});
+const RCSS=`
+.rv{position:relative;overflow:hidden;background:#02040a;direction:rtl;font-family:var(--body);color:#fff}
+.rv .bgf{position:absolute;filter:blur(9px) saturate(1.35) brightness(.5);transform-origin:50% 50%}
+.rv .bgf svg,.rv .main svg{width:100%;height:100%;display:block}
+.rv .main{position:absolute;overflow:hidden}
+.rv .main text{direction:rtl;font-family:var(--body);font-weight:700}
+.rv .main .mono{font-family:var(--mono);direction:ltr}
+.rv .grain{position:absolute;inset:0;width:100%;height:100%;opacity:.07;mix-blend-mode:overlay}
+.rv .vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,transparent 50%,#000b 100%)}
+.rv .top{position:absolute;left:0;right:0;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.rv .brand{font-family:var(--mono);color:#7fe4ff;letter-spacing:.42em;margin-inline-end:-.42em;opacity:.9}
+.rv .pre{font-family:var(--body);font-weight:700;color:#ff9a3c;letter-spacing:.06em}
+.rv .ttl{font-family:var(--display);line-height:1.04;text-shadow:0 6px 40px #000,0 0 40px #4fd6ff40;text-wrap:balance}
+.rv .ttl .hl{background:linear-gradient(90deg,#b8f4ff,#4fd6ff 45%,#ffb37a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.rv .ttl .q{color:#ff9a3c}
+.rv .cap{position:absolute;left:0;right:0;display:flex;justify-content:center;text-align:center}
+.rv .cap p{margin:0;font-weight:800;line-height:1.28;text-wrap:balance}
+.rv .cap span{display:inline-block;margin:0 .13em;text-shadow:0 3px 0 #000,0 0 20px #000,0 0 50px #000a}
+.rv .prog{position:absolute;display:flex;gap:8px}
+.rv .prog div{flex:1;height:6px;border-radius:3px;background:#ffffff2a;overflow:hidden;position:relative}
+.rv .prog i{position:absolute;inset-block:0;inset-inline-start:0;background:linear-gradient(270deg,#4fd6ff,#ff9a3c)}
+.rv .cta{position:absolute;left:0;right:0;display:flex;justify-content:center}
+.rv .cta span{font-weight:800;border-radius:999px;background:linear-gradient(90deg,#ff9a3c,#ff5e7a);color:#140600;box-shadow:0 10px 40px #ff7a4a66}
+.rv .flash{position:absolute;inset:0;background:radial-gradient(circle,#d9f7ffcc,#4fd6ff44 35%,transparent 70%);mix-blend-mode:screen}
+`;
+function RenderApp({fmt}){
+  const [t,setT]=useState(0);
+  const grainRef=useRef(null);
+  const V=fmt!=='h';
+  const W=V?1080:1920, H=V?1920:1080;
+  const mainW=V?1080:1500, mainH=Math.round(mainW*.62), mainX=(W-mainW)/2, mainY=V?560:132;
+  useEffect(()=>{const c=grainRef.current; const ctx=c.getContext('2d'); c.width=Math.round(W/4); c.height=Math.round(H/4); const img=ctx.createImageData(c.width,c.height); let seed=1;
+    const rnd=()=>{seed=(seed*16807)%2147483647; return seed/2147483647};
+    window.__frame=(x)=>{ReactDOM.flushSync(()=>setT(x)); seed=1+Math.floor(x*997)%100000; const d=img.data; for(let i=0;i<d.length;i+=4){const v=rnd()*255; d[i]=d[i+1]=d[i+2]=v; d[i+3]=255} ctx.putImageData(img,0,0)};
+    window.__total=TOTAL; window.__ready=true},[]);
+  FS=V?1.7:1.15;
+  const a=t, si=sceneAt(t), sc=SCENES[si], lr=t-sc.start, lts=lr*sc.k;
+  const film=filmSVG(t,a);
+  // headline
+  const hook=1-ss(2.5,3.0,t);
+  const fin=si===5?ss(4.2,5.0,lts):0;
+  const chIn=ss(sc.start+(si===0?2.8:.1),sc.start+(si===0?3.4:.7),t), chOut=si===5?1-fin:1-ss(sc.end-.5,sc.end-.05,t);
+  const chOp=si===0?chIn*chOut:Math.min(chIn,chOut);
+  const tS=V?1:.6;
+  const br=V?html`<br/>`:' ';
+  const pop=(o)=>({opacity:o,transform:`translateY(${((1-o)*30).toFixed(1)}px) scale(${(0.94+0.06*o).toFixed(3)})`});
+  const headline=html`<div className="top" style=${V?{top:'190px',height:'340px'}:{top:'14px',height:'112px'}}>
+      ${V&&html`<div className="brand" style=${{fontSize:'26px',marginBottom:'22px',opacity:.9}}>GAVRIEL FITNESS</div>`}
+      <div style=${{position:'relative',width:'100%',height:(V?250:112)+'px'}}>
+        ${hook>.01&&html`<div style=${{position:'absolute',inset:0,display:'flex',flexDirection:'column',justifyContent:'flex-end',alignItems:'center',...pop(ss(.15,.7,t)*hook)}}>
+          <div className="pre" style=${{fontSize:(V?28:20)+'px',marginBottom:V?'12px':'6px'}}>רוב האנשים טועים בזה</div>
+          <div className="ttl" style=${{fontSize:(V?98:96)*tS+'px'}}>לאן נעלם השומן${br}כשאתם מתאמנים<span className="q">?</span></div></div>`}
+        ${chOp>.01&&fin<.99&&html`<div style=${{position:'absolute',inset:0,display:'flex',flexDirection:'column',justifyContent:'flex-end',alignItems:'center',...pop(chOp)}}>
+          <div className="pre" style=${{fontSize:(V?28:20)+'px',marginBottom:V?'14px':'6px'}}>פרק ${String(si+1).padStart(2,'0')} · ${sc.sub}</div>
+          <div className="ttl" style=${{fontSize:(V?92:92)*tS+'px'}}>${sc.title}</div></div>`}
+        ${fin>.01&&html`<div style=${{position:'absolute',inset:0,display:'flex',flexDirection:'column',justifyContent:'flex-end',alignItems:'center',...pop(fin)}}>
+          <div className="ttl" style=${{fontSize:(V?74:78)*tS+'px'}}>השומן לא נמס בזיעה${V?html`<br/>`:' — '}<span className="hl">רוב המסה שלו יוצאת${br}דרך הנשימה!</span></div></div>`}
+      </div></div>`;
+  // captions
+  const ph=PHR[si]; let pi=0; ph.forEach((p,i)=>{if(lr>=p.t0-.05) pi=i});
+  const cur=ph[pi]; const cOp=ss(cur.t0-.12,cur.t0+.1,lr)*(pi===ph.length-1?1-ss(DUR[si]-.45,DUR[si]-.1,lr):1);
+  const wl=cur.words.reduce((x,w)=>x+w.length+1,0); let cc=0;
+  const cap=html`<div className="cap" style=${V?{top:'1330px',padding:'0 90px'}:{top:'968px',padding:'0 200px'}}><p style=${{fontSize:(V?64:44)+'px',opacity:cOp,whiteSpace:V?'normal':'nowrap'}}>${cur.words.map((w,i)=>{
+      const wt=cur.t0+cc/wl*(cur.t1-cur.t0)*.85; cc+=w.length+1; const on=ss(wt-.04,wt+.12,lr); const next=i<cur.words.length-1?cur.t0+cc/wl*(cur.t1-cur.t0)*.85:cur.t1; const active=lr>=wt&&lr<next;
+      return html`<span key=${pi+'-'+i} style=${{color:active?'#ffd25a':on>.5?'#ffffff':'rgba(255,255,255,.38)',transform:`scale(${(1+(active?.06:0)+(1-on)*.04).toFixed(3)}) translateY(${((1-on)*8).toFixed(1)}px)`}}>${w}</span>`})}</p></div>`;
+  const flash=SCENES.slice(1).reduce((m,s)=>Math.max(m,Math.exp(-Math.pow((t-s.start)/.28,2))),0)*.5;
+  const prog=html`<div className="prog" style=${V?{left:'110px',right:'110px',top:(mainY+mainH+34)+'px'}:{left:'260px',right:'260px',top:'1046px'}}>${SCENES.map((s,i)=>html`<div key=${i}><i style=${{width:(clamp((t-s.start)/(s.end-s.start))*100)+'%'}}></i></div>`)}</div>`;
+  const ctaOp=si===5?ss(7.4,8.2,lts):0;
+  const fadeOut=1-ss(TOTAL-1.2,TOTAL,t), fadeIn=ss(0,.35,t);
+  const mask='linear-gradient(180deg,transparent 0,#000 9%,#000 91%,transparent 100%)';
+  return html`<div className="rv" style=${{width:W+'px',height:H+'px'}}>
+    <style>${RCSS}</style>
+    <div style=${{position:'absolute',inset:0,opacity:fadeIn*fadeOut}}>
+      <div className="bgf" style=${V?{left:'155px',top:'721px',width:'770px',height:'478px',transform:'scale(4.2)'}:{left:'720px',top:'391px',width:'480px',height:'298px',transform:'scale(4.6)'}}><svg viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid slice">${DEFS}${film}</svg></div>
+      <div className="main" style=${{left:mainX+'px',top:mainY+'px',width:mainW+'px',height:mainH+'px',WebkitMaskImage:mask,maskImage:mask}}>
+        <svg viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid slice">${film}</svg>
+        <div className="flash" style=${{opacity:flash}}></div>
+      </div>
+      <div className="vig"></div>
+      ${headline}${prog}${cap}
+      ${V&&ctaOp>.01&&html`<div className="cta" style=${{top:(V?1560:960)+'px',...pop(ctaOp)}}><span style=${{fontSize:(V?34:26)+'px',padding:V?'14px 34px':'10px 26px'}}>שמרו ושתפו מישהו שעדיין חושב שהשומן "נשרף" בזיעה</span></div>`}
+    </div>
+    <canvas className="grain" ref=${grainRef}></canvas>
+  </div>`;
+}
 const min=Math.min;
-ReactDOM.createRoot(document.getElementById('root')).render(html`<${App}/>`);
+if(window.FJ_RENDER){document.body.style.cssText='margin:0;padding:0;background:#000';document.querySelector('.wrap header').remove();document.querySelector('.wrap').style.cssText='display:block;max-width:none;margin:0'}
+ReactDOM.createRoot(document.getElementById('root')).render(window.FJ_RENDER?html`<${RenderApp} fmt=${window.FJ_RENDER.fmt}/>`:html`<${App}/>`);
 })();
 </script>
