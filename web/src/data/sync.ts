@@ -12,13 +12,16 @@ import { db, type LocalDb } from "./db";
 //   b.<year> / c.<year>  weigh-ins / cardio                  p           profile, targets, lessons read
 //   t.<templateId> a template with its exercises             x.<n> / fo.<n>  exercises / own foods, hashed
 //   mp.<id> / pp.<id>  one meal photo / one progress photo
+//   m.<yyyy-mm> / ci.<yyyy-mm> / bz.<yyyy-mm>  a month of missions / check-ins / cuts
+//   ss.<id> / cn.<id>  one sales practice / one coach note        (the journey row rides in p)
 // A group is last-writer-wins by `rev` (ms). Library foods (id "seed:…") are not copied: every
 // install has them.
 
 type Row = Record<string, unknown> & { id: string };
 type TableName =
   | "profile" | "exercises" | "templates" | "templateExercises" | "workouts" | "workoutExercises" | "sets"
-  | "foods" | "foodLogs" | "mealPhotos" | "targets" | "bodyMetrics" | "cardio" | "progressPhotos" | "lessonReads";
+  | "foods" | "foodLogs" | "mealPhotos" | "targets" | "bodyMetrics" | "cardio" | "progressPhotos" | "lessonReads"
+  | "journey" | "missions" | "checkins" | "cuts" | "salesSessions" | "coachNotes";
 
 const hash = (s: string, n: number) => {
   let h = 0;
@@ -41,8 +44,14 @@ export function groupOf(table: TableName, row: Row): string | null {
     case "templateExercises": return `t.${row.templateId}`;
     case "exercises": return `x.${hash(row.id, 4)}`;
     case "foods": return row.id.startsWith("seed:") ? null : `fo.${hash(row.id, 8)}`;
+    case "missions": return `m.${String(row.date).slice(0, 7)}`;
+    case "checkins": return `ci.${String(row.date).slice(0, 7)}`;
+    case "cuts": return `bz.${String(row.date).slice(0, 7)}`;
+    case "salesSessions": return `ss.${row.id}`;
+    case "coachNotes": return `cn.${row.id}`;
     case "profile":
     case "targets":
+    case "journey":
     case "lessonReads": return "p";
   }
 }
@@ -57,7 +66,12 @@ const TABLES_OF: Record<string, TableName[]> = {
   t: ["templates", "templateExercises"],
   x: ["exercises"],
   fo: ["foods"],
-  p: ["profile", "targets", "lessonReads"],
+  m: ["missions"],
+  ci: ["checkins"],
+  bz: ["cuts"],
+  ss: ["salesSessions"],
+  cn: ["coachNotes"],
+  p: ["profile", "targets", "lessonReads", "journey"],
 };
 export const SYNCED_TABLES = [...new Set(Object.values(TABLES_OF).flat())];
 
@@ -88,7 +102,12 @@ export async function loadGroup(d: LocalDb, group: string): Promise<Partial<Reco
     case "t": return { templates: await one("templates"), templateExercises: await t("templateExercises").where("templateId").equals(a).toArray() };
     case "x": return { exercises: await byGroup("exercises") };
     case "fo": return { foods: await byGroup("foods") };
-    case "p": return { profile: await t("profile").toArray(), targets: await t("targets").toArray(), lessonReads: await t("lessonReads").toArray() };
+    case "m": return { missions: await t("missions").where("date").startsWith(a).toArray() };
+    case "ci": return { checkins: await t("checkins").where("date").startsWith(a).toArray() };
+    case "bz": return { cuts: await t("cuts").where("date").startsWith(a).toArray() };
+    case "ss": return { salesSessions: await one("salesSessions") };
+    case "cn": return { coachNotes: await one("coachNotes") };
+    case "p": return { profile: await t("profile").toArray(), targets: await t("targets").toArray(), lessonReads: await t("lessonReads").toArray(), journey: await t("journey").toArray() };
     default: return {};
   }
 }

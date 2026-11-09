@@ -1,80 +1,191 @@
 {
-  "_about": "Dark theme (opt-in in settings): the same clean system in charcoal. White for primary actions, our green for completion. Same role names as tokens.json.",
+  "_about": "Dark theme (the default): matte black and graphite, warm off-white type, champagne gold for the one thing that matters, a little dark red for moments that count. Same roles as tokens.json.",
   "color": {
-    "bg": "#0E100F",
-    "surface": "#191C1A",
-    "surface-2": "#222623",
-    "surface-raised": "#1E2220",
-    "border": "#2C312E",
-    "border-input": "#7E8681",
-    "text": "#F2F4F2",
-    "text-muted": "#B0B7B2",
-    "text-subtle": "#9AA19C",
-    "accent": "#F2F4F2",
-    "accent-hover": "#FFFFFF",
-    "on-accent": "#121513",
-    "accent-soft": "#2A2E2B",
-    "accent-ink": "#F2F4F2",
-    "focus": "#5BC995",
-    "success": "#5BC995",
-    "success-soft": "#173326",
-    "danger": "#FF8E84",
-    "on-danger": "#2A0B08",
-    "danger-soft": "#3A1C19",
-    "warning": "#EBC06A",
-    "warning-soft": "#352C17",
-    "pr": "#E2C384",
-    "pr-soft": "#352E1E",
-    "macro-protein": "#FF8FA6",
-    "macro-carbs": "#8FB4FF",
-    "macro-fat": "#F0B35C",
+    "bg": "#0A0A0B",
+    "surface": "#131315",
+    "surface-2": "#1A1A1D",
+    "surface-raised": "#18181B",
+    "border": "#2A2A2E",
+    "border-input": "#77736B",
+    "text": "#F0EBE1",
+    "text-muted": "#B7B0A4",
+    "text-subtle": "#9A9387",
+    "accent": "#CFB585",
+    "accent-hover": "#DCC598",
+    "on-accent": "#15120D",
+    "accent-soft": "#272219",
+    "accent-ink": "#E6CF9F",
+    "focus": "#CFB585",
+    "success": "#A9C49A",
+    "success-soft": "#1B2419",
+    "danger": "#E5776B",
+    "on-danger": "#1A0A08",
+    "danger-soft": "#2C1714",
+    "warning": "#E2B867",
+    "warning-soft": "#2E2614",
+    "pr": "#DCC08A",
+    "pr-soft": "#29231A",
+    "blood": "#8E2A24",
+    "on-blood": "#F6EDE4",
+    "blood-soft": "#2A1412",
+    "blood-ink": "#EC8F84",
+    "macro-protein": "#E58C9C",
+    "macro-carbs": "#97B1E0",
+    "macro-fat": "#DDAA62",
     "overlay": "#000000"
   },
   "glass": {
-    "fill": "rgba(25, 28, 26, 0.86)",
-    "fill-raised": "rgba(30, 34, 32, 0.95)",
-    "border": "rgba(255, 255, 255, 0.07)",
-    "highlight": "rgba(255, 255, 255, 0.05)",
-    "well": "rgba(255, 255, 255, 0.06)",
-    "well-border": "rgba(255, 255, 255, 0.04)",
-    "blur": "20px",
-    "shadow": "0 1px 2px rgba(0, 0, 0, 0.3), 0 16px 36px -18px rgba(0, 0, 0, 0.6)",
-    "backdrop-base": "#0E100F",
-    "light-1": "rgba(40, 46, 42, 0.9)",
-    "light-2": "rgba(28, 52, 40, 0.45)",
-    "light-3": "rgba(30, 34, 32, 0.6)",
-    "grain-opacity": "0"
+    "fill": "rgba(21, 21, 23, 0.84)",
+    "fill-raised": "rgba(26, 26, 29, 0.96)",
+    "border": "rgba(240, 235, 225, 0.075)",
+    "highlight": "rgba(255, 238, 205, 0.05)",
+    "well": "rgba(255, 255, 255, 0.035)",
+    "well-border": "rgba(240, 235, 225, 0.055)",
+    "blur": "18px",
+    "shadow": "0 1px 0 rgba(0, 0, 0, 0.45), 0 22px 44px -24px rgba(0, 0, 0, 0.85)",
+    "backdrop-base": "#0A0A0B",
+    "light-1": "rgba(207, 181, 133, 0.075)",
+    "light-2": "rgba(142, 42, 36, 0.06)",
+    "light-3": "rgba(38, 38, 42, 0.55)",
+    "grain-opacity": "0.045"
   },
   "pairs": [
-    ["text", "bg"],
-    ["text", "surface"],
-    ["text", "surface-2"],
-    ["text-muted", "bg"],
-    ["text-muted", "surface"],
-    ["text-muted", "surface-2"],
-    ["text-subtle", "surface"],
-    ["text-subtle", "surface-2"],
-    ["text-subtle", "bg"],
-    ["on-accent", "accent"],
-    ["on-accent", "accent-hover"],
-    ["accent-ink", "accent-soft"],
-    ["success", "surface"],
-    ["success", "success-soft"],
-    ["text", "success-soft"],
-    ["on-danger", "danger"],
-    ["danger", "surface"],
-    ["danger", "danger-soft"],
-    ["warning", "surface"],
-    ["warning", "warning-soft"],
-    ["pr", "pr-soft"],
-    ["pr", "surface"],
-    ["macro-protein", "surface"],
-    ["macro-carbs", "surface"],
-    ["macro-fat", "surface"],
-    ["border-input", "surface", "ui"],
-    ["border-input", "surface-2", "ui"],
-    ["focus", "surface", "ui"],
-    ["focus", "bg", "ui"],
-    ["accent", "surface", "ui"]
+    [
+      "text",
+      "bg"
+    ],
+    [
+      "text",
+      "surface"
+    ],
+    [
+      "text",
+      "surface-2"
+    ],
+    [
+      "text-muted",
+      "bg"
+    ],
+    [
+      "text-muted",
+      "surface"
+    ],
+    [
+      "text-muted",
+      "surface-2"
+    ],
+    [
+      "text-subtle",
+      "surface"
+    ],
+    [
+      "text-subtle",
+      "surface-2"
+    ],
+    [
+      "text-subtle",
+      "bg"
+    ],
+    [
+      "on-accent",
+      "accent"
+    ],
+    [
+      "on-accent",
+      "accent-hover"
+    ],
+    [
+      "accent-ink",
+      "accent-soft"
+    ],
+    [
+      "success",
+      "surface"
+    ],
+    [
+      "success",
+      "success-soft"
+    ],
+    [
+      "text",
+      "success-soft"
+    ],
+    [
+      "on-danger",
+      "danger"
+    ],
+    [
+      "danger",
+      "surface"
+    ],
+    [
+      "danger",
+      "danger-soft"
+    ],
+    [
+      "warning",
+      "surface"
+    ],
+    [
+      "warning",
+      "warning-soft"
+    ],
+    [
+      "pr",
+      "pr-soft"
+    ],
+    [
+      "pr",
+      "surface"
+    ],
+    [
+      "macro-protein",
+      "surface"
+    ],
+    [
+      "macro-carbs",
+      "surface"
+    ],
+    [
+      "macro-fat",
+      "surface"
+    ],
+    [
+      "border-input",
+      "surface",
+      "ui"
+    ],
+    [
+      "border-input",
+      "surface-2",
+      "ui"
+    ],
+    [
+      "focus",
+      "surface",
+      "ui"
+    ],
+    [
+      "focus",
+      "bg",
+      "ui"
+    ],
+    [
+      "on-blood",
+      "blood"
+    ],
+    [
+      "blood-ink",
+      "blood-soft"
+    ],
+    [
+      "blood-ink",
+      "surface"
+    ],
+    [
+      "accent",
+      "surface",
+      "ui"
+    ]
   ]
 }

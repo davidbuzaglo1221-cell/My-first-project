@@ -18,6 +18,7 @@ import type {
   WorkoutSet,
   WorkoutTemplate,
 } from "./types";
+import type { CheckIn, CoachNote, Cut, Journey, Mission, SalesSession } from "./life-types";
 
 function seedExercises(): Exercise[] {
   return SEED_EXERCISES.map((e) => ({
@@ -67,6 +68,12 @@ export class LocalDb extends Dexie {
   cardio!: EntityTable<CardioSession, "id">;
   progressPhotos!: EntityTable<ProgressPhoto, "id">;
   lessonReads!: EntityTable<LessonRead, "id">;
+  journey!: EntityTable<Journey, "id">;
+  missions!: EntityTable<Mission, "id">;
+  checkins!: EntityTable<CheckIn, "id">;
+  cuts!: EntityTable<Cut, "id">;
+  salesSessions!: EntityTable<SalesSession, "id">;
+  coachNotes!: EntityTable<CoachNote, "id">;
   _sync!: EntityTable<{ id: string; rev: number }, "id">;
 
   constructor() {
@@ -102,6 +109,19 @@ export class LocalDb extends Dexie {
       });
     // v6: what the cloud copy (the artifact build) last saw of each group of rows.
     this.version(6).stores({ _sync: "id" });
+    // v7: the 90-day journey, the business and the coach. The new look is dark first.
+    this.version(7)
+      .stores({
+        journey: "id",
+        missions: "id, date, domain, status",
+        checkins: "id, date",
+        cuts: "id, date, client",
+        salesSessions: "id, at, scenarioId",
+        coachNotes: "id, at, kind",
+      })
+      .upgrade((tx) => tx.table("profile").toCollection().modify((p: Profile) => {
+        if (p.theme === "light") p.theme = "dark";
+      }));
     this.on("populate", (tx) => {
       const exercises = seedExercises();
       tx.table("exercises").bulkAdd(exercises);
@@ -138,7 +158,7 @@ export class LocalDb extends Dexie {
         displayName: null,
         units: "kg",
         weekStartsOn: "sun",
-        theme: "light",
+        theme: "dark",
         goal: null,
         bodyweightKg: null,
         defaultRestSec: 120,

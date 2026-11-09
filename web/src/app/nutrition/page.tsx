@@ -6,6 +6,7 @@ import { Suspense, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Barcode, Camera, ChevronLeft, Plus, Search, Zap } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
+import { BodyNav } from "@/components/journey/parts";
 import { Panel, Skeleton } from "@/components/ui/surface";
 import { CalorieArc, MacroTrio, WeekStrip } from "@/components/nutrition/visuals";
 import { EntrySheet } from "@/components/nutrition/sheets";
@@ -153,7 +154,8 @@ function Today() {
 
 export default function NutritionPage() {
   return (
-    <AppShell tab="nutrition" title="תזונה" action={<Link href="/nutrition/goals" className="pb-1 text-sm font-medium text-text-muted hover:text-text">יעדים</Link>}>
+    <AppShell eyebrow="גוף" tab="nutrition" title="תזונה" action={<Link href="/nutrition/goals" className="pb-1 text-sm font-medium text-text-muted hover:text-text">יעדים</Link>}>
+      <BodyNav active="nutrition" />
       <Suspense fallback={<Skeleton className="h-96 rounded-xl" />}>
         <Today />
       </Suspense>

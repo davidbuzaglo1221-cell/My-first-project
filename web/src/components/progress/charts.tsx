@@ -4,9 +4,9 @@ import { formatNumber } from "@/lib/format";
  * A small line chart. Time runs left to right even in Hebrew (the convention for charts),
  * so the SVG is forced LTR; labels around it stay RTL.
  */
-export function LineChart({ points, height = 140, label, unit }: { points: { x: number; y: number; label: string }[]; height?: number; label: string; unit: string }) {
+export function LineChart({ points, height = 140, label, unit, empty = "צריך לפחות שני אימונים כדי לראות מגמה." }: { points: { x: number; y: number; label: string }[]; height?: number; label: string; unit: string; empty?: string }) {
   if (points.length < 2) {
-    return <p className="well rounded-md px-4 py-6 text-center text-sm text-text-muted">צריך לפחות שני אימונים כדי לראות מגמה.</p>;
+    return <p className="well rounded-md px-4 py-6 text-center text-sm text-text-muted">{empty}</p>;
   }
   const w = 320;
   const pad = { t: 12, r: 8, b: 22, l: 8 };
@@ -29,10 +29,10 @@ export function LineChart({ points, height = 140, label, unit }: { points: { x: 
         role="img"
         aria-label={`${label}: מ-${formatNumber(first.y, 1)} ל-${formatNumber(last.y, 1)} ${unit}, ${points.length} נקודות`}
       >
-        <path d={`${path} L${x(points.length - 1)},${height - pad.b} L${x(0)},${height - pad.b} Z`} fill="var(--c-text)" opacity="0.05" />
-        <path d={path} fill="none" stroke="var(--c-text)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        <path d={`${path} L${x(points.length - 1)},${height - pad.b} L${x(0)},${height - pad.b} Z`} fill="var(--c-accent)" opacity="0.1" />
+        <path d={path} fill="none" stroke="var(--c-accent)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
         {points.map((p, i) => (
-          <circle key={i} cx={x(i)} cy={y(p.y)} r={i === points.length - 1 ? 4 : 2.5} fill={i === points.length - 1 ? "var(--c-text)" : "var(--c-surface)"} stroke="var(--c-text)" strokeWidth="1.5" />
+          <circle key={i} cx={x(i)} cy={y(p.y)} r={i === points.length - 1 ? 4 : 2.5} fill={i === points.length - 1 ? "var(--c-accent)" : "var(--c-surface)"} stroke="var(--c-accent)" strokeWidth="1.5" />
         ))}
         <text x={x(0)} y={height - 6} fontSize="10" fill="var(--c-text-subtle)">
           {first.label}

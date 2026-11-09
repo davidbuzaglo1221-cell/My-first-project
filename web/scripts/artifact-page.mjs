@@ -10,7 +10,7 @@ const scripts = grab(/<script[^>]*>[\s\S]*?<\/script>/g);
 if (!styles.length || !scripts.length) throw new Error("build output is missing its styles or script");
 
 const page = [
-  "<title>אימונים ותזונה</title>",
+  "<title>דוד 2.0</title>",
   '<meta name="claude:viewport-fit-sides" content="cover">',
   ...styles,
   '<div id="root"></div>',

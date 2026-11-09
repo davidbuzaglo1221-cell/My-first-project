@@ -4,186 +4,258 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Activity, Award, Barcode, BookOpen, Camera, ChevronLeft, Dumbbell, Flame, Image as ImageIcon, Plus, Scale, Search } from "lucide-react";
+import { Activity, Barcode, BookOpen, Camera, ChevronLeft, Dumbbell, Flame, Image as ImageIcon, NotebookPen, Plus, Scale, Scissors, Search, Swords, UserRound } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
 import { Button } from "@/components/ui/button";
 import { BottomSheet, SheetAction } from "@/components/ui/bottom-sheet";
-import { Panel, Skeleton } from "@/components/ui/surface";
-import { CalorieArc, MacroTrio, WeekRing, WeekStrip } from "@/components/nutrition/visuals";
-import { getDayLog, getWeekMarks } from "@/data/nutrition-repo";
+import { Skeleton } from "@/components/ui/surface";
+import { Countdown, DifficultyBars, DomainMark, GoldRing, MissionRow, Section } from "@/components/journey/parts";
+import { getDayLog } from "@/data/nutrition-repo";
 import { getCoachSummary } from "@/data/coach-repo";
+import { getCheckIn } from "@/data/journey-repo";
 import { listFinishedWorkouts, listTemplates } from "@/data/repo";
 import { useOpenWorkout, useProfile } from "@/hooks/use-data";
-import { useNow } from "@/hooks/use-now";
+import { useAllMissions, useCheckIns, useCuts, useDayMissions, useJourney, useToday } from "@/hooks/use-journey";
 import { useStartWorkout } from "@/hooks/use-start-workout";
-import { localDateKey } from "@/lib/nutrition";
+import { useNow } from "@/hooks/use-now";
+import { dayNumber, JOURNEY_DAYS, levelOf, msLeftToday, performance, rankOf, streak, totalXp } from "@/lib/journey/engine";
+import { shekel, summarize } from "@/lib/journey/business";
 import { TOPIC_LABEL } from "@/lib/lessons";
-import { formatDuration, formatDurationWords, formatFullDate, formatRelativeDay, greeting, startOfWeek } from "@/lib/format";
+import { formatNumber, greeting } from "@/lib/format";
 import { IS_ARTIFACT } from "@/lib/runtime";
+import { cn } from "@/lib/cn";
 
 /**
- * S04: today at a glance. One ink card carries the day's training (the week's goal, the streak,
- * the next workout); below it, eating, a one-minute lesson, and the next achievement within reach.
+ * Today: the command center. One gold-edged card carries the day's mission and the time left;
+ * under it the numbers that say how the week is really going, the side missions, the check-in,
+ * the chair and the body.
  */
-export default function HomePage() {
+export default function TodayPage() {
   const router = useRouter();
   const profile = useProfile();
+  const journey = useJourney();
+  const today = useToday();
+  const missions = useDayMissions(today, !!journey);
+  const all = useAllMissions();
+  const checkins = useCheckIns();
+  const cuts = useCuts();
+  const checkin = useLiveQuery(() => getCheckIn(today), [today]);
   const open = useOpenWorkout();
-  const now = useNow(1000);
   const { start, pending } = useStartWorkout();
   const [sheet, setSheet] = useState(false);
-  const today = localDateKey();
-  const weekStart = profile ? localDateKey(startOfWeek(new Date(), profile.weekStartsOn)) : null;
+  const nowMs = useNow(30_000);
+  const now = nowMs ? new Date(nowMs) : null;
 
   const day = useLiveQuery(() => getDayLog(today), [today]);
-  const marks = useLiveQuery(async () => (weekStart ? getWeekMarks(weekStart) : null), [weekStart]);
   const coach = useLiveQuery(() => getCoachSummary(), []);
   const training = useLiveQuery(async () => {
     const [templates, history] = await Promise.all([listTemplates(), listFinishedWorkouts()]);
-    // Suggest the template that has waited longest since it was last done.
     const next = templates
       .map((t) => ({ t, last: history.find((h) => h.workout.templateId === t.template.id)?.workout.startedAt ?? "" }))
       .sort((a, b) => a.last.localeCompare(b.last) || a.t.template.position - b.t.template.position)[0]?.t;
     return { next, last: history[0] };
   }, []);
 
-  // First visit: the short setup. Anyone who already trained is never sent there.
+  // First visit: set up the journey. Someone with training history but no journey starts it too.
   useEffect(() => {
-    if (profile && !profile.onboardedAt && training && !training.last) router.replace("/welcome");
-  }, [profile, training, router]);
+    if (journey === null) router.replace("/journey/start");
+  }, [journey, router]);
 
-  const nextBadge = coach?.achievements.filter((a) => !a.unlocked).sort((a, b) => b.progress - a.progress)[0];
+  const main = missions?.find((m) => m.slot === "main");
+  const rest = missions?.filter((m) => m.slot !== "main") ?? [];
+  const n = journey ? Math.max(1, dayNumber(journey.startDate, today)) : 1;
+  const level = levelOf(n);
+  const perf = all && checkins ? performance(all, checkins, today) : null;
+  const run = all ? streak(all, today) : 0;
+  const xp = all ? totalXp(all) : 0;
+  const rank = rankOf(xp);
+  const todayCuts = summarize((cuts ?? []).filter((c) => c.date === today));
+  const name = journey?.name?.trim() || profile?.displayName?.trim() || "";
 
   return (
-    <AppShell tab="home" title={now ? greeting(new Date(now)) : " "} subtitle={now ? formatFullDate(new Date(now)) : " "}>
-      {/* The ink card: the one dark, bold element on the screen. */}
-      {open === undefined || !training || !coach ? (
-        <Skeleton className="h-56 rounded-xl" />
+    <AppShell
+      tab="home"
+      eyebrow={journey ? `יום ${n} מתוך ${JOURNEY_DAYS} · ${level.name}` : " "}
+      title={now ? `${greeting(now)}${name ? `, ${name}` : ""}` : " "}
+      action={
+        <Link href="/profile" aria-label="פרופיל והגדרות" className="glass inline-flex size-11 shrink-0 items-center justify-center rounded-pill text-text-muted hover:text-text">
+          <UserRound aria-hidden className="size-5" strokeWidth={1.6} />
+        </Link>
+      }
+    >
+      {/* The mission of the day. */}
+      {!main || !now ? (
+        <Skeleton className="h-72 rounded-xl" />
       ) : (
-        <section aria-label="האימון של היום" className="flex flex-col gap-5 rounded-xl bg-accent p-5 text-on-accent shadow-pop">
-          <div className="flex items-center gap-4">
-            <WeekRing done={coach.thisWeek} goal={coach.weekGoal} />
-            <div className="flex min-w-0 flex-1 flex-col gap-1">
-              <span className="text-sm text-on-accent/70">{coach.thisWeek >= coach.weekGoal
-                  ? "היעד השבועי הושג"
-                  : coach.weekGoal - coach.thisWeek === 1
-                    ? "עוד אימון אחד ליעד השבועי"
-                    : `עוד ${coach.weekGoal - coach.thisWeek} אימונים ליעד השבועי`}</span>
-              <span className="flex items-center gap-1.5 text-sm font-semibold">
-                <Flame aria-hidden className="size-4 text-pr-soft" />
-                {coach.weekStreak > 0 ? `${coach.weekStreak} ${coach.weekStreak === 1 ? "שבוע" : "שבועות"} ברצף` : "רצף חדש מתחיל השבוע"}
+        <section aria-label="המשימה של היום" className="card-hero rise flex flex-col gap-5 rounded-xl p-6">
+          <div className="flex items-center justify-between gap-3">
+            <span className="eyebrow">{main.boss ? "מבחן הדרגה" : "המשימה של היום"}</span>
+            {main.status === "open" ? (
+              <span className="flex items-center gap-2 text-xs text-text-muted">
+                נשארו
+                <Countdown until={now.getTime() + msLeftToday(now)} className="text-sm text-text" />
               </span>
-            </div>
+            ) : (
+              <span className={cn("rounded-pill px-2.5 py-1 text-xs font-semibold", main.status === "done" ? "bg-accent text-on-accent" : "well text-text-muted")}>
+                {main.status === "done" ? "בוצע" : "דילגת"}
+              </span>
+            )}
           </div>
-          <span aria-hidden className="h-px bg-on-accent/12" />
-          {open ? (
-            <div className="flex flex-col gap-4">
-              <div className="flex items-baseline justify-between">
-                <h2 className="text-[1.625rem] leading-tight font-bold tracking-tight">{open.name ?? "אימון חופשי"}</h2>
-                <span className="figure text-2xl">
-                  <bdi dir="ltr">{now ? formatDuration((now - new Date(open.startedAt).getTime()) / 1000) : ""}</bdi>
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <DomainMark domain={main.domain} />
+              <DifficultyBars value={main.difficulty} />
+              {main.boss && (
+                <span className="inline-flex items-center gap-1 rounded-pill bg-blood px-2 py-0.5 text-[0.6875rem] font-semibold text-on-blood">
+                  <Swords aria-hidden className="size-3" />
+                  {main.xp} נק׳
                 </span>
-              </div>
-              <Button variant="inverse" size="lg" fullWidth onClick={() => void start()}>
-                חזרה לאימון
-              </Button>
+              )}
             </div>
-          ) : (
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1">
-                <span className="text-sm text-on-accent/70">האימון הבא</span>
-                <h2 className="text-[1.625rem] leading-tight font-bold tracking-tight">{training.next?.template.name ?? "אימון חופשי"}</h2>
-                {training.next && <p className="line-clamp-2 text-sm leading-relaxed text-on-accent/70">{training.next.items.map((i) => i.exercise.nameHe).join(", ")}</p>}
-              </div>
-              <Button variant="inverse" size="lg" fullWidth loading={pending} onClick={() => void start(training.next?.template.id)}>
-                התחלת אימון
-              </Button>
-            </div>
-          )}
+            <h2 className="display text-[2.15rem] leading-[1.08]">{main.title}</h2>
+            <p className="text-[0.975rem] leading-relaxed text-text-muted">{main.objective}</p>
+          </div>
+          <div className="hairline" />
+          <div className="flex items-center gap-3">
+            <Button size="lg" fullWidth onClick={() => router.push(`/mission?id=${encodeURIComponent(main.id)}`)}>
+              {main.status === "done" ? "מה כתבת" : main.status === "skipped" ? "לפתוח מחדש" : main.progress > 0 ? "להמשיך" : "לקבל את המשימה"}
+            </Button>
+          </div>
         </section>
       )}
 
-      {marks ? (
-        <WeekStrip days={marks} selected={today} today={today} onSelect={(d) => router.push(d === today ? "/nutrition" : `/nutrition?date=${d}`)} />
-      ) : (
-        <Skeleton className="h-16 rounded-pill" />
+      {/* How it is really going. */}
+      <div className="grid grid-cols-[auto_1fr] items-center gap-5 rounded-xl glass p-5">
+        {perf ? (
+          <GoldRing value={perf.score / 100} size={112} label={`ציון ביצוע לשבוע: ${perf.score} מתוך 100`}>
+            <span className="figure text-[2rem] leading-none">{perf.score}</span>
+            <span className="mt-1 text-[0.625rem] tracking-widest text-text-subtle">ביצוע 7 ימים</span>
+          </GoldRing>
+        ) : (
+          <Skeleton className="size-28 rounded-pill" />
+        )}
+        <div className="flex min-w-0 flex-col gap-3">
+          <div className="flex items-center gap-2">
+            <Flame aria-hidden className={cn("size-5", run > 0 ? "text-blood-ink" : "text-text-subtle")} />
+            <span className="figure text-xl">{run}</span>
+            <span className="text-sm text-text-muted">{run === 1 ? "יום ברצף" : "ימים ברצף"}</span>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-baseline justify-between gap-2 text-sm">
+              <span className="font-semibold">{rank.name}</span>
+              <span className="figure text-xs text-text-subtle">{formatNumber(xp, 0)} נק׳</span>
+            </div>
+            <span className="well block h-1.5 overflow-hidden rounded-pill" role="progressbar" aria-label="התקדמות לדרגה הבאה" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(rank.progress * 100)}>
+              <span className="block h-full rounded-pill bg-accent transition-[width] duration-700" style={{ width: `${Math.max(3, rank.progress * 100)}%` }} />
+            </span>
+            {rank.next && <span className="text-xs text-text-subtle">עוד {formatNumber(rank.toNext, 0)} ל{rank.next}</span>}
+          </div>
+        </div>
+      </div>
+
+      {rest.length > 0 && (
+        <Section title="משימות צד">
+          <div className="flex flex-col gap-2.5">
+            {rest.map((m, i) => (
+              <MissionRow key={m.id} m={m} index={i + 1} />
+            ))}
+          </div>
+        </Section>
       )}
 
-      <Link href="/nutrition" aria-label="ליומן התזונה של היום" className="block">
-        <Panel className="flex flex-col gap-6 rounded-xl px-5 pt-6 pb-6">
-          {day ? (
-            <>
-              <CalorieArc value={day.totals.kcal} target={day.targets.calories} size={240} />
-              <MacroTrio
-                values={{ protein: day.totals.protein, carbs: day.totals.carbs, fat: day.totals.fat }}
-                targets={{ protein: day.targets.protein, carbs: day.targets.carbs, fat: day.targets.fat }}
-              />
-            </>
-          ) : (
-            <Skeleton className="h-64" />
-          )}
-        </Panel>
-      </Link>
+      <Section title="היומן">
+        <Link href="/checkin" className="glass flex items-center gap-4 rounded-lg p-4">
+          <span className={cn("flex size-11 shrink-0 items-center justify-center rounded-pill", checkin ? "bg-accent text-on-accent" : "border border-accent/50 text-accent-ink")}>
+            <NotebookPen aria-hidden className="size-5" strokeWidth={1.7} />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <span className="font-semibold">{checkin ? "הצ'ק-אין של היום" : "צ'ק-אין של 60 שניות"}</span>
+            <span className="truncate text-sm text-text-muted">
+              {checkin
+                ? [checkin.sleepHours != null && `${formatNumber(checkin.sleepHours, 1)} ש׳ שינה`, checkin.energy != null && `אנרגיה ${checkin.energy}/5`, checkin.trained && "התאמן", checkin.screenHours != null && `${formatNumber(checkin.screenHours, 1)} ש׳ מסך`].filter(Boolean).join(" · ")
+                : "שינה, אנרגיה, מסך, ניצחון ולקח."}
+            </span>
+          </span>
+          <ChevronLeft aria-hidden className="size-5 shrink-0 text-text-subtle" />
+        </Link>
+      </Section>
 
-      <div className="grid grid-cols-4 gap-2">
-        {[
-          { href: `/nutrition/photo?date=${today}`, label: "צילום", Icon: Camera },
-          { href: `/nutrition/add?date=${today}`, label: "חיפוש", Icon: Search },
-          { href: `/nutrition/barcode?date=${today}`, label: "ברקוד", Icon: Barcode },
-        ].map(({ href, label, Icon }) => (
-          <Link key={label} href={href} className="glass flex flex-col items-center gap-2 rounded-lg py-3.5 text-sm font-medium">
-            <Icon aria-hidden className="size-5" />
-            {label}
-          </Link>
-        ))}
-        <button type="button" onClick={() => setSheet(true)} className="glass flex flex-col items-center gap-2 rounded-lg py-3.5 text-sm font-medium">
-          <Plus aria-hidden className="size-5" />
-          עוד
-        </button>
-      </div>
+      <Section title="הכיסא" href="/business" linkLabel="לעסק">
+        <div className="glass flex items-center gap-4 rounded-lg p-4">
+          <div className="flex min-w-0 flex-1 gap-6">
+            <div className="flex flex-col">
+              <span className="text-xs text-text-muted">היום</span>
+              <span className="figure text-2xl">{shekel(todayCuts.income)}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs text-text-muted">תספורות</span>
+              <span className="figure text-2xl">{todayCuts.cuts}</span>
+            </div>
+          </div>
+          <Button variant="soft" icon={<Scissors aria-hidden className="size-4" />} onClick={() => router.push("/business/log")}>
+            רישום
+          </Button>
+        </div>
+      </Section>
+
+      <Section title="הגוף" href="/workouts" linkLabel="לגוף">
+        {open === undefined || !training ? (
+          <Skeleton className="h-28 rounded-lg" />
+        ) : (
+          <div className="glass flex flex-col gap-4 rounded-lg p-4">
+            <div className="flex items-center gap-4">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-pill border border-border text-accent-ink">
+                <Dumbbell aria-hidden className="size-5" strokeWidth={1.7} />
+              </span>
+              <div className="flex min-w-0 flex-1 flex-col">
+                <span className="text-xs text-text-muted">{open ? "אימון פתוח" : "האימון הבא"}</span>
+                <span className="truncate font-semibold">{open ? (open.name ?? "אימון חופשי") : (training.next?.template.name ?? "אימון חופשי")}</span>
+              </div>
+              <Button variant={open ? "primary" : "secondary"} loading={pending} onClick={() => void (open ? start() : start(training.next?.template.id))}>
+                {open ? "חזרה" : "התחלה"}
+              </Button>
+            </div>
+            {day && (
+              <Link href="/nutrition" className="flex items-center gap-4 border-t border-border pt-3 text-sm">
+                <span className="text-text-muted">תזונה היום</span>
+                <span className="figure">{formatNumber(day.totals.kcal, 0)}<span className="text-text-subtle">/{formatNumber(day.targets.calories, 0)} קל׳</span></span>
+                <span className="figure">{formatNumber(day.totals.protein, 0)}<span className="text-text-subtle">/{formatNumber(day.targets.protein, 0)} ג׳ חלבון</span></span>
+              </Link>
+            )}
+          </div>
+        )}
+        <div className="grid grid-cols-4 gap-2">
+          {[
+            { href: `/nutrition/photo?date=${today}`, label: "צילום", Icon: Camera },
+            { href: `/nutrition/add?date=${today}`, label: "חיפוש", Icon: Search },
+            { href: `/nutrition/barcode?date=${today}`, label: "ברקוד", Icon: Barcode },
+          ].map(({ href, label, Icon }) => (
+            <Link key={label} href={href} className="glass flex flex-col items-center gap-2 rounded-lg py-3.5 text-sm font-medium">
+              <Icon aria-hidden className="size-5 text-accent-ink" strokeWidth={1.6} />
+              {label}
+            </Link>
+          ))}
+          <button type="button" onClick={() => setSheet(true)} className="glass flex flex-col items-center gap-2 rounded-lg py-3.5 text-sm font-medium">
+            <Plus aria-hidden className="size-5 text-accent-ink" strokeWidth={1.6} />
+            עוד
+          </button>
+        </div>
+      </Section>
 
       {coach && (
         <Link href={`/learn/read?id=${coach.lesson.id}`} className="glass flex flex-col gap-2 rounded-lg p-5">
-          <span className="flex items-center gap-2 text-sm text-text-muted">
-            <BookOpen aria-hidden className="size-4" />
-            שיעור של דקה, {TOPIC_LABEL[coach.lesson.topic]}
+          <span className="flex items-center gap-2 text-xs text-text-muted">
+            <BookOpen aria-hidden className="size-4 text-accent-ink" />
+            שיעור של דקה · {TOPIC_LABEL[coach.lesson.topic]}
           </span>
-          <span className="text-lg font-semibold">{coach.lesson.title}</span>
+          <span className="display text-xl">{coach.lesson.title}</span>
           <span className="line-clamp-2 text-sm leading-relaxed text-text-muted">{coach.lesson.body[0]}</span>
         </Link>
       )}
 
-      {nextBadge && (
-        <Link href="/achievements" className="glass flex items-center gap-4 rounded-lg p-4">
-          <span className="flex size-12 shrink-0 items-center justify-center rounded-pill bg-pr-soft text-pr">
-            <Award aria-hidden className="size-6" />
-          </span>
-          <span className="flex min-w-0 flex-1 flex-col gap-1.5">
-            <span className="text-sm text-text-muted">ההישג הבא</span>
-            <span className="font-semibold">{nextBadge.title}</span>
-            <span className="well block h-1.5 overflow-hidden rounded-pill" role="progressbar" aria-label={nextBadge.title} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(nextBadge.progress * 100)}>
-              <span className="block h-full rounded-pill bg-pr" style={{ width: `${Math.max(4, nextBadge.progress * 100)}%` }} />
-            </span>
-          </span>
-          <ChevronLeft aria-hidden className="size-5 shrink-0 text-text-subtle" />
-        </Link>
-      )}
-
-      {training?.last && (
-        <Link href={`/history/view?id=${training.last.workout.id}`} className="glass flex items-center gap-4 rounded-lg p-4">
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <span className="text-sm text-text-muted">האימון האחרון</span>
-            <span className="font-medium">{training.last.workout.name ?? "אימון חופשי"}</span>
-            <span className="text-sm text-text-subtle">
-              {formatRelativeDay(training.last.workout.startedAt)}, {formatDurationWords(training.last.durationSec)}, {training.last.setCount} סטים
-              {training.last.records.length > 0 && <span className="text-pr">, {training.last.records.length === 1 ? "שיא חדש" : `${training.last.records.length} שיאים`}</span>}
-            </span>
-          </div>
-          <ChevronLeft aria-hidden className="size-5 shrink-0 text-text-subtle" />
-        </Link>
-      )}
-
       <BottomSheet open={sheet} onOpenChange={setSheet} title="מה להוסיף?">
+        <SheetAction icon={<Scissors aria-hidden className="size-5" />} label="תספורת" hint="לקוח, מחיר, קבע תור" onClick={() => router.push("/business/log")} />
+        <SheetAction icon={<NotebookPen aria-hidden className="size-5" />} label="צ'ק-אין" hint="שינה, אנרגיה, מסך" onClick={() => router.push("/checkin")} />
         <SheetAction icon={<Camera aria-hidden className="size-5" />} label="צילום ארוחה" hint="זיהוי קלוריות מתמונה" onClick={() => router.push(`/nutrition/photo?date=${today}`)} />
         <SheetAction icon={<Search aria-hidden className="size-5" />} label="מזון מהמאגר" onClick={() => router.push(`/nutrition/add?date=${today}`)} />
         <SheetAction

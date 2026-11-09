@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useId, type InputHTMLAttributes, type ReactNode } from "react";
+import { forwardRef, useId, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttributes } from "react";
 import { Search, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 
@@ -159,3 +159,32 @@ export function Segmented<T extends string>({
     </div>
   );
 }
+
+/** Several lines of text, in the same well as a text field. */
+export const TextArea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string; hint?: string; hideLabel?: boolean }>(function TextArea(
+  { label, hint, hideLabel, className, id, rows = 4, ...rest },
+  ref,
+) {
+  const autoId = useId();
+  const inputId = id ?? autoId;
+  return (
+    <div className={cn("flex flex-col gap-2", className)}>
+      <label htmlFor={inputId} className={cn("text-sm font-medium text-text-muted", hideLabel && "sr-only")}>
+        {label}
+      </label>
+      <textarea
+        ref={ref}
+        id={inputId}
+        rows={rows}
+        aria-describedby={hint ? `${inputId}-hint` : undefined}
+        className="well w-full resize-y rounded-md px-4 py-3 text-base leading-relaxed text-text outline-none placeholder:text-text-subtle focus:outline-2 focus:outline-offset-2 focus:outline-focus"
+        {...rest}
+      />
+      {hint && (
+        <p id={`${inputId}-hint`} className="text-sm text-text-subtle">
+          {hint}
+        </p>
+      )}
+    </div>
+  );
+});

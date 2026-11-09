@@ -12,6 +12,7 @@ import { cn } from "@/lib/cn";
  */
 export function AppShell({
   tab,
+  eyebrow,
   title,
   subtitle,
   back,
@@ -21,6 +22,8 @@ export function AppShell({
   bottomSpace = true,
 }: {
   tab?: TabId;
+  /** A short tracked label above the title (the section, the day). */
+  eyebrow?: ReactNode;
   title?: string;
   subtitle?: ReactNode;
   back?: { href: string; label: string };
@@ -47,8 +50,9 @@ export function AppShell({
               </Link>
             )}
             <div className="flex items-end justify-between gap-3">
-              <div className="flex min-w-0 flex-col gap-1">
-                {title && <h1 className="text-[2rem] leading-[1.15] font-bold tracking-tight">{title}</h1>}
+              <div className="rise flex min-w-0 flex-col gap-1.5">
+                {eyebrow && <span className="eyebrow">{eyebrow}</span>}
+                {title && <h1 className="display text-[2.125rem]">{title}</h1>}
                 {subtitle && <p className="text-sm text-text-muted">{subtitle}</p>}
               </div>
               {action}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Activity, Award, BookOpen, ChevronLeft, Image as ImageIcon, LineChart as LineIcon, Scale } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
+import { BodyNav } from "@/components/journey/parts";
 import { EmptyState, Panel, Skeleton, Stat } from "@/components/ui/surface";
 import { BarChart } from "@/components/progress/charts";
 import { StrengthPanel } from "@/components/progress/strength-panel";
@@ -52,7 +53,8 @@ export default function ProgressPage() {
 
   if (!data) {
     return (
-      <AppShell tab="progress" title="התקדמות">
+      <AppShell tab="progress" eyebrow="גוף" title="התקדמות">
+      <BodyNav active="progress" />
         <Skeleton className="h-48 rounded-xl" />
         <Skeleton className="h-48 rounded-xl" />
       </AppShell>
@@ -63,7 +65,8 @@ export default function ProgressPage() {
   const avgKcal = logged.length ? logged.reduce((n, m) => n + m.kcal, 0) / logged.length : 0;
 
   return (
-    <AppShell tab="progress" title="התקדמות">
+    <AppShell tab="progress" eyebrow="גוף" title="התקדמות">
+      <BodyNav active="progress" />
       {data.history.length === 0 && logged.length === 0 ? (
         <EmptyState
           icon={<LineIcon aria-hidden className="size-6" />}

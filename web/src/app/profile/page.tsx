@@ -210,6 +210,14 @@ export default function ProfilePage() {
               <span className="flex-1 font-medium">יעדי תזונה</span>
               <ChevronLeft aria-hidden className="size-4 text-text-subtle" />
             </Link>
+            <Link href="/journey/start?edit=1" className="flex items-center gap-3 border-t border-border px-4 py-4">
+              <span className="flex-1 font-medium">המסע והפרופיל האישי</span>
+              <ChevronLeft aria-hidden className="size-4 text-text-subtle" />
+            </Link>
+            <Link href="/business/money" className="flex items-center gap-3 border-t border-border px-4 py-4">
+              <span className="flex-1 font-medium">כסף: חסכונות, הוצאות ויעדים</span>
+              <ChevronLeft aria-hidden className="size-4 text-text-subtle" />
+            </Link>
           </nav>
 
           {!IS_ARTIFACT && (

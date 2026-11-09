@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useLiveQuery } from "dexie-react-hooks";
 import { ChevronLeft, History, Library } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
+import { BodyNav } from "@/components/journey/parts";
 import { Button } from "@/components/ui/button";
 import { Banner, Panel, Skeleton } from "@/components/ui/surface";
 import { listFinishedWorkouts, listTemplates } from "@/data/repo";
@@ -17,7 +18,8 @@ export default function WorkoutsPage() {
   const data = useLiveQuery(async () => ({ templates: await listTemplates(), history: await listFinishedWorkouts() }), []);
 
   return (
-    <AppShell tab="workouts" title="אימונים">
+    <AppShell eyebrow="גוף" tab="workouts" title="אימונים">
+      <BodyNav active="workouts" />
       {open && (
         <Banner
           tone="success"

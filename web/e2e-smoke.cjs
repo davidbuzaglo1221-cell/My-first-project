@@ -18,7 +18,9 @@ const log = (...a) => console.log('✓', ...a);
 
   // First visit: onboarding builds the plan and the targets
   await page.goto(BASE + '/', { waitUntil: 'networkidle' });
-  await page.waitForURL('**/welcome'); await shot('S02-welcome'); log('first visit goes to onboarding');
+  await page.waitForURL('**/journey/start'); await page.getByLabel('איך לקרוא לך').fill('דוד');
+  await page.getByRole('button', { name: 'להתחיל את יום 1' }).click(); log('first visit starts the journey');
+  await page.waitForURL('**/welcome'); await shot('S02-welcome'); log('then the training set-up');
   await page.getByRole('radio', { name: /בניית שריר/ }).click(); await page.getByRole('button', { name: 'המשך' }).click();
   await page.getByRole('radio', { name: /בינוני/ }).click(); await page.getByRole('button', { name: 'המשך' }).click();
   await page.getByRole('radio', { name: '3', exact: true }).click(); await page.getByRole('button', { name: 'המשך' }).click();
@@ -26,7 +28,7 @@ const log = (...a) => console.log('✓', ...a);
   await page.getByLabel('משקל').fill('80'); await page.getByRole('button', { name: 'לתוכנית' }).click();
   await page.getByText('התוכנית שלך').first().waitFor(); await shot('S03-plan');
   await page.getByRole('button', { name: 'מתחילים' }).click(); await page.waitForURL(BASE + '/');
-  await page.getByText('גוף מלא A').first().waitFor(); await shot('S04-home-empty'); log('onboarding: plan + targets');
+  await page.getByText('גוף מלא A').first().waitFor(); await page.getByText('המשימה של היום').first().waitFor(); await shot('S04-home-empty'); log('onboarding: plan + targets');
 
   // Workout 1 from template A: log the squat sets with the keypad
   await page.goto(BASE + '/workouts'); await page.getByRole('button', { name: 'התחלה' }).first().click();
@@ -165,12 +167,12 @@ const log = (...a) => console.log('✓', ...a);
   await page.getByRole('button', { name: /סלט ירקות/ }).click(); await page.getByRole('dialog').waitFor();
   await shot('S27-entry-edit'); await page.keyboard.press('Escape');
 
-  await page.goto(BASE + '/'); await page.getByText('האימון האחרון').first().waitFor(); await shot('S04-home'); await shot('S04-home-full', true); log('home dashboard');
+  await page.goto(BASE + '/'); await page.getByText('תזונה היום').first().waitFor(); await shot('S04-home'); await shot('S04-home-full', true); log('home dashboard');
   await page.goto(BASE + '/progress'); await page.getByText('אימונים בשבוע').first().waitFor(); await shot('S18-progress', true); log('progress');
   await page.goto(BASE + '/profile'); await shot('S30-profile', true);
-  await page.getByRole('radio', { name: 'כהה' }).click(); await page.waitForTimeout(600); await page.goto(BASE + '/nutrition'); await page.getByText('חזה עוף בגריל').first().waitFor();
-  await shot('S27-nutrition-dark'); await page.goto(BASE + '/'); await shot('S04-home-dark'); log('dark theme');
-  await page.goto(BASE + '/profile'); await page.getByRole('radio', { name: 'בהיר' }).click(); await page.waitForTimeout(600);
+  await page.getByRole('radio', { name: 'בהיר' }).click(); await page.waitForTimeout(600); await page.goto(BASE + '/nutrition'); await page.getByText('חזה עוף בגריל').first().waitFor();
+  await shot('S27-nutrition-light'); await page.goto(BASE + '/'); await shot('S04-home-light'); log('light theme');
+  await page.goto(BASE + '/profile'); await page.getByRole('radio', { name: 'כהה' }).click(); await page.waitForTimeout(600);
 
   // Backup, wipe one table's worth of change, restore: the diary comes back
   const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'שמירת גיבוי לקובץ' }).click()]);

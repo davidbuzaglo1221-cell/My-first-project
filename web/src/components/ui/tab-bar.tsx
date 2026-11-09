@@ -1,22 +1,36 @@
 "use client";
 
 import Link from "next/link";
-import { Apple, Dumbbell, Home, LineChart, User } from "lucide-react";
+import { Briefcase, Compass, Dumbbell, Sparkles, Sun } from "lucide-react";
 import { cn } from "@/lib/cn";
 
-export type TabId = "home" | "workouts" | "progress" | "nutrition" | "profile";
+/** The five rooms of the app. Older screens name their own section; they map onto these. */
+export type TabId = "home" | "journey" | "body" | "business" | "coach" | "workouts" | "progress" | "nutrition" | "profile";
+type MainTab = "home" | "journey" | "body" | "business" | "coach";
 
-export const TABS: { id: TabId; label: string; href: string; Icon: typeof Home }[] = [
-  { id: "home", label: "היום", href: "/", Icon: Home },
-  { id: "workouts", label: "אימונים", href: "/workouts", Icon: Dumbbell },
-  { id: "progress", label: "התקדמות", href: "/progress", Icon: LineChart },
-  { id: "nutrition", label: "תזונה", href: "/nutrition", Icon: Apple },
-  { id: "profile", label: "פרופיל", href: "/profile", Icon: User },
+export const TABS: { id: MainTab; label: string; href: string; Icon: typeof Sun }[] = [
+  { id: "home", label: "היום", href: "/", Icon: Sun },
+  { id: "journey", label: "המסע", href: "/journey", Icon: Compass },
+  { id: "body", label: "גוף", href: "/workouts", Icon: Dumbbell },
+  { id: "business", label: "עסק", href: "/business", Icon: Briefcase },
+  { id: "coach", label: "מאמן", href: "/coach", Icon: Sparkles },
 ];
 
+const MAIN: Record<TabId, MainTab | null> = {
+  home: "home",
+  journey: "journey",
+  body: "body",
+  workouts: "body",
+  progress: "body",
+  nutrition: "body",
+  business: "business",
+  coach: "coach",
+  profile: null,
+};
+
 /**
- * Floating glass navigation, inset from the screen edges. In RTL the first tab sits on the right,
- * where the thumb starts. `onSelect` lets the design page demo it without routing.
+ * Floating navigation on graphite, inset from the edges. In RTL the first tab sits on the right,
+ * where the thumb starts. The current room gets the gold mark; the rest stay quiet.
  */
 export function TabBar({
   active,
@@ -24,9 +38,10 @@ export function TabBar({
   hrefFor,
 }: {
   active: TabId;
-  onSelect?: (id: TabId) => void;
-  hrefFor?: (id: TabId) => string;
+  onSelect?: (id: MainTab) => void;
+  hrefFor?: (id: MainTab) => string;
 }) {
+  const current = MAIN[active];
   return (
     <nav
       aria-label="ניווט ראשי"
@@ -34,12 +49,12 @@ export function TabBar({
     >
       <ul className="glass-raised pointer-events-auto mx-auto flex h-(--layout-tabbar-height) max-w-(--layout-max-width) items-stretch rounded-xl px-1.5">
         {TABS.map(({ id, label, href, Icon }) => {
-          const current = id === active;
+          const on = id === current;
           return (
             <li key={id} className="flex-1">
               <Link
                 href={hrefFor ? hrefFor(id) : href}
-                aria-current={current ? "page" : undefined}
+                aria-current={on ? "page" : undefined}
                 onClick={(e) => {
                   if (onSelect) {
                     e.preventDefault();
@@ -47,18 +62,17 @@ export function TabBar({
                   }
                 }}
                 className={cn(
-                  "relative flex h-full flex-col items-center justify-center gap-1 text-[0.6875rem] font-medium transition-colors duration-(--motion-fast)",
-                  current ? "text-text" : "text-text-subtle hover:text-text-muted",
+                  "relative flex h-full flex-col items-center justify-center gap-1 text-[0.6875rem] font-medium tracking-wide transition-colors duration-(--motion-fast)",
+                  on ? "text-text" : "text-text-subtle hover:text-text-muted",
                 )}
               >
-                <Icon aria-hidden className={cn("size-[1.35rem]", current && "text-accent")} strokeWidth={current ? 2.1 : 1.7} />
+                <Icon aria-hidden className={cn("size-[1.3rem] transition-transform duration-(--motion-base)", on && "-translate-y-px text-accent")} strokeWidth={on ? 1.9 : 1.5} />
                 {label}
-                {/* A short lit line under the current tab, instead of a filled pill. */}
                 <span
                   aria-hidden
                   className={cn(
-                    "absolute bottom-1.5 h-0.5 rounded-pill bg-accent transition-[width,opacity] duration-(--motion-base)",
-                    current ? "w-5 opacity-100" : "w-0 opacity-0",
+                    "absolute top-0 h-px rounded-pill bg-accent shadow-[0_0_12px_var(--c-accent)] transition-[width,opacity] duration-(--motion-base)",
+                    on ? "w-8 opacity-100" : "w-0 opacity-0",
                   )}
                 />
               </Link>

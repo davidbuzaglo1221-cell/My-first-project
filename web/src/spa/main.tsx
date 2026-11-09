@@ -1,4 +1,8 @@
 import "@fontsource/ibm-plex-sans-hebrew/hebrew-400.css";
+import "@fontsource/frank-ruhl-libre/hebrew-500.css";
+import "@fontsource/frank-ruhl-libre/hebrew-700.css";
+import "@fontsource/frank-ruhl-libre/latin-500.css";
+import "@fontsource/frank-ruhl-libre/latin-700.css";
 import "@fontsource/ibm-plex-sans-hebrew/hebrew-500.css";
 import "@fontsource/ibm-plex-sans-hebrew/hebrew-600.css";
 import "@fontsource/ibm-plex-sans-hebrew/hebrew-700.css";
@@ -37,6 +41,16 @@ import TemplateEdit from "../app/templates/edit/page";
 import Welcome from "../app/welcome/page";
 import Workout from "../app/workout/page";
 import Workouts from "../app/workouts/page";
+import Journey from "../app/journey/page";
+import JourneyStart from "../app/journey/start/page";
+import Mission from "../app/mission/page";
+import CheckIn from "../app/checkin/page";
+import Business from "../app/business/page";
+import BusinessLog from "../app/business/log/page";
+import BusinessMoney from "../app/business/money/page";
+import Coach from "../app/coach/page";
+import CoachSales from "../app/coach/sales/page";
+import Review from "../app/review/page";
 
 const ROUTES: Record<string, ComponentType> = {
   "/": Home,
@@ -62,19 +76,29 @@ const ROUTES: Record<string, ComponentType> = {
   "/welcome": Welcome,
   "/workout": Workout,
   "/workouts": Workouts,
+  "/journey": Journey,
+  "/journey/start": JourneyStart,
+  "/mission": Mission,
+  "/checkin": CheckIn,
+  "/business": Business,
+  "/business/log": BusinessLog,
+  "/business/money": BusinessMoney,
+  "/coach": Coach,
+  "/coach/sales": CoachSales,
+  "/review": Review,
 };
 
 // The saved theme, before the first paint (the same job as THEME_BOOT in the Next layout).
 const root = document.documentElement;
 root.lang = "he";
 root.dir = "rtl";
-root.dataset.theme = "light";
+root.dataset.theme = "dark";
 try {
   const t = localStorage.getItem("theme");
   if (t === "dark" || t === "light") root.dataset.theme = t;
   else if (t === "system") root.removeAttribute("data-theme");
 } catch {
-  // Storage blocked: light until the profile loads.
+  // Storage blocked: dark until the profile loads.
 }
 
 startRouter(Object.keys(ROUTES));

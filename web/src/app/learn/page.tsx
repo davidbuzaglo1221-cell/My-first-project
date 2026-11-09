@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Check, ChevronLeft } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
+import { BodyNav } from "@/components/journey/parts";
 import { Skeleton } from "@/components/ui/surface";
 import { readLessonIds } from "@/data/coach-repo";
 import { LESSONS, TOPIC_LABEL, type Lesson } from "@/lib/lessons";
@@ -14,7 +15,8 @@ const TOPICS: Lesson["topic"][] = ["training", "nutrition", "recovery"];
 export default function LearnPage() {
   const read = useLiveQuery(() => readLessonIds(), []);
   return (
-    <AppShell tab="progress" title="ללמוד" subtitle={read ? `${read.size} מתוך ${LESSONS.length} שיעורים נקראו` : " "} back={{ href: "/progress", label: "התקדמות" }}>
+    <AppShell tab="progress" eyebrow="גוף" title="ללמוד" subtitle={read ? `${read.size} מתוך ${LESSONS.length} שיעורים נקראו` : " "}>
+      <BodyNav active="learn" />
       {!read ? (
         <Skeleton className="h-96 rounded-xl" />
       ) : (
