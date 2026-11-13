@@ -1,0 +1,29 @@
+{
+  "name": "השם שלך",
+  "role": "מה את/ה עושה, במשפט אחד",
+  "audience": "מי הקהל",
+  "language": "he",
+  "dir": "rtl",
+  "address": "אתם, בגובה העיניים",
+  "colors": {
+    "accent": "#2B59C3",
+    "ink": "",
+    "paper": "",
+    "tint": "",
+    "muted": "",
+    "line": "",
+    "on_accent": ""
+  },
+  "backgrounds": "light",
+  "font": "Noto Sans Hebrew",
+  "radius": "soft",
+  "logo": "assets/logo.png",
+  "emojis": "few",
+  "venue": "zoom",
+  "cta": {
+    "type": "whatsapp",
+    "link": "https://wa.me/972500000000",
+    "short": "wa.me/972500000000",
+    "text": "שלחו לי הודעה בוואטסאפ"
+  }
+}
