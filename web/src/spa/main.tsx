@@ -51,6 +51,8 @@ import BusinessMoney from "../app/business/money/page";
 import Coach from "../app/coach/page";
 import CoachSales from "../app/coach/sales/page";
 import Review from "../app/review/page";
+import Academy from "../app/academy/page";
+import AcademyRead from "../app/academy/read/page";
 
 const ROUTES: Record<string, ComponentType> = {
   "/": Home,
@@ -86,6 +88,8 @@ const ROUTES: Record<string, ComponentType> = {
   "/coach": Coach,
   "/coach/sales": CoachSales,
   "/review": Review,
+  "/academy": Academy,
+  "/academy/read": AcademyRead,
 };
 
 // The saved theme, before the first paint (the same job as THEME_BOOT in the Next layout).

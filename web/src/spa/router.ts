@@ -46,7 +46,7 @@ export function navigate(href: string, mode: "push" | "replace" = "push") {
 const REOPENABLE = new Set([
   "/", "/workouts", "/workout", "/history", "/exercises", "/nutrition", "/nutrition/add", "/nutrition/photo",
   "/nutrition/barcode", "/nutrition/goals", "/progress", "/body", "/profile", "/cardio", "/photos", "/learn", "/achievements",
-  "/journey", "/checkin", "/business", "/business/log", "/business/money", "/coach", "/coach/sales", "/review",
+  "/journey", "/checkin", "/business", "/business/log", "/business/money", "/coach", "/coach/sales", "/review", "/academy",
 ]);
 
 export function startRouter(paths: string[]) {

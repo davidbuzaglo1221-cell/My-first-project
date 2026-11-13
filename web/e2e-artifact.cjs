@@ -66,6 +66,16 @@ const fakeClaude = () => {
     downloads: { save: async ({ filename, data }) => window.__note('downloads', { filename, size: (data.size ?? data.length) }) },
   };
   window.claude = { use: async (name) => (name in caps ? caps[name] : null) };
+  // A phone with a Hebrew voice: each paragraph "speaks" for 150 ms, and what was said is kept.
+  window.__spoken = [];
+  const voice = { name: 'Carmit (Enhanced)', lang: 'he-IL', localService: true, default: false, voiceURI: 'carmit' };
+  let timer = null;
+  Object.defineProperty(window, 'speechSynthesis', { configurable: true, value: {
+    getVoices: () => [voice], onvoiceschanged: null,
+    speak: (u) => { window.__spoken.push(u.text); timer = setTimeout(() => u.onend && u.onend(), 150); },
+    cancel: () => clearTimeout(timer), pause() {}, resume() {},
+  } });
+  window.SpeechSynthesisUtterance = function (text) { this.text = text; };
 };
 
 async function phone(browser, name) {
@@ -200,6 +210,25 @@ const shot = (page, name) => page.screenshot({ path: `${out}/${name}.png` });
   await page.getByRole('button', { name: 'לכתוב את הדוח' }).click();
   await page.getByText('המכירות עוד לא התחילו').waitFor(); await page.waitForTimeout(600); await shot(page, 'J12-review'); log('weekly report written');
   await tab(page, 'המסע'); await page.getByText('המפה').waitFor(); await page.waitForTimeout(700); await shot(page, 'J13-journey'); log('journey map and marks');
+
+  // The academy: a lesson read and heard, marked as learned
+  await page.getByRole('link', { name: /האקדמיה/ }).first().click();
+  await page.getByText('0 מתוך 27 שיעורים').waitFor(); await page.waitForTimeout(600); await shot(page, 'J14-academy');
+  await page.getByRole('link', { name: /משמעת היא מערכת/ }).first().click();
+  await page.getByRole('heading', { name: 'משמעת היא מערכת, לא תכונה' }).waitFor();
+  await page.locator('section[aria-label="האזנה לשיעור"]').getByText(/Carmit/).waitFor();
+  await page.getByRole('button', { name: 'האזנה לשיעור' }).click();
+  await page.waitForTimeout(500); await shot(page, 'J15-lesson');
+  await page.waitForFunction(() => window.__spoken.length >= 3);
+  await page.getByRole('button', { name: 'עצירה' }).click();
+  const spoken = await page.evaluate(() => window.__spoken);
+  if (!spoken[0].includes('משמעת היא מערכת') || !spoken[1].includes('רוב האנשים')) throw new Error('lesson was not read in order: ' + spoken.slice(0, 2));
+  log(`lesson read aloud paragraph by paragraph (${spoken.length} so far)`);
+  await page.getByRole('button', { name: 'סיימתי את השיעור' }).click();
+  await page.getByText('השיעור הזה מאחוריך').waitFor();
+  await page.locator('main header').getByRole('link').first().click();
+  await page.getByText('1 מתוך 27 שיעורים').waitFor(); log('academy lesson read and marked');
+  await page.locator('main header').getByRole('link').first().click();
 
   // A workout from the plan
   await tab(page, 'גוף'); await page.locator('main').getByRole('button', { name: 'התחלה' }).first().click();

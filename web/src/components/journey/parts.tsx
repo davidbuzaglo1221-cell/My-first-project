@@ -150,10 +150,11 @@ export function Metric({ label, value, hint, tone }: { label: string; value: Rea
 export function Section({ title, href, linkLabel, children, className }: { title: string; href?: string; linkLabel?: string; children: ReactNode; className?: string }) {
   return (
     <section className={cn("flex flex-col gap-3", className)} aria-label={title}>
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="eyebrow">{title}</h2>
+      <div className="flex items-center gap-3">
+        <h2 className="eyebrow shrink-0">{title}</h2>
+        <span aria-hidden className="rule" />
         {href && (
-          <Link href={href} className="text-sm text-text-muted hover:text-text">
+          <Link href={href} className="shrink-0 text-sm text-text-muted hover:text-text">
             {linkLabel ?? "הכול"}
           </Link>
         )}
@@ -172,18 +173,25 @@ export function BodyNav({ active }: { active: "workouts" | "nutrition" | "progre
     { id: "learn", label: "ידע", href: "/learn" },
   ] as const;
   return (
-    <nav aria-label="גוף" className="well -mt-1 flex rounded-md p-1">
+    <nav aria-label="גוף" className="-mt-1 flex border-b border-border">
       {items.map((i) => (
         <Link
           key={i.id}
           href={i.href}
           aria-current={i.id === active ? "page" : undefined}
           className={cn(
-            "flex h-9 flex-1 items-center justify-center rounded-sm text-sm font-medium transition-[background-color,color] duration-(--motion-fast)",
-            i.id === active ? "glass-raised text-text" : "text-text-muted hover:text-text",
+            "relative flex h-11 flex-1 items-center justify-center text-sm font-medium transition-colors duration-(--motion-fast)",
+            i.id === active ? "text-text" : "text-text-muted hover:text-text",
           )}
         >
           {i.label}
+          <span
+            aria-hidden
+            className={cn(
+              "absolute -bottom-px h-[2px] rounded-pill bg-accent transition-[width,opacity] duration-(--motion-base)",
+              i.id === active ? "w-10 opacity-100 shadow-[0_0_10px_var(--c-accent)]" : "w-0 opacity-0",
+            )}
+          />
         </Link>
       ))}
     </nav>

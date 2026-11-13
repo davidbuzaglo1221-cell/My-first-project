@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Award, Lock, Settings2, Swords } from "lucide-react";
+import { Award, ChevronLeft, GraduationCap, Lock, Settings2, Swords } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
 import { Skeleton } from "@/components/ui/surface";
 import { HBars, Section } from "@/components/journey/parts";
@@ -133,6 +133,17 @@ export default function JourneyPage() {
           </div>
         </div>
       </Section>
+
+      <Link href="/academy" className="glass group flex items-center gap-4 rounded-xl p-5">
+        <span className="flex size-12 shrink-0 items-center justify-center rounded-pill border border-accent/50 text-accent-ink">
+          <GraduationCap aria-hidden className="size-5" strokeWidth={1.6} />
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <span className="display text-xl">האקדמיה</span>
+          <span className="text-sm text-text-muted">27 שיעורים בתשעה תחומים, לקריאה או להאזנה</span>
+        </span>
+        <ChevronLeft aria-hidden className="size-5 text-text-subtle" />
+      </Link>
 
       <Section title="מה נבנה עד עכשיו" href="/review" linkLabel="הדוח השבועי">
         <div className="glass rounded-xl p-5">

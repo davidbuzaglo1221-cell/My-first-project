@@ -51,6 +51,34 @@
   background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--c-accent) 45%, transparent), transparent);
 }
 
+/* The gold bar under a page title. */
+@utility titlebar {
+  display: block;
+  width: 2.75rem;
+  height: 3px;
+  border-radius: 9999px;
+  background: linear-gradient(270deg, var(--c-accent-hover), var(--c-accent) 60%, color-mix(in oklab, var(--c-accent) 20%, transparent));
+  box-shadow: 0 0 14px -2px color-mix(in oklab, var(--c-accent) 60%, transparent);
+  animation: bar-in var(--motion-slow) var(--ease-out) both 120ms;
+  transform-origin: right;
+}
+
+/* A shorter, quieter bar under a heading inside the page. */
+@utility underbar {
+  display: block;
+  width: 1.75rem;
+  height: 2px;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--c-accent) 70%, transparent);
+}
+
+/* The line that runs from a section label to the end of the row. */
+@utility rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(270deg, color-mix(in oklab, var(--c-accent) 40%, transparent), color-mix(in oklab, var(--c-border) 70%, transparent) 40%, transparent);
+}
+
 /* The one card per screen that carries the moment: graphite with a gold edge of light. */
 @utility card-hero {
   position: relative;
@@ -184,6 +212,10 @@
 @keyframes rise {
   from { transform: translateY(10px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+@keyframes bar-in {
+  from { transform: scaleX(0); opacity: 0; }
+  to { transform: scaleX(1); opacity: 1; }
 }
 @keyframes ring-draw {
   from { stroke-dashoffset: var(--len); }

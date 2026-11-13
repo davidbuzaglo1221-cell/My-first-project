@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { ChevronLeft, FileText, Handshake, MessageSquareText, Target, Trash2 } from "lucide-react";
+import { ChevronLeft, FileText, Handshake, Headphones, MessageSquareText, Target, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
 import { Button } from "@/components/ui/button";
 import { Banner, Panel, Skeleton } from "@/components/ui/surface";
@@ -105,6 +105,14 @@ export default function CoachPage() {
           <FileText aria-hidden className="size-5 text-accent-ink" strokeWidth={1.6} />
           <span className="display text-xl leading-tight">הדוח השבועי</span>
           <span className="text-xs text-text-muted">{lastReport ? `אחרון: ${formatRelativeDay(lastReport.at)}` : "עוד לא נכתב"}</span>
+        </Link>
+        <Link href="/academy" className="card-hero rise col-span-2 flex items-center gap-4 rounded-xl p-5" style={{ ["--i" as string]: 2 }}>
+          <Headphones aria-hidden className="size-5 text-accent-ink" strokeWidth={1.6} />
+          <span className="flex flex-1 flex-col">
+            <span className="display text-xl leading-tight">האקדמיה</span>
+            <span className="text-xs text-text-muted">שיעורים בכל תחום, לקריאה או להאזנה</span>
+          </span>
+          <ChevronLeft aria-hidden className="size-5 text-text-subtle" />
         </Link>
         <Link href="/coach/sales" className="card-hero rise flex flex-col gap-3 rounded-xl p-5" style={{ ["--i" as string]: 1 }}>
           <Handshake aria-hidden className="size-5 text-accent-ink" strokeWidth={1.6} />

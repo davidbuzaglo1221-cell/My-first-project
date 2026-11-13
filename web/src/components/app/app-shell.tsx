@@ -53,6 +53,7 @@ export function AppShell({
               <div className="rise flex min-w-0 flex-col gap-1.5">
                 {eyebrow && <span className="eyebrow">{eyebrow}</span>}
                 {title && <h1 className="display text-[2.125rem]">{title}</h1>}
+                {title && title.trim() && <span aria-hidden className="titlebar mt-1" />}
                 {subtitle && <p className="text-sm text-text-muted">{subtitle}</p>}
               </div>
               {action}

@@ -4,14 +4,16 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Activity, Barcode, BookOpen, Camera, ChevronLeft, Dumbbell, Flame, Image as ImageIcon, NotebookPen, Plus, Scale, Scissors, Search, Swords, UserRound } from "lucide-react";
+import { Activity, Barcode, Camera, Headphones, ChevronLeft, Dumbbell, Flame, Image as ImageIcon, NotebookPen, Plus, Scale, Scissors, Search, Swords, UserRound } from "lucide-react";
 import { AppShell } from "@/components/app/app-shell";
 import { Button } from "@/components/ui/button";
 import { BottomSheet, SheetAction } from "@/components/ui/bottom-sheet";
 import { Skeleton } from "@/components/ui/surface";
 import { Countdown, DifficultyBars, DomainMark, GoldRing, MissionRow, Section } from "@/components/journey/parts";
 import { getDayLog } from "@/data/nutrition-repo";
-import { getCoachSummary } from "@/data/coach-repo";
+import { readLessonIds } from "@/data/coach-repo";
+import { minutesOf, nextLesson } from "@/lib/journey/academy";
+import { DOMAIN_LABEL } from "@/lib/journey/library";
 import { getCheckIn } from "@/data/journey-repo";
 import { listFinishedWorkouts, listTemplates } from "@/data/repo";
 import { useOpenWorkout, useProfile } from "@/hooks/use-data";
@@ -20,7 +22,6 @@ import { useStartWorkout } from "@/hooks/use-start-workout";
 import { useNow } from "@/hooks/use-now";
 import { dayNumber, JOURNEY_DAYS, levelOf, msLeftToday, performance, rankOf, streak, totalXp } from "@/lib/journey/engine";
 import { shekel, summarize } from "@/lib/journey/business";
-import { TOPIC_LABEL } from "@/lib/lessons";
 import { formatNumber, greeting } from "@/lib/format";
 import { IS_ARTIFACT } from "@/lib/runtime";
 import { cn } from "@/lib/cn";
@@ -47,7 +48,12 @@ export default function TodayPage() {
   const now = nowMs ? new Date(nowMs) : null;
 
   const day = useLiveQuery(() => getDayLog(today), [today]);
-  const coach = useLiveQuery(() => getCoachSummary(), []);
+  const leadDomain = missions?.find((m) => m.slot === "main")?.domain;
+  const academy = useLiveQuery(async () => {
+    const reads = await readLessonIds();
+    const done = new Set([...reads].filter((r) => r.startsWith("academy:")).map((r) => r.slice(8)));
+    return nextLesson(done, leadDomain);
+  }, [leadDomain]);
   const training = useLiveQuery(async () => {
     const [templates, history] = await Promise.all([listTemplates(), listFinishedWorkouts()]);
     const next = templates
@@ -242,15 +248,22 @@ export default function TodayPage() {
         </div>
       </Section>
 
-      {coach && (
-        <Link href={`/learn/read?id=${coach.lesson.id}`} className="glass flex flex-col gap-2 rounded-lg p-5">
-          <span className="flex items-center gap-2 text-xs text-text-muted">
-            <BookOpen aria-hidden className="size-4 text-accent-ink" />
-            שיעור של דקה · {TOPIC_LABEL[coach.lesson.topic]}
-          </span>
-          <span className="display text-xl">{coach.lesson.title}</span>
-          <span className="line-clamp-2 text-sm leading-relaxed text-text-muted">{coach.lesson.body[0]}</span>
-        </Link>
+      {academy && (
+        <Section title="השיעור של היום" href="/academy" linkLabel="האקדמיה">
+          <Link href={`/academy/read?id=${academy.id}`} className="glass group flex items-center gap-4 rounded-xl p-5">
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-pill bg-accent text-on-accent shadow-[0_10px_24px_-12px_var(--c-accent)]">
+              <Headphones aria-hidden className="size-5" />
+            </span>
+            <span className="flex min-w-0 flex-1 flex-col gap-1">
+              <span className="text-xs text-text-subtle">
+                {DOMAIN_LABEL[academy.domain]} · {minutesOf(academy)} דק׳ האזנה
+              </span>
+              <span className="display text-xl leading-snug">{academy.title}</span>
+              <span className="line-clamp-2 text-sm leading-relaxed text-text-muted">{academy.hook}</span>
+            </span>
+            <ChevronLeft aria-hidden className="size-5 shrink-0 text-text-subtle" />
+          </Link>
+        </Section>
       )}
 
       <BottomSheet open={sheet} onOpenChange={setSheet} title="מה להוסיף?">

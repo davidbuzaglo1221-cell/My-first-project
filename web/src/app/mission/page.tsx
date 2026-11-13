@@ -3,7 +3,9 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
-import { Minus, Pause, Play, Plus, RotateCcw, Swords } from "lucide-react";
+import Link from "next/link";
+import { Headphones, Minus, Pause, Play, Plus, RotateCcw, Swords } from "lucide-react";
+import { ACADEMY } from "@/lib/journey/academy";
 import { AppShell } from "@/components/app/app-shell";
 import { Button } from "@/components/ui/button";
 import { Panel, Skeleton } from "@/components/ui/surface";
@@ -113,6 +115,15 @@ function MissionPageInner() {
       <Panel className="flex flex-col gap-2">
         <span className="eyebrow">למה</span>
         <p className="text-[0.95rem] leading-relaxed text-text-muted">{m.why}</p>
+        {(() => {
+          const l = ACADEMY.find((x) => x.domain === m.domain);
+          return l ? (
+            <Link href={`/academy/read?id=${l.id}`} className="mt-1 inline-flex w-fit items-center gap-2 text-sm font-medium text-accent-ink">
+              <Headphones aria-hidden className="size-4" />
+              השיעור לתחום הזה: {l.title}
+            </Link>
+          ) : null;
+        })()}
       </Panel>
 
       <section aria-label="איך" className="flex flex-col gap-3">

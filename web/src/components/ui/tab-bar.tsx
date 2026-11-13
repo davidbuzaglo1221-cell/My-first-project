@@ -62,7 +62,7 @@ export function TabBar({
                   }
                 }}
                 className={cn(
-                  "relative flex h-full flex-col items-center justify-center gap-1 text-[0.6875rem] font-medium tracking-wide transition-colors duration-(--motion-fast)",
+                  "relative flex h-full flex-col items-center justify-center gap-1 pb-1 text-[0.6875rem] font-medium tracking-wide transition-colors duration-(--motion-fast)",
                   on ? "text-text" : "text-text-subtle hover:text-text-muted",
                 )}
               >
@@ -71,8 +71,8 @@ export function TabBar({
                 <span
                   aria-hidden
                   className={cn(
-                    "absolute top-0 h-px rounded-pill bg-accent shadow-[0_0_12px_var(--c-accent)] transition-[width,opacity] duration-(--motion-base)",
-                    on ? "w-8 opacity-100" : "w-0 opacity-0",
+                    "absolute bottom-1.5 h-[2px] rounded-pill bg-accent shadow-[0_0_12px_var(--c-accent)] transition-[width,opacity] duration-(--motion-base)",
+                    on ? "w-6 opacity-100" : "w-0 opacity-0",
                   )}
                 />
               </Link>

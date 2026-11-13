@@ -8,6 +8,8 @@ import { AppShell } from "@/components/app/app-shell";
 import { Skeleton } from "@/components/ui/surface";
 import { markLessonRead } from "@/data/coach-repo";
 import { LESSONS, TOPIC_LABEL } from "@/lib/lessons";
+import { audioPath, LessonPlayer } from "@/components/journey/lesson-player";
+import { RECORDED } from "@/lib/journey/lesson-audio";
 
 function Lesson() {
   const id = useSearchParams().get("id") ?? "";
@@ -25,18 +27,20 @@ function Lesson() {
         <span className="text-sm text-text-muted">
           {TOPIC_LABEL[lesson.topic]}, דקה קריאה
         </span>
-        <h1 className="text-[2rem] leading-[1.15] font-bold tracking-tight">{lesson.title}</h1>
+        <h1 className="display text-[2.1rem] leading-[1.1]">{lesson.title}</h1>
+        <span aria-hidden className="titlebar" />
       </header>
+      <LessonPlayer paragraphs={[lesson.title, ...lesson.body, `לנסות היום. ${lesson.tryToday}`]} src={RECORDED.has(`learn-${lesson.id}`) ? audioPath(`learn-${lesson.id}`) : null} />
       {/* Lesson body: longer lines read better with a little more leading. */}
       <div className="flex flex-col gap-4 text-[1.0625rem] leading-[1.75]">
         {lesson.body.map((p) => (
           <p key={p}>{p}</p>
         ))}
       </div>
-      <aside className="flex gap-3 rounded-xl bg-accent p-5 text-on-accent">
-        <Target aria-hidden className="mt-0.5 size-5 shrink-0" />
+      <aside className="card-hero flex gap-3 rounded-xl p-5">
+        <Target aria-hidden className="mt-0.5 size-5 shrink-0 text-accent-ink" />
         <div className="flex flex-col gap-1">
-          <span className="text-sm text-on-accent/70">לנסות היום</span>
+          <span className="eyebrow">לנסות היום</span>
           <span className="font-semibold leading-relaxed">{lesson.tryToday}</span>
         </div>
       </aside>

@@ -12,7 +12,8 @@
     "prebuild": "node scripts/build-tokens.mjs",
     "test": "vitest run",
     "e2e": "node e2e-smoke.cjs",
-    "build:artifact": "node scripts/build-tokens.mjs && vite build && node scripts/artifact-page.mjs"
+    "build:artifact": "node scripts/build-tokens.mjs && vite build && node scripts/artifact-page.mjs",
+    "audio": "NODE_USE_ENV_PROXY=1 node --experimental-strip-types --no-warnings scripts/lesson-audio.mts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.133.0",
