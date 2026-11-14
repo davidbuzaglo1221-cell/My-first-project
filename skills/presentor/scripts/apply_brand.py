@@ -116,6 +116,7 @@ def main():
     lang = (brand.get("lang") or brand.get("language") or "he").strip()
     lang = {"hebrew": "he", "עברית": "he", "english": "en", "אנגלית": "en"}.get(lang.lower(), lang)
     direction = (brand.get("dir") or ("rtl" if lang in ("he", "ar", "fa", "yi") else "ltr")).strip()
+    headings = "light" if str(brand.get("headings", "bold")).lower().startswith(("light", "thin")) else "bold"
     mode = "dark" if str(brand.get("backgrounds", "light")).lower().startswith("dark") else "light"
 
     print("colors:")
@@ -146,7 +147,7 @@ def main():
         html = t.read_text(encoding="utf-8")
         html = replace_block(html, "/*THEME-START*/", "/*THEME-END*/", root)
         html = replace_block(html, "/*FONT-START*/", "/*FONT-END*/", font_css)
-        html, n = re.subn(r"<html\b[^>]*>", '<html dir="%s" lang="%s" data-mode="%s">' % (direction, lang, mode), html, count=1)
+        html, n = re.subn(r"<html\b[^>]*>", '<html dir="%s" lang="%s" data-mode="%s" data-headings="%s">' % (direction, lang, mode, headings), html, count=1)
         if n != 1:
             die("no <html> tag in %s" % t)
         if logo:

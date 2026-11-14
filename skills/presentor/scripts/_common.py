@@ -114,7 +114,7 @@ def embed_google_font(family, subsets=("hebrew", "latin")):
     """Return (css, found_subsets). css has @font-face rules with base64 woff2 data."""
     fam = family.strip().replace(" ", "+")
     css = None
-    for axis in (":wght@400..900", ":wght@400;500;600;700;800;900", ":wght@400;700", ""):
+    for axis in (":wght@300..900", ":wght@400..900", ":wght@400;500;600;700;800;900", ":wght@400;700", ""):
         try:
             css = _get("https://fonts.googleapis.com/css2?family=%s%s&display=swap" % (fam, axis))
             break
