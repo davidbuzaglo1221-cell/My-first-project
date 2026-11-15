@@ -1,317 +1,320 @@
 <title>צמיחה</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800;900&family=Heebo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700;900&family=Heebo:wght@300;400;500;600&display=swap">
 <style>
-/* Layout: an immersive night-sky app. A slow aurora behind everything takes the hue of what you are doing;
-   glass cards float over it. Deliberately one dark visual world (no light variant). */
+/* Layout: a black notebook. Deep black page, cream ink, thin hand-drawn borders,
+   and one red pen that underlines, circles and ticks what matters. One dark world on purpose. */
 :root {
-  --hue: 265;
-  --bg: #07080f; --ink: #f4f2ff; --muted: rgba(244,242,255,.62); --faint: rgba(244,242,255,.38);
-  --glass: rgba(255,255,255,.055); --glass2: rgba(255,255,255,.09); --stroke: rgba(255,255,255,.09);
-  --gold: #ffc861; --gold-ink: #2a1800; --mint: #6ff0b4; --rose: #ff7a90;
-  --display: "Rubik", "Heebo", "Arial Hebrew", system-ui, sans-serif;
+  --bg: #050505; --paper: #0c0b0a; --ink: #f2e8d5; --muted: rgba(242,232,213,.6); --faint: rgba(242,232,213,.34); --line: rgba(242,232,213,.28);
+  --red: #d8262e; --red-soft: rgba(216,38,46,.13);
+  --gold: #f2e8d5; --gold-ink: #050505; --mint: #f2e8d5; --rose: #d8262e;
+  --glass: transparent; --glass2: rgba(242,232,213,.06); --stroke: rgba(242,232,213,.16);
+  --display: "Frank Ruhl Libre", "David", "Times New Roman", serif;
   --body: "Heebo", "Arial Hebrew", system-ui, sans-serif;
+  --sq1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M3 8 C 18 3, 30 12, 48 7 S 80 3, 102 8 S 140 12, 160 6 S 188 5, 197 7' fill='none' stroke='%23d8262e' stroke-width='2.4' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3Cpath d='M8 10 C 40 7, 70 11, 110 9 S 170 8, 194 10' fill='none' stroke='%23d8262e' stroke-width='1.2' stroke-linecap='round' opacity='.55' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  --sq2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M2 6 Q 25 12 50 7 T 100 7 T 150 8 T 198 5' fill='none' stroke='%23d8262e' stroke-width='2.2' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
+  --circ: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50' preserveAspectRatio='none'%3E%3Cpath d='M70 6 C 40 1, 6 8, 5 25 C 4 42, 40 47, 62 45 C 86 43, 97 33, 95 21 C 93 10, 76 4, 52 5' fill='none' stroke='%23d8262e' stroke-width='1.8' stroke-linecap='round' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E");
   color-scheme: dark;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent }
 html, body { background: var(--bg); color: var(--ink) }
-body { font-family: var(--body); font-size: 16px; line-height: 1.5; min-height: 100%; overflow-x: hidden }
+body { font-family: var(--body); font-weight: 400; font-size: 16px; line-height: 1.55; min-height: 100%; overflow-x: hidden }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg) }
+body::after { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .06; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; text-align: inherit }
-button, .press { transition: transform .15s ease, background .2s, opacity .2s }
-button:active, .press:active { transform: scale(.96) }
-button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px }
+button { transition: transform .15s ease, opacity .2s, background .2s }
+button:active { transform: scale(.97) }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 1.5px dashed var(--red); outline-offset: 4px }
 input, textarea, select { font: inherit; color: var(--ink) }
+::selection { background: var(--red); color: var(--ink) }
 
-.sky { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none }
-.sky i { position: absolute; width: 70vmax; height: 70vmax; border-radius: 50%; filter: blur(70px); opacity: .55; transition: background 1.2s }
-.sky i:nth-child(1) { background: radial-gradient(circle, hsl(var(--hue) 90% 55% / .55), transparent 65%); top: -30vmax; right: -20vmax; animation: drift1 26s ease-in-out infinite alternate }
-.sky i:nth-child(2) { background: radial-gradient(circle, hsl(calc(var(--hue) + 60) 90% 50% / .4), transparent 65%); bottom: -35vmax; left: -25vmax; animation: drift2 32s ease-in-out infinite alternate }
-.sky i:nth-child(3) { background: radial-gradient(circle, hsl(calc(var(--hue) - 50) 90% 60% / .28), transparent 60%); top: 30%; left: 20%; width: 50vmax; height: 50vmax; animation: drift1 40s ease-in-out infinite alternate-reverse }
-.sky::after { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,.5) 1px, transparent 1.4px); background-size: 120px 120px; opacity: .08 }
-@keyframes drift1 { to { transform: translate(-12vmax, 10vmax) scale(1.15) } }
-@keyframes drift2 { to { transform: translate(14vmax, -8vmax) scale(.9) } }
+/* the red pen */
+.ink { background: var(--sq1) left bottom / 100% .5em no-repeat; padding-bottom: .16em; -webkit-box-decoration-break: clone; box-decoration-break: clone }
+.ink2 { background: var(--sq2) left bottom / 100% .42em no-repeat; padding-bottom: .14em; -webkit-box-decoration-break: clone; box-decoration-break: clone }
+.circ { background: var(--circ) center / 100% 100% no-repeat; padding: .15em .55em }
+.red { color: var(--red) }
+.sk-border { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: -1 }
+.sketch { position: relative; isolation: isolate }
+.orb { position: absolute; inset: 0; z-index: -1; pointer-events: none }
+.orb svg { width: 100%; height: 100%; display: block }
 
-#app { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-bottom: 150px }
-.view { animation: rise .45s cubic-bezier(.2,.8,.2,1) both }
-@keyframes rise { from { opacity: 0; transform: translateY(14px) } }
+#app { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: max(18px, env(safe-area-inset-right, 0px)); padding-bottom: 150px }
+.view { animation: rise .5s cubic-bezier(.2,.8,.2,1) both }
+@keyframes rise { from { opacity: 0; transform: translateY(10px) } }
 
-.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: flex; align-items: center; justify-content: space-between; padding-block: 12px; margin-inline: -4px }
-.top::before { content: ""; position: absolute; inset: 0 -20px; background: linear-gradient(var(--bg) 40%, transparent); z-index: -1 }
-.brand { font-family: var(--display); font-weight: 900; font-size: 26px; letter-spacing: -.5px; display: flex; align-items: center; gap: 8px }
-.brand .seed { width: 22px; height: 22px; border-radius: 50%; background: conic-gradient(from 200deg, var(--gold), hsl(var(--hue) 90% 65%), var(--gold)); box-shadow: 0 0 18px hsl(var(--hue) 90% 60% / .7) }
-.glassbtn { width: 46px; height: 46px; border-radius: 16px; display: grid; place-items: center; background: var(--glass); border: 1px solid var(--stroke); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px) }
-.glassbtn svg { width: 22px; height: 22px }
-.burger span { display: block; width: 20px; height: 2.2px; background: var(--ink); border-radius: 2px; margin: 4.5px 0 }
-.burger span:nth-child(2) { width: 14px; margin-inline-start: auto }
-.lvl { position: relative; width: 46px; height: 46px }
-.lvl svg { width: 46px; height: 46px }
-.lvl b { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--display); font-weight: 800; font-size: 16px }
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: flex; align-items: center; justify-content: space-between; padding-block: 14px; background: var(--bg) }
+.brand { font-family: var(--display); font-weight: 700; font-size: 26px; letter-spacing: .5px }
+.glassbtn { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--stroke) }
+.glassbtn svg { width: 20px; height: 20px }
+.burger span { display: block; width: 20px; height: 1.6px; background: var(--ink); border-radius: 2px; margin: 4.5px 0 }
+.burger span:nth-child(2) { width: 13px; margin-inline-start: auto }
+.lvl { position: relative; width: 44px; height: 44px }
+.lvl svg { width: 44px; height: 44px }
+.lvl b { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--display); font-weight: 700; font-size: 17px }
 
-.scrim { position: fixed; inset: 0; background: rgba(3,3,10,.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .3s }
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .3s }
 .scrim.on { opacity: 1; pointer-events: auto }
-.drawer { position: fixed; top: 0; bottom: 0; right: 0; width: min(88vw, 390px); z-index: 41; transform: translateX(105%); transition: transform .4s cubic-bezier(.2,.9,.2,1); padding: calc(env(safe-area-inset-top, 0px) + 20px) max(18px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 20px) 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; background: rgba(14,14,28,.86); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-left: 1px solid var(--stroke) }
+.drawer { position: fixed; top: 0; bottom: 0; right: 0; width: min(88vw, 390px); z-index: 41; transform: translateX(105%); transition: transform .45s cubic-bezier(.2,.9,.2,1); padding: calc(env(safe-area-inset-top, 0px) + 22px) max(20px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 20px) 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; background: var(--bg); border-left: 1px solid var(--stroke) }
 .drawer.on { transform: none }
-.drawer h2 { font-family: var(--display); font-weight: 900; font-size: 30px; margin: 0 0 10px }
-.dlabel { color: var(--faint); font-size: 12px; font-weight: 700; letter-spacing: .08em; margin: 14px 4px 4px }
-.navitem { display: flex; align-items: center; gap: 14px; padding: 9px 8px; border-radius: 18px; width: 100% }
-.navitem.cur, .navitem:hover { background: var(--glass2) }
-.orbmini { width: 46px; height: 46px; border-radius: 15px; flex: none; position: relative; overflow: hidden }
-.navitem .t { font-weight: 700; font-size: 16px; display: block }
-.navitem .s { color: var(--muted); font-size: 12.5px }
+.drawer h2 { font-family: var(--display); font-weight: 700; font-size: 34px; margin: 0 0 12px }
+.dlabel { color: var(--faint); font-size: 12px; font-weight: 500; letter-spacing: .14em; margin: 18px 4px 6px }
+.navitem { display: flex; align-items: center; gap: 14px; padding: 9px 6px; border-radius: 14px; width: 100% }
+.navitem.cur { background: var(--glass2) }
+.orbmini { width: 44px; height: 44px; border-radius: 50%; flex: none; position: relative; overflow: hidden; border: 1px solid var(--stroke) }
+.navitem .t { font-family: var(--display); font-weight: 500; font-size: 19px; display: block; line-height: 1.2 }
+.navitem.cur .t { background: var(--sq2) left bottom / 100% .4em no-repeat }
+.navitem .s { color: var(--muted); font-size: 12.5px; font-weight: 300 }
 .navitem .ring { margin-inline-start: auto; flex: none }
-.navicon { width: 46px; height: 46px; border-radius: 15px; display: grid; place-items: center; background: var(--glass2); flex: none }
-.navicon svg { width: 22px; height: 22px }
+.navicon { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--stroke); flex: none }
+.navicon svg { width: 20px; height: 20px }
 
-.orb { position: absolute; inset: 0; background:
-  radial-gradient(circle at 70% 25%, hsl(calc(var(--h) + 30) 100% 75% / .9), transparent 38%),
-  radial-gradient(circle at 25% 80%, hsl(calc(var(--h) - 40) 95% 55% / .9), transparent 48%),
-  radial-gradient(circle at 50% 50%, hsl(var(--h) 85% 45%), hsl(calc(var(--h) + 20) 80% 18%) 80%) }
-.orb::after { content: ""; position: absolute; inset: 0; background: repeating-radial-gradient(circle at 70% 25%, rgba(255,255,255,.08) 0 1px, transparent 1px 14px); mix-blend-mode: overlay }
+.card { border-radius: 22px; position: relative }
 
-.card { background: var(--glass); border: 1px solid var(--stroke); border-radius: 26px; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px) }
+.hero { position: relative; border-radius: 26px; overflow: hidden; margin-top: 6px; padding: 24px 22px; min-height: 280px; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; background: var(--paper) }
+.hero .date { font-size: 13px; color: var(--muted); letter-spacing: .06em }
+.hero h1 { font-family: var(--display); font-weight: 700; font-size: 44px; line-height: 1.05; margin: 8px 0 0; text-wrap: balance }
+.stats { display: flex; gap: 18px; flex-wrap: wrap; color: var(--muted); font-size: 13.5px }
+.stat { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums }
+.stat b { color: var(--ink); font-family: var(--display); font-size: 20px; font-weight: 700 }
+.stat svg { width: 15px; height: 15px }
+.go { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 16px }
+.go small { display: block; color: var(--muted); font-size: 13px }
+.go b { font-family: var(--display); font-size: 23px; font-weight: 500; line-height: 1.2 }
+.play { width: 72px; height: 72px; border-radius: 50%; background: var(--ink); color: var(--bg); display: grid; place-items: center; flex: none; position: relative }
+.play::after { content: ""; position: absolute; inset: -9px; background: var(--circ) center / 100% 100% no-repeat; transform: rotate(-8deg) }
+.play svg { width: 28px; height: 28px }
 
-.hero { position: relative; border-radius: 32px; overflow: hidden; margin-top: 4px; padding: 22px; min-height: 260px; display: flex; flex-direction: column; justify-content: space-between; gap: 16px; isolation: isolate }
-.hero .orb { z-index: -1; animation: breathe 9s ease-in-out infinite }
-@keyframes breathe { 50% { transform: scale(1.08) rotate(3deg) } }
-.hero .date { font-size: 13px; opacity: .85; font-weight: 600 }
-.hero h1 { font-family: var(--display); font-weight: 900; font-size: 40px; line-height: 1; margin: 6px 0 0; text-wrap: balance; letter-spacing: -.5px }
-.stats { display: flex; gap: 8px; flex-wrap: wrap }
-.stat { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; background: rgba(0,0,0,.28); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-weight: 700; font-size: 13.5px; font-variant-numeric: tabular-nums }
-.stat svg { width: 16px; height: 16px }
-.go { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px }
-.go small { display: block; opacity: .85; font-size: 13px }
-.go b { font-family: var(--display); font-size: 20px; font-weight: 800; line-height: 1.15 }
-.play { width: 74px; height: 74px; border-radius: 50%; background: var(--gold); color: var(--gold-ink); display: grid; place-items: center; flex: none; box-shadow: 0 0 0 8px rgba(255,200,97,.18), 0 14px 40px rgba(0,0,0,.45); position: relative }
-.play::before { content: ""; position: absolute; inset: -8px; border-radius: 50%; border: 2px solid rgba(255,200,97,.5); animation: ping 2.4s ease-out infinite }
-@keyframes ping { to { transform: scale(1.35); opacity: 0 } }
-.play svg { width: 30px; height: 30px }
+.sec { margin-top: 34px }
+.sechead { display: flex; align-items: baseline; justify-content: space-between; margin: 0 2px 14px; gap: 12px }
+.sechead h3 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 25px }
+.sechead .aux { color: var(--faint); font-size: 12.5px; font-variant-numeric: tabular-nums }
 
-.sec { margin-top: 28px }
-.sechead { display: flex; align-items: baseline; justify-content: space-between; margin: 0 4px 12px }
-.sechead h3 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 22px; letter-spacing: -.3px }
-.sechead .aux { color: var(--muted); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums }
+.line-quote { padding: 22px 20px; font-family: var(--display); font-size: 22px; line-height: 1.5; font-weight: 400 }
+.line-quote small { display: block; font-family: var(--body); font-size: 12.5px; color: var(--faint); margin-top: 12px; letter-spacing: .04em }
 
 .tasks { display: grid; gap: 10px }
-.task { position: relative; display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 22px; overflow: hidden }
-.task::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 40%, hsl(var(--h) 90% 60% / .16)); pointer-events: none }
-.task .txt { flex: 1; min-width: 0; font-size: 15px; line-height: 1.4; font-weight: 500 }
-.task .tag { display: block; font-size: 11.5px; color: hsl(var(--h) 90% 75%); font-weight: 700; margin-bottom: 2px }
-.task.done .txt { opacity: .5 }
-.task.done .txt span:last-child { text-decoration: line-through }
-.round { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: var(--glass2); flex: none; position: relative }
-.round svg { width: 18px; height: 18px }
-.round.check.on { background: var(--mint); color: #04261a; animation: pop .4s }
-@keyframes pop { 40% { transform: scale(1.25) } }
+.task { display: flex; align-items: center; gap: 12px; padding: 16px 16px; border-radius: 18px }
+.task .txt { flex: 1; min-width: 0; font-size: 15.5px; line-height: 1.45 }
+.task .tag { display: block; font-size: 11.5px; color: var(--faint); letter-spacing: .08em; margin-bottom: 3px }
+.task.done .txt span:last-child { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--red); text-decoration-thickness: 1.5px }
+.round { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--stroke); flex: none; position: relative }
+.round svg { width: 17px; height: 17px }
+.round.check.on { border-color: transparent; color: var(--red) }
+.round.check.on svg { width: 30px; height: 30px }
+.tick path { stroke-dasharray: 40; stroke-dashoffset: 40; animation: draw .5s .05s ease-out forwards }
+@keyframes draw { to { stroke-dashoffset: 0 } }
 .row { display: flex; gap: 8px; flex-wrap: wrap }
-.pill { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: var(--glass); border: 1px solid var(--stroke); font-weight: 600; font-size: 14px }
-.pill svg { width: 17px; height: 17px }
-.pill.gold { background: var(--gold); color: var(--gold-ink); border-color: transparent }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--stroke); font-size: 14px }
+.pill svg { width: 16px; height: 16px }
+.pill.gold { background: var(--ink); color: var(--bg); border-color: transparent; font-weight: 500 }
 
-.week { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 6px; padding: 14px }
-.day { display: grid; justify-items: center; gap: 6px; font-size: 11.5px; color: var(--muted); font-weight: 600 }
-.day i { width: 100%; max-width: 38px; aspect-ratio: 1; border-radius: 12px; background: var(--glass2); display: grid; place-items: center }
-.day.on i { background: linear-gradient(135deg, var(--gold), #ff8a5c); box-shadow: 0 0 16px rgba(255,170,90,.45) }
-.day.on i svg { width: 16px; height: 16px; color: var(--gold-ink) }
+.week { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 6px; padding: 16px 12px }
+.day { display: grid; justify-items: center; gap: 6px; font-size: 12px; color: var(--faint) }
+.day i { width: 100%; max-width: 36px; aspect-ratio: 1; border-radius: 50%; border: 1px dashed var(--stroke); display: grid; place-items: center }
+.day.on i { border: 0; color: var(--red) }
+.day.on i svg { width: 28px; height: 28px }
 .day.today { color: var(--ink) }
-.day.today i { outline: 1.5px solid rgba(255,255,255,.5); outline-offset: 2px }
+.day.today i { border-style: solid; border-color: var(--line) }
 
-.rail { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2px 4px 10px; margin-inline: -4px; scrollbar-width: none }
+.rail { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 2px 12px; scrollbar-width: none }
 .rail::-webkit-scrollbar { display: none }
-.lab { scroll-snap-align: start; flex: 0 0 62%; max-width: 250px; aspect-ratio: 1 / 1.12; border-radius: 28px; position: relative; overflow: hidden; padding: 16px; display: flex; flex-direction: column; justify-content: flex-end; isolation: isolate }
-.lab .orb { z-index: -1 }
-.lab .ico { position: absolute; top: 16px; right: 16px; width: 48px; height: 48px; border-radius: 16px; background: rgba(0,0,0,.25); display: grid; place-items: center; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px) }
-.lab .ico svg { width: 26px; height: 26px }
-.lab b { font-family: var(--display); font-weight: 900; font-size: 26px; line-height: 1 }
-.lab span.s { font-size: 13px; opacity: .9; margin-top: 4px }
-.shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(transparent 32%, rgba(0,0,0,.55)) }
+.lab { scroll-snap-align: start; flex: 0 0 60%; max-width: 240px; aspect-ratio: 1 / 1.15; border-radius: 22px; position: relative; overflow: hidden; padding: 18px; display: flex; flex-direction: column; justify-content: flex-end; background: var(--paper) }
+.lab .ico { position: absolute; top: 18px; right: 18px; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); display: grid; place-items: center; z-index: 1 }
+.lab .ico svg { width: 22px; height: 22px }
+.lab b { font-family: var(--display); font-weight: 700; font-size: 26px; line-height: 1.05 }
+.lab span.s { font-size: 13px; color: var(--muted); margin-top: 6px; font-weight: 300 }
+.shade { display: none }
 
 .topics { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px }
-.topic { position: relative; border-radius: 26px; overflow: hidden; aspect-ratio: 1 / 1.08; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; isolation: isolate }
-.topic .orb { z-index: -1 }
-.topic b { font-family: var(--display); font-weight: 900; font-size: 22px; line-height: 1.05; display: block }
-.topic small { display: block; opacity: .8; font-size: 12px; margin-top: 2px }
+.topic { position: relative; border-radius: 22px; overflow: hidden; aspect-ratio: 1 / 1.1; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; background: var(--paper) }
+.topic b { font-family: var(--display); font-weight: 700; font-size: 24px; line-height: 1.05; display: block }
+.topic small { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; font-weight: 300 }
 
-.resume { display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 24px; width: 100% }
-.resume .art { width: 62px; height: 62px; border-radius: 18px; overflow: hidden; position: relative; flex: none }
+.resume { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 20px; width: 100% }
+.resume .art { width: 58px; height: 58px; border-radius: 50%; overflow: hidden; position: relative; flex: none; border: 1px solid var(--stroke) }
 .resume .t { flex: 1; min-width: 0 }
-.resume .t b { display: block; font-weight: 700 }
-.resume .t small { color: var(--muted) }
-.resume .round { background: var(--gold); color: var(--gold-ink); width: 48px; height: 48px }
+.resume .t b { display: block; font-family: var(--display); font-weight: 500; font-size: 19px }
+.resume .t small { color: var(--muted); font-weight: 300 }
+.resume .round { background: var(--ink); color: var(--bg); width: 46px; height: 46px; border: 0 }
 
-.cover { position: relative; border-radius: 34px; overflow: hidden; padding: 22px; min-height: 300px; display: flex; flex-direction: column; justify-content: flex-end; isolation: isolate; margin-top: 4px }
-.cover .orb { z-index: -2; animation: breathe 11s ease-in-out infinite }
-.cover h1 { font-family: var(--display); font-weight: 900; font-size: 54px; line-height: .95; margin: 0; letter-spacing: -1px }
-.cover p { margin: 6px 0 0; opacity: .88; font-weight: 500 }
-.eps { display: grid; gap: 10px; margin-top: 16px }
-.ep { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 22px; width: 100% }
-.ep .n { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--glass2); font-family: var(--display); font-weight: 800; flex: none; font-variant-numeric: tabular-nums }
-.ep .n svg { width: 20px; height: 20px }
-.ep.done .n { background: var(--mint); color: #04261a }
-.ep.now .n { background: var(--gold); color: var(--gold-ink) }
-.ep .t { flex: 1; min-width: 0; font-weight: 700 }
-.ep .t small { display: block; color: var(--muted); font-weight: 500; font-size: 13px }
-.badge { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; background: rgba(255,200,97,.16); color: var(--gold); flex: none }
-.badge.ok { background: rgba(111,240,180,.14); color: var(--mint) }
-.nb { margin-top: 22px; padding: 18px; display: grid; gap: 12px }
-.nb h4 { margin: 0; font-family: var(--display); font-size: 19px; font-weight: 800 }
-.nb p { margin: 0; color: var(--muted); font-size: 14px }
-.nbgo { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 20px; background: linear-gradient(135deg, hsl(var(--h) 80% 55% / .35), rgba(255,255,255,.04)); border: 1px solid var(--stroke); width: 100% }
-.nbgo svg { width: 24px; height: 24px; flex: none }
-.nbgo b { display: block }
-.nbgo small { color: var(--muted) }
+.cover { position: relative; border-radius: 26px; overflow: hidden; padding: 24px 22px; min-height: 300px; display: flex; flex-direction: column; justify-content: flex-end; margin-top: 6px; background: var(--paper) }
+.cover h1 { font-family: var(--display); font-weight: 900; font-size: 56px; line-height: 1; margin: 0 }
+.cover p { margin: 10px 0 0; color: var(--muted); font-weight: 300 }
+.eps { display: grid; gap: 10px; margin-top: 18px }
+.ep { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: 18px; width: 100% }
+.ep .n { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--stroke); font-family: var(--display); font-weight: 700; font-size: 18px; flex: none; font-variant-numeric: tabular-nums }
+.ep .n svg { width: 18px; height: 18px }
+.ep.done .n { border-color: transparent; color: var(--red) }
+.ep.done .n svg { width: 30px; height: 30px }
+.ep.now .n { background: var(--ink); color: var(--bg); border-color: transparent }
+.ep .t { flex: 1; min-width: 0; font-family: var(--display); font-weight: 500; font-size: 19px; line-height: 1.25 }
+.ep .t small { display: block; font-family: var(--body); color: var(--muted); font-weight: 300; font-size: 12.5px; margin-top: 2px }
+.badge { font-size: 11.5px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--stroke); color: var(--muted); flex: none }
+.badge.ok { border-color: transparent; color: var(--red); background: var(--circ) center / 100% 100% no-repeat }
+.nb { margin-top: 26px; padding: 20px; display: grid; gap: 12px }
+.nb h4 { margin: 0; font-family: var(--display); font-size: 22px; font-weight: 700 }
+.nb p { margin: 0; color: var(--muted); font-size: 14px; font-weight: 300 }
+.nbgo { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 16px; border: 1px solid var(--stroke); width: 100% }
+.nbgo svg { width: 22px; height: 22px; flex: none }
+.nbgo b { display: block; font-weight: 500 }
+.nbgo small { color: var(--muted); font-weight: 300 }
 
-.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; border-radius: 18px; margin-top: 6px }
-.seg button { padding: 10px; border-radius: 14px; font-weight: 700; text-align: center }
-.seg button.on { background: var(--ink); color: var(--bg) }
-.voiceorb { display: grid; place-items: center; padding-block: 26px 6px }
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; border-radius: 999px; margin-top: 6px; border: 1px solid var(--stroke) }
+.seg button { padding: 10px; border-radius: 999px; text-align: center }
+.seg button.on { background: var(--ink); color: var(--bg); font-weight: 500 }
+.voiceorb { display: grid; place-items: center; padding-block: 24px 4px }
 .vo { width: 180px; height: 180px; position: relative; display: grid; place-items: center; border-radius: 50% }
 .vo canvas { position: absolute; inset: -40px; width: 260px; height: 260px }
-.vo .core { width: 112px; height: 112px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff6dc, var(--gold) 45%, #ff8a5c); color: var(--gold-ink); display: grid; place-items: center; box-shadow: 0 0 70px rgba(255,180,90,.55); position: relative }
-.vo .core svg { width: 42px; height: 42px }
-.status { text-align: center; color: var(--muted); font-size: 14.5px; min-height: 22px; margin-top: 6px; padding-inline: 10px }
-.ask { display: flex; gap: 8px; align-items: flex-end; padding: 8px; border-radius: 24px; margin-top: 14px }
+.vo .core { width: 104px; height: 104px; border-radius: 50%; background: var(--ink); color: var(--bg); display: grid; place-items: center; position: relative }
+.vo .core svg { width: 38px; height: 38px }
+.status { text-align: center; color: var(--muted); font-size: 14.5px; min-height: 22px; margin-top: 8px; padding-inline: 10px; font-weight: 300 }
+.ask { display: flex; gap: 8px; align-items: flex-end; padding: 8px; border-radius: 22px; margin-top: 16px }
 .ask textarea { flex: 1; min-width: 0; border: 0; background: transparent; resize: none; padding: 9px 10px; min-height: 44px; max-height: 140px; font-size: 16px }
 .ask textarea::placeholder { color: var(--faint) }
-.send { width: 46px; height: 46px; border-radius: 50%; background: var(--gold); color: var(--gold-ink); display: grid; place-items: center; flex: none }
-.send svg { width: 20px; height: 20px }
-.send[disabled] { opacity: .4 }
-.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px }
-.chip { padding: 9px 14px; border-radius: 999px; background: var(--glass); border: 1px solid var(--stroke); font-size: 14px; font-weight: 500 }
-.chip.on { background: var(--gold); color: var(--gold-ink); border-color: transparent; font-weight: 700 }
-.answer { margin-top: 16px; padding: 16px; display: grid; gap: 10px }
-.answer .q { font-weight: 700 }
-.answer .a { color: var(--muted); font-size: 15px; white-space: pre-wrap }
+.send { width: 44px; height: 44px; border-radius: 50%; background: var(--ink); color: var(--bg); display: grid; place-items: center; flex: none }
+.send svg { width: 19px; height: 19px }
+.send[disabled] { opacity: .35 }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px }
+.chip { padding: 9px 14px; border-radius: 999px; border: 1px solid var(--stroke); font-size: 14px; font-weight: 300 }
+.chip.on { background: var(--ink); color: var(--bg); border-color: transparent; font-weight: 500 }
+.answer { margin-top: 18px; padding: 18px; display: grid; gap: 10px }
+.answer .q { font-family: var(--display); font-size: 20px; font-weight: 500 }
+.answer .a { color: var(--muted); font-size: 15px; white-space: pre-wrap; font-weight: 300 }
 .tools { display: flex; gap: 8px; flex-wrap: wrap }
-.mini { font-size: 13px; padding: 7px 12px; border-radius: 999px; background: var(--glass2); display: inline-flex; gap: 6px; align-items: center; font-weight: 600 }
-.mini svg { width: 15px; height: 15px }
-.rp { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-top: 14px }
-.rpc { position: relative; overflow: hidden; border-radius: 22px; padding: 14px; min-height: 110px; display: flex; flex-direction: column; justify-content: flex-end; isolation: isolate }
-.rpc .orb { z-index: -1; opacity: .85 }
-.rpc b { font-family: var(--display); font-weight: 800; font-size: 17px; line-height: 1.15 }
+.mini { font-size: 13px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--stroke); display: inline-flex; gap: 6px; align-items: center }
+.mini svg { width: 14px; height: 14px }
+.rp { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-top: 16px }
+.rpc { position: relative; overflow: hidden; border-radius: 20px; padding: 16px; min-height: 118px; display: flex; flex-direction: column; justify-content: flex-end; background: var(--paper) }
+.rpc b { font-family: var(--display); font-weight: 700; font-size: 20px; line-height: 1.15; position: relative; z-index: 1 }
 .turns { display: grid; gap: 8px; margin-top: 14px }
 .turn { display: flex; gap: 10px; align-items: center }
-.turn .who { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 13px; flex: none }
-.turn.ai .who { background: var(--gold); color: var(--gold-ink) }
-.turn.me .who { background: var(--glass2) }
-.turn .bub { flex: 1; min-width: 0; padding: 10px 12px; border-radius: 16px; background: var(--glass); font-size: 14.5px; color: var(--muted) }
-.turn .bub[data-hidden] { color: transparent; text-shadow: 0 0 9px rgba(244,242,255,.55); user-select: none }
-.fb { padding: 16px; margin-top: 14px; display: grid; gap: 8px }
-.score { font-family: var(--display); font-weight: 900; font-size: 54px; line-height: 1; color: var(--gold) }
+.turn .who { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; flex: none; border: 1px solid var(--stroke) }
+.turn.ai .who { background: var(--ink); color: var(--bg); border: 0 }
+.turn .bub { flex: 1; min-width: 0; padding: 10px 12px; border-radius: 14px; background: var(--glass2); font-size: 14.5px; color: var(--muted) }
+.turn .bub[data-hidden] { color: transparent; text-shadow: 0 0 9px rgba(242,232,213,.5); user-select: none }
+.fb { padding: 18px; margin-top: 14px; display: grid; gap: 8px; font-weight: 300 }
+.fb b { font-weight: 600 }
+.score { font-family: var(--display); font-weight: 900; font-size: 60px; line-height: 1; justify-self: start }
 
-.facebox { position: relative; border-radius: 32px; overflow: hidden; margin-top: 6px; aspect-ratio: 1 / 1.02; max-width: 100%; display: grid; place-items: center; isolation: isolate }
-.facebox .orb { z-index: -1; opacity: .7 }
-#face { width: 74%; display: grid; place-items: center }
+.facebox { position: relative; border-radius: 26px; overflow: hidden; margin-top: 6px; aspect-ratio: 1 / 1.02; max-width: 100%; display: grid; place-items: center; background: var(--paper) }
+#face { width: 70%; display: grid; place-items: center; position: relative; z-index: 1 }
 #face svg { width: 100%; height: auto }
-.facehud { position: absolute; top: 14px; inset-inline: 14px; display: flex; justify-content: space-between; gap: 8px }
-.countdown { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--display); font-weight: 900; font-size: 96px; color: #fff; text-shadow: 0 6px 30px rgba(0,0,0,.4); pointer-events: none }
+.facehud { position: absolute; top: 16px; inset-inline: 16px; display: flex; justify-content: space-between; gap: 8px; z-index: 2 }
+.countdown { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--display); font-weight: 900; font-size: 110px; color: var(--ink); pointer-events: none; z-index: 3 }
 .opts { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; margin-top: 14px }
-.opt { padding: 14px; border-radius: 18px; font-weight: 700; text-align: center; font-size: 16px }
-.opt.right { background: var(--mint); color: #04261a }
-.opt.wrong { background: var(--rose); color: #2a0008 }
-.opt[disabled] { opacity: .55 }
+.opt { padding: 14px; border-radius: 16px; text-align: center; font-family: var(--display); font-size: 19px; font-weight: 500; border: 1px solid var(--stroke) }
+.opt.right { background: var(--ink); color: var(--bg); border-color: transparent }
+.opt.wrong { border-color: var(--red); color: var(--red); text-decoration: line-through }
+.opt[disabled] { opacity: .5 }
 .opt.right[disabled], .opt.wrong[disabled] { opacity: 1 }
 .levels { display: flex; gap: 6px; margin-top: 12px }
-.levels button { flex: 1; padding: 8px 4px; border-radius: 14px; background: var(--glass); border: 1px solid var(--stroke); font-size: 13px; font-weight: 700; text-align: center; line-height: 1.25 }
-.levels button small { font-weight: 500; opacity: .7 }
-.levels button.on { background: var(--ink); color: var(--bg) }
-.levels button[disabled] { opacity: .35 }
-.explain { padding: 14px 16px; margin-top: 12px; font-size: 14.5px; color: var(--muted) }
-.explain b { color: var(--ink) }
+.levels button { flex: 1; padding: 8px 4px; border-radius: 14px; border: 1px solid var(--stroke); font-size: 13px; text-align: center; line-height: 1.25 }
+.levels button small { opacity: .6; font-weight: 300 }
+.levels button.on { background: var(--ink); color: var(--bg); border-color: transparent; font-weight: 500 }
+.levels button[disabled] { opacity: .3 }
+.explain { padding: 16px; margin-top: 12px; font-size: 15px; color: var(--muted); font-weight: 300 }
+.explain b { color: var(--ink); font-weight: 600 }
 
-.big { font-family: var(--display); font-weight: 900; font-size: 44px; line-height: 1; letter-spacing: -1px; font-variant-numeric: tabular-nums; margin-top: 4px }
+.big { font-family: var(--display); font-weight: 900; font-size: 50px; line-height: 1; font-variant-numeric: tabular-nums; margin-top: 6px }
 .ctrl { display: grid; gap: 4px }
-.ctrl label { display: flex; justify-content: space-between; font-weight: 700; font-size: 14px }
-.ctrl label span { color: var(--gold); font-variant-numeric: tabular-nums }
-input[type=range] { width: 100%; accent-color: var(--gold) }
-.bars { display: flex; height: 18px; border-radius: 10px; overflow: hidden; background: var(--glass2) }
+.ctrl label { display: flex; justify-content: space-between; font-size: 14px }
+.ctrl label span { font-variant-numeric: tabular-nums; font-weight: 600 }
+input[type=range] { width: 100%; accent-color: var(--red) }
+.bars { display: flex; height: 14px; border-radius: 8px; overflow: hidden; border: 1px solid var(--stroke) }
 .bars i { display: block; height: 100%; transition: width .5s }
 .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted) }
 .legend b { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-inline-end: 5px; vertical-align: -1px }
-.loss { padding: 14px; border-radius: 18px; background: rgba(255,122,144,.12); border: 1px solid rgba(255,122,144,.3) }
+.loss { padding: 14px; border-radius: 14px; border: 1px dashed var(--red); font-weight: 300 }
+.loss b { color: var(--red); font-weight: 700 }
 
-.breath { display: grid; place-items: center; padding-block: 30px 10px }
-.bo { width: 240px; height: 240px; border-radius: 50%; position: relative; display: grid; place-items: center }
-.bo .ball { width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #e8fbff, hsl(190 90% 60%) 45%, hsl(250 80% 50%)); box-shadow: 0 0 80px hsl(200 90% 60% / .55); transform: scale(.7) }
-.bo .ringb { position: absolute; inset: 0; border-radius: 50%; border: 1.5px dashed rgba(255,255,255,.25) }
-.phase { font-family: var(--display); font-weight: 800; font-size: 26px; text-align: center; margin-top: 18px; min-height: 36px }
+.breath { display: grid; place-items: center; padding-block: 34px 10px }
+.bo { width: 250px; height: 250px; border-radius: 50%; position: relative; display: grid; place-items: center }
+.bo .ball { width: 160px; height: 160px; border-radius: 50%; border: 1.5px solid var(--ink); box-shadow: inset 0 0 40px rgba(242,232,213,.08); transform: scale(.7) }
+.bo .ringb { position: absolute; inset: 0; border-radius: 50%; border: 1.5px dashed rgba(216,38,46,.6) }
+.phase { font-family: var(--display); font-weight: 500; font-size: 28px; text-align: center; margin-top: 20px; min-height: 40px }
 .tmr { text-align: center; color: var(--muted); font-variant-numeric: tabular-nums; min-height: 24px }
 
 .field { display: grid; gap: 6px; margin-top: 14px }
-.field label { font-weight: 700; font-size: 14px }
-.field input, .field textarea, .field select { background: var(--glass); border: 1px solid var(--stroke); border-radius: 16px; padding: 12px 14px; width: 100% }
-.hint { color: var(--muted); font-size: 13px; margin: 0 }
-.panel { padding: 16px; margin-top: 14px; display: grid; gap: 14px }
-.panel h4 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 18px }
-.memo { margin: 0; padding-inline-start: 18px }
+.field label { font-size: 14px; font-weight: 500 }
+.field input, .field textarea, .field select { background: transparent; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 10px 2px; width: 100% }
+.field select { background: var(--bg) }
+.hint { color: var(--muted); font-size: 13px; margin: 0; font-weight: 300 }
+.panel { padding: 18px; margin-top: 14px; display: grid; gap: 14px }
+.panel h4 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 22px }
+.memo { margin: 0; padding-inline-start: 18px; font-weight: 300 }
 .memo li { margin-bottom: 6px }
-.btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; padding: 15px 24px; border-radius: 999px; background: var(--gold); color: var(--gold-ink); font-weight: 800; font-size: 17px; font-family: var(--display) }
-.btn svg { width: 22px; height: 22px }
+.btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; padding: 15px 26px; border-radius: 999px; background: var(--ink); color: var(--bg); font-weight: 600; font-size: 16px }
+.btn svg { width: 20px; height: 20px }
 
 .player { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; padding: 0 max(12px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 12px) max(12px, env(safe-area-inset-left, 0px)); pointer-events: none }
-.pbar { pointer-events: auto; max-width: 560px; margin: 0 auto; background: rgba(20,20,38,.74); backdrop-filter: blur(22px) saturate(1.4); -webkit-backdrop-filter: blur(22px) saturate(1.4); border-radius: 24px; padding: 10px; display: flex; align-items: center; gap: 10px; box-shadow: 0 16px 50px rgba(0,0,0,.55); border: 1px solid var(--stroke) }
-.pbar .art { width: 50px; height: 50px; border-radius: 15px; overflow: hidden; position: relative; flex: none }
+.pbar { pointer-events: auto; max-width: 560px; margin: 0 auto; background: #0e0d0c; border-radius: 22px; padding: 10px; display: flex; align-items: center; gap: 10px; box-shadow: 0 -10px 40px rgba(0,0,0,.8); border: 1px solid var(--stroke) }
+.pbar .art { width: 48px; height: 48px; border-radius: 50%; overflow: hidden; position: relative; flex: none; border: 1px solid var(--stroke) }
 .pbar .meta { flex: 1; min-width: 0 }
-.pbar .meta b { display: block; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.pbar .meta span { color: var(--muted); font-size: 12px }
-.prog { height: 4px; border-radius: 4px; background: rgba(255,255,255,.12); margin-top: 6px; overflow: hidden }
-.prog i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold), #ff8a5c); width: 0; transition: width .4s }
-.pp { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: var(--gold-ink); flex: none }
-.pp svg { width: 22px; height: 22px }
-.pp.ghost { background: transparent; color: var(--ink); width: 38px }
-.eq { display: inline-flex; gap: 2px; align-items: flex-end; height: 12px; margin-inline-end: 6px; vertical-align: -1px }
-.eq i { width: 3px; background: var(--gold); border-radius: 2px; animation: eq .9s ease-in-out infinite }
+.pbar .meta b { display: block; font-family: var(--display); font-weight: 500; font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.pbar .meta span { color: var(--muted); font-size: 12px; font-weight: 300 }
+.prog { height: 2px; background: var(--stroke); margin-top: 7px; overflow: hidden; border-radius: 2px }
+.prog i { display: block; height: 100%; background: var(--red); width: 0; transition: width .4s }
+.pp { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--bg); flex: none }
+.pp svg { width: 20px; height: 20px }
+.pp.ghost { background: transparent; color: var(--muted); width: 36px }
+.eq { display: inline-flex; gap: 2px; align-items: flex-end; height: 11px; margin-inline-end: 7px; vertical-align: 0 }
+.eq i { width: 2px; background: var(--red); border-radius: 2px; animation: eq .9s ease-in-out infinite }
 .eq i:nth-child(2) { animation-delay: -.3s } .eq i:nth-child(3) { animation-delay: -.6s }
-@keyframes eq { 0%,100% { height: 3px } 50% { height: 12px } }
+@keyframes eq { 0%,100% { height: 3px } 50% { height: 11px } }
 
 .sheet { position: fixed; inset: 0; z-index: 50; background: var(--bg); transform: translateY(102%); transition: transform .45s cubic-bezier(.2,.9,.2,1); display: flex; flex-direction: column; padding: calc(env(safe-area-inset-top, 0px) + 12px) max(20px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 22px) max(20px, env(safe-area-inset-left, 0px)); overflow: hidden }
 .sheet.on { transform: none }
 .sheet .stage { flex: 1; display: grid; place-items: center; min-height: 0; position: relative }
-.sheet .stage canvas { width: min(86vw, 400px); height: min(86vw, 400px); max-width: 100% }
-.sheet .cap { position: absolute; inset: auto 0 4%; text-align: center; font-size: 19px; font-weight: 600; line-height: 1.45; padding-inline: 8px; text-shadow: 0 2px 14px rgba(0,0,0,.8); text-wrap: balance }
-.speakers { display: flex; justify-content: center; gap: 34px }
-.spk { display: grid; justify-items: center; gap: 6px; opacity: .4; transition: opacity .3s, transform .3s }
-.spk.on { opacity: 1; transform: translateY(-3px) }
-.spk .av { width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-size: 22px; font-weight: 900; position: relative; overflow: hidden; isolation: isolate }
-.spk .av .orb { z-index: -1 }
-.spk.on .av { box-shadow: 0 0 0 3px var(--gold), 0 0 30px rgba(255,200,97,.6) }
-.spk small { font-size: 13px; font-weight: 700 }
-.ttl { text-align: center; margin-top: 16px }
-.ttl b { font-family: var(--display); font-weight: 900; font-size: 28px; display: block; line-height: 1.1; text-wrap: balance }
-.ttl span { color: var(--muted); font-size: 14px }
-.ctrls { display: flex; justify-content: center; align-items: center; gap: 24px; margin-top: 20px }
-.ctrls .pp { width: 82px; height: 82px }
-.ctrls .pp svg { width: 34px; height: 34px }
-.sk { width: 54px; height: 54px; border-radius: 50%; background: var(--glass2); display: grid; place-items: center }
-.sk svg { width: 24px; height: 24px }
+.sheet .stage canvas { width: min(84vw, 380px); height: min(84vw, 380px); max-width: 100% }
+.sheet .cap { position: absolute; inset: auto 0 2%; text-align: center; font-family: var(--display); font-size: 21px; line-height: 1.45; padding-inline: 8px; text-wrap: balance }
+.speakers { display: flex; justify-content: center; gap: 38px }
+.spk { display: grid; justify-items: center; gap: 6px; opacity: .38; transition: opacity .3s }
+.spk.on { opacity: 1 }
+.spk .av { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-size: 24px; font-weight: 700; position: relative; border: 1px solid var(--line) }
+.spk.on .av::after { content: ""; position: absolute; inset: -8px; background: var(--circ) center / 100% 100% no-repeat }
+.spk small { font-size: 13px }
+.ttl { text-align: center; margin-top: 18px }
+.ttl b { font-family: var(--display); font-weight: 700; font-size: 30px; display: block; line-height: 1.15; text-wrap: balance }
+.ttl span { color: var(--muted); font-size: 14px; font-weight: 300 }
+.ctrls { display: flex; justify-content: center; align-items: center; gap: 26px; margin-top: 22px }
+.ctrls .pp { width: 80px; height: 80px }
+.ctrls .pp svg { width: 30px; height: 30px }
+.sk { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--stroke); display: grid; place-items: center }
+.sk svg { width: 22px; height: 22px }
 .subrow { display: flex; justify-content: center; gap: 8px; margin-top: 16px; flex-wrap: wrap }
-.subrow button { padding: 7px 13px; border-radius: 999px; background: var(--glass2); font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums }
-.subrow button.on { background: var(--ink); color: var(--bg) }
+.subrow button { padding: 6px 13px; border-radius: 999px; border: 1px solid var(--stroke); font-size: 13px; font-variant-numeric: tabular-nums }
+.subrow button.on { background: var(--ink); color: var(--bg); border-color: transparent }
 .sheethead { display: flex; justify-content: space-between; align-items: center }
 
-.modal { position: fixed; inset: 0; z-index: 70; display: grid; place-items: end center; padding: 16px; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); background: rgba(3,3,10,.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px) }
-.modal .box { width: 100%; max-width: 520px; padding: 20px; border-radius: 30px; background: rgba(24,22,44,.94); border: 1px solid var(--stroke); animation: rise .4s cubic-bezier(.2,.8,.2,1) both; display: grid; gap: 10px }
-.modal h3 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1.25 }
-.modal .opt { background: var(--glass2); text-align: right }
+.modal { position: fixed; inset: 0; z-index: 70; display: grid; place-items: end center; padding: 16px; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); background: rgba(0,0,0,.78) }
+.modal .box { width: 100%; max-width: 520px; padding: 22px; border-radius: 26px; background: #0e0d0c; animation: rise .4s cubic-bezier(.2,.8,.2,1) both; display: grid; gap: 10px; max-height: calc(100vh - 32px); overflow-y: auto }
+.modal h3 { margin: 0; font-family: var(--display); font-weight: 700; font-size: 25px; line-height: 1.3 }
+.modal .opt { text-align: right; font-size: 17px }
+.modal ol { margin: 0; padding-inline-start: 20px; display: grid; gap: 8px; font-weight: 300 }
+.modal ol b { font-weight: 600 }
+.diag { font-size: 12px; color: var(--faint); direction: rtl }
 
-.toast { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 14px); transform: translate(-50%, -20px); background: rgba(244,242,255,.96); color: #0b0b18; padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 700; z-index: 80; opacity: 0; transition: all .3s; pointer-events: none; max-width: calc(100vw - 32px); text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.4) }
+.toast { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 14px); transform: translate(-50%, -20px); background: var(--ink); color: var(--bg); padding: 9px 18px; border-radius: 999px; font-size: 14px; font-weight: 500; z-index: 80; opacity: 0; transition: all .3s; pointer-events: none; max-width: calc(100vw - 32px); text-align: center }
 .toast.on { opacity: 1; transform: translate(-50%, 0) }
-#fx { position: fixed; inset: 0; z-index: 90; pointer-events: none; width: 100%; height: 100% }
-.levelup { position: fixed; inset: 0; z-index: 85; display: grid; place-items: center; pointer-events: none }
+#fx { display: none }
+.stamp { position: fixed; inset: 0; z-index: 85; display: grid; place-items: center; pointer-events: none; animation: fade 1.6s ease forwards }
+.stamp svg { width: 150px; height: 150px }
+.stamp path { stroke-dasharray: 120; stroke-dashoffset: 120; animation: draw .55s ease-out forwards }
+@keyframes fade { 0%, 70% { opacity: 1 } 100% { opacity: 0 } }
+.levelup { position: fixed; inset: 0; z-index: 85; display: grid; place-items: center; pointer-events: none; background: rgba(0,0,0,.6) }
 .levelup div { text-align: center; animation: lvl 2.6s cubic-bezier(.2,.8,.2,1) forwards }
-.levelup b { font-family: var(--display); font-weight: 900; font-size: 64px; display: block; background: linear-gradient(135deg, #fff, var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent }
-.levelup span { font-weight: 700; font-size: 18px }
-@keyframes lvl { 0% { opacity: 0; transform: scale(.6) } 20% { opacity: 1; transform: scale(1.05) } 80% { opacity: 1 } 100% { opacity: 0; transform: scale(1.1) } }
+.levelup b { font-family: var(--display); font-weight: 900; font-size: 72px; display: block; line-height: 1.1 }
+.levelup span { font-family: var(--display); font-size: 24px }
+@keyframes lvl { 0% { opacity: 0; transform: translateY(10px) } 20% { opacity: 1; transform: none } 80% { opacity: 1 } 100% { opacity: 0 } }
 
-.welcome { display: grid; gap: 16px; padding-top: 18px }
+.welcome { display: grid; gap: 18px; padding-top: 22px }
 .welcome .hero { min-height: 330px; justify-content: flex-end }
 .welcome h1 { font-size: 50px }
-.welcome p { margin: 0; color: var(--muted); font-size: 16px }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important } }
+.welcome p { margin: 0; color: var(--muted); font-size: 16px; font-weight: 300 }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important } .tick path, .stamp path { stroke-dashoffset: 0 } }
 </style>
 
-<div class="sky" aria-hidden="true"><i></i><i></i><i></i></div>
 <div id="app" dir="rtl" lang="he"></div>
 <div class="scrim" id="scrim"></div>
 <nav class="drawer" id="drawer" dir="rtl" lang="he" aria-label="תפריט"></nav>
@@ -329,7 +332,28 @@ const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const TOPIC = Object.fromEntries(TOPICS.map((t) => [t.id, t]));
 const HOSTS = { A: { name: "מאיה", letter: "מ", hue: 330 }, B: { name: "דניאל", letter: "ד", hue: 200 } };
-const orb = (h) => `<span class="orb" style="--h:${h}"></span>`;
+function rng(seed) { let x = (seed * 9301 + 49297) % 233280 || 1; return () => (x = (x * 9301 + 49297) % 233280) / 233280; }
+function handCircle(cx, cy, r, R, over = .35) { const a0 = R() * 6.28, steps = 44; let d = ""; const k1 = R() * 6.28, k2 = R() * 6.28;
+  for (let i = 0; i <= steps; i++) { const a = a0 + (6.28 + over) * i / steps; const rr = r * (1 + .025 * Math.sin(a * 2 + k1) + .02 * Math.sin(a * 3 + k2)) * (1 - .04 * i / steps); d += (i ? "L" : "M") + (cx + Math.cos(a) * rr).toFixed(1) + " " + (cy + Math.sin(a) * rr * .96).toFixed(1); } return d; }
+const doodleCache = {};
+function orb(seed) {
+  if (doodleCache[seed]) return doodleCache[seed];
+  const R = rng(seed + 7); const cx = 120 + R() * 60, cy = 30 + R() * 50; let paths = "";
+  const n = 5 + (seed % 3);
+  for (let i = 0; i < n; i++) { const r = 26 + i * 24 + R() * 8; paths += `<path d="${handCircle(cx, cy, r, R)}" fill="none" stroke="#f2e8d5" stroke-opacity="${(.32 - i * .035).toFixed(2)}" stroke-width="1" vector-effect="non-scaling-stroke"/>`; }
+  paths += `<path d="${handCircle(cx, cy, 14 + R() * 6, R, .9)}" fill="none" stroke="#d8262e" stroke-width="1.6" vector-effect="non-scaling-stroke"/>`;
+  return (doodleCache[seed] = `<span class="orb"><svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${paths}</svg></span>`);
+}
+const TICK = '<svg class="tick" viewBox="0 0 30 30" fill="none" aria-hidden="true"><path d="M5 16 C 8 18, 10 21, 12 24 C 15 16, 20 9, 26 4" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function roughRect(R) { const j = () => (R() - .5) * 1.6; return `M${1 + j()} ${1.5 + j()} C ${30} ${.5 + j()}, ${70} ${2 + j()}, ${99 + j()} ${1 + j()} M${99.2 + j()} ${-.5} C ${100 + j()} 30, ${98.5 + j()} 70, ${99.3 + j()} ${99 + j()} M${100.5} ${99 + j()} C 70 ${100 + j()}, 30 ${98.6 + j()}, ${1 + j()} ${99.4 + j()} M${.8 + j()} ${100.6} C ${1.6 + j()} 70, ${.2 + j()} 30, ${1.2 + j()} ${-.4}`; }
+function sketchify(root = document) {
+  root.querySelectorAll(".card, .hero, .cover, .topic, .lab, .rpc, .facebox, .modal .box, .pbar").forEach((el, i) => {
+    if (el.querySelector(":scope > .sk-border")) return;
+    el.classList.add("sketch");
+    const R = rng(i * 13 + (el.textContent.length % 97) + 3);
+    el.insertAdjacentHTML("afterbegin", `<svg class="sk-border" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="${roughRect(R)}" fill="none" stroke="rgba(242,232,213,.30)" stroke-width="1.1" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>`);
+  });
+}
 
 const I = {
   play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 4.8v14.4a1 1 0 0 0 1.53.85l11.2-7.2a1 1 0 0 0 0-1.7L9.53 3.95A1 1 0 0 0 8 4.8z" transform="translate(-1.5 0)"/></svg>',
@@ -404,7 +428,7 @@ function gain(n, why) {
   paintTopLevel();
 }
 function levelUp(l) {
-  const d = document.createElement("div"); d.className = "levelup"; d.dir = "rtl"; d.innerHTML = `<div><b>רמה ${l.n}</b><span>${esc(l.name)}</span></div>`; document.body.appendChild(d);
+  const d = document.createElement("div"); d.className = "levelup"; d.dir = "rtl"; d.innerHTML = `<div><b>רמה ${l.n}</b><span class="ink">${esc(l.name)}</span></div>`; document.body.appendChild(d);
   confetti(); Sound.fanfare(); setTimeout(() => d.remove(), 2700);
 }
 function activeOn(k) { const day = S.days[k]; return !!day && (day.items.some((i) => i.done) || !!day.active); }
@@ -417,18 +441,15 @@ const Sound = {
   ac() { try { this.ctx ||= new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === "suspended") this.ctx.resume(); return this.ctx; } catch { return null; } },
   tone(f, t0, dur, gain = .06, type = "sine") { const c = this.ac(); if (!c) return; const o = c.createOscillator(), g = c.createGain(); o.type = type; o.frequency.value = f; g.gain.setValueAtTime(0, c.currentTime + t0); g.gain.linearRampToValueAtTime(gain, c.currentTime + t0 + .02); g.gain.exponentialRampToValueAtTime(.0001, c.currentTime + t0 + dur); o.connect(g).connect(c.destination); o.start(c.currentTime + t0); o.stop(c.currentTime + t0 + dur + .05); },
   chime() { this.tone(880, 0, .35); this.tone(1320, .08, .45, .04); },
-  fanfare() { [523, 659, 784, 1047].forEach((f, i) => this.tone(f, i * .1, .5, .05, "triangle")); },
+  fanfare() { [392, 523, 659].forEach((f, i) => this.tone(f, i * .14, .7, .04)); },
   wrong() { this.tone(220, 0, .25, .05, "triangle"); },
   sweep(up, dur) { const c = this.ac(); if (!c) return; const o = c.createOscillator(), g = c.createGain(); o.type = "sine"; const a = up ? 196 : 294, b = up ? 294 : 174; o.frequency.setValueAtTime(a, c.currentTime); o.frequency.linearRampToValueAtTime(b, c.currentTime + dur); g.gain.setValueAtTime(0, c.currentTime); g.gain.linearRampToValueAtTime(.035, c.currentTime + .3); g.gain.linearRampToValueAtTime(0, c.currentTime + dur); o.connect(g).connect(c.destination); o.start(); o.stop(c.currentTime + dur + .05); }
 };
 
 function confetti() {
-  const cv = $("#fx"), c = cv.getContext("2d"); const dpr = Math.min(2, devicePixelRatio || 1);
-  cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; c.setTransform(dpr, 0, 0, dpr, 0, 0);
-  const cols = ["#ffc861", "#ff7a90", "#6ff0b4", "#8fb3ff", "#ffffff", "#c49bff"];
-  const ps = Array.from({ length: 140 }, () => ({ x: innerWidth / 2 + (Math.random() - .5) * 80, y: innerHeight * .45, vx: (Math.random() - .5) * 11, vy: -Math.random() * 13 - 4, r: Math.random() * 6 + 3, c: cols[Math.random() * cols.length | 0], a: Math.random() * 6, va: (Math.random() - .5) * .3 }));
-  let t = 0; const step = () => { c.clearRect(0, 0, innerWidth, innerHeight); t++; for (const p of ps) { p.vy += .32; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.a += p.va; c.save(); c.translate(p.x, p.y); c.rotate(p.a); c.fillStyle = p.c; c.globalAlpha = Math.max(0, 1 - t / 110); c.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); c.restore(); } if (t < 110) requestAnimationFrame(step); else c.clearRect(0, 0, innerWidth, innerHeight); };
-  step();
+  const d = document.createElement("div"); d.className = "stamp";
+  d.innerHTML = '<svg viewBox="0 0 100 100" fill="none"><path d="M18 54 C 26 60, 34 70, 40 80 C 50 58, 66 36, 86 16" stroke="#d8262e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  document.body.appendChild(d); setTimeout(() => d.remove(), 1700);
 }
 
 /* local audio (NotebookLM files), per device */
@@ -442,38 +463,107 @@ const Files = {
 };
 
 /* ---------- voice engine ---------- */
+// Device speech first (works in Safari and on iPhone), Claude voice where the device has no Hebrew voice.
+// Lessons learned: never speak() right after cancel() (Safari drops it), unlock speech inside the first tap,
+// and treat an utterance that never starts as a failure instead of silently moving on.
 const Voice = {
-  claude: null, he: [],
+  claude: null, he: [], unlocked: false, lastCancel: 0, fails: 0, lastErr: "", claudeBroken: false,
+  hasSynth: typeof window.speechSynthesis !== "undefined" && typeof window.SpeechSynthesisUtterance !== "undefined",
   async init() {
     const load = () => { try { this.he = speechSynthesis.getVoices().filter((v) => /^(he|iw)/i.test(v.lang)); } catch { this.he = []; } };
-    load(); try { speechSynthesis.onvoiceschanged = () => { load(); if (view.name === "profile") render(); }; } catch {}
-    setTimeout(load, 900);
+    load(); try { speechSynthesis.addEventListener("voiceschanged", () => { load(); if (view.name === "profile") render(); }); } catch {}
+    setTimeout(load, 900); setTimeout(load, 2500);
     try { if (window.claude?.use) this.claude = await claude.use("tts"); } catch {}
   },
-  mode() { const e = S.settings.engine; if (e === "device" && this.he.length) return "device"; return this.claude ? "claude" : "device"; },
-  ranked() { const q = (v) => (/(premium|enhanced|neural|natural|online|משופר)/i.test(v.name) ? 2 : 0) + (v.localService === false ? 1 : 0); return this.he.slice().sort((a, b) => q(b) - q(a)); },
+  unlock() {
+    // Must run synchronously inside a tap: iOS only allows speech that a gesture started at least once.
+    try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch {}
+    Sound.ac();
+    if (this.unlocked || !this.hasSynth) return;
+    try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "he-IL"; speechSynthesis.speak(u); this.unlocked = true; } catch {}
+  },
+  mode() {
+    const e = S.settings.engine;
+    const claudeOk = this.claude && !this.claudeBroken;
+    if (e === "claude" && claudeOk) return "claude";
+    if (this.he.length || !claudeOk) return "device";
+    return "claude";
+  },
+  ranked() { const q = (v) => (/(premium|enhanced|neural|natural|online|משופר|פרימיום)/i.test(v.name) ? 2 : 0) + (v.localService === false ? 1 : 0); return this.he.slice().sort((a, b) => q(b) - q(a)); },
   pick(who) { const list = this.ranked(); const pref = S.settings.voice && list.find((v) => v.name === S.settings.voice); const a = pref || list[0] || null; if (who === "A") return a; return list.find((v) => v !== a) || a; },
   token: 0,
   prep(text) { return text.replaceAll("{name}", sayName() || "חבר"); },
-  speak(text, who = "A") {
+  // resolves "ok" | "stopped" | "fail"
+  async speak(text, who = "A") {
     const my = ++this.token; text = this.prep(text);
-    if (this.mode() === "claude") return this.claude.speak(text, { voice: who === "A" ? "airy" : "rounded", language: "he", rate: S.settings.rate }).then(() => my === this.token);
+    if (this.mode() === "claude") {
+      try { await this.claude.speak(text, { voice: who === "A" ? "airy" : "rounded", language: "he", rate: S.settings.rate }); return my === this.token ? "ok" : "stopped"; }
+      catch (e) {
+        if (e?.code === "stopped" || my !== this.token) return "stopped";
+        this.lastErr = "claude:" + (e?.code || e?.message || "error"); this.claudeBroken = true;
+        if (!this.hasSynth) return "fail";
+        // fall through to the device voice for this same line
+      }
+    }
+    if (!this.hasSynth) { this.lastErr = "no speechSynthesis"; return "fail"; }
+    const since = Date.now() - this.lastCancel; if (since < 180) await new Promise((r) => setTimeout(r, 180 - since));
+    if (my !== this.token) return "stopped";
     return new Promise((resolve) => {
+      let started = false, done = false, t1 = 0, t2 = 0;
+      const fin = (r) => { if (done) return; done = true; clearTimeout(t1); clearTimeout(t2); resolve(my === this.token ? r : "stopped"); };
       try {
         const u = new SpeechSynthesisUtterance(text); u.lang = "he-IL";
         const v = this.pick(who); if (v) u.voice = v;
         const distinct = this.pick("A") !== this.pick("B");
-        u.pitch = who === "B" && !distinct ? 0.8 : 1.02;
-        u.rate = S.settings.rate * 0.96;
-        let done = false; const fin = (ok) => { if (done) return; done = true; resolve(ok && my === this.token); };
-        u.onend = () => fin(true); u.onerror = () => fin(false);
+        u.pitch = who === "B" && !distinct ? 0.82 : 1;
+        u.rate = Math.max(.5, Math.min(2, S.settings.rate * 0.97));
+        u.volume = 1;
+        u.onstart = () => { started = true; this.fails = 0; };
+        u.onend = () => fin(started || text.trim().length < 2 ? "ok" : "fail");
+        u.onerror = (ev) => { this.lastErr = "device:" + (ev?.error || "error"); fin(ev?.error === "interrupted" || ev?.error === "canceled" ? "stopped" : "fail"); };
+        try { if (speechSynthesis.paused) speechSynthesis.resume(); } catch {}
         speechSynthesis.speak(u);
-        setTimeout(() => fin(true), 5000 + text.length * 150 / S.settings.rate);
-      } catch { resolve(false); }
+      } catch (e) { this.lastErr = "device:" + (e?.message || "throw"); fin("fail"); return; }
+      // An utterance that never starts is a failure, not success.
+      t1 = setTimeout(() => { if (!started) { this.lastErr = this.lastErr || "device:no-start"; try { speechSynthesis.cancel(); this.lastCancel = Date.now(); } catch {} fin("fail"); } }, 4500);
+      t2 = setTimeout(() => fin("ok"), 9000 + text.length * 160 / S.settings.rate);
     });
   },
-  stop() { this.token++; try { speechSynthesis.cancel(); } catch {} try { this.claude?.stop(); } catch {} }
+  stop() {
+    this.token++;
+    try { if (this.hasSynth && (speechSynthesis.speaking || speechSynthesis.pending)) { speechSynthesis.cancel(); this.lastCancel = Date.now(); } } catch {}
+    try { this.claude?.stop(); } catch {}
+  },
+  // Direct test, called straight from a tap (no awaits before speak), so it proves whether the device can talk at all.
+  testNow(text = "שלום, אם אתה שומע אותי, השמע עובד.") {
+    this.unlock(); this.token++;
+    if (this.mode() === "claude") { this.claude.speak(this.prep(text), { voice: "airy", language: "he" }).then(() => toast("השמע עובד")).catch((e) => { this.claudeBroken = true; this.lastErr = "claude:" + (e?.code || "error"); this.testNow(text); }); return; }
+    if (!this.hasSynth) { toast("הדפדפן הזה לא תומך בהקראה"); return; }
+    try { speechSynthesis.cancel(); } catch {}
+    const u = new SpeechSynthesisUtterance(this.prep(text)); u.lang = "he-IL"; const v = this.pick("A"); if (v) u.voice = v; u.volume = 1;
+    let st = false; u.onstart = () => { st = true; }; u.onerror = (e) => { this.lastErr = "device:" + (e?.error || "error"); };
+    speechSynthesis.speak(u);
+    setTimeout(() => { if (!st) { toast("הקול לא התחיל. בדוק את מתג השקט בצד הטלפון"); } }, 3500);
+  },
+  diag() { return `מנוע: ${this.mode() === "claude" ? "Claude" : "מכשיר"} · קולות עבריים: ${this.he.length}${this.he.length ? " (" + this.he.map((v) => v.name).slice(0, 3).join(", ") + ")" : ""} · ${this.hasSynth ? "הקראה נתמכת" : "אין הקראה"}${this.lastErr ? " · שגיאה אחרונה: " + this.lastErr : ""}`; }
 };
+function soundHelp() {
+  const m = $("#modal");
+  m.innerHTML = `<div class="modal" dir="rtl"><div class="box"><h3>לא <span class="ink">שומעים</span>? ככה מתקנים</h3>
+  <ol><li><b>מתג השקט בצד האייפון.</b> כשהוא על שקט (כתום), דפדפנים משתיקים הקראה. מעבירים אותו למצב צלצול.</li>
+  <li><b>עוצמת הקול</b> בכפתורים שבצד, כשהאפליקציה פתוחה.</li>
+  <li><b>קול עברי במכשיר:</b> הגדרות, נגישות, תוכן מוקרא, קולות, עברית. מורידים קול, עדיף משופר.</li>
+  <li><b>פותחים ב-Safari</b> ולא בתוך אפליקציה אחרת, ומוסיפים למסך הבית.</li></ol>
+  <button class="btn" id="sh-test">${I.ear} בדיקת שמע עכשיו</button>
+  <button class="pill" id="sh-close" style="justify-self:start">סגירה</button>
+  <p class="diag">${esc(Voice.diag())}</p></div></div>`;
+  sketchify(m);
+  $("#sh-test").onclick = () => Voice.testNow();
+  $("#sh-close").onclick = () => { m.innerHTML = ""; };
+}
+document.addEventListener("pointerdown", () => Voice.unlock(), { capture: true });
+document.addEventListener("touchend", () => Voice.unlock(), { capture: true });
+document.addEventListener("click", () => Voice.unlock(), { capture: true });
 
 /* ---------- player ---------- */
 const P = {
@@ -481,14 +571,16 @@ const P = {
   load(item, startIdx = 0) { this.stop(true); this.item = item; this.idx = startIdx; showPlayer(); this.play(); },
   async play() {
     if (!this.item) return;
-    Sound.ac(); this.playing = true; markActive(); paint();
+    Voice.unlock(); this.playing = true; markActive(); paint();
     if (this.item.kind === "file") { try { await this.audio.play(); } catch {} paint(); return; }
     const run = ++this.run;
     while (this.playing && run === this.run && this.idx < this.item.lines.length) {
       const [who, val] = this.item.lines[this.idx]; paint();
       if (who === "P") { Sound.sweep(/שאיפה|עוד קצת/.test(this.item.lines[this.idx - 1]?.[1] || ""), val / 1000); await new Promise((r) => setTimeout(r, val / S.settings.rate)); if (run !== this.run) return; this.idx++; continue; }
-      try { await Voice.speak(val, who); } catch (e) { if (e?.code === "not_granted" || e?.code === "unavailable") { Voice.claude = null; toast("עוברים לקול של המכשיר"); continue; } }
+      const r = await Voice.speak(val, who);
       if (run !== this.run || !this.playing) return;
+      if (r === "fail") { this.failCount = (this.failCount || 0) + 1; if (this.failCount >= 2) { this.failCount = 0; this.pause(); soundHelp(); return; } continue; }
+      this.failCount = 0;
       this.idx++;
       if (this.item.epId) S.resume = { epId: this.item.epId, idx: this.idx };
     }
@@ -641,11 +733,11 @@ function go(name, arg) {
   view = { name, arg }; closeDrawer(); render(); window.scrollTo({ top: 0 });
   try { localStorage.setItem("growth.view", JSON.stringify(view)); } catch {}
 }
-function ringSvg(pct, size = 46, col = "var(--gold)") { const r = size / 2 - 4, c = 2 * Math.PI * r; return `<svg class="ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg)"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="4"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${col}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c * (1 - Math.max(0, Math.min(1, pct)))).toFixed(1)}"/></svg>`; }
+function ringSvg(pct, size = 44, col = "#d8262e") { const r = size / 2 - 4, c = 2 * Math.PI * r; return `<svg class="ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg)"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="rgba(242,232,213,.18)" stroke-width="2"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${col}" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c * (1 - Math.max(0, Math.min(1, pct)))).toFixed(1)}"/></svg>`; }
 function topbar(back) {
   const l = levelOf();
   return `<header class="top"><button class="glassbtn burger" aria-label="תפריט" data-act="drawer"><div><span></span><span></span><span></span></div></button>
-  <div class="brand"><span class="seed"></span>צמיחה</div>
+  <div class="brand">צמיחה</div>
   ${back ? `<button class="glassbtn" aria-label="חזרה לבית" data-go="home">${I.home}</button>` : `<button class="lvl" data-go="profile" aria-label="רמה ${l.n}" id="toplvl">${ringSvg(l.pct)}<b>${l.n}</b></button>`}</header>`;
 }
 function paintTopLevel() { const el = $("#toplvl"); if (el) { const l = levelOf(); el.innerHTML = ringSvg(l.pct) + `<b>${l.n}</b>`; } }
@@ -662,7 +754,7 @@ function render() {
   else html = homeView();
   view.hue = hue; if (!P.playing) setHue(hue);
   app.innerHTML = `<div class="view">${html}</div>`;
-  bind(app); renderDrawer();
+  bind(app); renderDrawer(); sketchify(app);
   if (view.name === "coach") VO.mount(); else VO.unmount();
   if (view.name === "topic") loadOwnAudio(view.arg);
   if (view.name === "face") Face.mount();
@@ -672,7 +764,7 @@ function render() {
 
 function welcomeView() {
   return `<div class="welcome">
-    <section class="hero">${orb(280)}<div><div class="date">צמיחה</div><h1>לומדים באוזניים. משתנים בחיים.</h1></div></section>
+    <section class="hero">${orb(280)}<div><div class="date">צמיחה</div><h1>לומדים באוזניים. <span class="ink">משתנים בחיים.</span></h1></div></section>
     <p>פרקים קצרים בשיחה בין שני מגישים, מעבדות אימון, משימות יומיות ומאמן שעונה בקול. הכל מבוסס מחקר.</p>
     <div class="field"><label for="w-name">איך לקרוא לך?</label><input id="w-name" autocomplete="given-name" placeholder="השם שלך"></div>
     <div class="field"><label>במה להתמקד קודם? אפשר כמה</label><div class="chips" style="margin:0">${TOPICS.map((t) => `<button class="chip" data-focus="${t.id}">${t.title}</button>`).join("")}</div></div>
@@ -689,11 +781,13 @@ function homeView() {
   const heroHue = nx ? TOPIC[nx.t].hue : 265;
   return `${topbar()}
   <section class="hero">${orb(heroHue)}
-    <div><div class="date">${esc(dateStr)}</div><h1>${hi}${name ? ", " + esc(name) : ""}</h1></div>
-    <div><div class="stats"><span class="stat">${I.flame} ${st} ימים ברצף</span><span class="stat">${I.bolt} ${S.xp} נק׳ · ${esc(l.name)}</span><span class="stat">${I.check} ${done}/${dp.items.length}</span></div>
+    <div><div class="date">${esc(dateStr)}</div><h1>${hi}${name ? `, <span class="ink">${esc(name)}</span>` : ""}</h1></div>
+    <div><div class="stats"><span class="stat"><b class="${st ? "circ" : ""}">${st}</b> ימים ברצף</span><span class="stat"><b>${S.xp}</b> נקודות · ${esc(l.name)}</span><span class="stat"><b>${done}/${dp.items.length}</b> משימות</span></div>
     <div class="go"><div><small>${nx ? "האימון של היום · כ-" + (epMinutes(TOPIC[nx.t].episodes[nx.e]) + 1) + " דק׳" : "סיימת את כל הפרקים"}</small><b>${nx ? esc(TOPIC[nx.t].episodes[nx.e].title) : "תשאל את המאמן"}</b></div>
     <button class="play" data-act="daily" aria-label="התחל את האימון של היום">${I.play}</button></div></div>
   </section>
+
+  ${(() => { const ln = lineOfDay(); return ln ? `<section class="sec"><div class="card line-quote">״<span class="ink2">${esc(ln.text)}</span>״<small>${esc(ln.from)}</small></div></section>` : ""; })()}
 
   <section class="sec"><div class="sechead"><h3>המשימות של היום</h3><span class="aux">20 נק׳ למשימה</span></div>
     <div class="tasks">${dp.items.map(taskRow).join("")}</div>
@@ -711,27 +805,31 @@ function homeView() {
     <button class="resume card" data-play="${nx.t}:${nx.e}:${nx.from}"><span class="art">${orb(TOPIC[nx.t].hue)}</span><span class="t"><b>${esc(TOPIC[nx.t].episodes[nx.e].title)}</b><small>${esc(TOPIC[nx.t].title)} · ${epMinutes(TOPIC[nx.t].episodes[nx.e])} דק׳ · שני מגישים</small></span><span class="round">${I.play}</span></button></section>` : ""}
 
   <section class="sec"><div class="sechead"><h3>השבוע שלך</h3><span class="aux">עוד ${l.toNext} נק׳ לרמה ${l.n + 1}</span></div>
-    <div class="card week">${week.map((d) => `<div class="day ${d.on ? "on" : ""} ${d.today ? "today" : ""}"><i>${d.on ? I.flame : ""}</i>${esc(d.l)}</div>`).join("")}</div></section>
+    <div class="card week">${week.map((d) => `<div class="day ${d.on ? "on" : ""} ${d.today ? "today" : ""}"><i>${d.on ? TICK : ""}</i>${esc(d.l)}</div>`).join("")}</div></section>
 
   <section class="sec"><div class="sechead"><h3>נושאים</h3><span class="aux">${Object.keys(S.done).length}/${TOPICS.reduce((n, t) => n + t.episodes.length, 0)} פרקים</span></div>
-    <div class="topics">${TOPICS.map((t) => { const d = t.episodes.filter((e) => S.done[e.id]).length; return `<button class="topic" data-go="topic" data-arg="${t.id}">${orb(t.hue)}<span class="shade"></span>${ringSvg(d / t.episodes.length, 38, "#fff")}<span><b>${t.title}</b><small>${t.short}</small></span></button>`; }).join("")}</div></section>`;
+    <div class="topics">${TOPICS.map((t) => { const d = t.episodes.filter((e) => S.done[e.id]).length; return `<button class="topic" data-go="topic" data-arg="${t.id}">${orb(t.hue)}<span class="shade"></span>${ringSvg(d / t.episodes.length, 34, "#d8262e")}<span><b>${t.title}</b><small>${t.short}</small></span></button>`; }).join("")}</div></section>`;
+}
+function lineOfDay() {
+  const pool = []; for (const t of TOPICS) for (const e of t.episodes) for (const [w, v] of e.lines) if (w === "A" && v.length > 50 && v.length < 140 && !v.includes("{name}") && !/[?]/.test(v)) pool.push({ text: v, from: t.title + " · " + e.title });
+  return pool.length ? pool[hash(today() + "line") % pool.length] : null;
 }
 function labCard(g, hue, icon, title, sub, mode) { return `<button class="lab" data-go="${g}" ${mode ? `data-mode-go="${mode}"` : ""}>${orb(hue)}<span class="shade"></span><span class="ico">${icon}</span><b>${title}</b><span class="s">${esc(sub)}</span></button>`; }
 function taskRow(it, k) {
   const t = TOPIC[it.topic];
   return `<div class="task card ${it.done ? "done" : ""}" style="--h:${t?.hue ?? 40}"><span class="txt"><span class="tag">${it.ai ? "מהמאמן · " : ""}${esc(t?.title || "")}</span><span>${esc(it.text)}</span></span>
     <button class="round" data-act="say-task" data-k="${k}" aria-label="השמע משימה">${I.ear}</button>
-    <button class="round check ${it.done ? "on" : ""}" data-act="check" data-k="${k}" aria-label="${it.done ? "בטל סימון" : "סמן כבוצע"}">${I.check}</button></div>`;
+    <button class="round check ${it.done ? "on" : ""}" data-act="check" data-k="${k}" aria-label="${it.done ? "בטל סימון" : "סמן כבוצע"}">${it.done ? TICK : I.check}</button></div>`;
 }
 const TOPIC_LAB = { faces: ["face", "מעבדת פנים: לזהות הבעות בשבריר שנייה"], presence: ["breath", "נשימה מודרכת: אנחה מחזורית"], saving: ["money", "מחשבון העתיד: כמה עולים לך דמי הניהול"], earning: ["rp:raise", "תרגול: בקשת העלאה מול המאמן"], relationship: ["rp:partner", "תרגול: שיחה רגישה עם בת הזוג"], confidence: ["rp:no", "תרגול: לומר לא בביטחון"], "body-language": ["rp:first", "תרגול: רושם ראשון בראיון"], body: ["breath", "נשימה להירגע לפני השינה"] };
 function topicView(id) {
   const t = TOPIC[id]; const first = Math.max(0, t.episodes.findIndex((e) => !S.done[e.id])); const lab = TOPIC_LAB[id];
   return `${topbar(true)}
   <section class="cover">${orb(t.hue)}<span class="shade"></span>
-    <h1>${t.title}</h1><p>${t.short} · ${t.episodes.length} פרקים · ${t.episodes.reduce((n, e) => n + epMinutes(e), 0)} דק׳</p>
+    <h1><span class="ink">${t.title}</span></h1><p>${t.short} · ${t.episodes.length} פרקים · ${t.episodes.reduce((n, e) => n + epMinutes(e), 0)} דק׳</p>
     <div class="go"><div><small>${t.episodes.every((e) => S.done[e.id]) ? "השלמת את הנושא" : "להמשיך מכאן"}</small><b>${esc(t.episodes[first].title)}</b></div>
     <button class="play" data-chain="${id}:${first}" aria-label="נגן ברצף">${I.play}</button></div></section>
-  <div class="eps">${t.episodes.map((e, i) => { const q = S.quiz[e.id]; return `<button class="ep card ${S.done[e.id] ? "done" : ""} ${P.item?.epId === e.id ? "now" : ""}" data-play="${id}:${i}:0"><span class="n">${S.done[e.id] ? I.check : P.item?.epId === e.id ? I.play : i + 1}</span><span class="t">${esc(e.title)}<small>${epMinutes(e)} דק׳ · שני מגישים</small></span>${q ? `<span class="badge ${q === 1 ? "ok" : ""}">${q === 1 ? "חידון ✓" : "חידון"}</span>` : ""}</button>`; }).join("")}</div>
+  <div class="eps">${t.episodes.map((e, i) => { const q = S.quiz[e.id]; return `<button class="ep card ${S.done[e.id] ? "done" : ""} ${P.item?.epId === e.id ? "now" : ""}" data-play="${id}:${i}:0"><span class="n">${S.done[e.id] ? TICK : P.item?.epId === e.id ? I.play : i + 1}</span><span class="t">${esc(e.title)}<small>${epMinutes(e)} דק׳ · שני מגישים</small></span>${q ? `<span class="badge ${q === 1 ? "ok" : ""}">${q === 1 ? "חידון עבר" : "חידון"}</span>` : ""}</button>`; }).join("")}</div>
   ${lab ? `<section class="sec"><button class="resume card" data-lab="${lab[0]}"><span class="art">${orb(t.hue + 40)}</span><span class="t"><b>אימון מעשי</b><small>${lab[1]}</small></span><span class="round">${I.bolt}</span></button></section>` : ""}
   <div id="own"></div>
   <section class="nb card" style="--h:${t.hue}">
@@ -745,7 +843,7 @@ function topicView(id) {
 async function loadOwnAudio(id) {
   const el = $("#own"); if (!el) return;
   const files = await Files.list(id);
-  el.innerHTML = files.length ? `<div class="sechead" style="margin-top:22px"><h3>פודקאסטים בקול אנושי</h3></div><div class="eps" style="margin-top:0">` + files.map((f) => `<div class="ep card"><button class="n" style="background:var(--gold);color:var(--gold-ink)" data-file="${f.id}" aria-label="נגן">${I.play}</button><span class="t">${esc(f.name)}<small>NotebookLM</small></span><button class="mini" data-del="${f.id}" aria-label="מחק">${I.trash}</button></div>`).join("") + "</div>" : "";
+  el.innerHTML = files.length ? `<div class="sechead" style="margin-top:22px"><h3>פודקאסטים בקול אנושי</h3></div><div class="eps" style="margin-top:0">` + files.map((f) => `<div class="ep card"><button class="n" style="background:var(--ink);color:var(--bg)" data-file="${f.id}" aria-label="נגן">${I.play}</button><span class="t">${esc(f.name)}<small>NotebookLM</small></span><button class="mini" data-del="${f.id}" aria-label="מחק">${I.trash}</button></div>`).join("") + "</div>" : "";
   el.querySelectorAll("[data-file]").forEach((b) => b.onclick = () => { const r = files.find((f) => f.id === b.dataset.file); if (r) playFile(r, id); });
   el.querySelectorAll("[data-del]").forEach((b) => b.onclick = async () => { if (b.dataset.armed) { await Files.del(b.dataset.del); loadOwnAudio(id); toast("נמחק"); } else { b.dataset.armed = 1; b.textContent = "למחוק?"; setTimeout(() => { delete b.dataset.armed; b.innerHTML = I.trash; }, 2500); } });
 }
@@ -756,6 +854,7 @@ function quiz(epId, after) {
   const [question, opts, right, why] = q; const hue = P.item?.hue ?? 265;
   const m = $("#modal");
   m.innerHTML = `<div class="modal"><div class="box"><span class="badge" style="justify-self:start">שאלה אחת · 10 נק׳</span><h3>${esc(question)}</h3>${opts.map((o, i) => `<button class="opt" data-i="${i}">${esc(o)}</button>`).join("")}<button class="mini" data-skip style="justify-self:start">דלג</button></div></div>`;
+  sketchify(m);
   playLines("שאלה על הפרק", "חידון", hue, [["B", question], ...opts.map((o, i) => ["A", `${["אחת", "שתיים", "שלוש"][i]}. ${o}`])]);
   m.querySelectorAll("[data-i]").forEach((b) => b.onclick = () => {
     const i = +b.dataset.i; m.querySelectorAll("[data-i]").forEach((x) => { x.disabled = true; if (+x.dataset.i === right) x.classList.add("right"); });
@@ -763,7 +862,7 @@ function quiz(epId, after) {
     const ok = i === right; if (!ok) { b.classList.add("wrong"); Sound.wrong(); }
     const prev = S.quiz[epId]; S.quiz[epId] = ok ? 1 : (prev || 2); Store.save();
     if (ok && prev !== 1) { gain(10, "תשובה נכונה"); confetti(); }
-    const box = m.querySelector(".box"); const p = document.createElement("p"); p.className = "hint"; p.style.fontSize = "15px"; p.textContent = why; box.appendChild(p);
+    const box = m.querySelector(".box"); const p = document.createElement("p"); p.style.cssText = "margin:0;font-size:16px;line-height:1.6"; p.innerHTML = `<span class="ink2">${esc(why)}</span>`; box.appendChild(p);
     const c = document.createElement("button"); c.className = "btn"; c.textContent = "המשך"; c.onclick = () => { m.innerHTML = ""; P.stop(); render(); after?.(); }; box.appendChild(c);
     playLines(ok ? "נכון" : "כמעט", "חידון", hue, [["A", (ok ? "נכון. " : "לא בדיוק. ") + why]]);
   });
@@ -787,7 +886,7 @@ function coachView() {
   return `${head}
   <div class="row" style="justify-content:space-between;align-items:center;margin-top:8px"><b style="font-family:var(--display);font-size:20px">${esc(RP.rp.title)}</b><button class="mini" data-act="rp-exit">${I.stop} יציאה</button></div>
   <div class="turns">${RP.turns.map((t) => `<div class="turn ${t.me ? "me" : "ai"}"><span class="who">${t.me ? "אני" : "הם"}</span><span class="bub" ${S.settings.captions || t.me ? "" : "data-hidden"}>${esc(t.text)}</span></div>`).join("")}</div>
-  ${RP.fb ? `<div class="fb card"><div class="score">${RP.fb.score}/10</div><div><b>מה עבד:</b> ${esc(RP.fb.good)}</div><div><b>לשפר:</b> ${esc(RP.fb.improve)}</div><div><b>לנסות לומר:</b> ״${esc(RP.fb.line)}״</div><div class="tools"><button class="mini" data-act="rp-again">${I.play} עוד סיבוב</button></div></div>` :
+  ${RP.fb ? `<div class="fb card"><div class="score"><span class="circ">${RP.fb.score}</span>/10</div><div><b>מה עבד:</b> ${esc(RP.fb.good)}</div><div><b>לשפר:</b> ${esc(RP.fb.improve)}</div><div><b>לנסות לומר:</b> ״${esc(RP.fb.line)}״</div><div class="tools"><button class="mini" data-act="rp-again">${I.play} עוד סיבוב</button></div></div>` :
   `<form class="ask card" id="rpf"><textarea id="rpq" rows="1" placeholder="מה אתה עונה? אפשר להכתיב" aria-label="התשובה שלך"></textarea><button class="send" id="rps" aria-label="שלח">${I.send}</button></form>
   <div class="row" style="margin-top:10px">${RP.turns.length > 2 ? `<button class="pill gold" data-act="rp-end">${I.check} סיים וקבל משוב</button>` : ""}<button class="pill" data-act="caps">${I.cc} ${S.settings.captions ? "הסתר טקסט" : "הצג טקסט"}</button></div>`}`;
 }
@@ -803,34 +902,32 @@ const EXPR = {
   contempt: { he: "בוז", au: { 14: 1 }, cue: "רק צד אחד של הפה התהדק ועלה. זו ההבעה היחידה החד צדדית." }
 };
 const FACE_LEVELS = [{ ms: 1500, k: 1, he: "רגיל" }, { ms: 700, k: 1, he: "מהיר" }, { ms: 350, k: .85, he: "חד" }, { ms: 160, k: .75, he: "מיקרו" }];
-function faceSvg(au = {}, k = 1) {
-  const A = (n) => (au[n] || 0) * k;
-  const brow = (s) => { const ix = 100 - s * (15 - 4 * A(4)), ox = 100 - s * 44; const iy = 92 - 11 * A(1) + 7 * A(4), oy = 90 - 10 * A(2) + 2 * A(4); const my = Math.min(iy, oy) - 4 - 3 * A(2); return `<path d="M${ox} ${oy} Q${(ix + ox) / 2} ${my} ${ix} ${iy}" stroke="#3a2418" stroke-width="7" stroke-linecap="round" fill="none"/>`; };
-  const eye = (s) => { const cx = 100 - s * 28, cy = 112; const ry = Math.max(1.5, 7 + 4.5 * A(5) - 3 * A(7) - 2.2 * A(6) - 1.5 * A(9)); return `<ellipse cx="${cx}" cy="${cy}" rx="12" ry="${ry}" fill="#fff"/><circle cx="${cx}" cy="${cy}" r="${Math.min(5.5, ry)}" fill="#2b1a12"/><path d="M${cx - 13} ${cy - ry + .5} Q${cx} ${cy - ry - 4} ${cx + 13} ${cy - ry + .5}" stroke="#3a2418" stroke-width="2.5" fill="none" stroke-linecap="round"/>` + (A(6) > .3 ? `<path d="M${cx - s * 16} ${cy - 3} l${-s * 6} -3 M${cx - s * 16} ${cy + 1} l${-s * 7} 0 M${cx - s * 16} ${cy + 5} l${-s * 6} 3" stroke="#a86a4a" stroke-width="1.6" stroke-linecap="round" opacity="${A(6)}"/><path d="M${cx - 10} ${cy + ry + 5} Q${cx} ${cy + ry + 9} ${cx + 10} ${cy + ry + 5}" stroke="#a86a4a" stroke-width="1.6" fill="none" opacity="${A(6)}"/>` : ""); };
-  const nose = `<path d="M100 118 Q96 140 91 148 Q100 ${153 - 3 * A(9)} 109 148 Q104 140 100 118" fill="#d9926e" opacity=".55"/>` + (A(9) > .3 ? `<path d="M93 124 q7 -3 14 0 M94 129 q6 -2.5 12 0" stroke="#a86a4a" stroke-width="1.6" fill="none" opacity="${A(9)}"/>` : "");
+function faceSvg(au = {}, k = 1, reveal = false) {
+  const A = (n) => (au[n] || 0) * k; const C = "#f2e8d5", RD = "#d8262e";
+  const hot = (...ns) => reveal && ns.some((n) => A(n) > .25) ? RD : C;
+  const brow = (s) => { const ix = 100 - s * (15 - 4 * A(4)), ox = 100 - s * 44; const iy = 92 - 11 * A(1) + 7 * A(4), oy = 90 - 10 * A(2) + 2 * A(4); const my = Math.min(iy, oy) - 4 - 3 * A(2); return `<path d="M${ox} ${oy} Q${(ix + ox) / 2} ${my} ${ix} ${iy}" stroke="${hot(1, 2, 4)}" stroke-width="3.2" stroke-linecap="round" fill="none"/>`; };
+  const eye = (s) => { const cx = 100 - s * 28, cy = 112; const ry = Math.max(1.5, 7 + 4.5 * A(5) - 3 * A(7) - 2.2 * A(6) - 1.5 * A(9)); const col = hot(5, 6, 7); return `<path d="M${cx - 13} ${cy} Q${cx} ${cy - ry * 1.9} ${cx + 13} ${cy} Q${cx} ${cy + ry * 1.5} ${cx - 13} ${cy}" stroke="${col}" stroke-width="1.6" fill="none"/><circle cx="${cx}" cy="${cy}" r="${Math.min(4.6, ry * .8)}" fill="${C}"/>` + (A(6) > .3 ? `<path d="M${cx - s * 16} ${cy - 3} l${-s * 6} -3 M${cx - s * 16} ${cy + 1} l${-s * 7} 0 M${cx - s * 16} ${cy + 5} l${-s * 6} 3" stroke="${hot(6)}" stroke-width="1.2" stroke-linecap="round"/><path d="M${cx - 10} ${cy + ry + 5} Q${cx} ${cy + ry + 9} ${cx + 10} ${cy + ry + 5}" stroke="${hot(6)}" stroke-width="1.2" fill="none"/>` : ""); };
+  const nose = `<path d="M100 120 Q97 138 92 147 Q100 ${152 - 3 * A(9)} 108 147" stroke="${hot(9)}" stroke-width="1.5" fill="none" stroke-linecap="round"/>` + (A(9) > .3 ? `<path d="M93 124 q7 -3 14 0 M94 129 q6 -2.5 12 0" stroke="${hot(9)}" stroke-width="1.2" fill="none"/>` : "");
   const cy = 176, w = 26 + 3 * A(12) + 9 * A(20) - 2 * A(24);
   const lcy = cy - 9 * A(12) + 7 * A(15) - A(20); const rcy = lcy - 8 * A(14);
   const lx = 100 - w, rx = 100 + w + 3 * A(14);
   const open = 3 * A(25) + 20 * A(26) + (A(26) > 0 ? 4 * A(20) : 0);
   const upY = cy - 2 - 5 * A(10) - open * .25 + 1.5 * A(24), loY = cy + 3 + open - 1.5 * A(24);
-  const ctrl = 4 * A(12) - 5 * A(15);
-  const mouth = `<path d="M${lx} ${lcy} Q100 ${upY - 5 - ctrl * .2} ${rx} ${rcy} Q100 ${loY + 7 + ctrl} ${lx} ${lcy}" fill="${open > 2 ? "#5a1d22" : "#c26a62"}"/>` +
-    `<path d="M${lx} ${lcy} Q100 ${upY - 5 - ctrl * .2} ${rx} ${rcy}" stroke="#b0564f" stroke-width="${5 - 2.5 * A(24)}" fill="none" stroke-linecap="round"/>` +
-    `<path d="M${lx} ${lcy} Q100 ${loY + 7 + ctrl} ${rx} ${rcy}" stroke="#b0564f" stroke-width="${6 - 3 * A(24)}" fill="none" stroke-linecap="round"/>` +
-    (open > 6 ? `<path d="M${lx + 8} ${lcy + 1} Q100 ${upY + 1} ${rx - 8} ${rcy + 1} L${rx - 10} ${rcy + 3} Q100 ${upY + 5} ${lx + 10} ${lcy + 3}z" fill="#fff" opacity=".9"/>` : "") +
-    (A(12) > .4 ? `<path d="M${lx - 10} ${lcy - 18} Q${lx - 4} ${lcy - 4} ${lx + 2} ${lcy + 3} M${rx + 10} ${rcy - 18} Q${rx + 4} ${rcy - 4} ${rx - 2} ${rcy + 3}" stroke="#c07a58" stroke-width="1.8" fill="none" opacity=".7"/>` : "");
+  const ctrl = 4 * A(12) - 5 * A(15); const mc = hot(10, 12, 14, 15, 20, 24, 26);
+  const mouth = `<path d="M${lx} ${lcy} Q100 ${upY - 5 - ctrl * .2} ${rx} ${rcy}" stroke="${mc}" stroke-width="${2.2 - .8 * A(24)}" fill="none" stroke-linecap="round"/>` +
+    `<path d="M${lx} ${lcy} Q100 ${loY + 7 + ctrl} ${rx} ${rcy}" stroke="${mc}" stroke-width="${2.2 - .8 * A(24)}" fill="${open > 2 ? "#050505" : "none"}" stroke-linecap="round"/>` +
+    (A(12) > .4 ? `<path d="M${lx - 10} ${lcy - 18} Q${lx - 4} ${lcy - 4} ${lx + 2} ${lcy + 3} M${rx + 10} ${rcy - 18} Q${rx + 4} ${rcy - 4} ${rx - 2} ${rcy + 3}" stroke="${hot(12)}" stroke-width="1.2" fill="none"/>` : "");
   const chin = 216 + 10 * A(26);
-  return `<svg viewBox="0 0 200 250" role="img" aria-label="פנים"><path d="M100 26 C152 26 172 62 172 112 C172 ${170 + 6 * A(26)} 140 ${chin} 100 ${chin} C60 ${chin} 28 ${170 + 6 * A(26)} 28 112 C28 62 48 26 100 26z" fill="#f0b48e"/>
-  <ellipse cx="30" cy="118" rx="8" ry="15" fill="#e3a07b"/><ellipse cx="170" cy="118" rx="8" ry="15" fill="#e3a07b"/>
-  <path d="M30 96 C26 40 70 14 104 18 C146 20 176 46 170 96 C162 70 150 54 120 50 C92 47 60 52 30 96z" fill="#2e1d16"/>
-  ${A(6) > .2 ? `<ellipse cx="66" cy="140" rx="14" ry="8" fill="#f08c86" opacity="${.35 * A(6)}"/><ellipse cx="134" cy="140" rx="14" ry="8" fill="#f08c86" opacity="${.35 * A(6)}"/>` : ""}
+  return `<svg viewBox="0 0 200 250" role="img" aria-label="פנים" fill="none"><path d="M100 26 C152 26 172 62 172 112 C172 ${170 + 6 * A(26)} 140 ${chin} 100 ${chin} C60 ${chin} 28 ${170 + 6 * A(26)} 28 112 C28 62 48 26 100 26z" stroke="${C}" stroke-width="1.8"/>
+  <path d="M29 104 q-10 2 -8 16 q2 12 10 12 M171 104 q10 2 8 16 q-2 12 -10 12" stroke="${C}" stroke-width="1.4"/>
+  <path d="M30 96 C26 40 70 14 104 18 C146 20 176 46 170 96 M38 70 C60 44 100 40 128 46 M52 46 C80 30 120 30 150 48" stroke="${C}" stroke-width="1.3" stroke-opacity=".7"/>
   ${brow(1)}${brow(-1)}${eye(1)}${eye(-1)}${nose}${mouth}</svg>`;
 }
 const Face = {
   state: "idle", cur: null, lvl: 0, streak: 0, timer: 0,
   mount() { this.lvl = Math.min(S.face.level, FACE_LEVELS.length - 1); this.show({}); },
   stop() { clearTimeout(this.timer); this.state = "idle"; },
-  show(au, k) { const el = $("#face"); if (el) el.innerHTML = faceSvg(au, k); },
+  show(au, k, rv) { const el = $("#face"); if (el) el.innerHTML = faceSvg(au, k, rv); },
   start() {
     Sound.ac(); this.stop(); this.state = "count";
     const keys = Object.keys(EXPR); let pick; do { pick = keys[Math.random() * keys.length | 0]; } while (pick === this.cur); this.cur = pick;
@@ -851,12 +948,12 @@ const Face = {
     if (ok) { this.streak++; S.face.right++; if (this.streak > S.face.best) S.face.best = this.streak; gain(5, "זיהוי נכון"); if (this.streak % 5 === 0) { confetti(); if (this.lvl < FACE_LEVELS.length - 1 && this.lvl >= S.face.level) { S.face.level = this.lvl + 1; setTimeout(() => toast("נפתחה רמה: " + FACE_LEVELS[this.lvl + 1].he), 1200); } } }
     else { b.classList.add("wrong"); this.streak = 0; Sound.wrong(); }
     markActive(); Store.save();
-    this.show(EXPR[this.cur].au, 1);
-    const ex = $("#explain"); ex.hidden = false; ex.innerHTML = `<b>${EXPR[this.cur].he}.</b> ${esc(EXPR[this.cur].cue)}`;
+    this.show(EXPR[this.cur].au, 1, true);
+    const ex = $("#explain"); ex.hidden = false; ex.innerHTML = `<b class="ink2">${EXPR[this.cur].he}.</b> ${esc(EXPR[this.cur].cue)} <span class="red">באדום: מה שהשתנה.</span>`;
     $("#fhud").innerHTML = this.hud(); $("#fgo").hidden = false; $("#fgo").innerHTML = I.play + " עוד אחד";
     $("#flevels").innerHTML = this.levelsHtml(); bind($("#flevels"));
   },
-  hud() { return `<span class="stat">${I.flame} רצף ${this.streak}</span><span class="stat">שיא ${S.face.best} · ${S.face.total ? Math.round(100 * S.face.right / S.face.total) : 0}% דיוק</span>`; },
+  hud() { return `<span class="stat">רצף <b>${this.streak}</b></span><span class="stat">שיא <b>${S.face.best}</b> · ${S.face.total ? Math.round(100 * S.face.right / S.face.total) : 0}% דיוק</span>`; },
   levelsHtml() { return FACE_LEVELS.map((l, i) => `<button data-fl="${i}" class="${i === this.lvl ? "on" : ""}" ${i > S.face.level ? "disabled" : ""}>${l.he}<br><small>${l.ms >= 1000 ? (l.ms / 1000) + " שנ׳" : l.ms + " מ״ש"}</small></button>`).join(""); }
 };
 function faceView() {
@@ -880,7 +977,7 @@ const Money = {
     const fmt = (x) => "₪" + Math.round(x).toLocaleString("he-IL");
     const set = (id, t) => { const el = $("#" + id); if (el) el.textContent = t; };
     set("m-net", fmt(net)); set("m-paid", fmt(paid)); set("m-growth", fmt(net - paid)); set("m-fee", fmt(Math.max(0, cheap - net)));
-    const bars = $("#m-bars"); if (bars) { const tot = Math.max(cheap, net); bars.innerHTML = `<i style="width:${100 * paid / tot}%;background:#8fb3ff"></i><i style="width:${100 * Math.max(0, net - paid) / tot}%;background:var(--mint)"></i><i style="width:${100 * Math.max(0, cheap - net) / tot}%;background:var(--rose)"></i>`; }
+    const bars = $("#m-bars"); if (bars) { const tot = Math.max(cheap, net); bars.innerHTML = `<i style="width:${100 * paid / tot}%;background:rgba(242,232,213,.35)"></i><i style="width:${100 * Math.max(0, net - paid) / tot}%;background:#f2e8d5"></i><i style="width:${100 * Math.max(0, cheap - net) / tot}%;background:#d8262e"></i>`; }
     const habitFv = fv(v.ret - 0.2, v.habit * 30);
     set("m-habit", fmt(habitFv));
     this.out = { net, paid, cheap, habitFv };
@@ -900,17 +997,17 @@ function moneyView() {
   const v = Money.v;
   const sl = (id, label, min, max, step, unit) => `<div class="ctrl"><label for="ms-${id}">${label}<span id="mv-${id}">${v[id].toLocaleString("he-IL")}${unit}</span></label><input type="range" id="ms-${id}" data-m="${id}" data-unit="${unit}" min="${min}" max="${max}" step="${step}" value="${v[id]}"></div>`;
   return `${topbar(true)}
-  <section class="cover" style="min-height:230px">${orb(150)}<span class="shade"></span><p style="margin:0">בעוד <span id="mv-years2">${v.years}</span> שנה יהיו לך בערך</p><div class="big" id="m-net">₪0</div>
-    <div class="legend" style="color:#fff;margin-top:10px"><span><b style="background:#8fb3ff"></b>הפקדת <span id="m-paid"></span></span><span><b style="background:var(--mint)"></b>צמיחה <span id="m-growth"></span></span></div></section>
+  <section class="cover" style="min-height:230px">${orb(150)}<span class="shade"></span><p style="margin:0">בעוד <span id="mv-years2">${v.years}</span> שנה יהיו לך בערך</p><div class="big"><span id="m-net" class="ink">₪0</span></div>
+    <div class="legend" style="margin-top:10px"><span><b style="background:rgba(242,232,213,.35)"></b>הפקדת <span id="m-paid"></span></span><span><b style="background:#f2e8d5"></b>צמיחה <span id="m-growth"></span></span></div></section>
   <div class="card panel">
     ${sl("monthly", "חיסכון חודשי", 100, 10000, 100, " ₪")}${sl("years", "שנים", 1, 40, 1, "")}${sl("ret", "תשואה שנתית משוערת", 0, 10, 0.5, "%")}${sl("fee", "דמי ניהול מהצבירה", 0, 2, 0.05, "%")}
     <div class="bars" id="m-bars"></div>
-    <div class="legend"><span><b style="background:#8fb3ff"></b>הפקדות</span><span><b style="background:var(--mint)"></b>צמיחה</span><span><b style="background:var(--rose)"></b>הולך לדמי ניהול</span></div>
-    <div class="loss">דמי הניהול שלך, לעומת 0.2%, עולים לך <b id="m-fee"></b>.</div>
+    <div class="legend"><span><b style="background:rgba(242,232,213,.35)"></b>הפקדות</span><span><b style="background:#f2e8d5"></b>צמיחה</span><span><b style="background:#d8262e"></b>הולך לדמי ניהול</span></div>
+    <div class="loss">דמי הניהול שלך, לעומת 0.2%, עולים לך <b id="m-fee" class="ink2"></b>.</div>
   </div>
   <div class="card panel"><h4>כמה שווה ההרגל הקטן?</h4>
     ${sl("habit", "הוצאה יומית קטנה (קפה, משלוח)", 5, 150, 5, " ₪")}
-    <p style="margin:0">אם תשקיע אותה במקום זה, באותם תנאים: <b id="m-habit" style="color:var(--gold)"></b></p></div>
+    <p style="margin:0">אם תשקיע אותה במקום זה, באותם תנאים: <b id="m-habit" class="ink2"></b></p></div>
   <div class="row" style="margin-top:14px"><button class="btn" data-act="m-speak">${I.ear} תסביר לי בקול</button></div>
   <p class="hint" style="margin-top:12px">חישוב פשוט: הפקדה חודשית קבועה, תשואה קבועה, בלי מס ובלי אינפלציה. לא ייעוץ השקעות.</p>`;
 }
@@ -947,7 +1044,7 @@ function breathView() {
 function profileView() {
   const voices = Voice.ranked(); const mode = Voice.mode(); const l = levelOf();
   return `${topbar(true)}
-  <section class="cover" style="min-height:210px">${orb(265)}<span class="shade"></span><p style="margin:0">רמה ${l.n}</p><h1 style="font-size:46px">${esc(l.name)}</h1><p>${S.xp} נקודות · ${streak()} ימים ברצף · עוד ${l.toNext} לרמה הבאה</p></section>
+  <section class="cover" style="min-height:210px">${orb(265)}<span class="shade"></span><p style="margin:0">רמה ${l.n}</p><h1 style="font-size:52px"><span class="ink">${esc(l.name)}</span></h1><p>${S.xp} נקודות · ${streak()} ימים ברצף · עוד ${l.toNext} לרמה הבאה</p></section>
   <div class="card panel">
     <div class="field" style="margin:0"><label for="p-name">שם</label><input id="p-name" value="${esc(S.profile.name)}"></div>
     <div class="field" style="margin:0"><label for="p-say">איך לבטא את השם (עם ניקוד)</label><input id="p-say" value="${esc(S.profile.say)}" placeholder="לדוגמה: דָּוִד"><p class="hint">הקול קורא את השם כמו שכתוב כאן. ניקוד עוזר לו לבטא נכון.</p><button class="mini" data-act="test-name" style="justify-self:start">${I.ear} שמע איך זה נשמע</button></div>
@@ -960,7 +1057,8 @@ function profileView() {
     ${mode === "device" ? (voices.length ? `<div class="field" style="margin:0"><label for="p-voice">קול עברי במכשיר</label><select id="p-voice">${voices.map((v) => `<option ${v.name === S.settings.voice ? "selected" : ""} value="${esc(v.name)}">${esc(v.name)}</option>`).join("")}</select></div>` : `<p class="hint">לא נמצא קול עברי במכשיר.</p>`) : `<p class="hint">משתמש בקול של Claude.</p>`}
     <p class="hint">באייפון: הגדרות, נגישות, תוכן מוקרא, קולות, עברית. מורידים את הקול המשופר ובוחרים אותו כאן. ההבדל גדול.</p>
     <div class="ctrl"><label for="p-rate">מהירות<span id="rateV">×${S.settings.rate}</span></label><input id="p-rate" type="range" min="0.7" max="1.4" step="0.05" value="${S.settings.rate}"></div>
-    <button class="pill" data-act="test-voice" style="justify-self:start">${I.ear} בדיקת קול</button></div>
+    <div class="row"><button class="pill gold" data-act="test-voice">${I.ear} בדיקת שמע</button><button class="pill" data-act="sound-help">לא שומע?</button></div>
+    <p class="diag">${esc(Voice.diag())}</p></div>
   <div class="card panel"><h4>מה המאמן זוכר עליך</h4>
     ${S.memory.length ? `<ul class="memo">${S.memory.map((m, i) => `<li>${esc(m)} <button class="mini" data-forget="${i}">שכח</button></li>`).join("")}</ul>` : `<p class="hint">עוד כלום. המאמן לומד ממה שאתה שואל ומתרגל.</p>`}</div>
   <div class="card panel"><h4>במסך הבית</h4><p class="hint">ב-Safari: כפתור השיתוף, ואז הוספה למסך הבית. צריך להיות מחובר ל-Claude בספארי.</p></div>`;
@@ -998,7 +1096,7 @@ function paint() {
     <button class="meta" data-act="sheet"><b>${playing ? '<span class="eq"><i></i><i></i><i></i></span>' : ""}${esc(it.title)}</b><span>${esc(it.sub)}</span><div class="prog"><i style="width:${pct}%"></i></div></button>
     <button class="pp" data-act="toggle" aria-label="${playing ? "השהה" : "נגן"}">${playing ? I.pause : I.play}</button>
     <button class="pp ghost" data-act="close-player" aria-label="סגור נגן">${I.stop}</button></div>`;
-  bind(pl);
+  bind(pl); sketchify(pl);
   const sh = $("#sheet");
   if (sh.classList.contains("on")) {
     if (sh.dataset.built !== it.title + it.kind) buildSheet();
@@ -1028,25 +1126,25 @@ const Stage = { cv: null, raf: 0, t: 0, amp: 0, playing: false, who: "A", hue: 2
     const cv = this.cv, dpr = Math.min(2, devicePixelRatio || 1), w = cv.clientWidth, h = cv.clientHeight; if (!w) return;
     if (cv.width !== Math.round(w * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
     const c = cv.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
-    this.t += .016; const target = this.playing ? .55 + .45 * Math.abs(Math.sin(this.t * 7.3) * Math.sin(this.t * 3.1 + 1)) : .08; this.amp += (target - this.amp) * .12;
-    const hue = this.who === "B" ? this.hue + 50 : this.hue; const cx = w / 2, cy = h / 2, R = Math.min(w, h) * .3;
-    const g = c.createRadialGradient(cx, cy, 0, cx, cy, R * 1.9); g.addColorStop(0, `hsla(${hue} 95% 65% / .55)`); g.addColorStop(1, `hsla(${hue} 95% 50% / 0)`); c.fillStyle = g; c.fillRect(0, 0, w, h);
-    for (let k = 0; k < 7; k++) {
-      c.beginPath();
-      for (let a = 0; a <= Math.PI * 2 + .01; a += Math.PI / 80) {
-        const n = Math.sin(a * (3 + k) + this.t * (1.2 + k * .25)) * .5 + Math.sin(a * (5 + k) - this.t * 1.7) * .5;
-        const r = R * (.82 + k * .045) + n * R * .16 * this.amp * (1 + k * .15);
-        const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r; a === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+    this.t += .016; const target = this.playing ? .5 + .5 * Math.abs(Math.sin(this.t * 7.3) * Math.sin(this.t * 3.1 + 1)) : .06; this.amp += (target - this.amp) * .12;
+    const cx = w / 2, cy = h / 2, R = Math.min(w, h) * .34;
+    for (let k = 0; k < 9; k++) {
+      c.beginPath(); const ph = k * 1.7 + (this.who === "B" ? 2 : 0);
+      for (let a = 0; a <= Math.PI * 2 + .35; a += Math.PI / 70) {
+        const n = Math.sin(a * 3 + this.t * (1 + k * .2) + ph) * .5 + Math.sin(a * 5 - this.t * 1.4 + ph) * .5;
+        const r = R * (.55 + k * .06) + n * R * .1 * this.amp * (1 + k * .2);
+        const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r * .97; a === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
       }
-      c.strokeStyle = `hsla(${hue + k * 8} 95% ${70 - k * 3}% / ${.75 - k * .08})`; c.lineWidth = k === 0 ? 2.5 : 1.3; c.stroke();
+      const red = this.playing && k === 3;
+      c.strokeStyle = red ? "rgba(216,38,46,.95)" : `rgba(242,232,213,${(.62 - k * .06).toFixed(2)})`; c.lineWidth = red ? 2 : 1; c.stroke();
     }
-    const core = c.createRadialGradient(cx - R * .25, cy - R * .25, 0, cx, cy, R * .78); core.addColorStop(0, "#fff"); core.addColorStop(.35, `hsl(${hue} 95% 72%)`); core.addColorStop(1, `hsl(${hue + 30} 85% 35%)`);
-    c.beginPath(); c.arc(cx, cy, R * (.62 + .05 * this.amp), 0, Math.PI * 2); c.fillStyle = core; c.fill();
+    c.font = `700 ${Math.round(R * .5)}px "Frank Ruhl Libre", serif`; c.fillStyle = "#f2e8d5"; c.textAlign = "center"; c.textBaseline = "middle";
+    c.fillText(this.who === "B" ? "ד" : "מ", cx, cy + 2);
   } };
 const VO = { raf: 0, t: 0, active: false, status: "",
   mount() { const cv = $("#voc"); if (!cv) return; cancelAnimationFrame(this.raf); const dpr = Math.min(2, devicePixelRatio || 1); cv.width = 260 * dpr; cv.height = 260 * dpr; const c = cv.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0);
     const loop = () => { if (!document.body.contains(cv)) return; this.t += this.active ? .06 : .015; c.clearRect(0, 0, 260, 260);
-      for (let i = 0; i < 6; i++) { c.beginPath(); for (let a = 0; a <= Math.PI * 2 + .01; a += Math.PI / 60) { const r = 66 + i * 10 + Math.sin(a * (3 + i) + this.t * (1 + i * .3)) * (this.active ? 9 : 3); const x = 130 + Math.cos(a) * r, y = 130 + Math.sin(a) * r; a === 0 ? c.moveTo(x, y) : c.lineTo(x, y); } c.strokeStyle = `hsla(${38 + i * 6} 100% 70% / ${.6 - i * .09})`; c.lineWidth = 1.6; c.stroke(); }
+      for (let i = 0; i < 6; i++) { c.beginPath(); for (let a = 0; a <= Math.PI * 2 + .3; a += Math.PI / 60) { const r = 62 + i * 10 + Math.sin(a * (3 + i) + this.t * (1 + i * .3)) * (this.active ? 7 : 2.5); const x = 130 + Math.cos(a) * r, y = 130 + Math.sin(a) * r; a === 0 ? c.moveTo(x, y) : c.lineTo(x, y); } const red = this.active && i === 1; c.strokeStyle = red ? "rgba(216,38,46,.95)" : `rgba(242,232,213,${(.55 - i * .08).toFixed(2)})`; c.lineWidth = red ? 1.8 : 1; c.stroke(); }
       this.raf = requestAnimationFrame(loop); }; loop(); },
   unmount() { cancelAnimationFrame(this.raf); },
   set(s, active) { this.status = s; this.active = active; const el = $("#vos"); if (el) el.textContent = s; }
@@ -1139,8 +1237,9 @@ function act(a, b) {
     case "show-text": { const t = $("#ansText"); t.hidden = !t.hidden; break; }
     case "add-task": { const h = S.history.slice(-1)[0]; if (h?.task) { dayPlan().items.push({ i: -1, topic: guessTopic(h.q), text: h.task, done: false, ai: true }); h.task = ""; Store.save(); toast("נוסף למשימות של היום"); render(); } break; }
     case "save-profile": S.profile.name = $("#p-name").value.trim(); S.profile.say = $("#p-say").value.trim(); S.profile.about = $("#p-about").value.trim(); delete S.profile.skipped; Store.save(); toast("נשמר"); render(); break;
-    case "test-name": S.profile.say = $("#p-say").value.trim(); S.profile.name = $("#p-name").value.trim() || S.profile.name; Store.save(); playLines("השם שלך", "בדיקה", 265, [["A", "היי {name}, ככה אני אומרת את השם שלך."]]); break;
-    case "test-voice": playLines("בדיקת קול", "הגדרות", 265, [["A", "היי {name}, ככה אני נשמעת."], ["B", "וככה אני נשמע."]]); break;
+    case "test-name": S.profile.say = $("#p-say").value.trim(); S.profile.name = $("#p-name").value.trim() || S.profile.name; Store.save(); Voice.testNow("היי {name}, ככה אני אומרת את השם שלך."); break;
+    case "test-voice": Voice.testNow("היי {name}, ככה אני נשמעת. אם אתה שומע אותי, השמע עובד."); break;
+    case "sound-help": soundHelp(); break;
     case "nb-go": copySource(b.dataset.arg); break;
     case "nb-up": $("#audioIn").dataset.topic = b.dataset.arg; $("#audioIn").click(); break;
     case "nb-how": playLines("פודקאסט עומק אנושי", "NotebookLM", 220, [
@@ -1164,7 +1263,7 @@ function guessTopic(q) { const m = [["body-language", /גוף|תנוע|ידיי�
 let speakGen = 0;
 async function speakText(text, who = "A", doneMsg = "") {
   P.pause(); Voice.stop(); const my = ++speakGen; VO.set("מדבר...", true); let all = true;
-  for (const s of sentences(text)) { let ok; try { ok = await Voice.speak(s, who); } catch { ok = false; } if (!ok || my !== speakGen) { all = false; break; } }
+  let fails = 0; for (const s of sentences(text)) { const r = await Voice.speak(s, who); if (my !== speakGen || r === "stopped") { all = false; break; } if (r === "fail" && ++fails >= 2) { all = false; VO.set("לא הצלחתי להשמיע.", false); soundHelp(); return; } }
   if (my === speakGen) VO.set(all ? doneMsg : "עצרתי. לחץ על העיגול כדי לשמוע שוב.", false);
 }
 function speakAnswer(h) { return speakText(h.a, "A", h.task ? "המשימה שלך: " + h.task : "שאל עוד שאלה."); }
