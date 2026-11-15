@@ -1,206 +1,325 @@
 <title>צמיחה</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="צמיחה">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Karantina:wght@400;700&family=Heebo:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800;900&family=Heebo:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: one column "radio" app. Generative topic covers carry the visual identity; text kept to labels. */
+/* Layout: an immersive night-sky app. A slow aurora behind everything takes the hue of what you are doing;
+   glass cards float over it. Deliberately one dark visual world (no light variant). */
 :root {
-  --bg: #0d1517; --bg2: #121d20; --surface: #18262a; --surface2: #203236;
-  --ink: #edf1ec; --muted: #93a3a0; --line: rgba(237,241,236,.10);
-  --accent: #f2b75b; --accent-ink: #1b1305; --good: #7fd6a4; --warn: #f08a6c;
-  --display: "Karantina", "Heebo", "Arial Hebrew", system-ui, sans-serif;
+  --hue: 265;
+  --bg: #07080f; --ink: #f4f2ff; --muted: rgba(244,242,255,.62); --faint: rgba(244,242,255,.38);
+  --glass: rgba(255,255,255,.055); --glass2: rgba(255,255,255,.09); --stroke: rgba(255,255,255,.09);
+  --gold: #ffc861; --gold-ink: #2a1800; --mint: #6ff0b4; --rose: #ff7a90;
+  --display: "Rubik", "Heebo", "Arial Hebrew", system-ui, sans-serif;
   --body: "Heebo", "Arial Hebrew", system-ui, sans-serif;
-  --r: 22px;
   color-scheme: dark;
 }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
-  --bg: #eef3f1; --bg2: #e3ebe8; --surface: #ffffff; --surface2: #f1f6f4;
-  --ink: #102022; --muted: #56706c; --line: rgba(16,32,34,.11);
-  --accent: #b06a10; --accent-ink: #fffaf1; --good: #1f8a53; --warn: #b8462a; color-scheme: light } }
-:root[data-theme="light"] {
-  --bg: #eef3f1; --bg2: #e3ebe8; --surface: #ffffff; --surface2: #f1f6f4;
-  --ink: #102022; --muted: #56706c; --line: rgba(16,32,34,.11);
-  --accent: #b06a10; --accent-ink: #fffaf1; --good: #1f8a53; --warn: #b8462a; color-scheme: light }
-
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent }
 html, body { background: var(--bg); color: var(--ink) }
-body { font-family: var(--body); font-size: 16px; line-height: 1.5; min-height: 100%; }
+body { font-family: var(--body); font-size: 16px; line-height: 1.5; min-height: 100%; overflow-x: hidden }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg) }
-button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0 }
-button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px }
-#app { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-bottom: 140px; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; text-align: inherit }
+button, .press { transition: transform .15s ease, background .2s, opacity .2s }
+button:active, .press:active { transform: scale(.96) }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px }
+input, textarea, select { font: inherit; color: var(--ink) }
 
-/* top bar */
-.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: flex; align-items: center; justify-content: space-between; padding-block: 12px; background: var(--bg); }
-.brand { font-family: var(--display); font-size: 34px; font-weight: 700; letter-spacing: .5px; line-height: 1 }
-.brand b { color: var(--accent); font-weight: 700 }
-.iconbtn { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); }
-.iconbtn svg { width: 22px; height: 22px }
-.burger span { display: block; width: 20px; height: 2px; background: var(--ink); border-radius: 2px; margin: 4px 0 }
+.sky { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none }
+.sky i { position: absolute; width: 70vmax; height: 70vmax; border-radius: 50%; filter: blur(70px); opacity: .55; transition: background 1.2s }
+.sky i:nth-child(1) { background: radial-gradient(circle, hsl(var(--hue) 90% 55% / .55), transparent 65%); top: -30vmax; right: -20vmax; animation: drift1 26s ease-in-out infinite alternate }
+.sky i:nth-child(2) { background: radial-gradient(circle, hsl(calc(var(--hue) + 60) 90% 50% / .4), transparent 65%); bottom: -35vmax; left: -25vmax; animation: drift2 32s ease-in-out infinite alternate }
+.sky i:nth-child(3) { background: radial-gradient(circle, hsl(calc(var(--hue) - 50) 90% 60% / .28), transparent 60%); top: 30%; left: 20%; width: 50vmax; height: 50vmax; animation: drift1 40s ease-in-out infinite alternate-reverse }
+.sky::after { content: ""; position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,.5) 1px, transparent 1.4px); background-size: 120px 120px; opacity: .08 }
+@keyframes drift1 { to { transform: translate(-12vmax, 10vmax) scale(1.15) } }
+@keyframes drift2 { to { transform: translate(14vmax, -8vmax) scale(.9) } }
 
-/* drawer */
-.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .25s }
+#app { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-bottom: 150px }
+.view { animation: rise .45s cubic-bezier(.2,.8,.2,1) both }
+@keyframes rise { from { opacity: 0; transform: translateY(14px) } }
+
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: flex; align-items: center; justify-content: space-between; padding-block: 12px; margin-inline: -4px }
+.top::before { content: ""; position: absolute; inset: 0 -20px; background: linear-gradient(var(--bg) 40%, transparent); z-index: -1 }
+.brand { font-family: var(--display); font-weight: 900; font-size: 26px; letter-spacing: -.5px; display: flex; align-items: center; gap: 8px }
+.brand .seed { width: 22px; height: 22px; border-radius: 50%; background: conic-gradient(from 200deg, var(--gold), hsl(var(--hue) 90% 65%), var(--gold)); box-shadow: 0 0 18px hsl(var(--hue) 90% 60% / .7) }
+.glassbtn { width: 46px; height: 46px; border-radius: 16px; display: grid; place-items: center; background: var(--glass); border: 1px solid var(--stroke); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px) }
+.glassbtn svg { width: 22px; height: 22px }
+.burger span { display: block; width: 20px; height: 2.2px; background: var(--ink); border-radius: 2px; margin: 4.5px 0 }
+.burger span:nth-child(2) { width: 14px; margin-inline-start: auto }
+.lvl { position: relative; width: 46px; height: 46px }
+.lvl svg { width: 46px; height: 46px }
+.lvl b { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--display); font-weight: 800; font-size: 16px }
+
+.scrim { position: fixed; inset: 0; background: rgba(3,3,10,.55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .3s }
 .scrim.on { opacity: 1; pointer-events: auto }
-.drawer { position: fixed; top: 0; bottom: 0; right: 0; width: min(86vw, 380px); background: var(--bg2); z-index: 41; transform: translateX(105%); transition: transform .3s cubic-bezier(.2,.8,.2,1); padding: calc(env(safe-area-inset-top, 0px) + 18px) max(18px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 18px) 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px }
+.drawer { position: fixed; top: 0; bottom: 0; right: 0; width: min(88vw, 390px); z-index: 41; transform: translateX(105%); transition: transform .4s cubic-bezier(.2,.9,.2,1); padding: calc(env(safe-area-inset-top, 0px) + 20px) max(18px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 20px) 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; background: rgba(14,14,28,.86); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-left: 1px solid var(--stroke) }
 .drawer.on { transform: none }
-.drawer h2 { font-family: var(--display); font-size: 30px; margin: 0 0 8px; font-weight: 700 }
-.navitem { display: flex; align-items: center; gap: 14px; padding: 10px 8px; border-radius: 16px; text-align: right; width: 100% }
-.navitem:hover, .navitem.cur { background: var(--surface) }
-.navitem canvas { width: 46px; height: 46px; border-radius: 14px; flex: none }
-.navitem .t { font-weight: 700; font-size: 17px }
-.navitem .s { color: var(--muted); font-size: 13px }
-.navitem .meter { margin-inline-start: auto; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums }
-.navsep { height: 1px; background: var(--line); margin: 10px 0 }
-.navicon { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--surface); flex: none }
+.drawer h2 { font-family: var(--display); font-weight: 900; font-size: 30px; margin: 0 0 10px }
+.dlabel { color: var(--faint); font-size: 12px; font-weight: 700; letter-spacing: .08em; margin: 14px 4px 4px }
+.navitem { display: flex; align-items: center; gap: 14px; padding: 9px 8px; border-radius: 18px; width: 100% }
+.navitem.cur, .navitem:hover { background: var(--glass2) }
+.orbmini { width: 46px; height: 46px; border-radius: 15px; flex: none; position: relative; overflow: hidden }
+.navitem .t { font-weight: 700; font-size: 16px; display: block }
+.navitem .s { color: var(--muted); font-size: 12.5px }
+.navitem .ring { margin-inline-start: auto; flex: none }
+.navicon { width: 46px; height: 46px; border-radius: 15px; display: grid; place-items: center; background: var(--glass2); flex: none }
 .navicon svg { width: 22px; height: 22px }
 
-/* home */
-.hero { margin-top: 6px; border-radius: 28px; overflow: hidden; position: relative; background: var(--surface); min-height: 210px; display: flex; align-items: flex-end }
-.hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; max-width: 100% }
-.hero .in { position: relative; padding: 20px; display: flex; align-items: flex-end; justify-content: space-between; width: 100%; gap: 12px }
-.hero .date { font-size: 13px; color: #fff; opacity: .85 }
-.hero .hi { font-family: var(--display); font-size: 46px; line-height: .95; color: #fff; text-wrap: balance }
-.bigplay { width: 72px; height: 72px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none; box-shadow: 0 10px 30px rgba(0,0,0,.35) }
-.bigplay svg { width: 30px; height: 30px }
-.sec { margin-top: 26px }
-.sechead { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px }
-.sechead h3 { margin: 0; font-family: var(--display); font-size: 30px; font-weight: 700; letter-spacing: .3px }
-.sechead .aux { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums }
+.orb { position: absolute; inset: 0; background:
+  radial-gradient(circle at 70% 25%, hsl(calc(var(--h) + 30) 100% 75% / .9), transparent 38%),
+  radial-gradient(circle at 25% 80%, hsl(calc(var(--h) - 40) 95% 55% / .9), transparent 48%),
+  radial-gradient(circle at 50% 50%, hsl(var(--h) 85% 45%), hsl(calc(var(--h) + 20) 80% 18%) 80%) }
+.orb::after { content: ""; position: absolute; inset: 0; background: repeating-radial-gradient(circle at 70% 25%, rgba(255,255,255,.08) 0 1px, transparent 1px 14px); mix-blend-mode: overlay }
+
+.card { background: var(--glass); border: 1px solid var(--stroke); border-radius: 26px; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px) }
+
+.hero { position: relative; border-radius: 32px; overflow: hidden; margin-top: 4px; padding: 22px; min-height: 260px; display: flex; flex-direction: column; justify-content: space-between; gap: 16px; isolation: isolate }
+.hero .orb { z-index: -1; animation: breathe 9s ease-in-out infinite }
+@keyframes breathe { 50% { transform: scale(1.08) rotate(3deg) } }
+.hero .date { font-size: 13px; opacity: .85; font-weight: 600 }
+.hero h1 { font-family: var(--display); font-weight: 900; font-size: 40px; line-height: 1; margin: 6px 0 0; text-wrap: balance; letter-spacing: -.5px }
+.stats { display: flex; gap: 8px; flex-wrap: wrap }
+.stat { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; background: rgba(0,0,0,.28); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); font-weight: 700; font-size: 13.5px; font-variant-numeric: tabular-nums }
+.stat svg { width: 16px; height: 16px }
+.go { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px }
+.go small { display: block; opacity: .85; font-size: 13px }
+.go b { font-family: var(--display); font-size: 20px; font-weight: 800; line-height: 1.15 }
+.play { width: 74px; height: 74px; border-radius: 50%; background: var(--gold); color: var(--gold-ink); display: grid; place-items: center; flex: none; box-shadow: 0 0 0 8px rgba(255,200,97,.18), 0 14px 40px rgba(0,0,0,.45); position: relative }
+.play::before { content: ""; position: absolute; inset: -8px; border-radius: 50%; border: 2px solid rgba(255,200,97,.5); animation: ping 2.4s ease-out infinite }
+@keyframes ping { to { transform: scale(1.35); opacity: 0 } }
+.play svg { width: 30px; height: 30px }
+
+.sec { margin-top: 28px }
+.sechead { display: flex; align-items: baseline; justify-content: space-between; margin: 0 4px 12px }
+.sechead h3 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 22px; letter-spacing: -.3px }
+.sechead .aux { color: var(--muted); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums }
+
 .tasks { display: grid; gap: 10px }
-.task { display: flex; align-items: center; gap: 12px; background: var(--surface); border-radius: 18px; padding: 12px 14px; min-height: 64px }
-.task .dot { width: 10px; height: 10px; border-radius: 50%; flex: none }
-.task .txt { flex: 1; min-width: 0; font-size: 15px; line-height: 1.35 }
-.task.done .txt { color: var(--muted); text-decoration: line-through }
-.task .act { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--surface2); flex: none }
-.task .act svg { width: 18px; height: 18px }
-.task .check.on { background: var(--good); color: #062214 }
-.task.ai { outline: 1px dashed var(--accent); outline-offset: -1px }
-.row { display: flex; gap: 10px; flex-wrap: wrap }
-.pill { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: var(--surface); font-weight: 600; font-size: 14px }
-.pill svg { width: 18px; height: 18px }
-.pill.accent { background: var(--accent); color: var(--accent-ink) }
-.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px }
-.tile { position: relative; border-radius: 20px; overflow: hidden; aspect-ratio: 1 / 1.05; max-width: 100%; background: var(--surface); text-align: right }
-.tile canvas { position: absolute; inset: 0; width: 100%; height: 100% }
-.tile .lab { position: absolute; inset: auto 0 0 0; padding: 12px; background: linear-gradient(transparent, rgba(0,0,0,.55)); color: #fff }
-.tile .lab b { font-family: var(--display); font-size: 30px; font-weight: 700; display: block; line-height: 1 }
-.tile .lab small { opacity: .85; font-size: 12px; font-variant-numeric: tabular-nums }
-.streak { display: flex; gap: 6px; align-items: flex-end }
-.streak i { width: 100%; flex: 1; height: 34px; border-radius: 8px; background: var(--surface) }
-.streak i.on { background: var(--accent) }
-.streak i.today { outline: 2px solid var(--ink); outline-offset: 1px }
+.task { position: relative; display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 22px; overflow: hidden }
+.task::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 40%, hsl(var(--h) 90% 60% / .16)); pointer-events: none }
+.task .txt { flex: 1; min-width: 0; font-size: 15px; line-height: 1.4; font-weight: 500 }
+.task .tag { display: block; font-size: 11.5px; color: hsl(var(--h) 90% 75%); font-weight: 700; margin-bottom: 2px }
+.task.done .txt { opacity: .5 }
+.task.done .txt span:last-child { text-decoration: line-through }
+.round { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: var(--glass2); flex: none; position: relative }
+.round svg { width: 18px; height: 18px }
+.round.check.on { background: var(--mint); color: #04261a; animation: pop .4s }
+@keyframes pop { 40% { transform: scale(1.25) } }
+.row { display: flex; gap: 8px; flex-wrap: wrap }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: var(--glass); border: 1px solid var(--stroke); font-weight: 600; font-size: 14px }
+.pill svg { width: 17px; height: 17px }
+.pill.gold { background: var(--gold); color: var(--gold-ink); border-color: transparent }
 
-/* topic */
-.cover { position: relative; border-radius: 28px; overflow: hidden; aspect-ratio: 1.25 / 1; max-width: 100%; margin-top: 6px }
-.cover canvas { position: absolute; inset: 0; width: 100%; height: 100% }
-.cover .in { position: absolute; inset: auto 0 0 0; padding: 20px; color: #fff; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; background: linear-gradient(transparent, rgba(0,0,0,.5)) }
-.cover h1 { font-family: var(--display); font-size: 64px; line-height: .9; margin: 0; font-weight: 700 }
-.cover p { margin: 4px 0 0; opacity: .9; font-size: 14px }
-.eps { display: grid; gap: 8px; margin-top: 14px }
-.ep { display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 18px; background: var(--surface); text-align: right; width: 100% }
-.ep .num { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--surface2); font-weight: 800; flex: none; font-variant-numeric: tabular-nums }
-.ep.done .num { background: var(--good); color: #062214 }
-.ep.playing .num { background: var(--accent); color: var(--accent-ink) }
-.ep .t { font-weight: 700; flex: 1; min-width: 0 }
-.ep .m { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums }
-.nb { margin-top: 22px; border-radius: 22px; padding: 16px; background: var(--surface); display: grid; gap: 12px }
-.nb h4 { margin: 0; font-size: 17px }
-.nb .steps { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px }
-.nb .step { border-radius: 16px; background: var(--surface2); padding: 12px 8px; display: grid; justify-items: center; gap: 6px; text-align: center; font-size: 13px; font-weight: 600 }
-.nb .step svg { width: 26px; height: 26px; color: var(--accent) }
-.nb .step b { font-size: 11px; color: var(--muted); font-weight: 700 }
-.own { display: grid; gap: 8px }
-.own .ep .num { background: var(--accent); color: var(--accent-ink) }
-.hint { color: var(--muted); font-size: 13px }
+.week { display: grid; grid-template-columns: repeat(7, minmax(0,1fr)); gap: 6px; padding: 14px }
+.day { display: grid; justify-items: center; gap: 6px; font-size: 11.5px; color: var(--muted); font-weight: 600 }
+.day i { width: 100%; max-width: 38px; aspect-ratio: 1; border-radius: 12px; background: var(--glass2); display: grid; place-items: center }
+.day.on i { background: linear-gradient(135deg, var(--gold), #ff8a5c); box-shadow: 0 0 16px rgba(255,170,90,.45) }
+.day.on i svg { width: 16px; height: 16px; color: var(--gold-ink) }
+.day.today { color: var(--ink) }
+.day.today i { outline: 1.5px solid rgba(255,255,255,.5); outline-offset: 2px }
 
-/* coach */
-.orb-wrap { display: grid; place-items: center; padding-block: 28px 10px }
-.orb { width: 190px; height: 190px; border-radius: 50%; position: relative; display: grid; place-items: center }
-.orb canvas { position: absolute; inset: -30px; width: 250px; height: 250px }
-.orb .core { width: 120px; height: 120px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; position: relative; box-shadow: 0 0 60px color-mix(in srgb, var(--accent) 45%, transparent) }
-.orb .core svg { width: 44px; height: 44px }
-.orb-status { text-align: center; color: var(--muted); font-size: 14px; min-height: 22px; margin-top: 4px }
-.ask { display: flex; gap: 8px; align-items: flex-end; background: var(--surface); border-radius: 22px; padding: 8px }
-.ask textarea { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink); font: inherit; resize: none; padding: 8px 10px; min-height: 44px; max-height: 140px }
-.ask textarea::placeholder { color: var(--muted) }
-.send { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.rail { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2px 4px 10px; margin-inline: -4px; scrollbar-width: none }
+.rail::-webkit-scrollbar { display: none }
+.lab { scroll-snap-align: start; flex: 0 0 62%; max-width: 250px; aspect-ratio: 1 / 1.12; border-radius: 28px; position: relative; overflow: hidden; padding: 16px; display: flex; flex-direction: column; justify-content: flex-end; isolation: isolate }
+.lab .orb { z-index: -1 }
+.lab .ico { position: absolute; top: 16px; right: 16px; width: 48px; height: 48px; border-radius: 16px; background: rgba(0,0,0,.25); display: grid; place-items: center; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px) }
+.lab .ico svg { width: 26px; height: 26px }
+.lab b { font-family: var(--display); font-weight: 900; font-size: 26px; line-height: 1 }
+.lab span.s { font-size: 13px; opacity: .9; margin-top: 4px }
+.shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(transparent 32%, rgba(0,0,0,.55)) }
+
+.topics { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px }
+.topic { position: relative; border-radius: 26px; overflow: hidden; aspect-ratio: 1 / 1.08; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; isolation: isolate }
+.topic .orb { z-index: -1 }
+.topic b { font-family: var(--display); font-weight: 900; font-size: 22px; line-height: 1.05; display: block }
+.topic small { display: block; opacity: .8; font-size: 12px; margin-top: 2px }
+
+.resume { display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 24px; width: 100% }
+.resume .art { width: 62px; height: 62px; border-radius: 18px; overflow: hidden; position: relative; flex: none }
+.resume .t { flex: 1; min-width: 0 }
+.resume .t b { display: block; font-weight: 700 }
+.resume .t small { color: var(--muted) }
+.resume .round { background: var(--gold); color: var(--gold-ink); width: 48px; height: 48px }
+
+.cover { position: relative; border-radius: 34px; overflow: hidden; padding: 22px; min-height: 300px; display: flex; flex-direction: column; justify-content: flex-end; isolation: isolate; margin-top: 4px }
+.cover .orb { z-index: -2; animation: breathe 11s ease-in-out infinite }
+.cover h1 { font-family: var(--display); font-weight: 900; font-size: 54px; line-height: .95; margin: 0; letter-spacing: -1px }
+.cover p { margin: 6px 0 0; opacity: .88; font-weight: 500 }
+.eps { display: grid; gap: 10px; margin-top: 16px }
+.ep { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 22px; width: 100% }
+.ep .n { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--glass2); font-family: var(--display); font-weight: 800; flex: none; font-variant-numeric: tabular-nums }
+.ep .n svg { width: 20px; height: 20px }
+.ep.done .n { background: var(--mint); color: #04261a }
+.ep.now .n { background: var(--gold); color: var(--gold-ink) }
+.ep .t { flex: 1; min-width: 0; font-weight: 700 }
+.ep .t small { display: block; color: var(--muted); font-weight: 500; font-size: 13px }
+.badge { font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px; background: rgba(255,200,97,.16); color: var(--gold); flex: none }
+.badge.ok { background: rgba(111,240,180,.14); color: var(--mint) }
+.nb { margin-top: 22px; padding: 18px; display: grid; gap: 12px }
+.nb h4 { margin: 0; font-family: var(--display); font-size: 19px; font-weight: 800 }
+.nb p { margin: 0; color: var(--muted); font-size: 14px }
+.nbgo { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 20px; background: linear-gradient(135deg, hsl(var(--h) 80% 55% / .35), rgba(255,255,255,.04)); border: 1px solid var(--stroke); width: 100% }
+.nbgo svg { width: 24px; height: 24px; flex: none }
+.nbgo b { display: block }
+.nbgo small { color: var(--muted) }
+
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 5px; border-radius: 18px; margin-top: 6px }
+.seg button { padding: 10px; border-radius: 14px; font-weight: 700; text-align: center }
+.seg button.on { background: var(--ink); color: var(--bg) }
+.voiceorb { display: grid; place-items: center; padding-block: 26px 6px }
+.vo { width: 180px; height: 180px; position: relative; display: grid; place-items: center; border-radius: 50% }
+.vo canvas { position: absolute; inset: -40px; width: 260px; height: 260px }
+.vo .core { width: 112px; height: 112px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff6dc, var(--gold) 45%, #ff8a5c); color: var(--gold-ink); display: grid; place-items: center; box-shadow: 0 0 70px rgba(255,180,90,.55); position: relative }
+.vo .core svg { width: 42px; height: 42px }
+.status { text-align: center; color: var(--muted); font-size: 14.5px; min-height: 22px; margin-top: 6px; padding-inline: 10px }
+.ask { display: flex; gap: 8px; align-items: flex-end; padding: 8px; border-radius: 24px; margin-top: 14px }
+.ask textarea { flex: 1; min-width: 0; border: 0; background: transparent; resize: none; padding: 9px 10px; min-height: 44px; max-height: 140px; font-size: 16px }
+.ask textarea::placeholder { color: var(--faint) }
+.send { width: 46px; height: 46px; border-radius: 50%; background: var(--gold); color: var(--gold-ink); display: grid; place-items: center; flex: none }
 .send svg { width: 20px; height: 20px }
 .send[disabled] { opacity: .4 }
 .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px }
-.chip { padding: 8px 14px; border-radius: 999px; background: var(--surface); font-size: 14px; border: 1px solid var(--line) }
-.chip.on { background: var(--accent); color: var(--accent-ink); border-color: transparent }
-.answer { margin-top: 16px; border-radius: 20px; background: var(--surface); padding: 14px 16px; display: grid; gap: 10px }
+.chip { padding: 9px 14px; border-radius: 999px; background: var(--glass); border: 1px solid var(--stroke); font-size: 14px; font-weight: 500 }
+.chip.on { background: var(--gold); color: var(--gold-ink); border-color: transparent; font-weight: 700 }
+.answer { margin-top: 16px; padding: 16px; display: grid; gap: 10px }
 .answer .q { font-weight: 700 }
 .answer .a { color: var(--muted); font-size: 15px; white-space: pre-wrap }
-.answer .a[hidden] { display: none }
-.answer .tools { display: flex; gap: 8px; flex-wrap: wrap }
-.mini { font-size: 13px; padding: 6px 12px; border-radius: 999px; background: var(--surface2); display: inline-flex; gap: 6px; align-items: center }
+.tools { display: flex; gap: 8px; flex-wrap: wrap }
+.mini { font-size: 13px; padding: 7px 12px; border-radius: 999px; background: var(--glass2); display: inline-flex; gap: 6px; align-items: center; font-weight: 600 }
 .mini svg { width: 15px; height: 15px }
+.rp { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-top: 14px }
+.rpc { position: relative; overflow: hidden; border-radius: 22px; padding: 14px; min-height: 110px; display: flex; flex-direction: column; justify-content: flex-end; isolation: isolate }
+.rpc .orb { z-index: -1; opacity: .85 }
+.rpc b { font-family: var(--display); font-weight: 800; font-size: 17px; line-height: 1.15 }
+.turns { display: grid; gap: 8px; margin-top: 14px }
+.turn { display: flex; gap: 10px; align-items: center }
+.turn .who { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 13px; flex: none }
+.turn.ai .who { background: var(--gold); color: var(--gold-ink) }
+.turn.me .who { background: var(--glass2) }
+.turn .bub { flex: 1; min-width: 0; padding: 10px 12px; border-radius: 16px; background: var(--glass); font-size: 14.5px; color: var(--muted) }
+.turn .bub[data-hidden] { color: transparent; text-shadow: 0 0 9px rgba(244,242,255,.55); user-select: none }
+.fb { padding: 16px; margin-top: 14px; display: grid; gap: 8px }
+.score { font-family: var(--display); font-weight: 900; font-size: 54px; line-height: 1; color: var(--gold) }
 
-/* profile */
+.facebox { position: relative; border-radius: 32px; overflow: hidden; margin-top: 6px; aspect-ratio: 1 / 1.02; max-width: 100%; display: grid; place-items: center; isolation: isolate }
+.facebox .orb { z-index: -1; opacity: .7 }
+#face { width: 74%; display: grid; place-items: center }
+#face svg { width: 100%; height: auto }
+.facehud { position: absolute; top: 14px; inset-inline: 14px; display: flex; justify-content: space-between; gap: 8px }
+.countdown { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--display); font-weight: 900; font-size: 96px; color: #fff; text-shadow: 0 6px 30px rgba(0,0,0,.4); pointer-events: none }
+.opts { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; margin-top: 14px }
+.opt { padding: 14px; border-radius: 18px; font-weight: 700; text-align: center; font-size: 16px }
+.opt.right { background: var(--mint); color: #04261a }
+.opt.wrong { background: var(--rose); color: #2a0008 }
+.opt[disabled] { opacity: .55 }
+.opt.right[disabled], .opt.wrong[disabled] { opacity: 1 }
+.levels { display: flex; gap: 6px; margin-top: 12px }
+.levels button { flex: 1; padding: 8px 4px; border-radius: 14px; background: var(--glass); border: 1px solid var(--stroke); font-size: 13px; font-weight: 700; text-align: center; line-height: 1.25 }
+.levels button small { font-weight: 500; opacity: .7 }
+.levels button.on { background: var(--ink); color: var(--bg) }
+.levels button[disabled] { opacity: .35 }
+.explain { padding: 14px 16px; margin-top: 12px; font-size: 14.5px; color: var(--muted) }
+.explain b { color: var(--ink) }
+
+.big { font-family: var(--display); font-weight: 900; font-size: 44px; line-height: 1; letter-spacing: -1px; font-variant-numeric: tabular-nums; margin-top: 4px }
+.ctrl { display: grid; gap: 4px }
+.ctrl label { display: flex; justify-content: space-between; font-weight: 700; font-size: 14px }
+.ctrl label span { color: var(--gold); font-variant-numeric: tabular-nums }
+input[type=range] { width: 100%; accent-color: var(--gold) }
+.bars { display: flex; height: 18px; border-radius: 10px; overflow: hidden; background: var(--glass2) }
+.bars i { display: block; height: 100%; transition: width .5s }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted) }
+.legend b { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-inline-end: 5px; vertical-align: -1px }
+.loss { padding: 14px; border-radius: 18px; background: rgba(255,122,144,.12); border: 1px solid rgba(255,122,144,.3) }
+
+.breath { display: grid; place-items: center; padding-block: 30px 10px }
+.bo { width: 240px; height: 240px; border-radius: 50%; position: relative; display: grid; place-items: center }
+.bo .ball { width: 150px; height: 150px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #e8fbff, hsl(190 90% 60%) 45%, hsl(250 80% 50%)); box-shadow: 0 0 80px hsl(200 90% 60% / .55); transform: scale(.7) }
+.bo .ringb { position: absolute; inset: 0; border-radius: 50%; border: 1.5px dashed rgba(255,255,255,.25) }
+.phase { font-family: var(--display); font-weight: 800; font-size: 26px; text-align: center; margin-top: 18px; min-height: 36px }
+.tmr { text-align: center; color: var(--muted); font-variant-numeric: tabular-nums; min-height: 24px }
+
 .field { display: grid; gap: 6px; margin-top: 14px }
 .field label { font-weight: 700; font-size: 14px }
-.field input, .field textarea, .field select { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; font: inherit; width: 100% }
-.card { background: var(--surface); border-radius: 20px; padding: 16px; margin-top: 14px; display: grid; gap: 10px }
-.card h4 { margin: 0 }
-.memo li { margin-bottom: 4px }
-.range { width: 100% }
+.field input, .field textarea, .field select { background: var(--glass); border: 1px solid var(--stroke); border-radius: 16px; padding: 12px 14px; width: 100% }
+.hint { color: var(--muted); font-size: 13px; margin: 0 }
+.panel { padding: 16px; margin-top: 14px; display: grid; gap: 14px }
+.panel h4 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 18px }
+.memo { margin: 0; padding-inline-start: 18px }
+.memo li { margin-bottom: 6px }
+.btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; padding: 15px 24px; border-radius: 999px; background: var(--gold); color: var(--gold-ink); font-weight: 800; font-size: 17px; font-family: var(--display) }
+.btn svg { width: 22px; height: 22px }
 
-/* player */
 .player { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; padding: 0 max(12px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 12px) max(12px, env(safe-area-inset-left, 0px)); pointer-events: none }
-.pbar { pointer-events: auto; max-width: 560px; margin: 0 auto; background: color-mix(in srgb, var(--surface2) 92%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 22px; padding: 10px; display: flex; align-items: center; gap: 10px; box-shadow: 0 12px 40px rgba(0,0,0,.35); border: 1px solid var(--line) }
-.pbar canvas { width: 48px; height: 48px; border-radius: 14px; flex: none }
-.pbar .meta { flex: 1; min-width: 0; text-align: right }
+.pbar { pointer-events: auto; max-width: 560px; margin: 0 auto; background: rgba(20,20,38,.74); backdrop-filter: blur(22px) saturate(1.4); -webkit-backdrop-filter: blur(22px) saturate(1.4); border-radius: 24px; padding: 10px; display: flex; align-items: center; gap: 10px; box-shadow: 0 16px 50px rgba(0,0,0,.55); border: 1px solid var(--stroke) }
+.pbar .art { width: 50px; height: 50px; border-radius: 15px; overflow: hidden; position: relative; flex: none }
+.pbar .meta { flex: 1; min-width: 0 }
 .pbar .meta b { display: block; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
 .pbar .meta span { color: var(--muted); font-size: 12px }
-.prog { height: 4px; border-radius: 4px; background: var(--line); margin-top: 6px; overflow: hidden }
-.prog i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .4s }
-.pbtn { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); flex: none }
-.pbtn svg { width: 22px; height: 22px }
-.pbtn.ghost { background: transparent; color: var(--ink); width: 40px }
+.prog { height: 4px; border-radius: 4px; background: rgba(255,255,255,.12); margin-top: 6px; overflow: hidden }
+.prog i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold), #ff8a5c); width: 0; transition: width .4s }
+.pp { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: var(--gold-ink); flex: none }
+.pp svg { width: 22px; height: 22px }
+.pp.ghost { background: transparent; color: var(--ink); width: 38px }
+.eq { display: inline-flex; gap: 2px; align-items: flex-end; height: 12px; margin-inline-end: 6px; vertical-align: -1px }
+.eq i { width: 3px; background: var(--gold); border-radius: 2px; animation: eq .9s ease-in-out infinite }
+.eq i:nth-child(2) { animation-delay: -.3s } .eq i:nth-child(3) { animation-delay: -.6s }
+@keyframes eq { 0%,100% { height: 3px } 50% { height: 12px } }
 
-.sheet { position: fixed; inset: 0; z-index: 50; background: var(--bg); transform: translateY(102%); transition: transform .35s cubic-bezier(.2,.8,.2,1); display: flex; flex-direction: column; padding: calc(env(safe-area-inset-top, 0px) + 12px) max(20px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 24px) max(20px, env(safe-area-inset-left, 0px)) }
+.sheet { position: fixed; inset: 0; z-index: 50; background: var(--bg); transform: translateY(102%); transition: transform .45s cubic-bezier(.2,.9,.2,1); display: flex; flex-direction: column; padding: calc(env(safe-area-inset-top, 0px) + 12px) max(20px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 22px) max(20px, env(safe-area-inset-left, 0px)); overflow: hidden }
 .sheet.on { transform: none }
-.sheet .stage { flex: 1; display: grid; place-items: center; position: relative; min-height: 0 }
-.sheet .stage canvas { width: min(84vw, 380px); height: min(84vw, 380px); border-radius: 36px }
-.speakers { display: flex; justify-content: center; gap: 28px; margin-top: 10px }
-.spk { display: grid; justify-items: center; gap: 6px; opacity: .45; transition: opacity .3s, transform .3s }
-.spk.on { opacity: 1; transform: scale(1.06) }
-.spk .av { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-size: 30px; font-weight: 700 }
-.spk.on .av { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 60%, transparent) }
-.spk small { font-size: 13px; font-weight: 600 }
-.sheet .ttl { text-align: center; margin-top: 18px }
-.sheet .ttl b { font-family: var(--display); font-size: 40px; display: block; line-height: 1; font-weight: 700 }
-.sheet .ttl span { color: var(--muted); font-size: 14px }
-.ctrls { display: flex; justify-content: center; align-items: center; gap: 22px; margin-top: 22px }
-.ctrls .pbtn { width: 80px; height: 80px }
-.ctrls .pbtn svg { width: 34px; height: 34px }
-.ctrls .sk { width: 54px; height: 54px; border-radius: 50%; background: var(--surface); display: grid; place-items: center }
-.ctrls .sk svg { width: 24px; height: 24px }
-.speed { display: flex; justify-content: center; gap: 8px; margin-top: 16px }
-.speed button { padding: 6px 12px; border-radius: 999px; background: var(--surface); font-size: 13px; font-variant-numeric: tabular-nums }
-.speed button.on { background: var(--ink); color: var(--bg) }
-.close { align-self: flex-start }
+.sheet .stage { flex: 1; display: grid; place-items: center; min-height: 0; position: relative }
+.sheet .stage canvas { width: min(86vw, 400px); height: min(86vw, 400px); max-width: 100% }
+.sheet .cap { position: absolute; inset: auto 0 4%; text-align: center; font-size: 19px; font-weight: 600; line-height: 1.45; padding-inline: 8px; text-shadow: 0 2px 14px rgba(0,0,0,.8); text-wrap: balance }
+.speakers { display: flex; justify-content: center; gap: 34px }
+.spk { display: grid; justify-items: center; gap: 6px; opacity: .4; transition: opacity .3s, transform .3s }
+.spk.on { opacity: 1; transform: translateY(-3px) }
+.spk .av { width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-size: 22px; font-weight: 900; position: relative; overflow: hidden; isolation: isolate }
+.spk .av .orb { z-index: -1 }
+.spk.on .av { box-shadow: 0 0 0 3px var(--gold), 0 0 30px rgba(255,200,97,.6) }
+.spk small { font-size: 13px; font-weight: 700 }
+.ttl { text-align: center; margin-top: 16px }
+.ttl b { font-family: var(--display); font-weight: 900; font-size: 28px; display: block; line-height: 1.1; text-wrap: balance }
+.ttl span { color: var(--muted); font-size: 14px }
+.ctrls { display: flex; justify-content: center; align-items: center; gap: 24px; margin-top: 20px }
+.ctrls .pp { width: 82px; height: 82px }
+.ctrls .pp svg { width: 34px; height: 34px }
+.sk { width: 54px; height: 54px; border-radius: 50%; background: var(--glass2); display: grid; place-items: center }
+.sk svg { width: 24px; height: 24px }
+.subrow { display: flex; justify-content: center; gap: 8px; margin-top: 16px; flex-wrap: wrap }
+.subrow button { padding: 7px 13px; border-radius: 999px; background: var(--glass2); font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums }
+.subrow button.on { background: var(--ink); color: var(--bg) }
+.sheethead { display: flex; justify-content: space-between; align-items: center }
 
-.toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 112px); transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-size: 14px; z-index: 60; opacity: 0; transition: all .25s; pointer-events: none; max-width: calc(100vw - 32px); text-align: center }
-.toast.on { opacity: 1; transform: translateX(-50%) }
-.welcome { display: grid; gap: 14px; padding-top: 10px }
-.welcome h1 { font-family: var(--display); font-size: 62px; line-height: .9; margin: 10px 0 0; text-wrap: balance }
-.welcome p { color: var(--muted); margin: 0 }
-.btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; padding: 14px 22px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-weight: 800; font-size: 17px }
-.btn svg { width: 22px; height: 22px }
-.btn.sec2 { background: var(--surface); color: var(--ink) }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important } }
+.modal { position: fixed; inset: 0; z-index: 70; display: grid; place-items: end center; padding: 16px; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); background: rgba(3,3,10,.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px) }
+.modal .box { width: 100%; max-width: 520px; padding: 20px; border-radius: 30px; background: rgba(24,22,44,.94); border: 1px solid var(--stroke); animation: rise .4s cubic-bezier(.2,.8,.2,1) both; display: grid; gap: 10px }
+.modal h3 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 22px; line-height: 1.25 }
+.modal .opt { background: var(--glass2); text-align: right }
+
+.toast { position: fixed; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 14px); transform: translate(-50%, -20px); background: rgba(244,242,255,.96); color: #0b0b18; padding: 10px 18px; border-radius: 999px; font-size: 14px; font-weight: 700; z-index: 80; opacity: 0; transition: all .3s; pointer-events: none; max-width: calc(100vw - 32px); text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.4) }
+.toast.on { opacity: 1; transform: translate(-50%, 0) }
+#fx { position: fixed; inset: 0; z-index: 90; pointer-events: none; width: 100%; height: 100% }
+.levelup { position: fixed; inset: 0; z-index: 85; display: grid; place-items: center; pointer-events: none }
+.levelup div { text-align: center; animation: lvl 2.6s cubic-bezier(.2,.8,.2,1) forwards }
+.levelup b { font-family: var(--display); font-weight: 900; font-size: 64px; display: block; background: linear-gradient(135deg, #fff, var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent }
+.levelup span { font-weight: 700; font-size: 18px }
+@keyframes lvl { 0% { opacity: 0; transform: scale(.6) } 20% { opacity: 1; transform: scale(1.05) } 80% { opacity: 1 } 100% { opacity: 0; transform: scale(1.1) } }
+
+.welcome { display: grid; gap: 16px; padding-top: 18px }
+.welcome .hero { min-height: 330px; justify-content: flex-end }
+.welcome h1 { font-size: 50px }
+.welcome p { margin: 0; color: var(--muted); font-size: 16px }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important } }
 </style>
 
+<div class="sky" aria-hidden="true"><i></i><i></i><i></i></div>
 <div id="app" dir="rtl" lang="he"></div>
 <div class="scrim" id="scrim"></div>
-<nav class="drawer" id="drawer" dir="rtl" lang="he" aria-label="נושאים"></nav>
-<div class="player" id="player" dir="rtl" hidden></div>
+<nav class="drawer" id="drawer" dir="rtl" lang="he" aria-label="תפריט"></nav>
+<div class="player" id="player" dir="rtl" lang="he" hidden></div>
 <section class="sheet" id="sheet" dir="rtl" lang="he" aria-label="נגן"></section>
-<div class="toast" id="toast" role="status"></div>
+<div id="modal" dir="rtl" lang="he"></div>
+<div class="toast" id="toast" role="status" dir="rtl" lang="he"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
 <input type="file" id="audioIn" accept="audio/*,video/mp4,.m4a,.wav,.mp3" hidden>
 
 <script>// Course content. Two hosts: A = מאיה, B = דניאל. ["P", ms] is a silent pause.
@@ -632,62 +751,101 @@ window.TASKS = [
   ["body", "בלי קפאין אחרי שתיים בצהריים."],
   ["body", "אמור שלושה דברים שהגוף שלך עשה בשבילך השבוע."]
 ];
+
+// One retrieval question per episode: [question, options, correct index, why]
+window.QUIZ = {
+  bl1: ["מה הכלל הראשון לפני שמפרשים שפת גוף?", ["לבדוק את קו הבסיס של האדם", "לחפש ידיים שלובות", "לספור כמה קשר עין יש"], 0, "קודם לומדים איך האדם מתנהג כשהוא רגוע, ואז מחפשים שינוי."],
+  bl2: ["מה נשאר מהמחקר על תנוחת הכוח?", ["שינוי הורמונלי גדול", "תחושה קלה של כוח אצל חלק מהאנשים", "יותר אומץ לקחת סיכונים"], 1, "ניסויים גדולים לא מצאו שינוי בהורמונים. נשאר רק אפקט קטן על התחושה."],
+  bl3: ["נגיעה בצוואר ומשחק בטבעת מעידים בעיקר על...", ["שקר", "אי נוחות או לחץ", "שעמום"], 1, "אלה סימני הרגעה עצמית. הם מראים לחץ, לא שקר."],
+  fc1: ["מה מבדיל חיוך אמיתי מחיוך של נימוס?", ["רואים יותר שיניים", "העיניים משתתפות והלחיים עולות", "החיוך רחב יותר"], 1, "בחיוך אמיתי השריר סביב העין מתכווץ, ונוצרים קמטוטים בצדדים."],
+  fc2: ["מיקרו-הבעה מעידה בעיקר על...", ["שהאדם משקר", "שיש רגש, אולי מוסתר", "שהאדם עייף"], 1, "מיקרו-הבעות מופיעות גם אצל אנשים שאומרים אמת. הן סימן לרגש, לא לשקר."],
+  fc3: ["איזו הבעה מסוכנת במיוחד בזוגיות לפי גוטמן?", ["עצב", "בוז", "הפתעה"], 1, "בוז, כמו גלגול עיניים וחצי חיוך עקום, הוא מהמנבאים החזקים לפרידה."],
+  sv1: ["מה כדאי לטפל בו לפני כל חיסכון?", ["מינוס קבוע בבנק", "ביטוח הרכב", "קניות בסופר"], 0, "ריבית על מינוס היא מהיקרות שיש. היא אוכלת כל חיסכון."],
+  sv2: ["מה פירוש: שלם לעצמך קודם?", ["לחסוך את מה שנשאר בסוף החודש", "העברה אוטומטית לחיסכון ביום המשכורת", "לקנות לעצמך משהו קודם"], 1, "אוטומציה ביום המשכורת עוקפת את הצורך בכוח רצון."],
+  sv3: ["בתשואה של בערך שבעה אחוזים בשנה, כל כמה זמן הכסף מוכפל?", ["כל חמש שנים", "כל עשר שנים", "כל עשרים שנה"], 1, "בערך עשר שנים. לכן להתחיל מוקדם שווה כל כך הרבה."],
+  er1: ["מה זה שילוב מיומנויות?", ["להיות הכי טוב בעולם בדבר אחד", "להיות טוב מאוד בכמה דברים שנדיר לראות יחד", "לעבוד בשתי עבודות"], 1, "שילוב נדיר של מיומנויות טובות שווה יותר מאחת מושלמת."],
+  er2: ["מה עושים אחרי שאומרים מספר במשא ומתן?", ["מסבירים אותו שוב", "שותקים", "מורידים קצת"], 1, "השקט אחרי המספר הוא חלק מהמשא ומתן."],
+  er3: ["במה עדיף להתחיל הכנסה נוספת?", ["מוצר דיגיטלי", "שירות שאתה כבר יודע לתת", "מסחר יומי"], 1, "שירות מכניס כסף מהר ומלמד מה אנשים באמת צריכים."],
+  cf1: ["מה המקור החזק ביותר לביטחון לפי בנדורה?", ["מחמאות מאחרים", "חוויות של הצלחה", "תנוחת הגוף"], 1, "עושים, מצליחים, והמוח מתעדכן. לכן מתחילים בצעדים קטנים."],
+  cf2: ["מה עוזר לחשוב בבהירות תחת לחץ, לפי איתן קרוס?", ["לדבר לעצמך בשם שלך", "לצעוק", "להתעלם מהרגש"], 0, "הדיבור בשמך יוצר מרחק, כמו לייעץ לחבר."],
+  cf3: ["איך משנים תכונת אישיות לפי המחקר?", ["מחכים להרגיש אחרת", "מתרגלים התנהגויות קטנות של התכונה", "אי אפשר לשנות"], 1, "התנהגויות קטנות שחוזרות משנות תכונות לאורך חודשים."],
+  pr1: ["מה קורה כשהטלפון מונח על השולחן בזמן שיחה?", ["כלום", "תחושת הקרבה יורדת", "השיחה נהיית ארוכה יותר"], 1, "עצם הנוכחות של הטלפון מורידה את איכות החיבור."],
+  pr2: ["איך עושים אנחה מחזורית?", ["שאיפה, עוד שאיפה קצרה, ונשיפה ארוכה", "נשיפות מהירות", "עצירת נשימה ארוכה"], 0, "הנשיפה הארוכה היא החלק שמרגיע."],
+  pr3: ["מה עושים כשמבקרים אותך?", ["מתגוננים מיד", "שואלים מה בדיוק לא עבד", "מתעלמים"], 1, "שאלה משדרת ביטחון ונותנת לך זמן לחשוב."],
+  rl1: ["כמה מהזמן פנו זוגות יציבים להזמנות לקשר?", ["בערך שליש", "בערך חצי", "בערך שמונים ושישה אחוז"], 2, "זוגות שנשארו יחד הגיבו לרוב ההזמנות הקטנות."],
+  rl2: ["מה התרופה לביקורת בוויכוח?", ["פתיחה רכה: אני מרגיש... ואני צריך...", "שתיקה", "הומור עוקצני"], 0, "מדברים על ההרגשה והצורך, לא על האישיות שלה."],
+  rl3: ["מה היחס שגוטמן מצא אצל זוגות יציבים?", ["אחד לאחד", "שלוש לאחת", "חמש חיוביות לכל שלילית"], 2, "חמש לאחת, גם בזמן ויכוח."],
+  bd1: ["מה הכי מכייל את השעון הביולוגי?", ["שעת קימה קבועה", "לישון מאוחר בסוף השבוע", "קפה בבוקר"], 0, "שעת קימה קבועה, גם בסופ״ש, יחד עם אור בוקר."],
+  bd2: ["מה ההמלצה לאימון כוח?", ["פעם בחודש", "לפחות פעמיים בשבוע", "רק אחרי גיל חמישים"], 1, "ארגון הבריאות העולמי ממליץ לפחות פעמיים בשבוע."],
+  bd3: ["מה משפר דימוי גוף לפי המחקר?", ["להתמקד במה שהגוף יודע לעשות", "להסתכל יותר במראה", "דיאטה קיצונית"], 0, "התמקדות ביכולות של הגוף משפרת את היחס אליו."]
+};
+
+// Practice conversations with the coach
+window.ROLEPLAYS = [
+  { id: "raise", title: "בקשת העלאה", topic: "earning", hue: 44, role: "אתה מנהל ישיר בחברה ישראלית בינונית. אתה מעריך את העובד, אבל התקציב לחוץ ואתה לא נותן העלאה בקלות. תשאל על תוצאות, תתנגד פעם או פעמיים באופן מציאותי, ותתרכך רק אם הוא מביא נתונים ותוצאות.", open: "כן, ביקשת לדבר איתי. מה קורה?" },
+  { id: "partner", title: "שיחה רגישה עם בת הזוג", topic: "relationship", hue: 2, role: "את בת הזוג שלו. את מרגישה שהוא פחות נוכח בזמן האחרון, הרבה בטלפון. את לא תוקפנית, אבל פגועה. את מגיבה טוב לפתיחה רכה ולהקשבה, ומתכנסת אם הוא מתגונן או מבקר.", open: "אתה רוצה לדבר? כי אני מרגישה שמשהו לא בסדר בינינו בזמן האחרון." },
+  { id: "no", title: "לומר לא בביטחון", topic: "confidence", hue: 210, role: "אתה חבר טוב שמבקש ממנו טובה גדולה: לעזור במעבר דירה כל השבת, למרות שהוא כבר התחייב למשהו אחר. אתה לוחץ קצת, משתמש ברגשות אשם עדינים, אבל מכבד גבול ברור ואדיב.", open: "אחי, אני ממש צריך אותך בשבת, כל היום. אתה איתי, נכון?" },
+  { id: "first", title: "רושם ראשון בפגישה", topic: "body-language", hue: 24, role: "את מגייסת בחברה, בתחילת ראיון עבודה. את שואלת שאלות פתיחה רגילות, ומגיבה בחום כשהוא עונה בקצרה, בביטחון ועם דוגמאות.", open: "שלום, נעים מאוד. ספר לי קצת על עצמך." }
+];
 </script>
 <script>
 "use strict";
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const TOPIC = Object.fromEntries(TOPICS.map((t) => [t.id, t]));
-const HOSTS = { A: { name: "מאיה", letter: "מ" }, B: { name: "דניאל", letter: "ד" } };
+const HOSTS = { A: { name: "מאיה", letter: "מ", hue: 330 }, B: { name: "דניאל", letter: "ד", hue: 200 } };
+const orb = (h) => `<span class="orb" style="--h:${h}"></span>`;
 
-/* ---------- icons ---------- */
 const I = {
-  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>',
-  pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1.5"/><rect x="14" y="4" width="4" height="16" rx="1.5"/></svg>',
-  ear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 4.8v14.4a1 1 0 0 0 1.53.85l11.2-7.2a1 1 0 0 0 0-1.7L9.53 3.95A1 1 0 0 0 8 4.8z" transform="translate(-1.5 0)"/></svg>',
+  pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4.2" height="16" rx="1.6"/><rect x="13.8" y="4" width="4.2" height="16" rx="1.6"/></svg>',
+  ear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
   check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
   spark: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.3L20.5 10l-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-1.7zM19 15l1 2.6 2.5.9-2.5 1-1 2.5-1-2.5-2.5-1 2.5-.9z"/></svg>',
   home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg>',
   user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" stroke-linecap="round"/></svg>',
-  send: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4l17.5-7.5a1 1 0 0 0 0-1.8L3.4 3.6a.7.7 0 0 0-1 .8L4.5 11l9 1-9 1-2.1 6.6a.7.7 0 0 0 1 .8z" transform="scale(-1,1) translate(-24,0)"/></svg>',
-  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  send: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.6 3.6L3.1 11.1a1 1 0 0 0 0 1.8l17.5 7.5a.7.7 0 0 0 1-.8L19.5 13l-9-1 9-1 2.1-6.6a.7.7 0 0 0-1-.8z" transform="scale(-1,1) translate(-24,0)"/></svg>',
   down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
-  next: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 6v12h-2V6zM13 12L5 18V6z" transform="scale(-1,1) translate(-24,0)"/></svg>',
-  prev: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 6v12h2V6zM11 12l8 6V6z" transform="scale(-1,1) translate(-24,0)"/></svg>',
-  stop: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
+  fwd: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 6v12h2V6zM11 12l8 6V6z"/></svg>',
+  rew: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 6v12h-2V6zM13 12L5 18V6z"/></svg>',
+  stop: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>',
-  open: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
   upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>',
   text: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>',
   trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+  flame: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s5 4.5 5 10a5 5 0 0 1-10 0c0-2.4 1.3-4 2.4-5.1.2 1.6 1 2.8 2.1 3.3C11 7.6 12 2 12 2zm0 20a7 7 0 0 0 7-7c0-1.2-.3-2.3-.7-3.3C19.3 17 15.6 20 12 20s-6.5-2.3-6.9-5.6c-.1.4-.1.8-.1 1.2A6.5 6.5 0 0 0 12 22z"/></svg>',
+  bolt: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>',
+  face: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 10h.01M16 10h.01M8.5 15c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8"/></svg>',
+  wind: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8h11a3 3 0 1 0-3-3M3 12h16a3 3 0 1 1-3 3M3 16h7"/></svg>',
+  coin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg>',
+  chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5" stroke-linecap="round"/></svg>',
+  cc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 10.5a2 2 0 1 0 0 3M16.5 10.5a2 2 0 1 0 0 3" stroke-linecap="round"/></svg>',
 };
 
 /* ---------- state + storage ---------- */
-const today = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
-const DEFAULT = { profile: { name: "", about: "", focus: [] }, done: {}, days: {}, memory: [], history: [], settings: { rate: 1, voice: "" }, resume: null };
+const dkey = (d = new Date()) => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const today = () => dkey();
+const DEFAULT = { profile: { name: "", say: "", about: "", focus: [] }, done: {}, quiz: {}, days: {}, memory: [], history: [], xp: 0, face: { best: 0, level: 0, total: 0, right: 0 }, labs: {}, settings: { rate: 1, voice: "", engine: "auto", captions: false }, resume: null };
 let S = structuredClone(DEFAULT);
+function merge(x) { const o = structuredClone(DEFAULT); for (const k of Object.keys(o)) if (x && x[k] !== undefined) o[k] = (typeof o[k] === "object" && !Array.isArray(o[k]) && o[k]) ? { ...o[k], ...x[k] } : x[k]; return o; }
 const Store = {
-  db: null, uid: null, ref: null, timer: null, busy: false, dirty: false,
+  ref: null, timer: null, busy: false, dirty: false,
   async init() {
     try { const raw = localStorage.getItem("growth.state"); if (raw) S = merge(JSON.parse(raw)); } catch {}
     try {
       if (!window.claude?.use) return;
       const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
       if (!db || !user) return;
-      const uid = await user.id();
-      if (!uid) return;
-      this.db = db; this.uid = uid;
+      const uid = await user.id(); if (!uid) return;
       this.ref = db.collection("data/users/" + uid).doc("state");
       const snap = await Promise.race([this.ref.get(), new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 10000))]);
-      if (snap?.exists) { const remote = snap.data(); if (remote) { S = merge(remote); render(); } }
-      else this.save();
+      if (snap?.exists && snap.data()) { S = merge(snap.data()); render(); } else this.save();
     } catch (e) { console.warn("db unavailable", e); }
   },
   save() {
     try { localStorage.setItem("growth.state", JSON.stringify(S)); } catch {}
     if (!this.ref) return;
-    clearTimeout(this.timer);
-    this.timer = setTimeout(() => this.flush(), 900);
+    clearTimeout(this.timer); this.timer = setTimeout(() => this.flush(), 900);
   },
   async flush() {
     if (this.busy) { this.dirty = true; return; }
@@ -697,56 +855,85 @@ const Store = {
     if (this.dirty) { this.dirty = false; this.flush(); }
   }
 };
-function merge(x) { const o = structuredClone(DEFAULT); for (const k of Object.keys(o)) if (x && x[k] !== undefined) o[k] = (typeof o[k] === "object" && !Array.isArray(o[k]) && o[k]) ? { ...o[k], ...x[k] } : x[k]; return o; }
 const nameOf = () => (S.profile.name || "").trim();
+const sayName = () => (S.profile.say || S.profile.name || "").trim();
 
-/* local audio (NotebookLM files) in IndexedDB, per device */
-const Audio$ = {
-  dbp: null,
-  open() { if (this.dbp) return this.dbp; this.dbp = new Promise((res, rej) => { try { const r = indexedDB.open("growth-audio", 1); r.onupgradeneeded = () => r.result.createObjectStore("files", { keyPath: "id" }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }); return this.dbp; },
-  async tx(mode, fn) { const db = await this.open(); return new Promise((res, rej) => { const t = db.transaction("files", mode); const st = t.objectStore("files"); const out = fn(st); t.oncomplete = () => res(out.result ?? out); t.onerror = () => rej(t.error); }); },
-  async list(topic) { try { const all = await this.tx("readonly", (st) => st.getAll()); return (all || []).filter((f) => f.topic === topic).sort((a, b) => a.at - b.at); } catch { return []; } },
-  async add(topic, file) { return this.tx("readwrite", (st) => st.put({ id: "a" + Date.now(), topic, name: file.name.replace(/\.[^.]+$/, ""), at: Date.now(), blob: file })); },
-  async del(id) { return this.tx("readwrite", (st) => st.delete(id)); }
+/* ---------- XP + levels ---------- */
+const LEVELS = [[0, "ניצוץ"], [80, "סקרן"], [200, "לומד"], [380, "מתאמן"], [620, "יציב"], [920, "נוכח"], [1300, "חד"], [1800, "מוביל"], [2500, "מנטור"], [3400, "מאסטר"]];
+function levelOf(xp = S.xp) { let i = 0; while (i + 1 < LEVELS.length && xp >= LEVELS[i + 1][0]) i++; const cur = LEVELS[i][0], nxt = LEVELS[i + 1]?.[0] ?? cur + 1000; return { n: i + 1, name: LEVELS[i][1], pct: (xp - cur) / (nxt - cur), toNext: nxt - xp }; }
+function gain(n, why) {
+  const before = levelOf().n; S.xp += n; Store.save();
+  toast(`+${n} נקודות · ${why}`); Sound.chime();
+  const after = levelOf();
+  if (after.n > before) setTimeout(() => levelUp(after), 500);
+  paintTopLevel();
+}
+function levelUp(l) {
+  const d = document.createElement("div"); d.className = "levelup"; d.dir = "rtl"; d.innerHTML = `<div><b>רמה ${l.n}</b><span>${esc(l.name)}</span></div>`; document.body.appendChild(d);
+  confetti(); Sound.fanfare(); setTimeout(() => d.remove(), 2700);
+}
+function activeOn(k) { const day = S.days[k]; return !!day && (day.items.some((i) => i.done) || !!day.active); }
+function streak() { let n = 0; const d = new Date(); if (!activeOn(dkey(d))) d.setDate(d.getDate() - 1); while (activeOn(dkey(d))) { n++; d.setDate(d.getDate() - 1); } return n; }
+function markActive() { const d = dayPlan(); if (!d.active) { d.active = true; Store.save(); } }
+
+/* ---------- sound fx ---------- */
+const Sound = {
+  ctx: null,
+  ac() { try { this.ctx ||= new (window.AudioContext || window.webkitAudioContext)(); if (this.ctx.state === "suspended") this.ctx.resume(); return this.ctx; } catch { return null; } },
+  tone(f, t0, dur, gain = .06, type = "sine") { const c = this.ac(); if (!c) return; const o = c.createOscillator(), g = c.createGain(); o.type = type; o.frequency.value = f; g.gain.setValueAtTime(0, c.currentTime + t0); g.gain.linearRampToValueAtTime(gain, c.currentTime + t0 + .02); g.gain.exponentialRampToValueAtTime(.0001, c.currentTime + t0 + dur); o.connect(g).connect(c.destination); o.start(c.currentTime + t0); o.stop(c.currentTime + t0 + dur + .05); },
+  chime() { this.tone(880, 0, .35); this.tone(1320, .08, .45, .04); },
+  fanfare() { [523, 659, 784, 1047].forEach((f, i) => this.tone(f, i * .1, .5, .05, "triangle")); },
+  wrong() { this.tone(220, 0, .25, .05, "triangle"); },
+  sweep(up, dur) { const c = this.ac(); if (!c) return; const o = c.createOscillator(), g = c.createGain(); o.type = "sine"; const a = up ? 196 : 294, b = up ? 294 : 174; o.frequency.setValueAtTime(a, c.currentTime); o.frequency.linearRampToValueAtTime(b, c.currentTime + dur); g.gain.setValueAtTime(0, c.currentTime); g.gain.linearRampToValueAtTime(.035, c.currentTime + .3); g.gain.linearRampToValueAtTime(0, c.currentTime + dur); o.connect(g).connect(c.destination); o.start(); o.stop(c.currentTime + dur + .05); }
 };
 
-/* ---------- speech engine ---------- */
+function confetti() {
+  const cv = $("#fx"), c = cv.getContext("2d"); const dpr = Math.min(2, devicePixelRatio || 1);
+  cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cols = ["#ffc861", "#ff7a90", "#6ff0b4", "#8fb3ff", "#ffffff", "#c49bff"];
+  const ps = Array.from({ length: 140 }, () => ({ x: innerWidth / 2 + (Math.random() - .5) * 80, y: innerHeight * .45, vx: (Math.random() - .5) * 11, vy: -Math.random() * 13 - 4, r: Math.random() * 6 + 3, c: cols[Math.random() * cols.length | 0], a: Math.random() * 6, va: (Math.random() - .5) * .3 }));
+  let t = 0; const step = () => { c.clearRect(0, 0, innerWidth, innerHeight); t++; for (const p of ps) { p.vy += .32; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.a += p.va; c.save(); c.translate(p.x, p.y); c.rotate(p.a); c.fillStyle = p.c; c.globalAlpha = Math.max(0, 1 - t / 110); c.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); c.restore(); } if (t < 110) requestAnimationFrame(step); else c.clearRect(0, 0, innerWidth, innerHeight); };
+  step();
+}
+
+/* local audio (NotebookLM files), per device */
+const Files = {
+  dbp: null,
+  open() { if (this.dbp) return this.dbp; this.dbp = new Promise((res, rej) => { try { const r = indexedDB.open("growth-audio", 1); r.onupgradeneeded = () => r.result.createObjectStore("files", { keyPath: "id" }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }); return this.dbp; },
+  async tx(mode, fn) { const db = await this.open(); return new Promise((res, rej) => { const t = db.transaction("files", mode); const req = fn(t.objectStore("files")); t.oncomplete = () => res(req?.result); t.onerror = () => rej(t.error); }); },
+  async list(topic) { try { return ((await this.tx("readonly", (st) => st.getAll())) || []).filter((f) => f.topic === topic).sort((a, b) => a.at - b.at); } catch { return []; } },
+  add(topic, file) { return this.tx("readwrite", (st) => st.put({ id: "a" + Date.now(), topic, name: file.name.replace(/\.[^.]+$/, ""), at: Date.now(), blob: file })); },
+  del(id) { return this.tx("readwrite", (st) => st.delete(id)); }
+};
+
+/* ---------- voice engine ---------- */
 const Voice = {
-  claude: null, he: [], ready: false,
+  claude: null, he: [],
   async init() {
     const load = () => { try { this.he = speechSynthesis.getVoices().filter((v) => /^(he|iw)/i.test(v.lang)); } catch { this.he = []; } };
-    load();
-    try { speechSynthesis.onvoiceschanged = () => { load(); if (view.name === "profile") render(); }; } catch {}
-    setTimeout(load, 800);
+    load(); try { speechSynthesis.onvoiceschanged = () => { load(); if (view.name === "profile") render(); }; } catch {}
+    setTimeout(load, 900);
     try { if (window.claude?.use) this.claude = await claude.use("tts"); } catch {}
   },
-  mode() { if (this.he.length || !this.claude) return "device"; return "claude"; },
-  pick(who) {
-    const pref = S.settings.voice && this.he.find((v) => v.name === S.settings.voice);
-    const list = this.he.slice().sort((a, b) => (/(enhanced|premium|neural|online)/i.test(b.name) ? 1 : 0) - (/(enhanced|premium|neural|online)/i.test(a.name) ? 1 : 0));
-    if (who === "A") return pref || list[0] || null;
-    return list.find((v) => v !== (pref || list[0])) || pref || list[0] || null;
-  },
+  mode() { const e = S.settings.engine; if (e === "device" && this.he.length) return "device"; return this.claude ? "claude" : "device"; },
+  ranked() { const q = (v) => (/(premium|enhanced|neural|natural|online|משופר)/i.test(v.name) ? 2 : 0) + (v.localService === false ? 1 : 0); return this.he.slice().sort((a, b) => q(b) - q(a)); },
+  pick(who) { const list = this.ranked(); const pref = S.settings.voice && list.find((v) => v.name === S.settings.voice); const a = pref || list[0] || null; if (who === "A") return a; return list.find((v) => v !== a) || a; },
   token: 0,
+  prep(text) { return text.replaceAll("{name}", sayName() || "חבר"); },
   speak(text, who = "A") {
-    const my = ++this.token;
-    text = text.replaceAll("{name}", nameOf() || "חבר");
-    if (this.mode() === "claude") {
-      return this.claude.speak(text, { voice: who === "A" ? "airy" : "rounded", language: "he", rate: S.settings.rate }).then(() => my === this.token);
-    }
+    const my = ++this.token; text = this.prep(text);
+    if (this.mode() === "claude") return this.claude.speak(text, { voice: who === "A" ? "airy" : "rounded", language: "he", rate: S.settings.rate }).then(() => my === this.token);
     return new Promise((resolve) => {
       try {
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "he-IL";
+        const u = new SpeechSynthesisUtterance(text); u.lang = "he-IL";
         const v = this.pick(who); if (v) u.voice = v;
         const distinct = this.pick("A") !== this.pick("B");
-        u.pitch = who === "B" && !distinct ? 0.78 : 1;
-        u.rate = S.settings.rate * (who === "B" && !distinct ? 0.97 : 1);
+        u.pitch = who === "B" && !distinct ? 0.8 : 1.02;
+        u.rate = S.settings.rate * 0.96;
         let done = false; const fin = (ok) => { if (done) return; done = true; resolve(ok && my === this.token); };
         u.onend = () => fin(true); u.onerror = () => fin(false);
         speechSynthesis.speak(u);
-        // Safety net in case a browser never fires onend
-        setTimeout(() => fin(true), 4000 + text.length * 140 / S.settings.rate);
+        setTimeout(() => fin(true), 5000 + text.length * 150 / S.settings.rate);
       } catch { resolve(false); }
     });
   },
@@ -755,425 +942,655 @@ const Voice = {
 
 /* ---------- player ---------- */
 const P = {
-  item: null, idx: 0, playing: false, audio: null, // item: {kind:'ep'|'lines'|'file', title, sub, hue, lines, epId, topic, url}
+  item: null, idx: 0, playing: false, audio: null, run: 0,
   load(item, startIdx = 0) { this.stop(true); this.item = item; this.idx = startIdx; showPlayer(); this.play(); },
   async play() {
     if (!this.item) return;
-    this.playing = true; paint();
-    if (this.item.kind === "file") { try { await this.audio.play(); } catch {} return; }
+    Sound.ac(); this.playing = true; markActive(); paint();
+    if (this.item.kind === "file") { try { await this.audio.play(); } catch {} paint(); return; }
     const run = ++this.run;
     while (this.playing && run === this.run && this.idx < this.item.lines.length) {
-      const [who, val] = this.item.lines[this.idx];
-      paint();
-      if (who === "P") { await new Promise((r) => setTimeout(r, val / S.settings.rate)); if (run !== this.run) return; this.idx++; continue; }
-      let ok;
-      try { ok = await Voice.speak(val, who); } catch (e) { ok = false; if (e?.code === "not_granted" || e?.code === "unavailable") { toast("ההקראה כבויה במכשיר הזה"); this.pause(); return; } }
+      const [who, val] = this.item.lines[this.idx]; paint();
+      if (who === "P") { Sound.sweep(/שאיפה|עוד קצת/.test(this.item.lines[this.idx - 1]?.[1] || ""), val / 1000); await new Promise((r) => setTimeout(r, val / S.settings.rate)); if (run !== this.run) return; this.idx++; continue; }
+      try { await Voice.speak(val, who); } catch (e) { if (e?.code === "not_granted" || e?.code === "unavailable") { Voice.claude = null; toast("עוברים לקול של המכשיר"); continue; } }
       if (run !== this.run || !this.playing) return;
-      if (!ok && this.item) { /* skipped or errored; continue */ }
       this.idx++;
-      if (this.item.epId) { S.resume = { epId: this.item.epId, idx: this.idx }; }
+      if (this.item.epId) S.resume = { epId: this.item.epId, idx: this.idx };
     }
     if (run === this.run && this.item && this.idx >= this.item.lines.length) this.finish();
   },
-  run: 0,
   pause() { this.playing = false; this.run++; Voice.stop(); if (this.audio) this.audio.pause(); paint(); Store.save(); },
-  toggle() { this.playing ? this.pause() : this.play(); },
-  skip(d) { if (!this.item) return; if (this.item.kind === "file") { this.audio.currentTime = Math.max(0, this.audio.currentTime + d * 15); return; } const was = this.playing; this.run++; Voice.stop(); this.idx = Math.max(0, Math.min(this.item.lines.length - 1, this.idx + d)); while (this.item.lines[this.idx]?.[0] === "P" && this.idx < this.item.lines.length - 1) this.idx += d > 0 ? 1 : -1; this.idx = Math.max(0, this.idx); if (was) this.play(); else paint(); },
+  toggle() { if (this.item?.kind === "file") { this.audio.paused ? this.play() : this.pause(); return; } this.playing ? this.pause() : this.play(); },
+  skip(d) {
+    if (!this.item) return;
+    if (this.item.kind === "file") { this.audio.currentTime = Math.max(0, this.audio.currentTime + d * 15); return; }
+    const was = this.playing; this.run++; Voice.stop();
+    let i = Math.max(0, Math.min(this.item.lines.length - 1, this.idx + d));
+    while (this.item.lines[i]?.[0] === "P" && i > 0 && i < this.item.lines.length - 1) i += d > 0 ? 1 : -1;
+    this.idx = i; if (was) this.play(); else paint();
+  },
   finish() {
-    this.playing = false;
-    const it = this.item;
-    if (it?.epId) { S.done[it.epId] = Date.now(); S.resume = null; Store.save(); toast("הפרק הושלם"); }
+    this.playing = false; const it = this.item;
+    if (it?.epId) { const first = !S.done[it.epId]; S.done[it.epId] = Date.now(); S.resume = null; Store.save(); if (first) { gain(30, "פרק הושלם"); confetti(); } }
     paint(); if (view.name === "topic" || view.name === "home") render();
     if (it?.onEnd) it.onEnd();
   },
-  stop(silent) { this.playing = false; this.run++; Voice.stop(); if (this.audio) { this.audio.pause(); URL.revokeObjectURL(this.audio.src); this.audio = null; } if (!silent) { this.item = null; $("#player").hidden = true; closeSheet(); } }
+  stop(silent) { this.playing = false; this.run++; Voice.stop(); if (this.audio) { this.audio.pause(); try { URL.revokeObjectURL(this.audio.src); } catch {} this.audio = null; } if (!silent) { this.item = null; $("#player").hidden = true; closeSheet(); setHue(view.hue ?? 265); } }
 };
-function playEpisode(topicId, epIdx, fromIdx = 0) {
-  const t = TOPIC[topicId], ep = t.episodes[epIdx];
-  P.load({ kind: "ep", title: ep.title, sub: t.title + " · פרק " + (epIdx + 1), hue: t.hue, lines: ep.lines, epId: ep.id, topic: topicId,
-    onEnd: () => { const next = t.episodes[epIdx + 1]; if (next && !S.done[next.id]) setTimeout(() => { if (!P.playing) toastAction("לפרק הבא?", () => playEpisode(topicId, epIdx + 1)); }, 600); } }, fromIdx);
+function playEpisode(tid, e, from = 0, chain = false) {
+  const t = TOPIC[tid], ep = t.episodes[e];
+  setHue(t.hue);
+  P.load({ kind: "ep", title: ep.title, sub: `${t.title} · פרק ${e + 1}`, hue: t.hue, lines: ep.lines, epId: ep.id, topic: tid,
+    onEnd: () => setTimeout(() => quiz(ep.id, () => { const nx = t.episodes[e + 1]; if (nx && !S.done[nx.id] && chain) playEpisode(tid, e + 1, 0, chain); }), 500) }, from);
 }
-function playLines(title, sub, hue, lines) { P.load({ kind: "lines", title, sub, hue, lines }); }
-function playFile(rec, topicId) {
+function playLines(title, sub, hue, lines, onEnd) { P.load({ kind: "lines", title, sub, hue, lines, onEnd }); }
+function playFile(rec, tid) {
   P.stop(true);
-  const a = new Audio(URL.createObjectURL(rec.blob)); a.preload = "auto"; a.playbackRate = S.settings.rate;
-  a.ontimeupdate = paint; a.onended = () => { P.playing = false; paint(); }; a.onpause = paint;
-  P.audio = a; P.item = { kind: "file", title: rec.name, sub: TOPIC[topicId].title + " · NotebookLM", hue: TOPIC[topicId].hue, lines: [] }; P.idx = 0;
+  const a = new Audio(URL.createObjectURL(rec.blob)); a.playbackRate = S.settings.rate;
+  a.ontimeupdate = paint; a.onpause = paint; a.onplay = paint;
+  a.onended = () => { paint(); const k = "nb-" + rec.id; if (!S.labs[k]) { S.labs[k] = 1; gain(30, "פודקאסט עומק"); } };
+  P.audio = a; P.item = { kind: "file", title: rec.name, sub: TOPIC[tid].title + " · NotebookLM", hue: TOPIC[tid].hue, lines: [] }; P.idx = 0;
   showPlayer(); P.play();
 }
-function epLength(ep) { const chars = ep.lines.reduce((n, [w, v]) => n + (w === "P" ? v / 70 : v.length), 0); return Math.max(1, Math.round(chars / 760)); }
+function epMinutes(ep) { const chars = ep.lines.reduce((n, [w, v]) => n + (w === "P" ? v / 80 : v.length), 0); return Math.max(1, Math.round(chars / 760)); }
 
-/* ---------- generative art ---------- */
-function art(canvas, hue, seed = 1, motion = 0) {
-  const dpr = Math.min(2, window.devicePixelRatio || 1);
-  const w = canvas.clientWidth || 100, h = canvas.clientHeight || 100;
-  if (canvas.width !== Math.round(w * dpr)) { canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr); }
-  const c = canvas.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0);
-  let s = seed * 9301 + 49297; const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280;
-  const g = c.createLinearGradient(0, 0, w, h);
-  g.addColorStop(0, `hsl(${hue} 55% 22%)`); g.addColorStop(1, `hsl(${(hue + 40) % 360} 60% 12%)`);
-  c.fillStyle = g; c.fillRect(0, 0, w, h);
-  const cx = w * (0.25 + rnd() * 0.5), cy = h * (0.3 + rnd() * 0.3);
-  const R = Math.max(w, h);
-  for (let i = 18; i > 0; i--) {
-    const r = R * (i / 18) * 0.9 + Math.sin(motion * 1.5 + i) * (motion ? 4 : 0);
-    c.beginPath();
-    for (let a = 0; a <= Math.PI * 2 + 0.01; a += Math.PI / 90) {
-      const wob = 1 + 0.06 * Math.sin(a * (3 + (i % 4)) + seed + motion * (0.6 + i * 0.05));
-      const x = cx + Math.cos(a) * r * wob, y = cy + Math.sin(a) * r * wob * 0.86;
-      a === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
-    }
-    c.strokeStyle = `hsla(${(hue + i * 4) % 360} 85% ${55 + i * 1.5}% / ${0.10 + (18 - i) * 0.012})`;
-    c.lineWidth = 1.2; c.stroke();
-  }
-  const rg = c.createRadialGradient(cx, cy, 0, cx, cy, R * 0.35);
-  rg.addColorStop(0, `hsla(${hue} 95% 70% / .55)`); rg.addColorStop(1, `hsla(${hue} 95% 60% / 0)`);
-  c.fillStyle = rg; c.fillRect(0, 0, w, h);
-}
-function paintArt(root = document) { root.querySelectorAll("canvas[data-hue]").forEach((cv) => art(cv, +cv.dataset.hue, +(cv.dataset.seed || 1))); }
-
-/* ---------- daily tasks ---------- */
+/* ---------- daily plan ---------- */
 function hash(str) { let h = 2166136261; for (const ch of str) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
 function dayPlan(date = today()) {
   if (!S.days[date]) {
     const focus = S.profile.focus?.length ? S.profile.focus : TOPICS.map((t) => t.id);
     const order = TOPICS.map((t) => t.id).sort((a, b) => hash(date + a) - hash(date + b));
     const inF = order.filter((t) => focus.includes(t)), outF = order.filter((t) => !focus.includes(t));
-    // two from the focus topics, one from elsewhere so the week stays broad
     const chosen = [...inF.slice(0, 2), ...(outF.length ? outF.slice(0, 1) : inF.slice(2, 3))];
     while (chosen.length < 3) { const x = order.find((t) => !chosen.includes(t)); if (!x) break; chosen.push(x); }
     const recent = new Set(Object.values(S.days).slice(-6).flatMap((d) => d.items.map((it) => it.i)));
-    const picks = chosen.map((tid) => {
+    const items = chosen.map((tid) => {
       const cand = TASKS.map((x, i) => [x, i]).filter(([x]) => x[0] === tid);
-      const fresh = cand.filter(([, i]) => !recent.has(i));
-      const list = fresh.length ? fresh : cand;
+      const fresh = cand.filter(([, i]) => !recent.has(i)); const list = fresh.length ? fresh : cand;
       const [x, i] = list[hash(date + tid + "t") % list.length];
       return { i, topic: x[0], text: x[1], done: false };
     });
-    S.days[date] = { items: picks };
+    S.days[date] = { items };
     const keys = Object.keys(S.days).sort(); while (keys.length > 60) delete S.days[keys.shift()];
     Store.save();
   }
   return S.days[date];
 }
-function streakDays() {
-  const out = []; const d = new Date();
-  for (let k = 6; k >= 0; k--) { const x = new Date(d); x.setDate(d.getDate() - k); const key = x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0") + "-" + String(x.getDate()).padStart(2, "0"); const day = S.days[key]; out.push({ key, on: !!day && day.items.some((i) => i.done), today: k === 0 }); }
-  return out;
+function nextEpisode() {
+  if (S.resume) for (const t of TOPICS) { const e = t.episodes.findIndex((x) => x.id === S.resume.epId); if (e >= 0) return { t: t.id, e, from: Math.max(0, S.resume.idx - 1) }; }
+  const order = [...(S.profile.focus || []), ...TOPICS.map((t) => t.id)];
+  for (const tid of order) { const t = TOPIC[tid]; const e = t.episodes.findIndex((x) => !S.done[x.id]); if (e >= 0) return { t: tid, e, from: 0 }; }
+  return null;
 }
 
-/* ---------- AI coach ---------- */
-const Coach = {
+/* ---------- AI ---------- */
+const AI = {
   sample: null, tried: false,
-  async get() { if (!this.tried) { this.tried = true; try { this.sample = window.claude?.use ? await claude.use("sample") : null; } catch { this.sample = null; } } return this.sample; },
+  async get() { if (!this.tried) { this.tried = true; try { this.sample = window.claude?.use ? await claude.use("sample") : null; } catch { this.sample = null; } } if (!this.sample) throw Object.assign(new Error("no sample"), { code: "unavailable" }); return this.sample; },
   context() {
     const p = S.profile;
-    const listened = Object.keys(S.done).map((id) => { for (const t of TOPICS) { const e = t.episodes.find((x) => x.id === id); if (e) return t.title + ": " + e.title; } return null; }).filter(Boolean);
+    const heard = Object.keys(S.done).map((id) => { for (const t of TOPICS) { const e = t.episodes.find((x) => x.id === id); if (e) return t.title + ": " + e.title; } return null; }).filter(Boolean);
     const dp = S.days[today()];
-    return [
-      "שם: " + (p.name || "לא ידוע"),
-      "על עצמו: " + (p.about || "לא סיפר עדיין"),
-      "נושאי מיקוד: " + ((p.focus || []).map((f) => TOPIC[f]?.title).join(", ") || "הכל"),
-      "דברים שלמדת עליו בשיחות קודמות: " + (S.memory.length ? S.memory.join(" | ") : "אין עדיין"),
-      "פרקים ששמע: " + (listened.join(", ") || "עוד לא"),
-      "משימות היום: " + (dp ? dp.items.map((i) => (i.done ? "[בוצע] " : "") + i.text).join(" | ") : "-"),
-      "שאלות אחרונות: " + (S.history.slice(-4).map((h) => h.q).join(" | ") || "-"),
-    ].join("\n");
+    return ["שם: " + (p.name || "לא ידוע"), "על עצמו: " + (p.about || "לא סיפר עדיין"), "מיקוד: " + ((p.focus || []).map((f) => TOPIC[f]?.title).join(", ") || "הכל"),
+      "מה שלמדת עליו בעבר: " + (S.memory.join(" | ") || "אין עדיין"), "פרקים ששמע: " + (heard.join(", ") || "עוד לא"), "רמה: " + levelOf().n + ", רצף ימים: " + streak(),
+      "משימות היום: " + (dp ? dp.items.map((i) => (i.done ? "[בוצע] " : "") + i.text).join(" | ") : "-"), "שאלות אחרונות: " + (S.history.slice(-4).map((h) => h.q).join(" | ") || "-")].join("\n");
   },
   rules: `אתה "המאמן" באפליקציית התפתחות אישית בעברית. המשתמש לא קורא, הוא שומע: כל מה שתכתוב יוקרא בקול.
-כללים:
-- עברית מדוברת, חמה וישירה, בלשון זכר, פונה אליו בשמו לפעמים.
-- רק מידע אמיתי ומבוסס. אם המחקר חלש או שנוי במחלוקת, אמור זאת במשפט אחד. אל תמציא מחקרים, מספרים או ציטוטים.
-- במיקרו-הבעות ושפת גוף: לעולם לא להבטיח זיהוי שקרים.
-- בכסף: ידע כללי לישראל, לא המלצה על מוצר ספציפי. בהחלטות גדולות, הפנה ליועץ בלתי תלוי. ברפואה ובנפש: הפנה לאיש מקצוע כשיש סימן לבעיה אמיתית.
-- מבנה: תשובה ברורה בשני משפטים, ואז למה זה עובד, ואז צעד אחד לעשות היום.
-- בלי כוכביות, בלי רשימות ממוספרות, בלי כותרות ובלי אימוג'י. משפטים קצרים שנעים לשמוע.
-- עד 170 מילים.`,
+- עברית מדוברת, חמה, ישירה ואנושית, כמו חבר חכם. לשון זכר. לפעמים פונה בשמו.
+- רק מידע אמיתי ומבוסס. כשהמחקר חלש או שנוי במחלוקת, אמור זאת במשפט אחד. אל תמציא מחקרים, מספרים או ציטוטים.
+- שפת גוף ומיקרו-הבעות: לעולם לא להבטיח זיהוי שקרים.
+- כסף: ידע כללי לישראל, בלי המלצה על מוצר ספציפי. בהחלטות גדולות, הפנה ליועץ בלתי תלוי. בריאות ונפש: הפנה לאיש מקצוע כשיש סימן לבעיה.
+- בלי כוכביות, רשימות, כותרות או אימוג'י. משפטים קצרים שנעים לשמוע.`,
   async ask(q) {
-    const sample = await this.get();
-    if (!sample) throw Object.assign(new Error("no sample"), { code: "unavailable" });
-    const prompt = `${this.rules}
+    const s = await this.get();
+    const r = await s.json(`${this.rules}
+- מבנה: תשובה ברורה בשני משפטים, למה זה עובד, וצעד אחד להיום. עד 170 מילים.
 
 מה שידוע לך על המשתמש:
 ${this.context()}
 
 השאלה שלו: ${q}
 
-החזר JSON בלבד בצורה:
-{"answer": "התשובה המדוברת", "task": "משימה אחת קצרה להיום שנובעת מהתשובה, עד 14 מילים", "remember": ["עובדה חדשה וחשובה שלמדת עליו מהשאלה, אם יש. אחרת מערך ריק"]}`;
-    const r = await sample.json(prompt, { cache: false, modelTier: "default" });
+החזר JSON בלבד: {"answer": "התשובה המדוברת", "task": "משימה אחת קצרה להיום, עד 14 מילים", "remember": ["עובדה חדשה וחשובה עליו מהשאלה, אם יש"]}`, { cache: false });
     if (!r || typeof r.answer !== "string") throw Object.assign(new Error("bad"), { code: "invalid_json" });
     return r;
   },
-  async personalTask() {
-    const sample = await this.get();
-    if (!sample) throw Object.assign(new Error("no sample"), { code: "unavailable" });
-    const prompt = `${this.rules}
+  async task() {
+    const s = await this.get();
+    return s.json(`${this.rules}
 
 מה שידוע לך על המשתמש:
 ${this.context()}
 
-צור משימה אישית אחת להיום, שמתאימה לו ושונה ממשימות היום. משהו מעשי שלוקח עד עשרים דקות, מבוסס, לא קלישאה.
-החזר JSON בלבד: {"topic": "אחד מ: ${TOPICS.map((t) => t.id).join(", ")}", "task": "המשימה, עד 16 מילים", "why": "משפט אחד למה זה עובד"}`;
-    return sample.json(prompt, { cache: false, modelTier: "default" });
+צור משימה אישית אחת להיום, מותאמת לו ושונה ממשימות היום. מעשית, עד עשרים דקות, מבוססת, לא קלישאה.
+החזר JSON בלבד: {"topic": "אחד מ: ${TOPICS.map((t) => t.id).join(", ")}", "task": "עד 16 מילים", "why": "משפט אחד למה זה עובד"}`, { cache: false });
+  },
+  async roleTurn(rp, turns) {
+    const s = await this.get();
+    const msgs = [{ role: "user", content: `${this.rules}
+
+אנחנו בתרגול שיחה. ${rp.role}
+דבר רק בתור הדמות, עד שלושה משפטים קצרים, טבעי ומציאותי. אל תצא מהדמות ואל תיתן עצות.
+פרטים על המתאמן: ${this.context()}
+
+פתח את השיחה.` }, { role: "assistant", content: rp.open }];
+    for (const t of turns.slice(1)) msgs.push({ role: t.me ? "user" : "assistant", content: t.text });
+    const r = await s(msgs, { cache: false });
+    return (r.text || "").trim();
+  },
+  async feedback(rp, turns) {
+    const s = await this.get();
+    const log = turns.map((t) => (t.me ? "המתאמן: " : "הדמות: ") + t.text).join("\n");
+    return s.json(`${this.rules}
+
+נתח את תרגול השיחה הבא ("${rp.title}"). הדמות: ${rp.role}
+${log}
+
+תן משוב כן ומדויק, מבוסס על עקרונות מוכחים (משא ומתן, גוטמן, אסרטיביות, הקשבה). החזר JSON בלבד:
+{"score": מספר 1 עד 10, "good": "משפט אחד על מה שעשה טוב", "improve": "משפט אחד על הדבר הכי חשוב לשפר", "line": "משפט אחד מדויק שהיה כדאי לומר במקום", "spoken": "סיכום מדובר וחם של כל זה, עד 70 מילים"}`, { cache: false });
   }
 };
-function sentences(text) { return text.replace(/\s+/g, " ").match(/[^.!?]+[.!?]*/g)?.map((s) => s.trim()).filter(Boolean) || [text]; }
+function aiErr(e) {
+  const c = e?.code;
+  if (c === "unavailable" || c === "not_granted") return "המאמן עובד כשפותחים את האפליקציה בתוך Claude ומחוברים לחשבון.";
+  if (c === "rate_limited") return "יותר מדי בקשות ברגע. נסה שוב בעוד דקה.";
+  return "לא הצלחתי לקבל תשובה. נסה שוב.";
+}
+const sentences = (t) => t.replace(/\s+/g, " ").match(/[^.!?]+[.!?]*/g)?.map((s) => s.trim()).filter(Boolean) || [t];
 
 /* ---------- views ---------- */
 let view = { name: "home" };
-function go(name, arg) { view = { name, arg }; closeDrawer(); render(); window.scrollTo({ top: 0 }); try { localStorage.setItem("growth.view", JSON.stringify(view)); } catch {} }
-function topbar(left) {
-  return `<header class="top"><button class="iconbtn burger" aria-label="תפריט נושאים" data-act="drawer"><div><span></span><span></span><span></span></div></button>
-  <div class="brand">צמי<b>חה</b></div>${left || `<button class="iconbtn" aria-label="המאמן" data-go="coach">${I.spark}</button>`}</header>`;
+function setHue(h) { document.documentElement.style.setProperty("--hue", h); }
+function go(name, arg) {
+  if (view.name === "face") Face.stop(); if (view.name === "breath") Breath.stop();
+  view = { name, arg }; closeDrawer(); render(); window.scrollTo({ top: 0 });
+  try { localStorage.setItem("growth.view", JSON.stringify(view)); } catch {}
 }
+function ringSvg(pct, size = 46, col = "var(--gold)") { const r = size / 2 - 4, c = 2 * Math.PI * r; return `<svg class="ring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg)"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="4"/><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${col}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c * (1 - Math.max(0, Math.min(1, pct)))).toFixed(1)}"/></svg>`; }
+function topbar(back) {
+  const l = levelOf();
+  return `<header class="top"><button class="glassbtn burger" aria-label="תפריט" data-act="drawer"><div><span></span><span></span><span></span></div></button>
+  <div class="brand"><span class="seed"></span>צמיחה</div>
+  ${back ? `<button class="glassbtn" aria-label="חזרה לבית" data-go="home">${I.home}</button>` : `<button class="lvl" data-go="profile" aria-label="רמה ${l.n}" id="toplvl">${ringSvg(l.pct)}<b>${l.n}</b></button>`}</header>`;
+}
+function paintTopLevel() { const el = $("#toplvl"); if (el) { const l = levelOf(); el.innerHTML = ringSvg(l.pct) + `<b>${l.n}</b>`; } }
 function render() {
   const app = $("#app");
-  if (!nameOf() && view.name !== "profile" && !S.profile.skipped) { app.innerHTML = welcomeView(); bind(app); paintArt(app); renderDrawer(); return; }
-  app.innerHTML = view.name === "topic" ? topicView(view.arg) : view.name === "coach" ? coachView() : view.name === "profile" ? profileView() : homeView();
-  bind(app); paintArt(app); renderDrawer(); if (view.name === "coach") Orb.mount(); else Orb.unmount();
+  let hue = 265, html;
+  if (!nameOf() && view.name !== "profile" && !S.profile.skipped) { html = welcomeView(); hue = 280; }
+  else if (view.name === "topic" && TOPIC[view.arg]) { html = topicView(view.arg); hue = TOPIC[view.arg].hue; }
+  else if (view.name === "coach") { html = coachView(); hue = 40; }
+  else if (view.name === "face") { html = faceView(); hue = 340; }
+  else if (view.name === "money") { html = moneyView(); hue = 150; }
+  else if (view.name === "breath") { html = breathView(); hue = 200; }
+  else if (view.name === "profile") html = profileView();
+  else html = homeView();
+  view.hue = hue; if (!P.playing) setHue(hue);
+  app.innerHTML = `<div class="view">${html}</div>`;
+  bind(app); renderDrawer();
+  if (view.name === "coach") VO.mount(); else VO.unmount();
   if (view.name === "topic") loadOwnAudio(view.arg);
+  if (view.name === "face") Face.mount();
+  if (view.name === "money") Money.calc();
+  if (view.name === "breath") Breath.mount();
 }
+
 function welcomeView() {
   return `<div class="welcome">
-    <div class="cover" style="aspect-ratio:1.4/1"><canvas data-hue="38" data-seed="7"></canvas></div>
-    <h1>לומדים באוזניים.</h1>
-    <p>פרקים קצרים בקול על שפת גוף, הבעות פנים, כסף, ביטחון, נוכחות, זוגיות והגוף. כל יום שלוש משימות, ומאמן שאפשר לשאול הכל.</p>
+    <section class="hero">${orb(280)}<div><div class="date">צמיחה</div><h1>לומדים באוזניים. משתנים בחיים.</h1></div></section>
+    <p>פרקים קצרים בשיחה בין שני מגישים, מעבדות אימון, משימות יומיות ומאמן שעונה בקול. הכל מבוסס מחקר.</p>
     <div class="field"><label for="w-name">איך לקרוא לך?</label><input id="w-name" autocomplete="given-name" placeholder="השם שלך"></div>
-    <div class="field"><label>במה להתמקד קודם?</label><div class="chips" id="w-focus">${TOPICS.map((t) => `<button class="chip" data-focus="${t.id}">${t.title}</button>`).join("")}</div></div>
-    <button class="btn" data-act="start">${I.ear} מתחילים</button>
+    <div class="field"><label>במה להתמקד קודם? אפשר כמה</label><div class="chips" style="margin:0">${TOPICS.map((t) => `<button class="chip" data-focus="${t.id}">${t.title}</button>`).join("")}</div></div>
+    <button class="btn" data-act="start">${I.play} בוא נתחיל</button>
   </div>`;
 }
 function homeView() {
-  const dp = dayPlan(); const name = nameOf();
-  const hour = new Date().getHours();
-  const hi = hour < 12 ? "בוקר טוב" : hour < 17 ? "צהריים טובים" : hour < 21 ? "ערב טוב" : "לילה טוב";
-  const doneCount = dp.items.filter((i) => i.done).length;
-  const next = nextEpisode();
+  const dp = dayPlan(); const name = nameOf(); const h = new Date().getHours();
+  const hi = h < 5 ? "לילה טוב" : h < 12 ? "בוקר טוב" : h < 17 ? "צהריים טובים" : h < 21 ? "ערב טוב" : "לילה טוב";
+  const nx = nextEpisode(); const st = streak(); const l = levelOf();
   const dateStr = new Date().toLocaleDateString("he-IL", { weekday: "long", day: "numeric", month: "long" });
+  const done = dp.items.filter((i) => i.done).length;
+  const week = []; for (let k = 6; k >= 0; k--) { const d = new Date(); d.setDate(d.getDate() - k); week.push({ on: activeOn(dkey(d)), today: k === 0, l: d.toLocaleDateString("he-IL", { weekday: "narrow" }) }); }
+  const heroHue = nx ? TOPIC[nx.t].hue : 265;
   return `${topbar()}
-  <section class="hero"><canvas data-hue="${next ? TOPIC[next.t].hue : 38}" data-seed="${new Date().getDate()}"></canvas>
-    <div class="in"><div><div class="date">${esc(dateStr)}</div><div class="hi">${hi}${name ? ", " + esc(name) : ""}</div></div>
-    <button class="bigplay" data-act="brief" aria-label="השמע את היום">${I.play}</button></div></section>
+  <section class="hero">${orb(heroHue)}
+    <div><div class="date">${esc(dateStr)}</div><h1>${hi}${name ? ", " + esc(name) : ""}</h1></div>
+    <div><div class="stats"><span class="stat">${I.flame} ${st} ימים ברצף</span><span class="stat">${I.bolt} ${S.xp} נק׳ · ${esc(l.name)}</span><span class="stat">${I.check} ${done}/${dp.items.length}</span></div>
+    <div class="go"><div><small>${nx ? "האימון של היום · כ-" + (epMinutes(TOPIC[nx.t].episodes[nx.e]) + 1) + " דק׳" : "סיימת את כל הפרקים"}</small><b>${nx ? esc(TOPIC[nx.t].episodes[nx.e].title) : "תשאל את המאמן"}</b></div>
+    <button class="play" data-act="daily" aria-label="התחל את האימון של היום">${I.play}</button></div></div>
+  </section>
 
-  <section class="sec"><div class="sechead"><h3>המשימות של היום</h3><span class="aux">${doneCount}/${dp.items.length}</span></div>
-    <div class="tasks">${dp.items.map((it, k) => taskRow(it, k)).join("")}</div>
-    <div class="row" style="margin-top:10px">
-      <button class="pill" data-act="say-tasks">${I.ear} השמע משימות</button>
-      ${dp.items.some((i) => i.ai) ? "" : `<button class="pill" data-act="ai-task">${I.spark} משימה אישית מהמאמן</button>`}
+  <section class="sec"><div class="sechead"><h3>המשימות של היום</h3><span class="aux">20 נק׳ למשימה</span></div>
+    <div class="tasks">${dp.items.map(taskRow).join("")}</div>
+    <div class="row" style="margin-top:10px"><button class="pill" data-act="say-tasks">${I.ear} השמע משימות</button>${dp.items.some((i) => i.ai) ? "" : `<button class="pill" data-act="ai-task">${I.spark} משימה אישית מהמאמן</button>`}</div></section>
+
+  <section class="sec"><div class="sechead"><h3>מעבדות אימון</h3><span class="aux">החלק הצידה</span></div>
+    <div class="rail">
+      ${labCard("face", 340, I.face, "מעבדת פנים", `לזהות הבעה בשבריר שנייה · שיא ${S.face.best}`)}
+      ${labCard("coach", 40, I.chat, "תרגול שיחה", "העלאה, בת זוג, לומר לא", "rp")}
+      ${labCard("breath", 200, I.wind, "נשימה", "אנחה מחזורית מודרכת")}
+      ${labCard("money", 150, I.coin, "מחשבון העתיד", "ריבית דריבית ודמי ניהול")}
     </div></section>
 
-  <section class="sec"><div class="sechead"><h3>7 הימים האחרונים</h3><span class="aux">${streakDays().filter((d) => d.on).length} ימים פעילים</span></div>
-    <div class="streak">${streakDays().map((d) => `<i class="${d.on ? "on" : ""} ${d.today ? "today" : ""}" title="${d.key}"></i>`).join("")}</div></section>
+  ${nx ? `<section class="sec"><div class="sechead"><h3>${S.resume ? "להמשיך לשמוע" : "הפרק הבא שלך"}</h3></div>
+    <button class="resume card" data-play="${nx.t}:${nx.e}:${nx.from}"><span class="art">${orb(TOPIC[nx.t].hue)}</span><span class="t"><b>${esc(TOPIC[nx.t].episodes[nx.e].title)}</b><small>${esc(TOPIC[nx.t].title)} · ${epMinutes(TOPIC[nx.t].episodes[nx.e])} דק׳ · שני מגישים</small></span><span class="round">${I.play}</span></button></section>` : ""}
 
-  ${next ? `<section class="sec"><div class="sechead"><h3>${S.resume ? "להמשיך לשמוע" : "הפרק הבא שלך"}</h3></div>
-    <button class="ep" data-play="${next.t}:${next.e}:${next.from}"><span class="num">${I.play}</span><span class="t">${esc(TOPIC[next.t].episodes[next.e].title)}<br><span class="m">${esc(TOPIC[next.t].title)} · ${epLength(TOPIC[next.t].episodes[next.e])} דק׳</span></span></button></section>` : ""}
+  <section class="sec"><div class="sechead"><h3>השבוע שלך</h3><span class="aux">עוד ${l.toNext} נק׳ לרמה ${l.n + 1}</span></div>
+    <div class="card week">${week.map((d) => `<div class="day ${d.on ? "on" : ""} ${d.today ? "today" : ""}"><i>${d.on ? I.flame : ""}</i>${esc(d.l)}</div>`).join("")}</div></section>
 
   <section class="sec"><div class="sechead"><h3>נושאים</h3><span class="aux">${Object.keys(S.done).length}/${TOPICS.reduce((n, t) => n + t.episodes.length, 0)} פרקים</span></div>
-    <div class="grid2">${TOPICS.map((t, i) => `<button class="tile" data-go="topic" data-arg="${t.id}"><canvas data-hue="${t.hue}" data-seed="${i + 2}"></canvas><span class="lab"><b>${t.title}</b><small>${t.episodes.filter((e) => S.done[e.id]).length}/${t.episodes.length}</small></span></button>`).join("")}</div></section>`;
+    <div class="topics">${TOPICS.map((t) => { const d = t.episodes.filter((e) => S.done[e.id]).length; return `<button class="topic" data-go="topic" data-arg="${t.id}">${orb(t.hue)}<span class="shade"></span>${ringSvg(d / t.episodes.length, 38, "#fff")}<span><b>${t.title}</b><small>${t.short}</small></span></button>`; }).join("")}</div></section>`;
 }
+function labCard(g, hue, icon, title, sub, mode) { return `<button class="lab" data-go="${g}" ${mode ? `data-mode-go="${mode}"` : ""}>${orb(hue)}<span class="shade"></span><span class="ico">${icon}</span><b>${title}</b><span class="s">${esc(sub)}</span></button>`; }
 function taskRow(it, k) {
-  const hue = TOPIC[it.topic]?.hue ?? 38;
-  return `<div class="task ${it.done ? "done" : ""} ${it.ai ? "ai" : ""}"><span class="dot" style="background:hsl(${hue} 70% 55%)"></span>
-    <span class="txt">${esc(it.text)}</span>
-    <button class="act" data-act="say-task" data-k="${k}" aria-label="השמע משימה">${I.ear}</button>
-    <button class="act check ${it.done ? "on" : ""}" data-act="check" data-k="${k}" aria-label="${it.done ? "בטל סימון" : "סמן כבוצע"}">${I.check}</button></div>`;
+  const t = TOPIC[it.topic];
+  return `<div class="task card ${it.done ? "done" : ""}" style="--h:${t?.hue ?? 40}"><span class="txt"><span class="tag">${it.ai ? "מהמאמן · " : ""}${esc(t?.title || "")}</span><span>${esc(it.text)}</span></span>
+    <button class="round" data-act="say-task" data-k="${k}" aria-label="השמע משימה">${I.ear}</button>
+    <button class="round check ${it.done ? "on" : ""}" data-act="check" data-k="${k}" aria-label="${it.done ? "בטל סימון" : "סמן כבוצע"}">${I.check}</button></div>`;
 }
-function nextEpisode() {
-  if (S.resume) { for (const t of TOPICS) { const e = t.episodes.findIndex((x) => x.id === S.resume.epId); if (e >= 0) return { t: t.id, e, from: Math.max(0, S.resume.idx - 1) }; } }
-  const order = [...(S.profile.focus || []), ...TOPICS.map((t) => t.id)];
-  for (const tid of order) { const t = TOPIC[tid]; const e = t.episodes.findIndex((x) => !S.done[x.id]); if (e >= 0) return { t: tid, e, from: 0 }; }
-  return null;
-}
+const TOPIC_LAB = { faces: ["face", "מעבדת פנים: לזהות הבעות בשבריר שנייה"], presence: ["breath", "נשימה מודרכת: אנחה מחזורית"], saving: ["money", "מחשבון העתיד: כמה עולים לך דמי הניהול"], earning: ["rp:raise", "תרגול: בקשת העלאה מול המאמן"], relationship: ["rp:partner", "תרגול: שיחה רגישה עם בת הזוג"], confidence: ["rp:no", "תרגול: לומר לא בביטחון"], "body-language": ["rp:first", "תרגול: רושם ראשון בראיון"], body: ["breath", "נשימה להירגע לפני השינה"] };
 function topicView(id) {
-  const t = TOPIC[id]; const idx = TOPICS.indexOf(t);
-  return `${topbar(`<button class="iconbtn" aria-label="חזרה לבית" data-go="home">${I.home}</button>`)}
-  <section class="cover"><canvas data-hue="${t.hue}" data-seed="${idx + 2}"></canvas>
-    <div class="in"><div><h1>${t.title}</h1><p>${t.short} · ${t.episodes.length} פרקים</p></div>
-    <button class="bigplay" data-play="${id}:${Math.max(0, t.episodes.findIndex((e) => !S.done[e.id]))}:0" aria-label="נגן">${I.play}</button></div></section>
-  <div class="eps">${t.episodes.map((e, i) => {
-    const playing = P.item?.epId === e.id;
-    return `<button class="ep ${S.done[e.id] ? "done" : ""} ${playing ? "playing" : ""}" data-play="${id}:${i}:0"><span class="num">${S.done[e.id] ? I.check : i + 1}</span><span class="t">${esc(e.title)}</span><span class="m">${epLength(e)} דק׳</span></button>`;
-  }).join("")}</div>
-  <div class="own" id="own"></div>
-  <section class="nb">
-    <h4>פודקאסט עומק מ-NotebookLM</h4>
-    <div class="steps">
-      <button class="step" data-act="nb-copy" data-arg="${id}"><b>1</b>${I.copy}העתק חומר</button>
-      <a class="step" href="https://notebooklm.google.com/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none"><b>2</b>${I.open}צור סקירת אודיו</a>
-      <button class="step" data-act="nb-up" data-arg="${id}"><b>3</b>${I.upload}הוסף לכאן</button>
-    </div>
-    <button class="mini" data-act="nb-how" style="justify-self:start">${I.ear} איך זה עובד</button>
+  const t = TOPIC[id]; const first = Math.max(0, t.episodes.findIndex((e) => !S.done[e.id])); const lab = TOPIC_LAB[id];
+  return `${topbar(true)}
+  <section class="cover">${orb(t.hue)}<span class="shade"></span>
+    <h1>${t.title}</h1><p>${t.short} · ${t.episodes.length} פרקים · ${t.episodes.reduce((n, e) => n + epMinutes(e), 0)} דק׳</p>
+    <div class="go"><div><small>${t.episodes.every((e) => S.done[e.id]) ? "השלמת את הנושא" : "להמשיך מכאן"}</small><b>${esc(t.episodes[first].title)}</b></div>
+    <button class="play" data-chain="${id}:${first}" aria-label="נגן ברצף">${I.play}</button></div></section>
+  <div class="eps">${t.episodes.map((e, i) => { const q = S.quiz[e.id]; return `<button class="ep card ${S.done[e.id] ? "done" : ""} ${P.item?.epId === e.id ? "now" : ""}" data-play="${id}:${i}:0"><span class="n">${S.done[e.id] ? I.check : P.item?.epId === e.id ? I.play : i + 1}</span><span class="t">${esc(e.title)}<small>${epMinutes(e)} דק׳ · שני מגישים</small></span>${q ? `<span class="badge ${q === 1 ? "ok" : ""}">${q === 1 ? "חידון ✓" : "חידון"}</span>` : ""}</button>`; }).join("")}</div>
+  ${lab ? `<section class="sec"><button class="resume card" data-lab="${lab[0]}"><span class="art">${orb(t.hue + 40)}</span><span class="t"><b>אימון מעשי</b><small>${lab[1]}</small></span><span class="round">${I.bolt}</span></button></section>` : ""}
+  <div id="own"></div>
+  <section class="nb card" style="--h:${t.hue}">
+    <h4>פודקאסט עומק בקול אנושי, מ-NotebookLM</h4>
+    <p>NotebookLM של גוגל יוצר פודקאסט של שני מגישים בקול אנושי לגמרי. הכנתי לו את כל החומר של הנושא, עם הוראות לעברית ולמחקר בלבד.</p>
+    <a class="nbgo" href="https://notebooklm.google.com/" target="_blank" rel="noopener" data-act="nb-go" data-arg="${id}" style="color:inherit;text-decoration:none">${I.copy}<span><b>העתק חומר ופתח את NotebookLM</b><small>מדביקים כמקור, ובוחרים סקירת אודיו בעברית</small></span></a>
+    <button class="nbgo" data-act="nb-up" data-arg="${id}">${I.upload}<span><b>הוסף את הפודקאסט לכאן</b><small>הקובץ שהורדת מ-NotebookLM ינוגן בנושא הזה</small></span></button>
+    <button class="mini" data-act="nb-how" style="justify-self:start">${I.ear} שמע איך עושים את זה</button>
   </section>`;
 }
 async function loadOwnAudio(id) {
   const el = $("#own"); if (!el) return;
-  const files = await Audio$.list(id);
-  el.innerHTML = files.length ? `<div class="sechead" style="margin:16px 0 0"><h3 style="font-size:24px">הפודקאסטים שלך</h3></div>` + files.map((f) => `<div class="ep" style="cursor:default"><button class="num" data-file="${f.id}" aria-label="נגן">${I.play}</button><span class="t">${esc(f.name)}</span><button class="mini" data-act="file-del" data-id="${f.id}" aria-label="מחק">${I.trash}</button></div>`).join("") : "";
-  el.querySelectorAll("[data-file]").forEach((b) => b.onclick = () => { const rec = files.find((f) => f.id === b.dataset.file); if (rec) playFile(rec, id); });
-  el.querySelectorAll("[data-act=file-del]").forEach((b) => b.onclick = async () => { if (b.dataset.armed) { await Audio$.del(b.dataset.id); loadOwnAudio(id); toast("נמחק"); } else { b.dataset.armed = 1; b.textContent = "למחוק?"; setTimeout(() => { delete b.dataset.armed; b.innerHTML = I.trash; }, 2500); } });
+  const files = await Files.list(id);
+  el.innerHTML = files.length ? `<div class="sechead" style="margin-top:22px"><h3>פודקאסטים בקול אנושי</h3></div><div class="eps" style="margin-top:0">` + files.map((f) => `<div class="ep card"><button class="n" style="background:var(--gold);color:var(--gold-ink)" data-file="${f.id}" aria-label="נגן">${I.play}</button><span class="t">${esc(f.name)}<small>NotebookLM</small></span><button class="mini" data-del="${f.id}" aria-label="מחק">${I.trash}</button></div>`).join("") + "</div>" : "";
+  el.querySelectorAll("[data-file]").forEach((b) => b.onclick = () => { const r = files.find((f) => f.id === b.dataset.file); if (r) playFile(r, id); });
+  el.querySelectorAll("[data-del]").forEach((b) => b.onclick = async () => { if (b.dataset.armed) { await Files.del(b.dataset.del); loadOwnAudio(id); toast("נמחק"); } else { b.dataset.armed = 1; b.textContent = "למחוק?"; setTimeout(() => { delete b.dataset.armed; b.innerHTML = I.trash; }, 2500); } });
 }
+
+/* ---------- quiz ---------- */
+function quiz(epId, after) {
+  const q = QUIZ[epId]; if (!q) { after?.(); return; }
+  const [question, opts, right, why] = q; const hue = P.item?.hue ?? 265;
+  const m = $("#modal");
+  m.innerHTML = `<div class="modal"><div class="box"><span class="badge" style="justify-self:start">שאלה אחת · 10 נק׳</span><h3>${esc(question)}</h3>${opts.map((o, i) => `<button class="opt" data-i="${i}">${esc(o)}</button>`).join("")}<button class="mini" data-skip style="justify-self:start">דלג</button></div></div>`;
+  playLines("שאלה על הפרק", "חידון", hue, [["B", question], ...opts.map((o, i) => ["A", `${["אחת", "שתיים", "שלוש"][i]}. ${o}`])]);
+  m.querySelectorAll("[data-i]").forEach((b) => b.onclick = () => {
+    const i = +b.dataset.i; m.querySelectorAll("[data-i]").forEach((x) => { x.disabled = true; if (+x.dataset.i === right) x.classList.add("right"); });
+    m.querySelector("[data-skip]")?.remove();
+    const ok = i === right; if (!ok) { b.classList.add("wrong"); Sound.wrong(); }
+    const prev = S.quiz[epId]; S.quiz[epId] = ok ? 1 : (prev || 2); Store.save();
+    if (ok && prev !== 1) { gain(10, "תשובה נכונה"); confetti(); }
+    const box = m.querySelector(".box"); const p = document.createElement("p"); p.className = "hint"; p.style.fontSize = "15px"; p.textContent = why; box.appendChild(p);
+    const c = document.createElement("button"); c.className = "btn"; c.textContent = "המשך"; c.onclick = () => { m.innerHTML = ""; P.stop(); render(); after?.(); }; box.appendChild(c);
+    playLines(ok ? "נכון" : "כמעט", "חידון", hue, [["A", (ok ? "נכון. " : "לא בדיוק. ") + why]]);
+  });
+  m.querySelector("[data-skip]").onclick = () => { m.innerHTML = ""; P.stop(); after?.(); };
+}
+
+/* ---------- coach ---------- */
+let coachMode = "ask"; let RP = null;
 function coachView() {
   const last = S.history.slice(-1)[0];
-  const ideas = ["איך לזהות אם מישהו לא נוח לו בשיחה?", "איך להתחיל לחסוך כשאין כסף?", "איך לבקש העלאה?", "איך להיות יותר נוכח מול בת הזוג?", "מה לעשות כשאני לחוץ לפני פגישה?", "איך לשפר שינה?"];
-  return `${topbar(`<button class="iconbtn" aria-label="חזרה לבית" data-go="home">${I.home}</button>`)}
-  <div class="orb-wrap"><button class="orb" data-act="orb" aria-label="השמע שוב או עצור"><canvas id="orbc"></canvas><span class="core">${I.spark}</span></button></div>
-  <div class="orb-status" id="orbs">${esc(Orb.status || "שאל אותי כל דבר. אני עונה בקול.")}</div>
-  <form class="ask" id="askf" style="margin-top:16px"><textarea id="askq" rows="1" placeholder="מה תרצה ללמוד? אפשר להכתיב במיקרופון של המקלדת" aria-label="השאלה שלך"></textarea>
-  <button class="send" id="asks" aria-label="שלח">${I.send}</button></form>
+  const ideas = ["איך לזהות שמישהו לא נוח לו בשיחה?", "איך להתחיל לחסוך כשאין כסף?", "איך לבקש העלאה?", "איך להיות יותר נוכח מול בת הזוג?", "מה לעשות כשאני לחוץ לפני פגישה?", "איך לשפר שינה?"];
+  const head = `${topbar(true)}<div class="seg card"><button class="${coachMode === "ask" ? "on" : ""}" data-mode="ask">שאלה</button><button class="${coachMode === "rp" ? "on" : ""}" data-mode="rp">תרגול שיחה</button></div>
+  <div class="voiceorb"><button class="vo" data-act="vo" aria-label="השמע שוב או עצור"><canvas id="voc"></canvas><span class="core">${coachMode === "rp" ? I.chat : I.spark}</span></button></div>
+  <div class="status" id="vos">${esc(VO.status || (coachMode === "rp" ? "בחר תרחיש. המאמן משחק את הדמות, אתה עונה, ובסוף מקבל ציון ומשוב." : "שאל אותי כל דבר. אני עונה בקול."))}</div>`;
+  if (coachMode === "ask") return `${head}
+  <form class="ask card" id="askf"><textarea id="askq" rows="1" placeholder="מה תרצה ללמוד? אפשר להכתיב במיקרופון של המקלדת" aria-label="השאלה שלך"></textarea><button class="send" id="asks" aria-label="שלח">${I.send}</button></form>
   <div class="chips">${ideas.map((q) => `<button class="chip" data-q="${esc(q)}">${esc(q)}</button>`).join("")}</div>
-  ${last ? answerCard(last) : ""}
-  ${S.history.length > 1 ? `<section class="sec"><div class="sechead"><h3>שיעורים קודמים</h3></div><div class="eps">${S.history.slice(0, -1).slice(-8).reverse().map((h, i) => `<button class="ep" data-replay="${S.history.length - 2 - i}"><span class="num">${I.play}</span><span class="t">${esc(h.q)}</span></button>`).join("")}</div></section>` : ""}`;
+  ${last ? `<div class="answer card"><div class="q">${esc(last.q)}</div><div class="a" id="ansText" hidden>${esc(last.a)}</div><div class="tools"><button class="mini" data-act="replay">${I.play} שמע שוב</button><button class="mini" data-act="show-text">${I.text} טקסט</button>${last.task ? `<button class="mini" data-act="add-task">${I.check} הוסף למשימות</button>` : ""}</div></div>` : ""}
+  ${S.history.length > 1 ? `<section class="sec"><div class="sechead"><h3>שיעורים קודמים</h3></div><div class="eps" style="margin-top:0">${S.history.slice(0, -1).slice(-8).reverse().map((h, i) => `<button class="ep card" data-replay="${S.history.length - 2 - i}"><span class="n">${I.play}</span><span class="t">${esc(h.q)}</span></button>`).join("")}</div></section>` : ""}`;
+  if (!RP) return `${head}<div class="rp">${ROLEPLAYS.map((r) => `<button class="rpc" data-rp="${r.id}">${orb(r.hue)}<span class="shade"></span><b>${esc(r.title)}</b></button>`).join("")}</div>`;
+  return `${head}
+  <div class="row" style="justify-content:space-between;align-items:center;margin-top:8px"><b style="font-family:var(--display);font-size:20px">${esc(RP.rp.title)}</b><button class="mini" data-act="rp-exit">${I.stop} יציאה</button></div>
+  <div class="turns">${RP.turns.map((t) => `<div class="turn ${t.me ? "me" : "ai"}"><span class="who">${t.me ? "אני" : "הם"}</span><span class="bub" ${S.settings.captions || t.me ? "" : "data-hidden"}>${esc(t.text)}</span></div>`).join("")}</div>
+  ${RP.fb ? `<div class="fb card"><div class="score">${RP.fb.score}/10</div><div><b>מה עבד:</b> ${esc(RP.fb.good)}</div><div><b>לשפר:</b> ${esc(RP.fb.improve)}</div><div><b>לנסות לומר:</b> ״${esc(RP.fb.line)}״</div><div class="tools"><button class="mini" data-act="rp-again">${I.play} עוד סיבוב</button></div></div>` :
+  `<form class="ask card" id="rpf"><textarea id="rpq" rows="1" placeholder="מה אתה עונה? אפשר להכתיב" aria-label="התשובה שלך"></textarea><button class="send" id="rps" aria-label="שלח">${I.send}</button></form>
+  <div class="row" style="margin-top:10px">${RP.turns.length > 2 ? `<button class="pill gold" data-act="rp-end">${I.check} סיים וקבל משוב</button>` : ""}<button class="pill" data-act="caps">${I.cc} ${S.settings.captions ? "הסתר טקסט" : "הצג טקסט"}</button></div>`}`;
 }
-function answerCard(h) {
-  return `<div class="answer"><div class="q">${esc(h.q)}</div>
-  <div class="a" id="ansText" hidden>${esc(h.a)}</div>
-  <div class="tools"><button class="mini" data-act="replay-last">${I.play} שמע שוב</button><button class="mini" data-act="show-text">${I.text} טקסט</button>${h.task ? `<button class="mini" data-act="add-task">${I.check} הוסף למשימות</button>` : ""}</div></div>`;
+
+/* ---------- face lab ---------- */
+const EXPR = {
+  joy: { he: "שמחה", au: { 6: 1, 12: 1, 25: .35 }, cue: "הלחיים עלו והעיניים הצטמצמו. זה חיוך אמיתי, עם העיניים." },
+  sad: { he: "עצב", au: { 1: 1, 4: .55, 15: 1 }, cue: "הקצוות הפנימיים של הגבות עלו למרכז, וזוויות הפה ירדו." },
+  anger: { he: "כעס", au: { 4: 1, 5: .5, 7: .8, 24: 1 }, cue: "הגבות ירדו והתקרבו, מבט נוקב, והשפתיים לחוצות." },
+  fear: { he: "פחד", au: { 1: 1, 2: .9, 4: .55, 5: 1, 20: 1, 26: .35 }, cue: "הגבות עלו וגם התקרבו, העיניים נפתחו לרווחה, והשפתיים נמתחו לצדדים." },
+  surprise: { he: "הפתעה", au: { 1: 1, 2: 1, 5: 1, 26: 1 }, cue: "גבות מעוגלות למעלה, עיניים פתוחות, ולסת שנשמטה." },
+  disgust: { he: "גועל", au: { 9: 1, 10: 1, 4: .35, 7: .4, 15: .3 }, cue: "האף התקמט והשפה העליונה עלתה." },
+  contempt: { he: "בוז", au: { 14: 1 }, cue: "רק צד אחד של הפה התהדק ועלה. זו ההבעה היחידה החד צדדית." }
+};
+const FACE_LEVELS = [{ ms: 1500, k: 1, he: "רגיל" }, { ms: 700, k: 1, he: "מהיר" }, { ms: 350, k: .85, he: "חד" }, { ms: 160, k: .75, he: "מיקרו" }];
+function faceSvg(au = {}, k = 1) {
+  const A = (n) => (au[n] || 0) * k;
+  const brow = (s) => { const ix = 100 - s * (15 - 4 * A(4)), ox = 100 - s * 44; const iy = 92 - 11 * A(1) + 7 * A(4), oy = 90 - 10 * A(2) + 2 * A(4); const my = Math.min(iy, oy) - 4 - 3 * A(2); return `<path d="M${ox} ${oy} Q${(ix + ox) / 2} ${my} ${ix} ${iy}" stroke="#3a2418" stroke-width="7" stroke-linecap="round" fill="none"/>`; };
+  const eye = (s) => { const cx = 100 - s * 28, cy = 112; const ry = Math.max(1.5, 7 + 4.5 * A(5) - 3 * A(7) - 2.2 * A(6) - 1.5 * A(9)); return `<ellipse cx="${cx}" cy="${cy}" rx="12" ry="${ry}" fill="#fff"/><circle cx="${cx}" cy="${cy}" r="${Math.min(5.5, ry)}" fill="#2b1a12"/><path d="M${cx - 13} ${cy - ry + .5} Q${cx} ${cy - ry - 4} ${cx + 13} ${cy - ry + .5}" stroke="#3a2418" stroke-width="2.5" fill="none" stroke-linecap="round"/>` + (A(6) > .3 ? `<path d="M${cx - s * 16} ${cy - 3} l${-s * 6} -3 M${cx - s * 16} ${cy + 1} l${-s * 7} 0 M${cx - s * 16} ${cy + 5} l${-s * 6} 3" stroke="#a86a4a" stroke-width="1.6" stroke-linecap="round" opacity="${A(6)}"/><path d="M${cx - 10} ${cy + ry + 5} Q${cx} ${cy + ry + 9} ${cx + 10} ${cy + ry + 5}" stroke="#a86a4a" stroke-width="1.6" fill="none" opacity="${A(6)}"/>` : ""); };
+  const nose = `<path d="M100 118 Q96 140 91 148 Q100 ${153 - 3 * A(9)} 109 148 Q104 140 100 118" fill="#d9926e" opacity=".55"/>` + (A(9) > .3 ? `<path d="M93 124 q7 -3 14 0 M94 129 q6 -2.5 12 0" stroke="#a86a4a" stroke-width="1.6" fill="none" opacity="${A(9)}"/>` : "");
+  const cy = 176, w = 26 + 3 * A(12) + 9 * A(20) - 2 * A(24);
+  const lcy = cy - 9 * A(12) + 7 * A(15) - A(20); const rcy = lcy - 8 * A(14);
+  const lx = 100 - w, rx = 100 + w + 3 * A(14);
+  const open = 3 * A(25) + 20 * A(26) + (A(26) > 0 ? 4 * A(20) : 0);
+  const upY = cy - 2 - 5 * A(10) - open * .25 + 1.5 * A(24), loY = cy + 3 + open - 1.5 * A(24);
+  const ctrl = 4 * A(12) - 5 * A(15);
+  const mouth = `<path d="M${lx} ${lcy} Q100 ${upY - 5 - ctrl * .2} ${rx} ${rcy} Q100 ${loY + 7 + ctrl} ${lx} ${lcy}" fill="${open > 2 ? "#5a1d22" : "#c26a62"}"/>` +
+    `<path d="M${lx} ${lcy} Q100 ${upY - 5 - ctrl * .2} ${rx} ${rcy}" stroke="#b0564f" stroke-width="${5 - 2.5 * A(24)}" fill="none" stroke-linecap="round"/>` +
+    `<path d="M${lx} ${lcy} Q100 ${loY + 7 + ctrl} ${rx} ${rcy}" stroke="#b0564f" stroke-width="${6 - 3 * A(24)}" fill="none" stroke-linecap="round"/>` +
+    (open > 6 ? `<path d="M${lx + 8} ${lcy + 1} Q100 ${upY + 1} ${rx - 8} ${rcy + 1} L${rx - 10} ${rcy + 3} Q100 ${upY + 5} ${lx + 10} ${lcy + 3}z" fill="#fff" opacity=".9"/>` : "") +
+    (A(12) > .4 ? `<path d="M${lx - 10} ${lcy - 18} Q${lx - 4} ${lcy - 4} ${lx + 2} ${lcy + 3} M${rx + 10} ${rcy - 18} Q${rx + 4} ${rcy - 4} ${rx - 2} ${rcy + 3}" stroke="#c07a58" stroke-width="1.8" fill="none" opacity=".7"/>` : "");
+  const chin = 216 + 10 * A(26);
+  return `<svg viewBox="0 0 200 250" role="img" aria-label="פנים"><path d="M100 26 C152 26 172 62 172 112 C172 ${170 + 6 * A(26)} 140 ${chin} 100 ${chin} C60 ${chin} 28 ${170 + 6 * A(26)} 28 112 C28 62 48 26 100 26z" fill="#f0b48e"/>
+  <ellipse cx="30" cy="118" rx="8" ry="15" fill="#e3a07b"/><ellipse cx="170" cy="118" rx="8" ry="15" fill="#e3a07b"/>
+  <path d="M30 96 C26 40 70 14 104 18 C146 20 176 46 170 96 C162 70 150 54 120 50 C92 47 60 52 30 96z" fill="#2e1d16"/>
+  ${A(6) > .2 ? `<ellipse cx="66" cy="140" rx="14" ry="8" fill="#f08c86" opacity="${.35 * A(6)}"/><ellipse cx="134" cy="140" rx="14" ry="8" fill="#f08c86" opacity="${.35 * A(6)}"/>` : ""}
+  ${brow(1)}${brow(-1)}${eye(1)}${eye(-1)}${nose}${mouth}</svg>`;
 }
+const Face = {
+  state: "idle", cur: null, lvl: 0, streak: 0, timer: 0,
+  mount() { this.lvl = Math.min(S.face.level, FACE_LEVELS.length - 1); this.show({}); },
+  stop() { clearTimeout(this.timer); this.state = "idle"; },
+  show(au, k) { const el = $("#face"); if (el) el.innerHTML = faceSvg(au, k); },
+  start() {
+    Sound.ac(); this.stop(); this.state = "count";
+    const keys = Object.keys(EXPR); let pick; do { pick = keys[Math.random() * keys.length | 0]; } while (pick === this.cur); this.cur = pick;
+    $("#opts").innerHTML = keys.map((k) => `<button class="opt card" data-e="${k}" disabled>${EXPR[k].he}</button>`).join(""); $("#explain").hidden = true; $("#fgo").hidden = true;
+    const cd = $("#cd"); let n = 3; this.show({});
+    const tick = () => { if (this.state !== "count") return; if (n > 0) { cd.textContent = n; Sound.tone(660, 0, .12, .04); n--; this.timer = setTimeout(tick, 600); } else { cd.textContent = ""; this.flash(); } };
+    tick();
+  },
+  flash() {
+    const L = FACE_LEVELS[this.lvl];
+    this.show(EXPR[this.cur].au, L.k); this.state = "flash";
+    this.timer = setTimeout(() => { this.show({}); this.state = "answer"; document.querySelectorAll("#opts .opt").forEach((b) => { b.disabled = false; b.onclick = () => this.answer(b.dataset.e, b); }); }, L.ms);
+  },
+  answer(e, b) {
+    if (this.state !== "answer") return; this.state = "done";
+    const ok = e === this.cur; S.face.total++;
+    document.querySelectorAll("#opts .opt").forEach((x) => { x.disabled = true; if (x.dataset.e === this.cur) x.classList.add("right"); });
+    if (ok) { this.streak++; S.face.right++; if (this.streak > S.face.best) S.face.best = this.streak; gain(5, "זיהוי נכון"); if (this.streak % 5 === 0) { confetti(); if (this.lvl < FACE_LEVELS.length - 1 && this.lvl >= S.face.level) { S.face.level = this.lvl + 1; setTimeout(() => toast("נפתחה רמה: " + FACE_LEVELS[this.lvl + 1].he), 1200); } } }
+    else { b.classList.add("wrong"); this.streak = 0; Sound.wrong(); }
+    markActive(); Store.save();
+    this.show(EXPR[this.cur].au, 1);
+    const ex = $("#explain"); ex.hidden = false; ex.innerHTML = `<b>${EXPR[this.cur].he}.</b> ${esc(EXPR[this.cur].cue)}`;
+    $("#fhud").innerHTML = this.hud(); $("#fgo").hidden = false; $("#fgo").innerHTML = I.play + " עוד אחד";
+    $("#flevels").innerHTML = this.levelsHtml(); bind($("#flevels"));
+  },
+  hud() { return `<span class="stat">${I.flame} רצף ${this.streak}</span><span class="stat">שיא ${S.face.best} · ${S.face.total ? Math.round(100 * S.face.right / S.face.total) : 0}% דיוק</span>`; },
+  levelsHtml() { return FACE_LEVELS.map((l, i) => `<button data-fl="${i}" class="${i === this.lvl ? "on" : ""}" ${i > S.face.level ? "disabled" : ""}>${l.he}<br><small>${l.ms >= 1000 ? (l.ms / 1000) + " שנ׳" : l.ms + " מ״ש"}</small></button>`).join(""); }
+};
+function faceView() {
+  Face.lvl = Math.min(S.face.level, FACE_LEVELS.length - 1);
+  return `${topbar(true)}
+  <div class="facebox">${orb(340)}<div class="facehud" id="fhud">${Face.hud()}</div><div id="face"></div><div class="countdown" id="cd"></div></div>
+  <div class="levels" id="flevels">${Face.levelsHtml()}</div>
+  <div class="opts" id="opts"></div>
+  <div class="explain card" id="explain" hidden></div>
+  <div class="row" style="margin-top:14px"><button class="btn" id="fgo" data-act="face-go">${I.play} התחל</button><button class="pill" data-act="face-how">${I.ear} איך זה עובד</button></div>
+  <p class="hint" style="margin-top:14px">חמישה נכונים ברצף פותחים רמה מהירה יותר. ברמת מיקרו ההבעה מופיעה פחות מחמישית שנייה, כמו מיקרו-הבעה אמיתית. האימון משפר זיהוי הבעות. הוא לא גלאי שקר.</p>`;
+}
+
+/* ---------- money lab ---------- */
+const Money = {
+  v: { monthly: 1000, years: 25, ret: 6, fee: 0.8, habit: 30 },
+  calc() {
+    const v = this.v; const n = v.years * 12;
+    const fv = (r, dep = v.monthly) => { const m = r / 100 / 12; return m === 0 ? dep * n : dep * ((Math.pow(1 + m, n) - 1) / m); };
+    const net = fv(v.ret - v.fee), cheap = fv(v.ret - 0.2), paid = v.monthly * n;
+    const fmt = (x) => "₪" + Math.round(x).toLocaleString("he-IL");
+    const set = (id, t) => { const el = $("#" + id); if (el) el.textContent = t; };
+    set("m-net", fmt(net)); set("m-paid", fmt(paid)); set("m-growth", fmt(net - paid)); set("m-fee", fmt(Math.max(0, cheap - net)));
+    const bars = $("#m-bars"); if (bars) { const tot = Math.max(cheap, net); bars.innerHTML = `<i style="width:${100 * paid / tot}%;background:#8fb3ff"></i><i style="width:${100 * Math.max(0, net - paid) / tot}%;background:var(--mint)"></i><i style="width:${100 * Math.max(0, cheap - net) / tot}%;background:var(--rose)"></i>`; }
+    const habitFv = fv(v.ret - 0.2, v.habit * 30);
+    set("m-habit", fmt(habitFv));
+    this.out = { net, paid, cheap, habitFv };
+  },
+  speak() {
+    const o = this.out, v = this.v; if (!o) return; const f = (x) => Math.round(x).toLocaleString("he-IL");
+    playLines("מחשבון העתיד", "סיכום", 150, [
+      ["A", `אם תחסוך ${f(v.monthly)} שקל בחודש במשך ${v.years} שנה, בתשואה של ${v.ret} אחוז בשנה, יהיו לך בערך ${f(o.net)} שקל.`],
+      ["B", `מתוכם הפקדת בעצמך ${f(o.paid)}. כל השאר זו ריבית דריבית.`],
+      ["A", `ודמי ניהול של ${v.fee} אחוז, לעומת שתי עשיריות אחוז, עולים לך בערך ${f(Math.max(0, o.cheap - o.net))} שקל. שיחת טלפון אחת לקרן יכולה לחסוך את זה.`],
+      ["B", "וזכור: התשואה לא מובטחת, והשוק עולה ויורד. המחשבון מראה כיוון, לא הבטחה."]
+    ]);
+    if (!S.labs.money) { S.labs.money = 1; gain(15, "מחשבון העתיד"); }
+  }
+};
+function moneyView() {
+  const v = Money.v;
+  const sl = (id, label, min, max, step, unit) => `<div class="ctrl"><label for="ms-${id}">${label}<span id="mv-${id}">${v[id].toLocaleString("he-IL")}${unit}</span></label><input type="range" id="ms-${id}" data-m="${id}" data-unit="${unit}" min="${min}" max="${max}" step="${step}" value="${v[id]}"></div>`;
+  return `${topbar(true)}
+  <section class="cover" style="min-height:230px">${orb(150)}<span class="shade"></span><p style="margin:0">בעוד <span id="mv-years2">${v.years}</span> שנה יהיו לך בערך</p><div class="big" id="m-net">₪0</div>
+    <div class="legend" style="color:#fff;margin-top:10px"><span><b style="background:#8fb3ff"></b>הפקדת <span id="m-paid"></span></span><span><b style="background:var(--mint)"></b>צמיחה <span id="m-growth"></span></span></div></section>
+  <div class="card panel">
+    ${sl("monthly", "חיסכון חודשי", 100, 10000, 100, " ₪")}${sl("years", "שנים", 1, 40, 1, "")}${sl("ret", "תשואה שנתית משוערת", 0, 10, 0.5, "%")}${sl("fee", "דמי ניהול מהצבירה", 0, 2, 0.05, "%")}
+    <div class="bars" id="m-bars"></div>
+    <div class="legend"><span><b style="background:#8fb3ff"></b>הפקדות</span><span><b style="background:var(--mint)"></b>צמיחה</span><span><b style="background:var(--rose)"></b>הולך לדמי ניהול</span></div>
+    <div class="loss">דמי הניהול שלך, לעומת 0.2%, עולים לך <b id="m-fee"></b>.</div>
+  </div>
+  <div class="card panel"><h4>כמה שווה ההרגל הקטן?</h4>
+    ${sl("habit", "הוצאה יומית קטנה (קפה, משלוח)", 5, 150, 5, " ₪")}
+    <p style="margin:0">אם תשקיע אותה במקום זה, באותם תנאים: <b id="m-habit" style="color:var(--gold)"></b></p></div>
+  <div class="row" style="margin-top:14px"><button class="btn" data-act="m-speak">${I.ear} תסביר לי בקול</button></div>
+  <p class="hint" style="margin-top:12px">חישוב פשוט: הפקדה חודשית קבועה, תשואה קבועה, בלי מס ובלי אינפלציה. לא ייעוץ השקעות.</p>`;
+}
+
+/* ---------- breath lab ---------- */
+const Breath = {
+  running: false, raf: 0, t0: 0, dur: 180, phases: [["שאיפה דרך האף", 2.6, .7, 1], ["עוד שאיפה קטנה", 1.1, 1, 1.12], ["נשיפה ארוכה דרך הפה", 6, 1.12, .7]],
+  mount() { this.paint(.7, "בחר כמה זמן", 0); },
+  start(min) {
+    Sound.ac(); this.stop(); this.dur = min * 60; this.running = true; this.t0 = performance.now(); let lastPh = -1;
+    const cyc = this.phases.reduce((n, p) => n + p[1], 0);
+    const loop = (now) => {
+      if (!this.running) return; const el = (now - this.t0) / 1000; if (el >= this.dur) return this.finish();
+      let t = el % cyc, i = 0; while (i < 2 && t > this.phases[i][1]) { t -= this.phases[i][1]; i++; }
+      const [label, len, a, b] = this.phases[i]; const p = Math.min(1, t / len); const e = .5 - Math.cos(Math.PI * p) / 2;
+      if (i !== lastPh) { lastPh = i; Sound.sweep(i < 2, len * .95); }
+      this.paint(a + (b - a) * e, label, this.dur - el); this.raf = requestAnimationFrame(loop);
+    };
+    this.raf = requestAnimationFrame(loop);
+  },
+  paint(s, label, left) { const b = $("#ball"); if (b) b.style.transform = `scale(${s})`; const ph = $("#phase"); if (ph) ph.textContent = label; const tm = $("#tmr"); if (tm) tm.textContent = left ? `${Math.floor(left / 60)}:${String(Math.floor(left % 60)).padStart(2, "0")}` : ""; },
+  stop() { this.running = false; cancelAnimationFrame(this.raf); this.paint(.7, "", 0); },
+  finish() { this.stop(); const ph = $("#phase"); if (ph) ph.textContent = "כל הכבוד"; markActive(); gain(Math.round(this.dur / 12), "נשימה"); confetti(); }
+};
+function breathView() {
+  return `${topbar(true)}
+  <div class="breath"><div class="bo"><span class="ringb"></span><span class="ball" id="ball"></span></div></div>
+  <div class="phase" id="phase"></div><div class="tmr" id="tmr"></div>
+  <div class="row" style="justify-content:center;margin-top:16px">${[1, 3, 5].map((m) => `<button class="pill ${m === 5 ? "gold" : ""}" data-br="${m}">${m} דק׳</button>`).join("")}<button class="pill" data-act="br-stop">${I.stop} עצור</button></div>
+  <p class="hint" style="margin-top:18px;text-align:center">אנחה מחזורית: שאיפה, עוד שאיפה קצרה, ונשיפה ארוכה. במחקר מסטנפורד, חמש דקות ביום שיפרו מצב רוח והורידו לחץ. עקוב אחרי הכדור והצליל, אפשר בעיניים עצומות.</p>`;
+}
+
+/* ---------- profile ---------- */
 function profileView() {
-  const voices = Voice.he; const mode = Voice.mode();
-  return `${topbar(`<button class="iconbtn" aria-label="חזרה לבית" data-go="home">${I.home}</button>`)}
-  <h2 style="font-family:var(--display);font-size:44px;margin:8px 0 0">הפרופיל שלי</h2>
-  <p class="hint">מה שתכתוב כאן עוזר למאמן להכיר אותך. הכל נשמר בחשבון שלך ורק אתה רואה אותו.</p>
-  <div class="field"><label for="p-name">שם</label><input id="p-name" value="${esc(S.profile.name)}"></div>
-  <div class="field"><label for="p-about">ספר על עצמך: גיל, עבודה, מטרות, מה מאתגר אותך</label><textarea id="p-about" rows="4">${esc(S.profile.about)}</textarea></div>
-  <div class="field"><label>נושאי מיקוד</label><div class="chips">${TOPICS.map((t) => `<button class="chip ${S.profile.focus.includes(t.id) ? "on" : ""}" data-pfocus="${t.id}">${t.title}</button>`).join("")}</div></div>
-  <button class="btn" style="margin-top:16px" data-act="save-profile">שמירה</button>
-
-  <div class="card"><h4>קול ההקראה</h4>
-    ${mode === "claude" ? `<p class="hint" style="margin:0">משתמש בקול של Claude.</p>` : voices.length ? `<div class="field" style="margin:0"><label for="p-voice">קול</label><select id="p-voice">${voices.map((v) => `<option ${v.name === S.settings.voice ? "selected" : ""} value="${esc(v.name)}">${esc(v.name)}</option>`).join("")}</select></div>` :
-    `<p class="hint" style="margin:0">לא נמצא קול עברי במכשיר. באייפון: הגדרות, נגישות, תוכן מוקרא, קולות, עברית, ולהוריד קול משופר.</p>`}
-    <p class="hint" style="margin:0">טיפ לאייפון: הורדת הקול "משופר" או "פרימיום" בהגדרות נשמעת הרבה יותר טבעית.</p>
-    <div class="field" style="margin:0"><label for="p-rate">מהירות: <span id="rateV">${S.settings.rate}</span></label><input class="range" id="p-rate" type="range" min="0.7" max="1.4" step="0.05" value="${S.settings.rate}"></div>
+  const voices = Voice.ranked(); const mode = Voice.mode(); const l = levelOf();
+  return `${topbar(true)}
+  <section class="cover" style="min-height:210px">${orb(265)}<span class="shade"></span><p style="margin:0">רמה ${l.n}</p><h1 style="font-size:46px">${esc(l.name)}</h1><p>${S.xp} נקודות · ${streak()} ימים ברצף · עוד ${l.toNext} לרמה הבאה</p></section>
+  <div class="card panel">
+    <div class="field" style="margin:0"><label for="p-name">שם</label><input id="p-name" value="${esc(S.profile.name)}"></div>
+    <div class="field" style="margin:0"><label for="p-say">איך לבטא את השם (עם ניקוד)</label><input id="p-say" value="${esc(S.profile.say)}" placeholder="לדוגמה: דָּוִד"><p class="hint">הקול קורא את השם כמו שכתוב כאן. ניקוד עוזר לו לבטא נכון.</p><button class="mini" data-act="test-name" style="justify-self:start">${I.ear} שמע איך זה נשמע</button></div>
+    <div class="field" style="margin:0"><label for="p-about">ספר על עצמך: גיל, עבודה, מטרות, מה מאתגר אותך</label><textarea id="p-about" rows="4">${esc(S.profile.about)}</textarea></div>
+    <div class="field" style="margin:0"><label>נושאי מיקוד</label><div class="chips" style="margin:0">${TOPICS.map((t) => `<button class="chip ${S.profile.focus.includes(t.id) ? "on" : ""}" data-pfocus="${t.id}">${t.title}</button>`).join("")}</div></div>
+    <button class="btn" data-act="save-profile">שמירה</button>
+  </div>
+  <div class="card panel"><h4>הקול</h4>
+    ${Voice.claude && Voice.he.length ? `<div class="chips" style="margin:0"><button class="chip ${mode === "claude" ? "on" : ""}" data-eng="claude">קול Claude</button><button class="chip ${mode === "device" ? "on" : ""}" data-eng="device">קול המכשיר</button></div>` : ""}
+    ${mode === "device" ? (voices.length ? `<div class="field" style="margin:0"><label for="p-voice">קול עברי במכשיר</label><select id="p-voice">${voices.map((v) => `<option ${v.name === S.settings.voice ? "selected" : ""} value="${esc(v.name)}">${esc(v.name)}</option>`).join("")}</select></div>` : `<p class="hint">לא נמצא קול עברי במכשיר.</p>`) : `<p class="hint">משתמש בקול של Claude.</p>`}
+    <p class="hint">באייפון: הגדרות, נגישות, תוכן מוקרא, קולות, עברית. מורידים את הקול המשופר ובוחרים אותו כאן. ההבדל גדול.</p>
+    <div class="ctrl"><label for="p-rate">מהירות<span id="rateV">×${S.settings.rate}</span></label><input id="p-rate" type="range" min="0.7" max="1.4" step="0.05" value="${S.settings.rate}"></div>
     <button class="pill" data-act="test-voice" style="justify-self:start">${I.ear} בדיקת קול</button></div>
-
-  <div class="card"><h4>מה המאמן זוכר עליך</h4>
-    ${S.memory.length ? `<ul class="memo">${S.memory.map((m, i) => `<li>${esc(m)} <button class="mini" data-act="forget" data-i="${i}">שכח</button></li>`).join("")}</ul>` : `<p class="hint" style="margin:0">עוד כלום. המאמן לומד ממה שאתה שואל.</p>`}</div>
-
-  <div class="card"><h4>להוסיף למסך הבית</h4>
-    <p class="hint" style="margin:0">באייפון: לפתוח את הקישור ב-Safari, ללחוץ על כפתור השיתוף, ואז "הוספה למסך הבית". צריך להיות מחובר ל-Claude בספארי.</p></div>`;
+  <div class="card panel"><h4>מה המאמן זוכר עליך</h4>
+    ${S.memory.length ? `<ul class="memo">${S.memory.map((m, i) => `<li>${esc(m)} <button class="mini" data-forget="${i}">שכח</button></li>`).join("")}</ul>` : `<p class="hint">עוד כלום. המאמן לומד ממה שאתה שואל ומתרגל.</p>`}</div>
+  <div class="card panel"><h4>במסך הבית</h4><p class="hint">ב-Safari: כפתור השיתוף, ואז הוספה למסך הבית. צריך להיות מחובר ל-Claude בספארי.</p></div>`;
 }
 
-/* drawer */
+/* ---------- drawer ---------- */
 function renderDrawer() {
-  $("#drawer").innerHTML = `<h2>נושאים</h2>
-  ${TOPICS.map((t, i) => `<button class="navitem ${view.name === "topic" && view.arg === t.id ? "cur" : ""}" data-go="topic" data-arg="${t.id}"><canvas data-hue="${t.hue}" data-seed="${i + 2}"></canvas><span><span class="t">${t.title}</span><br><span class="s">${t.short}</span></span><span class="meter">${t.episodes.filter((e) => S.done[e.id]).length}/${t.episodes.length}</span></button>`).join("")}
-  <div class="navsep"></div>
-  <button class="navitem ${view.name === "home" ? "cur" : ""}" data-go="home"><span class="navicon">${I.home}</span><span class="t">היום שלי</span></button>
-  <button class="navitem ${view.name === "coach" ? "cur" : ""}" data-go="coach"><span class="navicon">${I.spark}</span><span class="t">המאמן</span></button>
-  <button class="navitem ${view.name === "profile" ? "cur" : ""}" data-go="profile"><span class="navicon">${I.user}</span><span class="t">הפרופיל שלי</span></button>`;
-  bind($("#drawer")); requestAnimationFrame(() => paintArt($("#drawer")));
+  const cur = (n, a) => view.name === n && (a === undefined || view.arg === a) ? "cur" : "";
+  $("#drawer").innerHTML = `<h2>לאן היום?</h2>
+  <button class="navitem ${cur("home")}" data-go="home"><span class="navicon">${I.home}</span><span><span class="t">היום שלי</span><span class="s">משימות, רצף ואימון יומי</span></span></button>
+  <button class="navitem ${cur("coach")}" data-go="coach"><span class="navicon">${I.spark}</span><span><span class="t">המאמן</span><span class="s">שאלות ותרגול שיחה</span></span></button>
+  <div class="dlabel">נושאים</div>
+  ${TOPICS.map((t) => { const d = t.episodes.filter((e) => S.done[e.id]).length; return `<button class="navitem ${cur("topic", t.id)}" data-go="topic" data-arg="${t.id}"><span class="orbmini">${orb(t.hue)}</span><span><span class="t">${t.title}</span><span class="s">${t.short}</span></span>${ringSvg(d / t.episodes.length, 30)}</button>`; }).join("")}
+  <div class="dlabel">מעבדות</div>
+  <button class="navitem ${cur("face")}" data-go="face"><span class="navicon">${I.face}</span><span class="t">מעבדת פנים</span></button>
+  <button class="navitem ${cur("breath")}" data-go="breath"><span class="navicon">${I.wind}</span><span class="t">נשימה</span></button>
+  <button class="navitem ${cur("money")}" data-go="money"><span class="navicon">${I.coin}</span><span class="t">מחשבון העתיד</span></button>
+  <div class="dlabel">אני</div>
+  <button class="navitem ${cur("profile")}" data-go="profile"><span class="navicon">${I.user}</span><span><span class="t">הפרופיל שלי</span><span class="s">רמה ${levelOf().n} · ${S.xp} נק׳</span></span></button>`;
+  bind($("#drawer"));
 }
-function openDrawer() { $("#drawer").classList.add("on"); $("#scrim").classList.add("on"); requestAnimationFrame(() => paintArt($("#drawer"))); }
+function openDrawer() { $("#drawer").classList.add("on"); $("#scrim").classList.add("on"); }
 function closeDrawer() { $("#drawer").classList.remove("on"); $("#scrim").classList.remove("on"); }
 
-/* player UI */
+/* ---------- player UI ---------- */
 function showPlayer() { $("#player").hidden = false; paint(); }
 function paint() {
-  const it = P.item; const pl = $("#player"); if (!it) return;
-  const total = it.kind === "file" ? (P.audio?.duration || 1) : it.lines.length;
-  const pos = it.kind === "file" ? (P.audio?.currentTime || 0) : P.idx;
+  const it = P.item; if (!it) return;
+  const file = it.kind === "file"; const total = file ? (P.audio?.duration || 1) : it.lines.length; const pos = file ? (P.audio?.currentTime || 0) : P.idx;
   const pct = Math.min(100, (pos / total) * 100);
-  const who = it.kind === "file" ? null : it.lines[Math.min(P.idx, it.lines.length - 1)]?.[0];
-  const playing = it.kind === "file" ? (P.audio && !P.audio.paused) : P.playing;
-  pl.innerHTML = `<div class="pbar"><canvas data-hue="${it.hue}" data-seed="3"></canvas>
-    <button class="meta" data-act="sheet"><b>${esc(it.title)}</b><span>${esc(it.sub)}</span><div class="prog"><i style="width:${pct}%"></i></div></button>
-    <button class="pbtn" data-act="toggle" aria-label="${playing ? "השהה" : "נגן"}">${playing ? I.pause : I.play}</button>
-    <button class="pbtn ghost" data-act="close-player" aria-label="סגור נגן">${I.stop}</button></div>`;
-  bind(pl); paintArt(pl);
+  const line = file ? null : it.lines[Math.min(P.idx, it.lines.length - 1)];
+  const playing = file ? !!(P.audio && !P.audio.paused) : P.playing;
+  const pl = $("#player");
+  pl.innerHTML = `<div class="pbar"><span class="art">${orb(it.hue)}</span>
+    <button class="meta" data-act="sheet"><b>${playing ? '<span class="eq"><i></i><i></i><i></i></span>' : ""}${esc(it.title)}</b><span>${esc(it.sub)}</span><div class="prog"><i style="width:${pct}%"></i></div></button>
+    <button class="pp" data-act="toggle" aria-label="${playing ? "השהה" : "נגן"}">${playing ? I.pause : I.play}</button>
+    <button class="pp ghost" data-act="close-player" aria-label="סגור נגן">${I.stop}</button></div>`;
+  bind(pl);
   const sh = $("#sheet");
   if (sh.classList.contains("on")) {
-    if (!sh.dataset.built || sh.dataset.built !== it.title) buildSheet();
+    if (sh.dataset.built !== it.title + it.kind) buildSheet();
     $("#sheet [data-act=toggle]").innerHTML = playing ? I.pause : I.play;
-    sh.querySelectorAll(".spk").forEach((s) => s.classList.toggle("on", playing && s.dataset.who === who));
-    $("#sheet .prog i").style.width = pct + "%";
+    sh.querySelectorAll(".spk").forEach((s) => s.classList.toggle("on", playing && line?.[0] === s.dataset.who));
+    const pr = $("#sheet .prog i"); if (pr) pr.style.width = pct + "%";
+    const cap = $("#cap"); if (cap) cap.textContent = S.settings.captions && line && line[0] !== "P" ? Voice.prep(line[1]) : "";
   }
-  Stage.playing = playing;
+  Stage.playing = playing; Stage.who = line?.[0];
 }
 function buildSheet() {
-  const it = P.item; const sh = $("#sheet"); sh.dataset.built = it.title;
-  sh.innerHTML = `<button class="iconbtn close" data-act="close-sheet" aria-label="סגור">${I.down}</button>
-  <div class="stage"><canvas id="stagec" data-hue="${it.hue}"></canvas></div>
-  ${it.kind === "file" ? "" : `<div class="speakers">${["A", "B"].map((w) => `<div class="spk" data-who="${w}"><div class="av" style="background:hsl(${w === "A" ? it.hue : (it.hue + 50) % 360} 60% 45%);color:#fff">${HOSTS[w].letter}</div><small>${HOSTS[w].name}</small></div>`).join("")}</div>`}
+  const it = P.item; const sh = $("#sheet"); sh.dataset.built = it.title + it.kind;
+  sh.innerHTML = `<div class="sheethead"><button class="glassbtn" data-act="close-sheet" aria-label="סגור">${I.down}</button><button class="glassbtn" data-act="caps" aria-label="כתוביות">${I.cc}</button></div>
+  <div class="stage"><canvas id="stagec"></canvas><div class="cap" id="cap"></div></div>
+  ${it.kind === "file" ? "" : `<div class="speakers">${["A", "B"].map((w) => `<div class="spk" data-who="${w}"><div class="av">${orb(HOSTS[w].hue)}${HOSTS[w].letter}</div><small>${HOSTS[w].name}</small></div>`).join("")}</div>`}
   <div class="ttl"><b>${esc(it.title)}</b><span>${esc(it.sub)}</span><div class="prog" style="max-width:320px;margin:12px auto 0"><i></i></div></div>
-  <div class="ctrls"><button class="sk" data-act="skip" data-d="-1" aria-label="אחורה">${I.prev}</button>
-  <button class="pbtn" data-act="toggle" aria-label="נגן או השהה">${I.play}</button>
-  <button class="sk" data-act="skip" data-d="1" aria-label="קדימה">${I.next}</button></div>
-  <div class="speed">${[0.85, 1, 1.15, 1.3].map((r) => `<button data-rate="${r}" class="${S.settings.rate === r ? "on" : ""}">×${r}</button>`).join("")}</div>`;
-  bind(sh); Stage.mount($("#stagec"));
+  <div class="ctrls"><button class="sk" data-act="skip" data-d="-1" aria-label="אחורה">${I.rew}</button><button class="pp" data-act="toggle" aria-label="נגן או השהה">${I.play}</button><button class="sk" data-act="skip" data-d="1" aria-label="קדימה">${I.fwd}</button></div>
+  <div class="subrow">${[0.85, 1, 1.15, 1.3].map((r) => `<button data-rate="${r}" class="${S.settings.rate === r ? "on" : ""}">×${r}</button>`).join("")}</div>`;
+  bind(sh); Stage.mount($("#stagec"), it.hue);
 }
 function openSheet() { $("#sheet").classList.add("on"); buildSheet(); paint(); }
 function closeSheet() { $("#sheet").classList.remove("on"); Stage.unmount(); }
-const Stage = { cv: null, raf: 0, t: 0, playing: false,
-  mount(cv) { this.cv = cv; cancelAnimationFrame(this.raf); const loop = () => { if (!this.cv) return; this.t += this.playing ? 0.03 : 0.004; art(this.cv, +this.cv.dataset.hue, 5, this.t); this.raf = requestAnimationFrame(loop); }; loop(); },
-  unmount() { this.cv = null; cancelAnimationFrame(this.raf); } };
-const Orb = { raf: 0, t: 0, active: false, status: "",
-  mount() { const cv = $("#orbc"); if (!cv) return; cancelAnimationFrame(this.raf);
-    const loop = () => { if (!document.body.contains(cv)) return; this.t += this.active ? 0.05 : 0.012; const dpr = Math.min(2, devicePixelRatio || 1); cv.width = 250 * dpr; cv.height = 250 * dpr; const c = cv.getContext("2d"); c.scale(dpr, dpr);
-      const acc = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#f2b75b";
-      for (let i = 0; i < 5; i++) { c.beginPath(); for (let a = 0; a <= Math.PI * 2 + 0.01; a += Math.PI / 60) { const r = 72 + i * 11 + Math.sin(a * (3 + i) + this.t * (1 + i * 0.3)) * (this.active ? 7 : 2.5); const x = 125 + Math.cos(a) * r, y = 125 + Math.sin(a) * r; a === 0 ? c.moveTo(x, y) : c.lineTo(x, y); } c.strokeStyle = acc; c.globalAlpha = 0.5 - i * 0.08; c.lineWidth = 1.5; c.stroke(); }
+const Stage = { cv: null, raf: 0, t: 0, amp: 0, playing: false, who: "A", hue: 265,
+  mount(cv, hue) { this.cv = cv; this.hue = hue; cancelAnimationFrame(this.raf); const loop = () => { if (!this.cv) return; this.draw(); this.raf = requestAnimationFrame(loop); }; loop(); },
+  unmount() { this.cv = null; cancelAnimationFrame(this.raf); },
+  draw() {
+    const cv = this.cv, dpr = Math.min(2, devicePixelRatio || 1), w = cv.clientWidth, h = cv.clientHeight; if (!w) return;
+    if (cv.width !== Math.round(w * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+    const c = cv.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
+    this.t += .016; const target = this.playing ? .55 + .45 * Math.abs(Math.sin(this.t * 7.3) * Math.sin(this.t * 3.1 + 1)) : .08; this.amp += (target - this.amp) * .12;
+    const hue = this.who === "B" ? this.hue + 50 : this.hue; const cx = w / 2, cy = h / 2, R = Math.min(w, h) * .3;
+    const g = c.createRadialGradient(cx, cy, 0, cx, cy, R * 1.9); g.addColorStop(0, `hsla(${hue} 95% 65% / .55)`); g.addColorStop(1, `hsla(${hue} 95% 50% / 0)`); c.fillStyle = g; c.fillRect(0, 0, w, h);
+    for (let k = 0; k < 7; k++) {
+      c.beginPath();
+      for (let a = 0; a <= Math.PI * 2 + .01; a += Math.PI / 80) {
+        const n = Math.sin(a * (3 + k) + this.t * (1.2 + k * .25)) * .5 + Math.sin(a * (5 + k) - this.t * 1.7) * .5;
+        const r = R * (.82 + k * .045) + n * R * .16 * this.amp * (1 + k * .15);
+        const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r; a === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+      }
+      c.strokeStyle = `hsla(${hue + k * 8} 95% ${70 - k * 3}% / ${.75 - k * .08})`; c.lineWidth = k === 0 ? 2.5 : 1.3; c.stroke();
+    }
+    const core = c.createRadialGradient(cx - R * .25, cy - R * .25, 0, cx, cy, R * .78); core.addColorStop(0, "#fff"); core.addColorStop(.35, `hsl(${hue} 95% 72%)`); core.addColorStop(1, `hsl(${hue + 30} 85% 35%)`);
+    c.beginPath(); c.arc(cx, cy, R * (.62 + .05 * this.amp), 0, Math.PI * 2); c.fillStyle = core; c.fill();
+  } };
+const VO = { raf: 0, t: 0, active: false, status: "",
+  mount() { const cv = $("#voc"); if (!cv) return; cancelAnimationFrame(this.raf); const dpr = Math.min(2, devicePixelRatio || 1); cv.width = 260 * dpr; cv.height = 260 * dpr; const c = cv.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const loop = () => { if (!document.body.contains(cv)) return; this.t += this.active ? .06 : .015; c.clearRect(0, 0, 260, 260);
+      for (let i = 0; i < 6; i++) { c.beginPath(); for (let a = 0; a <= Math.PI * 2 + .01; a += Math.PI / 60) { const r = 66 + i * 10 + Math.sin(a * (3 + i) + this.t * (1 + i * .3)) * (this.active ? 9 : 3); const x = 130 + Math.cos(a) * r, y = 130 + Math.sin(a) * r; a === 0 ? c.moveTo(x, y) : c.lineTo(x, y); } c.strokeStyle = `hsla(${38 + i * 6} 100% 70% / ${.6 - i * .09})`; c.lineWidth = 1.6; c.stroke(); }
       this.raf = requestAnimationFrame(loop); }; loop(); },
   unmount() { cancelAnimationFrame(this.raf); },
-  set(s, active) { this.status = s; this.active = active; const el = $("#orbs"); if (el) el.textContent = s; }
+  set(s, active) { this.status = s; this.active = active; const el = $("#vos"); if (el) el.textContent = s; }
 };
 
-/* toast */
 let toastT;
-function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2400); }
-function toastAction(msg, fn) { const t = $("#toast"); t.innerHTML = ""; const b = document.createElement("button"); b.textContent = msg; b.style.cssText = "color:inherit;font-weight:700"; b.onclick = () => { t.classList.remove("on"); fn(); }; t.appendChild(b); t.style.pointerEvents = "auto"; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => { t.classList.remove("on"); t.style.pointerEvents = "none"; }, 6000); }
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2300); }
 
 /* ---------- actions ---------- */
 const welcomeFocus = new Set();
+function openLab(target) { if (target.startsWith("rp:")) { coachMode = "rp"; view = { name: "coach" }; startRP(target.slice(3)); } else go(target); }
 function bind(root) {
-  root.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => go(b.dataset.go, b.dataset.arg));
+  root.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => { if (b.dataset.modeGo) { coachMode = b.dataset.modeGo; RP = null; VO.status = ""; } go(b.dataset.go, b.dataset.arg); });
+  root.querySelectorAll("[data-lab]").forEach((b) => b.onclick = () => openLab(b.dataset.lab));
   root.querySelectorAll("[data-play]").forEach((b) => b.onclick = () => { const [t, e, f] = b.dataset.play.split(":"); playEpisode(t, +e, +f); if (view.name === "topic") render(); });
-  root.querySelectorAll("[data-act]").forEach((b) => { if (!b.onclick) b.onclick = (ev) => act(b.dataset.act, b, ev); });
+  root.querySelectorAll("[data-chain]").forEach((b) => b.onclick = () => { const [t, e] = b.dataset.chain.split(":"); playEpisode(t, +e, 0, true); render(); });
+  root.querySelectorAll("[data-act]").forEach((b) => b.onclick = (ev) => act(b.dataset.act, b, ev));
   root.querySelectorAll("[data-focus]").forEach((b) => b.onclick = () => { const id = b.dataset.focus; welcomeFocus.has(id) ? welcomeFocus.delete(id) : welcomeFocus.add(id); b.classList.toggle("on"); });
-  root.querySelectorAll("[data-pfocus]").forEach((b) => b.onclick = () => { const f = S.profile.focus; const id = b.dataset.pfocus; const i = f.indexOf(id); i >= 0 ? f.splice(i, 1) : f.push(id); b.classList.toggle("on"); });
+  root.querySelectorAll("[data-pfocus]").forEach((b) => b.onclick = () => { const f = S.profile.focus; const i = f.indexOf(b.dataset.pfocus); i >= 0 ? f.splice(i, 1) : f.push(b.dataset.pfocus); b.classList.toggle("on"); });
   root.querySelectorAll("[data-q]").forEach((b) => b.onclick = () => { $("#askq").value = b.dataset.q; askNow(); });
   root.querySelectorAll("[data-replay]").forEach((b) => b.onclick = () => { const h = S.history[+b.dataset.replay]; if (h) speakAnswer(h); });
-  root.querySelectorAll("[data-rate]").forEach((b) => b.onclick = () => { S.settings.rate = +b.dataset.rate; if (P.audio) P.audio.playbackRate = S.settings.rate; Store.save(); $("#sheet").querySelectorAll("[data-rate]").forEach((x) => x.classList.toggle("on", x === b)); if (P.playing && P.item.kind !== "file") { P.run++; Voice.stop(); P.play(); } });
-  const f = root.querySelector("#askf"); if (f) { f.onsubmit = (e) => { e.preventDefault(); askNow(); }; const ta = $("#askq"); ta.oninput = () => { ta.style.height = "auto"; ta.style.height = Math.min(140, ta.scrollHeight) + "px"; }; ta.onkeydown = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); askNow(); } }; }
-  const rate = root.querySelector("#p-rate"); if (rate) rate.oninput = () => { S.settings.rate = +rate.value; $("#rateV").textContent = rate.value; Store.save(); };
+  root.querySelectorAll("[data-forget]").forEach((b) => b.onclick = () => { S.memory.splice(+b.dataset.forget, 1); Store.save(); render(); });
+  root.querySelectorAll("[data-mode]").forEach((b) => b.onclick = () => { coachMode = b.dataset.mode; VO.status = ""; render(); });
+  root.querySelectorAll("[data-rp]").forEach((b) => b.onclick = () => startRP(b.dataset.rp));
+  root.querySelectorAll("[data-eng]").forEach((b) => b.onclick = () => { S.settings.engine = b.dataset.eng; Store.save(); render(); });
+  root.querySelectorAll("[data-fl]").forEach((b) => b.onclick = () => { if (b.disabled) return; Face.lvl = +b.dataset.fl; root.querySelectorAll("[data-fl]").forEach((x) => x.classList.toggle("on", x === b)); });
+  root.querySelectorAll("[data-br]").forEach((b) => b.onclick = () => Breath.start(+b.dataset.br));
+  root.querySelectorAll("[data-m]").forEach((r) => r.oninput = () => { Money.v[r.dataset.m] = +r.value; $("#mv-" + r.dataset.m).textContent = (+r.value).toLocaleString("he-IL") + r.dataset.unit; if (r.dataset.m === "years") $("#mv-years2").textContent = r.value; Money.calc(); });
+  root.querySelectorAll("[data-rate]").forEach((b) => b.onclick = () => { S.settings.rate = +b.dataset.rate; if (P.audio) P.audio.playbackRate = S.settings.rate; Store.save(); root.querySelectorAll("[data-rate]").forEach((x) => x.classList.toggle("on", x === b)); if (P.playing && P.item.kind !== "file") { P.run++; Voice.stop(); P.play(); } });
+  const f = root.querySelector("#askf"); if (f) { f.onsubmit = (e) => { e.preventDefault(); askNow(); }; autosize($("#askq"), askNow); }
+  const rf = root.querySelector("#rpf"); if (rf) { rf.onsubmit = (e) => { e.preventDefault(); rpSend(); }; autosize($("#rpq"), rpSend); }
+  const rate = root.querySelector("#p-rate"); if (rate) rate.oninput = () => { S.settings.rate = +rate.value; $("#rateV").textContent = "×" + rate.value; Store.save(); };
   const vs = root.querySelector("#p-voice"); if (vs) vs.onchange = () => { S.settings.voice = vs.value; Store.save(); };
 }
+function autosize(ta, submit) { ta.oninput = () => { ta.style.height = "auto"; ta.style.height = Math.min(140, ta.scrollHeight) + "px"; }; ta.onkeydown = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); } }; }
 function act(a, b) {
-  const dp = S.days[today()];
+  const dp = dayPlan();
   switch (a) {
     case "drawer": openDrawer(); break;
     case "start": {
-      const n = $("#w-name").value.trim();
-      S.profile.name = n; S.profile.focus = [...welcomeFocus]; if (!n) S.profile.skipped = true;
-      delete S.days[today()]; Store.save(); go("home");
-      playLines("ברוכים הבאים", "היכרות", 38, [
-        ["A", `${n ? "היי " + n + ", " : "היי, "}אני מאיה.`], ["B", "ואני דניאל. אנחנו נלווה אותך כאן."],
-        ["A", "כל נושא בנוי מפרקים קצרים של כמה דקות. אתה לא צריך לקרוא כלום, רק לשמוע."],
-        ["B", "בכל יום מחכות לך שלוש משימות קטנות. הן נבחרות לפי מה שבחרת להתמקד בו."],
-        ["A", "ויש גם מאמן. לוחצים על הכוכב למעלה, שואלים כל שאלה, והוא עונה בקול, לפי מה שהוא יודע עליך."],
-        ["B", "הכל כאן מבוסס על מחקר. וכשהמחקר לא חד, נגיד לך את זה. בוא נתחיל."]
+      const n = $("#w-name").value.trim(); S.profile.name = n; S.profile.focus = [...welcomeFocus]; if (!n) S.profile.skipped = true;
+      delete S.days[today()]; Store.save(); go("home"); Sound.chime();
+      playLines("ברוכים הבאים", "היכרות", 280, [
+        ["A", `${n ? "היי {name}, " : "היי, "}אני מאיה.`], ["B", "ואני דניאל. אנחנו נלווה אותך כאן."],
+        ["A", "כל נושא בנוי מפרקים קצרים. לא צריך לקרוא כלום, רק לשמוע. ובסוף כל פרק יש שאלה אחת, כי ככה הזיכרון נבנה."],
+        ["B", "יש גם מעבדות: מעבדת פנים שמאמנת אותך לזהות הבעות בשבריר שנייה, נשימה מודרכת, ומחשבון שמראה כמה הכסף שלך יכול לצמוח."],
+        ["A", "ויש מאמן. אפשר לשאול אותו הכל, או לתרגל איתו שיחה קשה, כמו בקשת העלאה, ולקבל ציון ומשוב."],
+        ["B", "כל דבר שאתה עושה מקדם אותך ברמות. והכל כאן מבוסס מחקר. כשהמחקר לא חד, נגיד לך. כל בוקר לוחצים על הכפתור הזהוב הגדול, ואנחנו עושים את השאר."]
       ]);
       break;
     }
-    case "brief": {
-      const d = dayPlan(); const n = nameOf();
-      const lines = [["A", `${n ? n + ", " : ""}הנה היום שלך.`], ["B", `יש לך ${d.items.filter((i) => !i.done).length || "אפס"} משימות פתוחות.`]];
-      d.items.forEach((it, k) => { if (!it.done) lines.push([k % 2 ? "B" : "A", it.text]); });
+    case "daily": {
       const nx = nextEpisode();
-      if (nx) { const ep = TOPIC[nx.t].episodes[nx.e]; lines.push(["A", `ומיד אחרי זה, הפרק הבא שלך: ${ep.title}, בנושא ${TOPIC[nx.t].title}.`]); }
-      P.load({ kind: "lines", title: "היום שלך", sub: new Date().toLocaleDateString("he-IL", { weekday: "long" }), hue: 38, lines, onEnd: nx ? () => playEpisode(nx.t, nx.e, nx.from) : null });
-      break;
+      if (!nx) { go("coach"); break; }
+      const h = new Date().getHours(); const part = h < 12 ? "בוקר" : h < 17 ? "צהריים" : "ערב";
+      const lines = [["A", `${sayName() ? "{name}, " : ""}${part} של צמיחה. הנה היום שלך.`]];
+      const open = dp.items.filter((i) => !i.done);
+      lines.push(["B", open.length ? `יש לך ${open.length === 1 ? "משימה אחת" : open.length === 2 ? "שתי משימות" : "שלוש משימות"} להיום.` : "סיימת כבר את כל המשימות של היום. יפה מאוד."]);
+      open.forEach((it, k) => lines.push([k % 2 ? "B" : "A", it.text]));
+      lines.push(["A", `ועכשיו, הפרק שלך: ${TOPIC[nx.t].episodes[nx.e].title}.`]);
+      setHue(TOPIC[nx.t].hue);
+      P.load({ kind: "lines", title: "האימון של היום", sub: "תדריך", hue: TOPIC[nx.t].hue, lines, onEnd: () => playEpisode(nx.t, nx.e, nx.from) });
+      openSheet(); break;
     }
-    case "say-tasks": { const d = dayPlan(); playLines("המשימות של היום", "היום שלך", 38, d.items.map((it, k) => [k % 2 ? "B" : "A", `משימה ${k + 1}. ${it.text}`])); break; }
-    case "say-task": { const it = dp.items[+b.dataset.k]; playLines("משימה", TOPIC[it.topic]?.title || "", TOPIC[it.topic]?.hue || 38, [["A", it.text], ...(it.why ? [["B", it.why]] : [])]); break; }
-    case "check": { const it = dp.items[+b.dataset.k]; it.done = !it.done; Store.save(); if (it.done) { toast(dp.items.every((i) => i.done) ? "כל המשימות של היום בוצעו. כל הכבוד." : "בוצע"); } render(); break; }
+    case "say-tasks": playLines("המשימות של היום", "היום שלך", 40, dp.items.map((it, k) => [k % 2 ? "B" : "A", `משימה ${["ראשונה", "שנייה", "שלישית", "רביעית", "חמישית"][k] || k + 1}. ${it.text}`])); break;
+    case "say-task": { const it = dp.items[+b.dataset.k]; playLines("משימה", TOPIC[it.topic]?.title || "", TOPIC[it.topic]?.hue || 40, [["A", it.text], ...(it.why ? [["B", it.why]] : [])]); break; }
+    case "check": {
+      const it = dp.items[+b.dataset.k]; it.done = !it.done; Store.save();
+      if (it.done) { if (!it.paid) { it.paid = true; gain(20, "משימה בוצעה"); } if (dp.items.every((i) => i.done)) { confetti(); setTimeout(() => toast("כל המשימות של היום בוצעו"), 1800); } }
+      render(); break;
+    }
     case "ai-task": {
       b.disabled = true; b.innerHTML = I.spark + " חושב...";
-      Coach.personalTask().then((r) => {
+      AI.task().then((r) => {
         if (!r?.task) throw new Error("empty");
         const topic = TOPIC[r.topic] ? r.topic : "confidence";
         dayPlan().items.push({ i: -1, topic, text: r.task, why: r.why || "", done: false, ai: true }); Store.save(); render();
         playLines("משימה אישית", "מהמאמן", TOPIC[topic].hue, [["A", r.task], ...(r.why ? [["B", r.why]] : [])]);
-      }).catch((e) => { toast(coachErr(e)); render(); });
+      }).catch((e) => { toast(aiErr(e)); render(); });
       break;
     }
     case "toggle": P.toggle(); break;
@@ -1181,85 +1598,93 @@ function act(a, b) {
     case "sheet": openSheet(); break;
     case "close-sheet": closeSheet(); break;
     case "close-player": P.stop(); break;
-    case "orb": if (Orb.active) { speakGen++; Voice.stop(); Orb.set("עצרתי.", false); } else { const h = S.history.slice(-1)[0]; if (h) speakAnswer(h); else $("#askq")?.focus(); } break;
-    case "replay-last": { const h = S.history.slice(-1)[0]; if (h) speakAnswer(h); break; }
+    case "caps": S.settings.captions = !S.settings.captions; Store.save(); toast(S.settings.captions ? "טקסט מוצג" : "טקסט מוסתר"); paint(); if (view.name === "coach") render(); break;
+    case "vo": if (VO.active) { speakGen++; Voice.stop(); VO.set("עצרתי. לחץ שוב כדי לשמוע.", false); } else if (coachMode === "rp" && RP) { const t = [...RP.turns].reverse().find((x) => !x.me); if (t) speakText(t.text, "B", "תורך."); } else { const h = S.history.slice(-1)[0]; if (h) speakAnswer(h); else $("#askq")?.focus(); } break;
+    case "replay": { const h = S.history.slice(-1)[0]; if (h) speakAnswer(h); break; }
     case "show-text": { const t = $("#ansText"); t.hidden = !t.hidden; break; }
     case "add-task": { const h = S.history.slice(-1)[0]; if (h?.task) { dayPlan().items.push({ i: -1, topic: guessTopic(h.q), text: h.task, done: false, ai: true }); h.task = ""; Store.save(); toast("נוסף למשימות של היום"); render(); } break; }
-    case "save-profile": S.profile.name = $("#p-name").value.trim(); S.profile.about = $("#p-about").value.trim(); delete S.profile.skipped; Store.save(); toast("נשמר"); render(); break;
-    case "test-voice": playLines("בדיקת קול", "הגדרות", 38, [["A", `שלום${nameOf() ? " " + nameOf() : ""}, ככה אני נשמעת.`], ["B", "וככה אני נשמע."]]); break;
-    case "forget": S.memory.splice(+b.dataset.i, 1); Store.save(); render(); break;
-    case "nb-copy": copySource(b.dataset.arg); break;
+    case "save-profile": S.profile.name = $("#p-name").value.trim(); S.profile.say = $("#p-say").value.trim(); S.profile.about = $("#p-about").value.trim(); delete S.profile.skipped; Store.save(); toast("נשמר"); render(); break;
+    case "test-name": S.profile.say = $("#p-say").value.trim(); S.profile.name = $("#p-name").value.trim() || S.profile.name; Store.save(); playLines("השם שלך", "בדיקה", 265, [["A", "היי {name}, ככה אני אומרת את השם שלך."]]); break;
+    case "test-voice": playLines("בדיקת קול", "הגדרות", 265, [["A", "היי {name}, ככה אני נשמעת."], ["B", "וככה אני נשמע."]]); break;
+    case "nb-go": copySource(b.dataset.arg); break;
     case "nb-up": $("#audioIn").dataset.topic = b.dataset.arg; $("#audioIn").click(); break;
-    case "nb-how": playLines("איך יוצרים פודקאסט עומק", "NotebookLM", 220, [
-      ["A", "NotebookLM של גוגל יודע להפוך חומר לפודקאסט של שני מגישים. זה חינמי, ועושים את זה כך."],
-      ["B", "צעד ראשון: לוחצים על העתק חומר. זה מעתיק את כל החומר של הנושא, יחד עם הוראות."],
-      ["A", "צעד שני: לוחצים על צור סקירת אודיו. זה פותח את NotebookLM. יוצרים מחברת חדשה, מוסיפים מקור מסוג טקסט שהועתק, ומדביקים."],
-      ["B", "אחר כך בוחרים סקירת אודיו. בהגדרות אפשר לבחור שפה, כדאי לבחור עברית. ולחכות כמה דקות."],
-      ["A", "צעד שלישי: מורידים את קובץ האודיו, חוזרים לכאן, ולוחצים על הוסף לכאן. הפודקאסט יישמר בנושא הזה במכשיר שלך."]
+    case "nb-how": playLines("פודקאסט עומק אנושי", "NotebookLM", 220, [
+      ["A", "NotebookLM של גוגל הופך חומר לפודקאסט של שני מגישים, בקול אנושי לגמרי. זה חינמי."],
+      ["B", "לוחצים על העתק חומר ופתח. החומר של הנושא מועתק, ו-NotebookLM נפתח."],
+      ["A", "שם יוצרים מחברת חדשה, מוסיפים מקור מסוג טקסט שהועתק, ומדביקים."],
+      ["B", "אחר כך לוחצים על סקירת אודיו, בוחרים עברית בהגדרות השפה, ומחכים כמה דקות."],
+      ["A", "מורידים את הקובץ, חוזרים לכאן, ולוחצים על הוסף את הפודקאסט. הוא יופיע בנושא, ותקבל עליו נקודות כשתשמע אותו עד הסוף."]
     ]); break;
+    case "face-go": Face.start(); break;
+    case "face-how": playLines("מעבדת פנים", "איך זה עובד", 340, [["A", "תראה פנים רגועות. לשבריר שנייה תופיע הבעה, ותיעלם."], ["B", "בחר איזה רגש ראית. אחרי כל תשובה ההבעה מוצגת שוב, עם הרמזים שמזהים אותה."], ["A", "חמישה נכונים ברצף פותחים רמה מהירה יותר. ברמת מיקרו זה פחות מחמישית שנייה, כמו מיקרו-הבעה אמיתית."], ["B", "זה אימון לזיהוי רגשות, לא גלאי שקר. ככה תשים לב מתי מישהו קרוב אליך מסתיר משהו, ותדע לשאול ברכות."]]); break;
+    case "m-speak": Money.speak(); break;
+    case "br-stop": Breath.stop(); break;
+    case "rp-exit": RP = null; VO.status = ""; speakGen++; Voice.stop(); render(); break;
+    case "rp-again": startRP(RP.rp.id); break;
+    case "rp-end": rpEnd(); break;
   }
 }
-function guessTopic(q) { const m = [["body-language", /גוף|תנוע|ידיים|עמיד/], ["faces", /פנים|הבע|חיוך/], ["saving", /חיסכ|לחסוך|חוב|מינוס|פנסי/], ["earning", /הכנס|משכורת|העלא|עסק|לקוח/], ["relationship", /זוג|אישה|חברה|בת ה|אהב/], ["body", /שינה|כושר|אימון|אוכל|תזונ|גוף שלי/], ["presence", /נוכח|לחץ|נשימ|קשב/]]; for (const [id, re] of m) if (re.test(q)) return id; return "confidence"; }
-function coachErr(e) {
-  const c = e?.code;
-  if (c === "unavailable" || c === "not_granted") return "המאמן זמין כשפותחים את האפליקציה בתוך Claude, מחוברים לחשבון.";
-  if (c === "rate_limited") return "יותר מדי שאלות ברגע. נסה שוב בעוד דקה.";
-  return "לא הצלחתי לקבל תשובה. נסה שוב.";
+function guessTopic(q) { const m = [["body-language", /גוף|תנוע|ידיים|עמיד/], ["faces", /פנים|הבע|חיוך/], ["saving", /חיסכ|לחסוך|חוב|מינוס|פנסי/], ["earning", /הכנס|משכורת|העלא|עסק|לקוח/], ["relationship", /זוג|אישה|חברה|בת ה|אהב/], ["body", /שינה|כושר|אימון|אוכל|תזונ/], ["presence", /נוכח|לחץ|נשימ|קשב/]]; for (const [id, re] of m) if (re.test(q)) return id; return "confidence"; }
+
+let speakGen = 0;
+async function speakText(text, who = "A", doneMsg = "") {
+  P.pause(); Voice.stop(); const my = ++speakGen; VO.set("מדבר...", true); let all = true;
+  for (const s of sentences(text)) { let ok; try { ok = await Voice.speak(s, who); } catch { ok = false; } if (!ok || my !== speakGen) { all = false; break; } }
+  if (my === speakGen) VO.set(all ? doneMsg : "עצרתי. לחץ על העיגול כדי לשמוע שוב.", false);
 }
+function speakAnswer(h) { return speakText(h.a, "A", h.task ? "המשימה שלך: " + h.task : "שאל עוד שאלה."); }
 async function askNow() {
   const ta = $("#askq"); const q = ta.value.trim(); if (!q) { ta.focus(); return; }
-  const btn = $("#asks"); btn.disabled = true;
-  P.pause(); Voice.stop();
-  Orb.set("חושב על זה...", true);
+  $("#asks").disabled = true; P.pause(); Voice.stop(); VO.set("חושב על זה...", true);
   try {
-    const r = await Coach.ask(q);
+    const r = await AI.ask(q);
     const h = { q, a: r.answer.trim(), task: (r.task || "").trim(), at: Date.now() };
     S.history.push(h); if (S.history.length > 40) S.history.splice(0, S.history.length - 40);
     for (const m of (Array.isArray(r.remember) ? r.remember : [])) if (typeof m === "string" && m.trim() && !S.memory.includes(m.trim())) S.memory.push(m.trim());
     if (S.memory.length > 30) S.memory.splice(0, S.memory.length - 30);
-    Store.save(); ta.value = "";
-    render(); speakAnswer(h);
-  } catch (e) { Orb.set(coachErr(e), false); }
-  finally { const b2 = $("#asks"); if (b2) b2.disabled = false; }
+    markActive(); Store.save(); render(); speakAnswer(h); gain(5, "שאלה טובה");
+  } catch (e) { VO.set(aiErr(e), false); const b = $("#asks"); if (b) b.disabled = false; }
 }
-let speakGen = 0;
-async function speakAnswer(h) {
-  P.pause(); Voice.stop();
-  const parts = sentences(h.a); const my = ++speakGen;
-  Orb.set("מדבר...", true);
-  let all = true;
-  for (const s of parts) {
-    let ok; try { ok = await Voice.speak(s, "A"); } catch { ok = false; }
-    if (!ok || my !== speakGen) { all = false; break; }
-  }
-  if (my === speakGen) Orb.set(all ? (h.task ? "המשימה שלך: " + h.task : "שאל עוד שאלה.") : "עצרתי. לחץ על העיגול כדי לשמוע שוב.", false);
+function startRP(id) { const rp = ROLEPLAYS.find((r) => r.id === id); if (!rp) return; RP = { rp, turns: [{ me: false, text: rp.open }] }; coachMode = "rp"; if (view.name !== "coach") view = { name: "coach" }; closeDrawer(); render(); window.scrollTo({ top: 0 }); speakText(rp.open, "B", "תורך. מה אתה עונה?"); }
+async function rpSend() {
+  const ta = $("#rpq"); const text = ta.value.trim(); if (!text || !RP) return;
+  RP.turns.push({ me: true, text }); render(); VO.set("חושב...", true); $("#rps").disabled = true;
+  try { const reply = await AI.roleTurn(RP.rp, RP.turns); RP.turns.push({ me: false, text: reply || "..." }); render(); speakText(reply, "B", "תורך."); }
+  catch (e) { RP.turns.pop(); render(); VO.set(aiErr(e), false); $("#rpq").value = text; }
+}
+async function rpEnd() {
+  VO.set("מנתח את השיחה...", true);
+  try {
+    const f = await AI.feedback(RP.rp, RP.turns); RP.fb = { score: Math.max(1, Math.min(10, Math.round(+f.score || 5))), good: f.good || "", improve: f.improve || "", line: f.line || "" };
+    if (f.improve) { const m = "בתרגול " + RP.rp.title + ": לשפר " + f.improve; if (!S.memory.includes(m)) S.memory.push(m); if (S.memory.length > 30) S.memory.shift(); }
+    markActive(); Store.save(); render(); gain(10 + RP.fb.score * 2, "תרגול שיחה"); if (RP.fb.score >= 8) confetti();
+    speakText(f.spoken || `${f.good} ${f.improve}`, "A", "רוצה עוד סיבוב?");
+  } catch (e) { VO.set(aiErr(e), false); }
 }
 async function copySource(id) {
   const t = TOPIC[id];
   const body = t.episodes.map((e, i) => `פרק ${i + 1}: ${e.title}\n` + e.lines.filter(([w]) => w !== "P").map(([, v]) => v.replaceAll("{name}", nameOf() || "המאזין")).join("\n")).join("\n\n");
   const about = S.profile.about ? `\n\nעל המאזין: ${S.profile.about}` : "";
-  const text = `נושא: ${t.title}\n\nהוראות לסקירת האודיו: צרו פודקאסט בעברית, בשיחה בין שני מגישים, שמעמיק בנושא ${t.title}. הסבירו רק מה שמבוסס במחקר, אמרו במפורש איפה המחקר חלש או שנוי במחלוקת, תנו דוגמאות מהחיים בישראל, וסיימו בתרגיל מעשי אחד להיום.${about}\n\nחומר:\n\n${body}`;
-  try { await navigator.clipboard.writeText(text); toast("הועתק. עכשיו פתח את NotebookLM והדבק כמקור."); }
+  const text = `נושא: ${t.title}\n\nהוראות לסקירת האודיו: צרו פודקאסט בעברית, בשיחה טבעית בין שני מגישים, שמעמיק בנושא ${t.title}. הסבירו רק מה שמבוסס במחקר, אמרו במפורש איפה המחקר חלש או שנוי במחלוקת, תנו דוגמאות מהחיים בישראל, וסיימו בתרגיל מעשי אחד להיום.${about}\n\nחומר:\n\n${body}`;
+  try { await navigator.clipboard.writeText(text); toast("החומר הועתק. הדבק אותו כמקור ב-NotebookLM"); }
   catch { const ta = document.createElement("textarea"); ta.value = text; ta.style.cssText = "position:fixed;top:0;left:0;width:100%;height:40vh;z-index:99"; document.body.appendChild(ta); ta.select(); toast("סמן הכל והעתק"); setTimeout(() => ta.remove(), 15000); }
 }
 $("#audioIn").onchange = async (e) => {
   const f = e.target.files?.[0]; const topic = e.target.dataset.topic; e.target.value = "";
   if (!f || !topic) return;
-  try { await Audio$.add(topic, f); toast("הפודקאסט נשמר בנושא " + TOPIC[topic].title); if (view.name === "topic") loadOwnAudio(topic); }
-  catch { toast("לא הצלחתי לשמור את הקובץ במכשיר הזה."); }
+  try { await Files.add(topic, f); toast("הפודקאסט נשמר ב" + TOPIC[topic].title); if (view.name === "topic") loadOwnAudio(topic); }
+  catch { toast("לא הצלחתי לשמור את הקובץ במכשיר הזה"); }
 };
 $("#scrim").onclick = closeDrawer;
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("#drawer").classList.contains("on")) { e.preventDefault(); closeDrawer(); } });
 document.addEventListener("visibilitychange", () => { if (document.hidden) Store.save(); });
-let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => paintArt(), 150); });
 
-/* boot */
 async function waitClaude(ms = 2000) { const t0 = Date.now(); while (!window.claude?.use && Date.now() - t0 < ms) await new Promise((r) => setTimeout(r, 100)); }
 (async function boot() {
-  try { const v = JSON.parse(localStorage.getItem("growth.view") || "null"); if (v?.name && (v.name !== "topic" || TOPIC[v.arg])) view = v; } catch {}
+  try { const v = JSON.parse(localStorage.getItem("growth.view") || "null"); if (v?.name && v.name !== "coach" && (v.name !== "topic" || TOPIC[v.arg])) view = { name: v.name, arg: v.arg }; } catch {}
   render();
   await waitClaude();
-  Voice.init();
+  await Voice.init();
   await Store.init();
   render();
 })();
