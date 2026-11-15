@@ -1,0 +1,4 @@
+Source: https://github.com/xiaopu-ai/web-design
+Commit: 22a4f482cc4caa2394391c0c31ff0aefd1908774
+Path:   .
+Copied unmodified on 2026-11-15. License: MIT (see LICENSE).

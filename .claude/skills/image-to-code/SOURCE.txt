@@ -1,0 +1,4 @@
+Source: https://github.com/Leonxlnx/imagegen-skills
+Commit: beb16b0d0f4dae9a6f5cb04ea41e97b93a54ab8e
+Path:   skills/image-to-code
+Copied unmodified on 2026-11-15. License: MIT (see LICENSE).
