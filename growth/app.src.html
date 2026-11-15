@@ -213,7 +213,22 @@ input, textarea, select { font: inherit; color: var(--ink) }
 .levels button small { opacity: .6; font-weight: 300 }
 .levels button.on { background: var(--ink); color: var(--bg); border-color: transparent; font-weight: 500 }
 .levels button[disabled] { opacity: .3 }
-.explain { padding: 16px; margin-top: 12px; font-size: 15px; color: var(--muted); font-weight: 300 }
+.photo { position: relative; width: 100%; aspect-ratio: 480 / 540; border-radius: 16px; overflow: hidden; background: #111 }
+.photo img { width: 100%; height: 100%; object-fit: cover; display: block; max-width: 100% }
+.marks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none }
+.marks { animation: reveal 1.1s cubic-bezier(.3,.7,.2,1) both }
+@keyframes reveal { from { clip-path: inset(0 0 0 100%) } to { clip-path: inset(0 0 0 0) } }
+.mnum { position: absolute; transform: translate(-100%, 0); font-family: var(--display); font-weight: 700; color: var(--red); font-size: 22px; line-height: 1; text-shadow: 0 0 6px rgba(0,0,0,.5) }
+.cues { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px }
+.cues li { display: flex; gap: 10px; align-items: baseline; font-size: 15.5px; line-height: 1.5 }
+.mnum2 { font-family: var(--display); font-weight: 700; color: var(--red); font-size: 20px; flex: none }
+.atlas { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px }
+.acard { display: grid; gap: 6px; text-align: center }
+.acard b { font-family: var(--display); font-weight: 500; font-size: 17px }
+.stage2 { width: 72%; display: grid; place-items: center; aspect-ratio: 480 / 540 }
+.fixation { font-family: var(--display); font-size: 64px; color: var(--muted); font-weight: 400 }
+.modal .photo { max-width: 340px; justify-self: center; width: 100% }
+.explain { padding: 16px; margin-top: 12px; font-size: 15px; font-weight: 300; display: grid; gap: 10px }
 .explain b { color: var(--ink); font-weight: 600 }
 
 .big { font-family: var(--display); font-weight: 900; font-size: 50px; line-height: 1; font-variant-numeric: tabular-nums; margin-top: 6px }
@@ -326,6 +341,7 @@ input[type=range] { width: 100%; accent-color: var(--red) }
 <input type="file" id="audioIn" accept="audio/*,video/mp4,.m4a,.wav,.mp3" hidden>
 
 <script>/*CONTENT*/</script>
+<script>/*FACES*/</script>
 <script>
 "use strict";
 const $ = (s, el = document) => el.querySelector(s);
@@ -479,8 +495,7 @@ const Voice = {
     // Must run synchronously inside a tap: iOS only allows speech that a gesture started at least once.
     try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch {}
     Sound.ac();
-    if (this.unlocked || !this.hasSynth) return;
-    try { const u = new SpeechSynthesisUtterance(" "); u.volume = 0; u.lang = "he-IL"; speechSynthesis.speak(u); this.unlocked = true; } catch {}
+    this.unlocked = true;
   },
   mode() {
     const e = S.settings.engine;
@@ -547,19 +562,41 @@ const Voice = {
   },
   diag() { return `מנוע: ${this.mode() === "claude" ? "Claude" : "מכשיר"} · קולות עבריים: ${this.he.length}${this.he.length ? " (" + this.he.map((v) => v.name).slice(0, 3).join(", ") + ")" : ""} · ${this.hasSynth ? "הקראה נתמכת" : "אין הקראה"}${this.lastErr ? " · שגיאה אחרונה: " + this.lastErr : ""}`; }
 };
+function toneWavUrl(freq = 523, ms = 700) {
+  const sr = 22050, n = Math.round(sr * ms / 1000), buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+  const w = (o, str) => [...str].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+  w(0, "RIFF"); v.setUint32(4, 36 + n * 2, true); w(8, "WAVE"); w(12, "fmt "); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, "data"); v.setUint32(40, n * 2, true);
+  for (let i = 0; i < n; i++) { const env = Math.min(1, i / 800, (n - i) / 800); v.setInt16(44 + i * 2, Math.sin(2 * Math.PI * freq * i / sr) * 12000 * env, true); }
+  return URL.createObjectURL(new Blob([buf], { type: "audio/wav" }));
+}
+const SoundCheck = { res: {} };
 function soundHelp() {
   const m = $("#modal");
-  m.innerHTML = `<div class="modal" dir="rtl"><div class="box"><h3>לא <span class="ink">שומעים</span>? ככה מתקנים</h3>
-  <ol><li><b>מתג השקט בצד האייפון.</b> כשהוא על שקט (כתום), דפדפנים משתיקים הקראה. מעבירים אותו למצב צלצול.</li>
-  <li><b>עוצמת הקול</b> בכפתורים שבצד, כשהאפליקציה פתוחה.</li>
-  <li><b>קול עברי במכשיר:</b> הגדרות, נגישות, תוכן מוקרא, קולות, עברית. מורידים קול, עדיף משופר.</li>
-  <li><b>פותחים ב-Safari</b> ולא בתוך אפליקציה אחרת, ומוסיפים למסך הבית.</li></ol>
-  <button class="btn" id="sh-test">${I.ear} בדיקת שמע עכשיו</button>
-  <button class="pill" id="sh-close" style="justify-self:start">סגירה</button>
-  <p class="diag">${esc(Voice.diag())}</p></div></div>`;
+  const row = (id, title, sub) => `<div class="card" style="padding:14px;display:grid;gap:8px"><div><b>${title}</b><br><span class="hint">${sub}</span></div>
+    <div class="row"><button class="pill gold" data-sc="${id}">${I.play} השמע</button><button class="pill" data-yes="${id}">שמעתי</button><button class="pill" data-no="${id}">לא שמעתי</button><span class="hint" id="sc-${id}" style="align-self:center"></span></div></div>`;
+  m.innerHTML = `<div class="modal" dir="rtl"><div class="box"><h3>מעבדת <span class="ink">שמע</span></h3>
+  <p class="hint">שלוש בדיקות קצרות. לחץ על כל אחת והגד אם שמעת. כך נדע בדיוק מה עובד במכשיר שלך.</p>
+  ${row("beep", "1. צליל", "צליל קצר דרך מנוע השמע של הדפדפן")}
+  ${row("file", "2. קובץ שמע", "קובץ שמע רגיל, כמו מוזיקה")}
+  ${row("speech", "3. הקראה בעברית", "הקול שמקריא את הפרקים")}
+  <ol><li><b>מתג השקט בצד האייפון</b> משתיק בדיקות 1 ו-3. מעבירים למצב צלצול.</li>
+  <li><b>קול עברי:</b> הגדרות, נגישות, תוכן מוקרא, קולות, עברית. מורידים קול.</li></ol>
+  <p class="diag" id="sc-sum"></p>
+  <div class="row"><button class="pill" id="sc-copy">${I.copy} העתק תוצאות</button><button class="pill" id="sh-close">סגירה</button></div></div></div>`;
   sketchify(m);
-  $("#sh-test").onclick = () => Voice.testNow();
+  const sum = () => { const r = SoundCheck.res; const txt = `צליל: ${r.beep ?? "?"} · קובץ: ${r.file ?? "?"} · הקראה: ${r.speech ?? "?"} · ${Voice.diag()} · ${navigator.userAgent.replace(/^Mozilla\/5\.0 /, "").slice(0, 90)}`; $("#sc-sum").textContent = txt; S.labs.soundcheck = txt; Store.save(); return txt; };
+  m.querySelectorAll("[data-sc]").forEach((b) => b.onclick = () => {
+    const id = b.dataset.sc;
+    if (id === "beep") { Sound.ac(); Sound.tone(523, 0, .6, .25); Sound.tone(784, .25, .6, .2); }
+    if (id === "file") { const a = new Audio(toneWavUrl()); a.volume = 1; a.play().then(() => { $("#sc-file").textContent = "מתנגן"; }).catch((e) => { $("#sc-file").textContent = "נחסם: " + (e?.name || "שגיאה"); }); }
+    if (id === "speech") Voice.testNow("בדיקה. אם אתה שומע אותי, ההקראה עובדת.");
+  });
+  m.querySelectorAll("[data-yes]").forEach((b) => b.onclick = () => { SoundCheck.res[b.dataset.yes] = "כן"; $("#sc-" + b.dataset.yes).textContent = "✓"; sum(); });
+  m.querySelectorAll("[data-no]").forEach((b) => b.onclick = () => { SoundCheck.res[b.dataset.no] = "לא"; $("#sc-" + b.dataset.no).textContent = "✗"; sum(); });
+  $("#sc-copy").onclick = () => { const t = sum(); navigator.clipboard?.writeText(t).then(() => toast("הועתק. הדבק לי את זה בצ׳אט"), () => toast("סמן את השורה והעתק")); };
   $("#sh-close").onclick = () => { m.innerHTML = ""; };
+  sum();
 }
 document.addEventListener("pointerdown", () => Voice.unlock(), { capture: true });
 document.addEventListener("touchend", () => Voice.unlock(), { capture: true });
@@ -795,7 +832,7 @@ function homeView() {
 
   <section class="sec"><div class="sechead"><h3>מעבדות אימון</h3><span class="aux">החלק הצידה</span></div>
     <div class="rail">
-      ${labCard("face", 340, I.face, "מעבדת פנים", `לזהות הבעה בשבריר שנייה · שיא ${S.face.best}`)}
+      ${labCard("face", 340, I.face, "מעבדת פנים", `תמונות אמיתיות, סימונים באדום · שיא ${S.face.best}`)}
       ${labCard("coach", 40, I.chat, "תרגול שיחה", "העלאה, בת זוג, לומר לא", "rp")}
       ${labCard("breath", 200, I.wind, "נשימה", "אנחה מחזורית מודרכת")}
       ${labCard("money", 150, I.coin, "מחשבון העתיד", "ריבית דריבית ודמי ניהול")}
@@ -892,54 +929,57 @@ function coachView() {
 }
 
 /* ---------- face lab ---------- */
+/* Real photos. Red pen marks sit on the cues Ekman's research ties to each expression.
+   Coordinates are percent of the photo (480x540). */
 const EXPR = {
-  joy: { he: "שמחה", au: { 6: 1, 12: 1, 25: .35 }, cue: "הלחיים עלו והעיניים הצטמצמו. זה חיוך אמיתי, עם העיניים." },
-  sad: { he: "עצב", au: { 1: 1, 4: .55, 15: 1 }, cue: "הקצוות הפנימיים של הגבות עלו למרכז, וזוויות הפה ירדו." },
-  anger: { he: "כעס", au: { 4: 1, 5: .5, 7: .8, 24: 1 }, cue: "הגבות ירדו והתקרבו, מבט נוקב, והשפתיים לחוצות." },
-  fear: { he: "פחד", au: { 1: 1, 2: .9, 4: .55, 5: 1, 20: 1, 26: .35 }, cue: "הגבות עלו וגם התקרבו, העיניים נפתחו לרווחה, והשפתיים נמתחו לצדדים." },
-  surprise: { he: "הפתעה", au: { 1: 1, 2: 1, 5: 1, 26: 1 }, cue: "גבות מעוגלות למעלה, עיניים פתוחות, ולסת שנשמטה." },
-  disgust: { he: "גועל", au: { 9: 1, 10: 1, 4: .35, 7: .4, 15: .3 }, cue: "האף התקמט והשפה העליונה עלתה." },
-  contempt: { he: "בוז", au: { 14: 1 }, cue: "רק צד אחד של הפה התהדק ועלה. זו ההבעה היחידה החד צדדית." }
+  joy: { he: "שמחה", img: "joy", marks: [["c", 21, 37, 5, 5, 1], ["c", 78, 37, 5, 5, 1], ["u", 33, 61, 59, 0, 2]], cues: ["קמטוטים בזוויות העיניים והלחיים עולות. זה הסימן לחיוך אמיתי.", "זוויות הפה נמשכות למעלה ולצדדים."] },
+  sad: { he: "עצב", img: "sad", marks: [["e", 51, 24, 15, 5, 1], ["u", 39, 62, 61, 0, 2]], cues: ["הקצוות הפנימיים של הגבות עולים למרכז, כמו גג משופע.", "זוויות הפה יורדות."] },
+  anger: { he: "כעס", img: "anger", marks: [["e", 50, 30, 16, 5, 1], ["u", 43, 61, 62, 0, 2]], cues: ["הגבות יורדות ומתקרבות, והמבט נוקב.", "השפתיים נלחצות זו לזו."] },
+  fear: { he: "פחד", img: "fear", marks: [["c", 36, 30, 6, 5, 1], ["c", 64, 30, 6, 5, 1], ["u", 38, 55, 63, 0, 2]], cues: ["העיניים נפתחות לרווחה, והגבות עולות וגם מתקרבות.", "השפתיים נמתחות לצדדים."] },
+  surprise: { he: "הפתעה", img: "surprise", marks: [["u", 38, 26, 76, 0, 1], ["e", 58, 61, 8, 5, 2]], cues: ["הגבות עולות ומתעגלות, והעיניים נפתחות.", "הלסת נשמטת והפה נפתח. זה נמשך רגע קצר."] },
+  disgust: { he: "גועל", img: "disgust", marks: [["e", 52, 42, 8, 6, 1], ["u", 42, 57, 63, 0, 2]], cues: ["האף מתקמט.", "השפה העליונה עולה."] },
+  contempt: { he: "בוז", img: "contempt", marks: [["e", 50, 55, 15, 5, 1]], cues: ["רק צד אחד של הפה מתהדק ועולה. זו ההבעה היחידה החד צדדית."] }
 };
-const FACE_LEVELS = [{ ms: 1500, k: 1, he: "רגיל" }, { ms: 700, k: 1, he: "מהיר" }, { ms: 350, k: .85, he: "חד" }, { ms: 160, k: .75, he: "מיקרו" }];
-function faceSvg(au = {}, k = 1, reveal = false) {
-  const A = (n) => (au[n] || 0) * k; const C = "#f2e8d5", RD = "#d8262e";
-  const hot = (...ns) => reveal && ns.some((n) => A(n) > .25) ? RD : C;
-  const brow = (s) => { const ix = 100 - s * (15 - 4 * A(4)), ox = 100 - s * 44; const iy = 92 - 11 * A(1) + 7 * A(4), oy = 90 - 10 * A(2) + 2 * A(4); const my = Math.min(iy, oy) - 4 - 3 * A(2); return `<path d="M${ox} ${oy} Q${(ix + ox) / 2} ${my} ${ix} ${iy}" stroke="${hot(1, 2, 4)}" stroke-width="3.2" stroke-linecap="round" fill="none"/>`; };
-  const eye = (s) => { const cx = 100 - s * 28, cy = 112; const ry = Math.max(1.5, 7 + 4.5 * A(5) - 3 * A(7) - 2.2 * A(6) - 1.5 * A(9)); const col = hot(5, 6, 7); return `<path d="M${cx - 13} ${cy} Q${cx} ${cy - ry * 1.9} ${cx + 13} ${cy} Q${cx} ${cy + ry * 1.5} ${cx - 13} ${cy}" stroke="${col}" stroke-width="1.6" fill="none"/><circle cx="${cx}" cy="${cy}" r="${Math.min(4.6, ry * .8)}" fill="${C}"/>` + (A(6) > .3 ? `<path d="M${cx - s * 16} ${cy - 3} l${-s * 6} -3 M${cx - s * 16} ${cy + 1} l${-s * 7} 0 M${cx - s * 16} ${cy + 5} l${-s * 6} 3" stroke="${hot(6)}" stroke-width="1.2" stroke-linecap="round"/><path d="M${cx - 10} ${cy + ry + 5} Q${cx} ${cy + ry + 9} ${cx + 10} ${cy + ry + 5}" stroke="${hot(6)}" stroke-width="1.2" fill="none"/>` : ""); };
-  const nose = `<path d="M100 120 Q97 138 92 147 Q100 ${152 - 3 * A(9)} 108 147" stroke="${hot(9)}" stroke-width="1.5" fill="none" stroke-linecap="round"/>` + (A(9) > .3 ? `<path d="M93 124 q7 -3 14 0 M94 129 q6 -2.5 12 0" stroke="${hot(9)}" stroke-width="1.2" fill="none"/>` : "");
-  const cy = 176, w = 26 + 3 * A(12) + 9 * A(20) - 2 * A(24);
-  const lcy = cy - 9 * A(12) + 7 * A(15) - A(20); const rcy = lcy - 8 * A(14);
-  const lx = 100 - w, rx = 100 + w + 3 * A(14);
-  const open = 3 * A(25) + 20 * A(26) + (A(26) > 0 ? 4 * A(20) : 0);
-  const upY = cy - 2 - 5 * A(10) - open * .25 + 1.5 * A(24), loY = cy + 3 + open - 1.5 * A(24);
-  const ctrl = 4 * A(12) - 5 * A(15); const mc = hot(10, 12, 14, 15, 20, 24, 26);
-  const mouth = `<path d="M${lx} ${lcy} Q100 ${upY - 5 - ctrl * .2} ${rx} ${rcy}" stroke="${mc}" stroke-width="${2.2 - .8 * A(24)}" fill="none" stroke-linecap="round"/>` +
-    `<path d="M${lx} ${lcy} Q100 ${loY + 7 + ctrl} ${rx} ${rcy}" stroke="${mc}" stroke-width="${2.2 - .8 * A(24)}" fill="${open > 2 ? "#050505" : "none"}" stroke-linecap="round"/>` +
-    (A(12) > .4 ? `<path d="M${lx - 10} ${lcy - 18} Q${lx - 4} ${lcy - 4} ${lx + 2} ${lcy + 3} M${rx + 10} ${rcy - 18} Q${rx + 4} ${rcy - 4} ${rx - 2} ${rcy + 3}" stroke="${hot(12)}" stroke-width="1.2" fill="none"/>` : "");
-  const chin = 216 + 10 * A(26);
-  return `<svg viewBox="0 0 200 250" role="img" aria-label="פנים" fill="none"><path d="M100 26 C152 26 172 62 172 112 C172 ${170 + 6 * A(26)} 140 ${chin} 100 ${chin} C60 ${chin} 28 ${170 + 6 * A(26)} 28 112 C28 62 48 26 100 26z" stroke="${C}" stroke-width="1.8"/>
-  <path d="M29 104 q-10 2 -8 16 q2 12 10 12 M171 104 q10 2 8 16 q-2 12 -10 12" stroke="${C}" stroke-width="1.4"/>
-  <path d="M30 96 C26 40 70 14 104 18 C146 20 176 46 170 96 M38 70 C60 44 100 40 128 46 M52 46 C80 30 120 30 150 48" stroke="${C}" stroke-width="1.3" stroke-opacity=".7"/>
-  ${brow(1)}${brow(-1)}${eye(1)}${eye(-1)}${nose}${mouth}</svg>`;
+const EXTRA = [
+  { id: "fake", he: "חיוך מזויף", img: "fake", marks: [["e", 44, 45, 24, 7, 1], ["u", 37, 75, 65, 0, 2]], cues: ["העיניים לא משתתפות. אין קמטוטים ואין לחיים שעולות.", "רק הפה זז. ככה נראה חיוך של נימוס."], note: "צילום היסטורי של הרופא הצרפתי דושן, שיצר חיוך בעזרת זרם חשמלי בשריר הלחי. כך גילה שחיוך אמיתי דורש גם את השריר שסביב העין." },
+  { id: "contempt2", he: "בוז, דוגמה נוספת", img: "contempt2", marks: [["e", 50, 77, 23, 6, 1]], cues: ["חצי חיוך עקום. הפה לא סימטרי: צד אחד מתהדק ועולה."], note: "בוז קל לפספס כי הוא נראה כמו חיוך קטן. תסתכל על הסימטריה." },
+  { id: "snarl", he: "הבעה מעורבת", img: "snarl", marks: [["e", 50, 50, 11, 7, 1], ["e", 52, 81, 16, 8, 2]], cues: ["האף מתקמט: סימן של גועל.", "שיניים חשופות וגבות נמוכות: סימן של כעס."], note: "בחיים האמיתיים הבעות מתערבבות. כאן רואים גועל וכעס יחד." }
+];
+const PHOTO_CREDIT = "שבע ההבעות: Icerko Lýdia, ‏CC BY 3.0 · בוז (גבר): Djgriffin7, ‏CC BY-SA 4.0 · חיוך מזויף: Wellcome Collection, ‏CC BY 4.0 · הבעה מעורבת: Lara604, ‏CC BY 2.0 · כולן מ-Wikimedia Commons, נחתכו והומרו לשחור לבן.";
+function handEllipse(cx, cy, rx, ry, R) { const a0 = R() * 6.28, steps = 40; let d = ""; for (let i = 0; i <= steps; i++) { const a = a0 + (6.28 + .5) * i / steps; const k = 1 + .05 * Math.sin(a * 2 + a0) - .04 * i / steps; d += (i ? "L" : "M") + (cx + Math.cos(a) * rx * k).toFixed(2) + " " + (cy + Math.sin(a) * ry * k).toFixed(2); } return d; }
+function marksSvg(marks, seed = 3) {
+  const R = rng(seed); let p = "", nums = "";
+  for (const [t, x, y, a, b, n] of marks) {
+    let d, lx, ly;
+    if (t === "u") { const x2 = a; d = `M${x} ${y} C ${x + (x2 - x) * .3} ${y - 1.6}, ${x + (x2 - x) * .65} ${y + 1.8}, ${x2} ${y - .4}`; lx = Math.min(x, x2) - 3; ly = y; }
+    else { d = handEllipse(x, y, a, b * 1.1, R); lx = x - a - 3; ly = y - b; }
+    p += `<path d="${d}" fill="none" stroke="#d8262e" stroke-width="2.6" stroke-linecap="round" vector-effect="non-scaling-stroke"/>`;
+    nums += `<span class="mnum" style="left:${Math.max(1, lx).toFixed(1)}%;top:${Math.max(1, ly - 3).toFixed(1)}%">${n}</span>`;
+  }
+  return `<svg class="marks" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${p}</svg>${nums}`;
 }
+function photo(e, withMarks) { return `<div class="photo"><img src="${FACE_IMG[e.img]}" alt="${esc(e.he)}">${withMarks ? marksSvg(e.marks, e.img.length * 7) : ""}</div>`; }
+function cueList(e) { return `<ol class="cues">${e.cues.map((c, i) => `<li><span class="mnum2">${i + 1}</span>${esc(c)}</li>`).join("")}</ol>`; }
+
+const FACE_LEVELS = [{ ms: 1500, he: "רגיל" }, { ms: 700, he: "מהיר" }, { ms: 350, he: "חד" }, { ms: 160, he: "מיקרו" }];
+let faceTab = "atlas";
 const Face = {
   state: "idle", cur: null, lvl: 0, streak: 0, timer: 0,
-  mount() { this.lvl = Math.min(S.face.level, FACE_LEVELS.length - 1); this.show({}); },
+  mount() { this.lvl = Math.min(S.face.level, FACE_LEVELS.length - 1); if (faceTab === "train") this.fix(); },
   stop() { clearTimeout(this.timer); this.state = "idle"; },
-  show(au, k, rv) { const el = $("#face"); if (el) el.innerHTML = faceSvg(au, k, rv); },
+  fix(txt = "+") { const el = $("#stage"); if (el) el.innerHTML = `<div class="fixation">${txt}</div>`; },
   start() {
     Sound.ac(); this.stop(); this.state = "count";
     const keys = Object.keys(EXPR); let pick; do { pick = keys[Math.random() * keys.length | 0]; } while (pick === this.cur); this.cur = pick;
-    $("#opts").innerHTML = keys.map((k) => `<button class="opt card" data-e="${k}" disabled>${EXPR[k].he}</button>`).join(""); $("#explain").hidden = true; $("#fgo").hidden = true;
-    const cd = $("#cd"); let n = 3; this.show({});
-    const tick = () => { if (this.state !== "count") return; if (n > 0) { cd.textContent = n; Sound.tone(660, 0, .12, .04); n--; this.timer = setTimeout(tick, 600); } else { cd.textContent = ""; this.flash(); } };
+    $("#opts").innerHTML = keys.map((k) => `<button class="opt card" data-e="${k}" disabled>${EXPR[k].he}</button>`).join(""); sketchify($("#opts"));
+    $("#explain").hidden = true; $("#fgo").hidden = true;
+    let n = 3; const tick = () => { if (this.state !== "count") return; if (n > 0) { this.fix(n); Sound.tone(660, 0, .1, .04); n--; this.timer = setTimeout(tick, 650); } else { this.fix("+"); this.timer = setTimeout(() => this.flash(), 500); } };
     tick();
   },
   flash() {
-    const L = FACE_LEVELS[this.lvl];
-    this.show(EXPR[this.cur].au, L.k); this.state = "flash";
-    this.timer = setTimeout(() => { this.show({}); this.state = "answer"; document.querySelectorAll("#opts .opt").forEach((b) => { b.disabled = false; b.onclick = () => this.answer(b.dataset.e, b); }); }, L.ms);
+    const L = FACE_LEVELS[this.lvl]; const el = $("#stage"); if (!el) return;
+    el.innerHTML = photo(EXPR[this.cur], false); this.state = "flash";
+    this.timer = setTimeout(() => { this.fix("?"); this.state = "answer"; document.querySelectorAll("#opts .opt").forEach((b) => { b.disabled = false; b.onclick = () => this.answer(b.dataset.e, b); }); }, L.ms);
   },
   answer(e, b) {
     if (this.state !== "answer") return; this.state = "done";
@@ -948,23 +988,45 @@ const Face = {
     if (ok) { this.streak++; S.face.right++; if (this.streak > S.face.best) S.face.best = this.streak; gain(5, "זיהוי נכון"); if (this.streak % 5 === 0) { confetti(); if (this.lvl < FACE_LEVELS.length - 1 && this.lvl >= S.face.level) { S.face.level = this.lvl + 1; setTimeout(() => toast("נפתחה רמה: " + FACE_LEVELS[this.lvl + 1].he), 1200); } } }
     else { b.classList.add("wrong"); this.streak = 0; Sound.wrong(); }
     markActive(); Store.save();
-    this.show(EXPR[this.cur].au, 1, true);
-    const ex = $("#explain"); ex.hidden = false; ex.innerHTML = `<b class="ink2">${EXPR[this.cur].he}.</b> ${esc(EXPR[this.cur].cue)} <span class="red">באדום: מה שהשתנה.</span>`;
+    const ex = EXPR[this.cur];
+    $("#stage").innerHTML = photo(ex, true);
+    const box = $("#explain"); box.hidden = false; box.innerHTML = `<b class="ink2">${ex.he}</b>${cueList(ex)}`;
     $("#fhud").innerHTML = this.hud(); $("#fgo").hidden = false; $("#fgo").innerHTML = I.play + " עוד אחד";
     $("#flevels").innerHTML = this.levelsHtml(); bind($("#flevels"));
+    playLines(ex.he, "מעבדת פנים", 340, [["A", (ok ? "נכון, " : "זה היה ") + ex.he + "."], ...ex.cues.map((c) => ["A", c])]);
   },
   hud() { return `<span class="stat">רצף <b>${this.streak}</b></span><span class="stat">שיא <b>${S.face.best}</b> · ${S.face.total ? Math.round(100 * S.face.right / S.face.total) : 0}% דיוק</span>`; },
   levelsHtml() { return FACE_LEVELS.map((l, i) => `<button data-fl="${i}" class="${i === this.lvl ? "on" : ""}" ${i > S.face.level ? "disabled" : ""}>${l.he}<br><small>${l.ms >= 1000 ? (l.ms / 1000) + " שנ׳" : l.ms + " מ״ש"}</small></button>`).join(""); }
 };
+function openExpr(key) {
+  const e = EXPR[key] || EXTRA.find((x) => x.id === key); if (!e) return;
+  const m = $("#modal");
+  m.innerHTML = `<div class="modal" dir="rtl"><div class="box"><div class="row" style="justify-content:space-between;align-items:center"><h3><span class="ink">${esc(e.he)}</span></h3><button class="glassbtn" id="ex-close" aria-label="סגירה">${I.stop}</button></div>
+    ${photo(e, true)}${cueList(e)}${e.note ? `<p class="hint">${esc(e.note)}</p>` : ""}
+    <div class="row"><button class="pill gold" id="ex-say">${I.ear} הסבר בקול</button>${key === "fake" ? `<button class="pill" data-cmp="joy">השווה לחיוך אמיתי</button>` : key === "joy" ? `<button class="pill" data-cmp="fake">השווה לחיוך מזויף</button>` : ""}</div></div></div>`;
+  sketchify(m);
+  $("#ex-close").onclick = () => { m.innerHTML = ""; P.stop(); };
+  $("#ex-say").onclick = () => playLines(e.he, "אטלס ההבעות", 340, [["A", e.he + "."], ...e.cues.map((c) => ["A", c]), ...(e.note ? [["B", e.note]] : [])]);
+  m.querySelectorAll("[data-cmp]").forEach((b) => b.onclick = () => openExpr(b.dataset.cmp));
+  if (!S.labs["atlas-" + key]) { S.labs["atlas-" + key] = 1; Store.save(); }
+}
 function faceView() {
   Face.lvl = Math.min(S.face.level, FACE_LEVELS.length - 1);
-  return `${topbar(true)}
-  <div class="facebox">${orb(340)}<div class="facehud" id="fhud">${Face.hud()}</div><div id="face"></div><div class="countdown" id="cd"></div></div>
+  const tabs = `<div class="seg card" style="margin-top:6px"><button class="${faceTab === "atlas" ? "on" : ""}" data-ftab="atlas">אטלס ההבעות</button><button class="${faceTab === "train" ? "on" : ""}" data-ftab="train">אימון מהיר</button></div>`;
+  if (faceTab === "atlas") return `${topbar(true)}${tabs}
+  <section class="sec" style="margin-top:22px"><div class="sechead"><h3>שבע ההבעות <span class="ink2">האוניברסליות</span></h3><span class="aux">לחץ על תמונה</span></div>
+  <div class="atlas">${Object.entries(EXPR).map(([k, e]) => `<button class="acard" data-expr="${k}">${photo(e, false)}<b>${e.he}</b></button>`).join("")}</div></section>
+  <section class="sec"><div class="sechead"><h3>מקרים <span class="ink2">מיוחדים</span></h3></div>
+  <div class="atlas">${EXTRA.map((e) => `<button class="acard" data-expr="${e.id}">${photo(e, false)}<b>${e.he}</b></button>`).join("")}</div></section>
+  <div class="card panel" style="margin-top:22px"><h4>מה חשוב לדעת</h4><p class="hint" style="font-size:14.5px">פול אקמן מצא שבע הבעות שנראות דומה בתרבויות רבות. מיקרו-הבעה היא אחת מהן שמופיעה לשבריר שנייה, בערך בין עשירית לחצי שנייה. היא מגלה שיש רגש, אבל <span class="ink2">לא מוכיחה שקר</span>. משתמשים בה כדי לשאול שאלה טובה, לא כדי לשפוט.</p></div>
+  <p class="diag" style="margin-top:18px">${esc(PHOTO_CREDIT)}</p>`;
+  return `${topbar(true)}${tabs}
+  <div class="facebox" style="margin-top:14px"><div class="facehud" id="fhud">${Face.hud()}</div><div id="stage" class="stage2"><div class="fixation">+</div></div></div>
   <div class="levels" id="flevels">${Face.levelsHtml()}</div>
   <div class="opts" id="opts"></div>
   <div class="explain card" id="explain" hidden></div>
   <div class="row" style="margin-top:14px"><button class="btn" id="fgo" data-act="face-go">${I.play} התחל</button><button class="pill" data-act="face-how">${I.ear} איך זה עובד</button></div>
-  <p class="hint" style="margin-top:14px">חמישה נכונים ברצף פותחים רמה מהירה יותר. ברמת מיקרו ההבעה מופיעה פחות מחמישית שנייה, כמו מיקרו-הבעה אמיתית. האימון משפר זיהוי הבעות. הוא לא גלאי שקר.</p>`;
+  <p class="hint" style="margin-top:14px">תמונה אמיתית מופיעה לשבריר שנייה ונעלמת. חמישה נכונים ברצף פותחים רמה מהירה יותר. ברמת מיקרו זה פחות מחמישית שנייה, כמו מיקרו-הבעה אמיתית. האימון משפר זיהוי הבעות, הוא לא גלאי שקר.</p>`;
 }
 
 /* ---------- money lab ---------- */
@@ -1057,7 +1119,7 @@ function profileView() {
     ${mode === "device" ? (voices.length ? `<div class="field" style="margin:0"><label for="p-voice">קול עברי במכשיר</label><select id="p-voice">${voices.map((v) => `<option ${v.name === S.settings.voice ? "selected" : ""} value="${esc(v.name)}">${esc(v.name)}</option>`).join("")}</select></div>` : `<p class="hint">לא נמצא קול עברי במכשיר.</p>`) : `<p class="hint">משתמש בקול של Claude.</p>`}
     <p class="hint">באייפון: הגדרות, נגישות, תוכן מוקרא, קולות, עברית. מורידים את הקול המשופר ובוחרים אותו כאן. ההבדל גדול.</p>
     <div class="ctrl"><label for="p-rate">מהירות<span id="rateV">×${S.settings.rate}</span></label><input id="p-rate" type="range" min="0.7" max="1.4" step="0.05" value="${S.settings.rate}"></div>
-    <div class="row"><button class="pill gold" data-act="test-voice">${I.ear} בדיקת שמע</button><button class="pill" data-act="sound-help">לא שומע?</button></div>
+    <div class="row"><button class="pill gold" data-act="test-voice">${I.ear} בדיקת שמע</button><button class="pill" data-act="sound-help">מעבדת שמע</button></div>
     <p class="diag">${esc(Voice.diag())}</p></div>
   <div class="card panel"><h4>מה המאמן זוכר עליך</h4>
     ${S.memory.length ? `<ul class="memo">${S.memory.map((m, i) => `<li>${esc(m)} <button class="mini" data-forget="${i}">שכח</button></li>`).join("")}</ul>` : `<p class="hint">עוד כלום. המאמן לומד ממה שאתה שואל ומתרגל.</p>`}</div>
@@ -1171,6 +1233,8 @@ function bind(root) {
   root.querySelectorAll("[data-rp]").forEach((b) => b.onclick = () => startRP(b.dataset.rp));
   root.querySelectorAll("[data-eng]").forEach((b) => b.onclick = () => { S.settings.engine = b.dataset.eng; Store.save(); render(); });
   root.querySelectorAll("[data-fl]").forEach((b) => b.onclick = () => { if (b.disabled) return; Face.lvl = +b.dataset.fl; root.querySelectorAll("[data-fl]").forEach((x) => x.classList.toggle("on", x === b)); });
+  root.querySelectorAll("[data-expr]").forEach((b) => b.onclick = () => openExpr(b.dataset.expr));
+  root.querySelectorAll("[data-ftab]").forEach((b) => b.onclick = () => { Face.stop(); faceTab = b.dataset.ftab; render(); });
   root.querySelectorAll("[data-br]").forEach((b) => b.onclick = () => Breath.start(+b.dataset.br));
   root.querySelectorAll("[data-m]").forEach((r) => r.oninput = () => { Money.v[r.dataset.m] = +r.value; $("#mv-" + r.dataset.m).textContent = (+r.value).toLocaleString("he-IL") + r.dataset.unit; if (r.dataset.m === "years") $("#mv-years2").textContent = r.value; Money.calc(); });
   root.querySelectorAll("[data-rate]").forEach((b) => b.onclick = () => { S.settings.rate = +b.dataset.rate; if (P.audio) P.audio.playbackRate = S.settings.rate; Store.save(); root.querySelectorAll("[data-rate]").forEach((x) => x.classList.toggle("on", x === b)); if (P.playing && P.item.kind !== "file") { P.run++; Voice.stop(); P.play(); } });
@@ -1250,7 +1314,7 @@ function act(a, b) {
       ["A", "מורידים את הקובץ, חוזרים לכאן, ולוחצים על הוסף את הפודקאסט. הוא יופיע בנושא, ותקבל עליו נקודות כשתשמע אותו עד הסוף."]
     ]); break;
     case "face-go": Face.start(); break;
-    case "face-how": playLines("מעבדת פנים", "איך זה עובד", 340, [["A", "תראה פנים רגועות. לשבריר שנייה תופיע הבעה, ותיעלם."], ["B", "בחר איזה רגש ראית. אחרי כל תשובה ההבעה מוצגת שוב, עם הרמזים שמזהים אותה."], ["A", "חמישה נכונים ברצף פותחים רמה מהירה יותר. ברמת מיקרו זה פחות מחמישית שנייה, כמו מיקרו-הבעה אמיתית."], ["B", "זה אימון לזיהוי רגשות, לא גלאי שקר. ככה תשים לב מתי מישהו קרוב אליך מסתיר משהו, ותדע לשאול ברכות."]]); break;
+    case "face-how": playLines("מעבדת פנים", "איך זה עובד", 340, [["A", "תסתכל על הצלב במרכז. לשבריר שנייה תופיע תמונה אמיתית של פנים, ותיעלם."], ["B", "בחר איזה רגש ראית. אחרי כל תשובה התמונה מוצגת שוב, עם סימונים באדום על הרמזים שמזהים אותה."], ["A", "חמישה נכונים ברצף פותחים רמה מהירה יותר. ברמת מיקרו זה פחות מחמישית שנייה, כמו מיקרו-הבעה אמיתית."], ["B", "זה אימון לזיהוי רגשות, לא גלאי שקר. ככה תשים לב מתי מישהו קרוב אליך מסתיר משהו, ותדע לשאול ברכות."]]); break;
     case "m-speak": Money.speak(); break;
     case "br-stop": Breath.stop(); break;
     case "rp-exit": RP = null; VO.status = ""; speakGen++; Voice.stop(); render(); break;
