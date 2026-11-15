@@ -1,0 +1,46 @@
+// Runs dist/app.html in Chromium with a fake window.claude (db, user, sample, tts) and takes phone screenshots.
+const { chromium } = require('playwright');
+const fs = require('fs'); const path = require('path');
+const page0 = fs.readFileSync(path.join(__dirname, 'dist', 'app.html'), 'utf8');
+const html = `<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0;font:14px system-ui}img{max-width:100%}[hidden]{display:none!important}</style></head><body>${page0}</body></html>`;
+const out = path.join(__dirname, 'shots'); fs.mkdirSync(out, { recursive: true });
+(async () => {
+  const b = await chromium.launch();
+  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, colorScheme: 'dark' });
+  const p = await ctx.newPage();
+  const errs = []; p.on('pageerror', (e) => errs.push(e.message)); p.on('console', (m) => m.type() === 'error' && errs.push(m.text()));
+  await p.addInitScript(() => {
+    const store = {}; window.__spoken = []; window.__prompts = [];
+    const db = { collection: (c) => ({ doc: (id) => ({ get: async () => ({ exists: !!store[c + '/' + id], data: () => store[c + '/' + id] }), set: async (d) => { store[c + '/' + id] = d; window.__saved = d; } }) }) };
+    const sample = Object.assign(async () => ({ text: '' }), { json: async (prompt) => { window.__prompts.push(prompt); await new Promise(r => setTimeout(r, 200)); return prompt.includes('צור משימה אישית') ? { topic: 'presence', task: 'שתי דקות של אנחה מחזורית לפני הפגישה של עשר.', why: 'נשיפה ארוכה מאטה את הדופק.' } : { answer: 'כדי להתחיל לחסוך, תתחיל קטן. הוראת קבע של מאה שקל ביום אחרי המשכורת. ככה זה קורה בלי כוח רצון.', task: 'לקבוע הוראת קבע של מאה שקל.', remember: ['רוצה להתחיל לחסוך'] }; } });
+    const tts = { speak: async (t) => { window.__spoken.push(t); await new Promise(r => setTimeout(r, 30)); }, stop() {}, onState() { return () => {}; } };
+    const caps = { db, sample, tts, user: { id: async () => 'u1', isOwner: () => true } };
+    window.claude = { use: async (n) => caps[n] ?? null };
+  });
+  await p.route('https://app.test/', r => r.fulfill({ contentType: 'text/html', body: html })); await p.goto('https://app.test/'); await p.waitForTimeout(800);
+  await p.screenshot({ path: out + '/1-welcome.png' });
+  await p.fill('#w-name', 'אורי'); await p.click('[data-focus=confidence]'); await p.click('[data-focus=relationship]');
+  await p.click('[data-act=start]'); await p.waitForTimeout(1500);
+  await p.screenshot({ path: out + '/2-home.png' });
+  await p.screenshot({ path: out + '/2b-home-full.png', fullPage: true });
+  await p.click('[data-act=check][data-k="0"]');
+  await p.click('.burger'); await p.waitForTimeout(400); await p.screenshot({ path: out + '/3-drawer.png' });
+  await p.click('#drawer [data-arg=faces]'); await p.waitForTimeout(500);
+  await p.click('.eps .ep >> nth=1'); await p.waitForTimeout(800);
+  await p.screenshot({ path: out + '/4-topic.png' });
+  await p.click('[data-act=sheet]'); await p.waitForTimeout(600); await p.screenshot({ path: out + '/5-player.png' });
+  await p.click('[data-act=close-sheet]');
+  await p.click('.top [aria-label="חזרה לבית"]'); await p.waitForTimeout(300);
+  await p.click('.top [data-go=coach]'); await p.waitForTimeout(300);
+  await p.fill('#askq', 'איך להתחיל לחסוך?'); await p.click('#asks'); await p.waitForTimeout(1500);
+  await p.screenshot({ path: out + '/6-coach.png' });
+  await p.click('[data-act=add-task]'); await p.click('[data-go=home] >> nth=0').catch(()=>{});
+  const st = await p.evaluate(() => ({ spoken: window.__spoken.length, lastSpoken: window.__spoken.slice(-2), saved: !!window.__saved, mem: window.__saved?.memory, done: Object.keys(window.__saved?.done||{}), today: Object.values(window.__saved?.days||{})[0]?.items.map(i=>[i.text,i.done,!!i.ai]), promptHasName: window.__prompts[0]?.includes('אורי') }));
+  console.log(JSON.stringify(st, null, 1));
+  await ctx.close();
+  const c2 = await b.newContext({ viewport: { width: 390, height: 844 }, colorScheme: 'light' }); const p2 = await c2.newPage();
+  await p2.addInitScript(() => { localStorage.setItem('growth.state', JSON.stringify({ profile: { name: 'אורי', about: '', focus: [] } })); });
+  await p2.route('https://app.test/', r => r.fulfill({ contentType: 'text/html', body: html })); await p2.goto('https://app.test/'); await p2.waitForTimeout(2600); await p2.screenshot({ path: out + '/7-light.png' });
+  console.log('errors', errs);
+  await b.close();
+})();

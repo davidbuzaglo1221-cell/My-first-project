@@ -1,0 +1,1266 @@
+<title>צמיחה</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="צמיחה">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Karantina:wght@400;700&family=Heebo:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: one column "radio" app. Generative topic covers carry the visual identity; text kept to labels. */
+:root {
+  --bg: #0d1517; --bg2: #121d20; --surface: #18262a; --surface2: #203236;
+  --ink: #edf1ec; --muted: #93a3a0; --line: rgba(237,241,236,.10);
+  --accent: #f2b75b; --accent-ink: #1b1305; --good: #7fd6a4; --warn: #f08a6c;
+  --display: "Karantina", "Heebo", "Arial Hebrew", system-ui, sans-serif;
+  --body: "Heebo", "Arial Hebrew", system-ui, sans-serif;
+  --r: 22px;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
+  --bg: #eef3f1; --bg2: #e3ebe8; --surface: #ffffff; --surface2: #f1f6f4;
+  --ink: #102022; --muted: #56706c; --line: rgba(16,32,34,.11);
+  --accent: #b06a10; --accent-ink: #fffaf1; --good: #1f8a53; --warn: #b8462a; color-scheme: light } }
+:root[data-theme="light"] {
+  --bg: #eef3f1; --bg2: #e3ebe8; --surface: #ffffff; --surface2: #f1f6f4;
+  --ink: #102022; --muted: #56706c; --line: rgba(16,32,34,.11);
+  --accent: #b06a10; --accent-ink: #fffaf1; --good: #1f8a53; --warn: #b8462a; color-scheme: light }
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent }
+html, body { background: var(--bg); color: var(--ink) }
+body { font-family: var(--body); font-size: 16px; line-height: 1.5; min-height: 100%; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg) }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0 }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px }
+#app { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-bottom: 140px; }
+
+/* top bar */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: flex; align-items: center; justify-content: space-between; padding-block: 12px; background: var(--bg); }
+.brand { font-family: var(--display); font-size: 34px; font-weight: 700; letter-spacing: .5px; line-height: 1 }
+.brand b { color: var(--accent); font-weight: 700 }
+.iconbtn { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); }
+.iconbtn svg { width: 22px; height: 22px }
+.burger span { display: block; width: 20px; height: 2px; background: var(--ink); border-radius: 2px; margin: 4px 0 }
+
+/* drawer */
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .25s }
+.scrim.on { opacity: 1; pointer-events: auto }
+.drawer { position: fixed; top: 0; bottom: 0; right: 0; width: min(86vw, 380px); background: var(--bg2); z-index: 41; transform: translateX(105%); transition: transform .3s cubic-bezier(.2,.8,.2,1); padding: calc(env(safe-area-inset-top, 0px) + 18px) max(18px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 18px) 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px }
+.drawer.on { transform: none }
+.drawer h2 { font-family: var(--display); font-size: 30px; margin: 0 0 8px; font-weight: 700 }
+.navitem { display: flex; align-items: center; gap: 14px; padding: 10px 8px; border-radius: 16px; text-align: right; width: 100% }
+.navitem:hover, .navitem.cur { background: var(--surface) }
+.navitem canvas { width: 46px; height: 46px; border-radius: 14px; flex: none }
+.navitem .t { font-weight: 700; font-size: 17px }
+.navitem .s { color: var(--muted); font-size: 13px }
+.navitem .meter { margin-inline-start: auto; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums }
+.navsep { height: 1px; background: var(--line); margin: 10px 0 }
+.navicon { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--surface); flex: none }
+.navicon svg { width: 22px; height: 22px }
+
+/* home */
+.hero { margin-top: 6px; border-radius: 28px; overflow: hidden; position: relative; background: var(--surface); min-height: 210px; display: flex; align-items: flex-end }
+.hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; max-width: 100% }
+.hero .in { position: relative; padding: 20px; display: flex; align-items: flex-end; justify-content: space-between; width: 100%; gap: 12px }
+.hero .date { font-size: 13px; color: #fff; opacity: .85 }
+.hero .hi { font-family: var(--display); font-size: 46px; line-height: .95; color: #fff; text-wrap: balance }
+.bigplay { width: 72px; height: 72px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none; box-shadow: 0 10px 30px rgba(0,0,0,.35) }
+.bigplay svg { width: 30px; height: 30px }
+.sec { margin-top: 26px }
+.sechead { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px }
+.sechead h3 { margin: 0; font-family: var(--display); font-size: 30px; font-weight: 700; letter-spacing: .3px }
+.sechead .aux { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums }
+.tasks { display: grid; gap: 10px }
+.task { display: flex; align-items: center; gap: 12px; background: var(--surface); border-radius: 18px; padding: 12px 14px; min-height: 64px }
+.task .dot { width: 10px; height: 10px; border-radius: 50%; flex: none }
+.task .txt { flex: 1; min-width: 0; font-size: 15px; line-height: 1.35 }
+.task.done .txt { color: var(--muted); text-decoration: line-through }
+.task .act { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--surface2); flex: none }
+.task .act svg { width: 18px; height: 18px }
+.task .check.on { background: var(--good); color: #062214 }
+.task.ai { outline: 1px dashed var(--accent); outline-offset: -1px }
+.row { display: flex; gap: 10px; flex-wrap: wrap }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; background: var(--surface); font-weight: 600; font-size: 14px }
+.pill svg { width: 18px; height: 18px }
+.pill.accent { background: var(--accent); color: var(--accent-ink) }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px }
+.tile { position: relative; border-radius: 20px; overflow: hidden; aspect-ratio: 1 / 1.05; max-width: 100%; background: var(--surface); text-align: right }
+.tile canvas { position: absolute; inset: 0; width: 100%; height: 100% }
+.tile .lab { position: absolute; inset: auto 0 0 0; padding: 12px; background: linear-gradient(transparent, rgba(0,0,0,.55)); color: #fff }
+.tile .lab b { font-family: var(--display); font-size: 30px; font-weight: 700; display: block; line-height: 1 }
+.tile .lab small { opacity: .85; font-size: 12px; font-variant-numeric: tabular-nums }
+.streak { display: flex; gap: 6px; align-items: flex-end }
+.streak i { width: 100%; flex: 1; height: 34px; border-radius: 8px; background: var(--surface) }
+.streak i.on { background: var(--accent) }
+.streak i.today { outline: 2px solid var(--ink); outline-offset: 1px }
+
+/* topic */
+.cover { position: relative; border-radius: 28px; overflow: hidden; aspect-ratio: 1.25 / 1; max-width: 100%; margin-top: 6px }
+.cover canvas { position: absolute; inset: 0; width: 100%; height: 100% }
+.cover .in { position: absolute; inset: auto 0 0 0; padding: 20px; color: #fff; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; background: linear-gradient(transparent, rgba(0,0,0,.5)) }
+.cover h1 { font-family: var(--display); font-size: 64px; line-height: .9; margin: 0; font-weight: 700 }
+.cover p { margin: 4px 0 0; opacity: .9; font-size: 14px }
+.eps { display: grid; gap: 8px; margin-top: 14px }
+.ep { display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 18px; background: var(--surface); text-align: right; width: 100% }
+.ep .num { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--surface2); font-weight: 800; flex: none; font-variant-numeric: tabular-nums }
+.ep.done .num { background: var(--good); color: #062214 }
+.ep.playing .num { background: var(--accent); color: var(--accent-ink) }
+.ep .t { font-weight: 700; flex: 1; min-width: 0 }
+.ep .m { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums }
+.nb { margin-top: 22px; border-radius: 22px; padding: 16px; background: var(--surface); display: grid; gap: 12px }
+.nb h4 { margin: 0; font-size: 17px }
+.nb .steps { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px }
+.nb .step { border-radius: 16px; background: var(--surface2); padding: 12px 8px; display: grid; justify-items: center; gap: 6px; text-align: center; font-size: 13px; font-weight: 600 }
+.nb .step svg { width: 26px; height: 26px; color: var(--accent) }
+.nb .step b { font-size: 11px; color: var(--muted); font-weight: 700 }
+.own { display: grid; gap: 8px }
+.own .ep .num { background: var(--accent); color: var(--accent-ink) }
+.hint { color: var(--muted); font-size: 13px }
+
+/* coach */
+.orb-wrap { display: grid; place-items: center; padding-block: 28px 10px }
+.orb { width: 190px; height: 190px; border-radius: 50%; position: relative; display: grid; place-items: center }
+.orb canvas { position: absolute; inset: -30px; width: 250px; height: 250px }
+.orb .core { width: 120px; height: 120px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; position: relative; box-shadow: 0 0 60px color-mix(in srgb, var(--accent) 45%, transparent) }
+.orb .core svg { width: 44px; height: 44px }
+.orb-status { text-align: center; color: var(--muted); font-size: 14px; min-height: 22px; margin-top: 4px }
+.ask { display: flex; gap: 8px; align-items: flex-end; background: var(--surface); border-radius: 22px; padding: 8px }
+.ask textarea { flex: 1; min-width: 0; border: 0; background: transparent; color: var(--ink); font: inherit; resize: none; padding: 8px 10px; min-height: 44px; max-height: 140px }
+.ask textarea::placeholder { color: var(--muted) }
+.send { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; flex: none }
+.send svg { width: 20px; height: 20px }
+.send[disabled] { opacity: .4 }
+.chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px }
+.chip { padding: 8px 14px; border-radius: 999px; background: var(--surface); font-size: 14px; border: 1px solid var(--line) }
+.chip.on { background: var(--accent); color: var(--accent-ink); border-color: transparent }
+.answer { margin-top: 16px; border-radius: 20px; background: var(--surface); padding: 14px 16px; display: grid; gap: 10px }
+.answer .q { font-weight: 700 }
+.answer .a { color: var(--muted); font-size: 15px; white-space: pre-wrap }
+.answer .a[hidden] { display: none }
+.answer .tools { display: flex; gap: 8px; flex-wrap: wrap }
+.mini { font-size: 13px; padding: 6px 12px; border-radius: 999px; background: var(--surface2); display: inline-flex; gap: 6px; align-items: center }
+.mini svg { width: 15px; height: 15px }
+
+/* profile */
+.field { display: grid; gap: 6px; margin-top: 14px }
+.field label { font-weight: 700; font-size: 14px }
+.field input, .field textarea, .field select { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; font: inherit; width: 100% }
+.card { background: var(--surface); border-radius: 20px; padding: 16px; margin-top: 14px; display: grid; gap: 10px }
+.card h4 { margin: 0 }
+.memo li { margin-bottom: 4px }
+.range { width: 100% }
+
+/* player */
+.player { position: fixed; left: 0; right: 0; bottom: 0; z-index: 25; padding: 0 max(12px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 12px) max(12px, env(safe-area-inset-left, 0px)); pointer-events: none }
+.pbar { pointer-events: auto; max-width: 560px; margin: 0 auto; background: color-mix(in srgb, var(--surface2) 92%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 22px; padding: 10px; display: flex; align-items: center; gap: 10px; box-shadow: 0 12px 40px rgba(0,0,0,.35); border: 1px solid var(--line) }
+.pbar canvas { width: 48px; height: 48px; border-radius: 14px; flex: none }
+.pbar .meta { flex: 1; min-width: 0; text-align: right }
+.pbar .meta b { display: block; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.pbar .meta span { color: var(--muted); font-size: 12px }
+.prog { height: 4px; border-radius: 4px; background: var(--line); margin-top: 6px; overflow: hidden }
+.prog i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .4s }
+.pbtn { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); flex: none }
+.pbtn svg { width: 22px; height: 22px }
+.pbtn.ghost { background: transparent; color: var(--ink); width: 40px }
+
+.sheet { position: fixed; inset: 0; z-index: 50; background: var(--bg); transform: translateY(102%); transition: transform .35s cubic-bezier(.2,.8,.2,1); display: flex; flex-direction: column; padding: calc(env(safe-area-inset-top, 0px) + 12px) max(20px, env(safe-area-inset-right, 0px)) calc(env(safe-area-inset-bottom, 0px) + 24px) max(20px, env(safe-area-inset-left, 0px)) }
+.sheet.on { transform: none }
+.sheet .stage { flex: 1; display: grid; place-items: center; position: relative; min-height: 0 }
+.sheet .stage canvas { width: min(84vw, 380px); height: min(84vw, 380px); border-radius: 36px }
+.speakers { display: flex; justify-content: center; gap: 28px; margin-top: 10px }
+.spk { display: grid; justify-items: center; gap: 6px; opacity: .45; transition: opacity .3s, transform .3s }
+.spk.on { opacity: 1; transform: scale(1.06) }
+.spk .av { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-size: 30px; font-weight: 700 }
+.spk.on .av { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 60%, transparent) }
+.spk small { font-size: 13px; font-weight: 600 }
+.sheet .ttl { text-align: center; margin-top: 18px }
+.sheet .ttl b { font-family: var(--display); font-size: 40px; display: block; line-height: 1; font-weight: 700 }
+.sheet .ttl span { color: var(--muted); font-size: 14px }
+.ctrls { display: flex; justify-content: center; align-items: center; gap: 22px; margin-top: 22px }
+.ctrls .pbtn { width: 80px; height: 80px }
+.ctrls .pbtn svg { width: 34px; height: 34px }
+.ctrls .sk { width: 54px; height: 54px; border-radius: 50%; background: var(--surface); display: grid; place-items: center }
+.ctrls .sk svg { width: 24px; height: 24px }
+.speed { display: flex; justify-content: center; gap: 8px; margin-top: 16px }
+.speed button { padding: 6px 12px; border-radius: 999px; background: var(--surface); font-size: 13px; font-variant-numeric: tabular-nums }
+.speed button.on { background: var(--ink); color: var(--bg) }
+.close { align-self: flex-start }
+
+.toast { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 112px); transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-size: 14px; z-index: 60; opacity: 0; transition: all .25s; pointer-events: none; max-width: calc(100vw - 32px); text-align: center }
+.toast.on { opacity: 1; transform: translateX(-50%) }
+.welcome { display: grid; gap: 14px; padding-top: 10px }
+.welcome h1 { font-family: var(--display); font-size: 62px; line-height: .9; margin: 10px 0 0; text-wrap: balance }
+.welcome p { color: var(--muted); margin: 0 }
+.btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; padding: 14px 22px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-weight: 800; font-size: 17px }
+.btn svg { width: 22px; height: 22px }
+.btn.sec2 { background: var(--surface); color: var(--ink) }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important } }
+</style>
+
+<div id="app" dir="rtl" lang="he"></div>
+<div class="scrim" id="scrim"></div>
+<nav class="drawer" id="drawer" dir="rtl" lang="he" aria-label="נושאים"></nav>
+<div class="player" id="player" dir="rtl" hidden></div>
+<section class="sheet" id="sheet" dir="rtl" lang="he" aria-label="נגן"></section>
+<div class="toast" id="toast" role="status"></div>
+<input type="file" id="audioIn" accept="audio/*,video/mp4,.m4a,.wav,.mp3" hidden>
+
+<script>// Course content. Two hosts: A = מאיה, B = דניאל. ["P", ms] is a silent pause.
+// {name} is replaced with the listener's name from the profile.
+// Every claim here is meant to match published research; where research is weak, the episode says so.
+window.TOPICS = [
+  {
+    id: "body-language", title: "שפת גוף", short: "לקרוא אנשים בלי לנחש", hue: 24,
+    episodes: [
+      { id: "bl1", title: "שלושת הכללים", lines: [
+        ["A", "ברוכים הבאים. היום נפרק את המיתוס הכי נפוץ על שפת גוף: שיש תנועה אחת שמסגירה מה אדם חושב."],
+        ["B", "כמו ידיים שלובות שאומרות שהוא סגור, או נגיעה באף שאומרת שהוא משקר."],
+        ["A", "בדיוק. המחקר לא תומך בזה. ידיים שלובות יכולות להיות קור, נוחות, או סתם הרגל. אין מילון של תנועות."],
+        ["B", "אז מה כן עובד?"],
+        ["A", "שלושה כללים. הראשון: קו בסיס. לפני שמפרשים משהו, לומדים איך האדם הזה מתנהג כשהוא רגוע. יש אנשים שתמיד זזים, ויש שתמיד יציבים."],
+        ["B", "כלומר מה שחשוב זה השינוי, לא ההתנהגות עצמה."],
+        ["A", "נכון. הכלל השני: אשכולות. תנועה אחת לא אומרת כלום. שלושה סימנים שמופיעים יחד, למשל גוף שמסתובב ממך, רגליים שמכוונות ליציאה, ותשובות שמתקצרות, זה כבר מידע."],
+        ["B", "והשלישי?"],
+        ["A", "הקשר. מה קרה רגע לפני? שאלה קשה, חדר קר, עייפות. אותה תנועה במקום אחר אומרת דבר אחר."],
+        ["B", "ועוד מיתוס אחד שחייבים לנפץ: שתשעים ושלושה אחוז מהתקשורת הם לא מילוליים."],
+        ["A", "זה ציטוט שגוי של מחקרים של אלברט מהרביאן משנות השישים. הם בדקו מצב צר מאוד: מה אנשים מסיקים על רגש כשהמילים והטון סותרים זה את זה. זה לא חל על שיחה רגילה."],
+        ["B", "אז המילים חשובות מאוד."],
+        ["A", "מאוד. שפת גוף היא שכבה נוספת, לא תחליף. והיא עוזרת בעיקר לשאול שאלה טובה יותר, לא לקפוץ למסקנה."],
+        ["B", "התרגיל להיום: בשיחה הבאה שלך, תבחר אדם אחד ותשים לב לקו הבסיס שלו בשתי הדקות הראשונות. איך הוא יושב, כמה הוא זז, מה הקצב שלו. רק לשים לב, בלי לפרש."]
+      ]},
+      { id: "bl2", title: "איך אתה נראה כשאתה נכנס לחדר", lines: [
+        ["A", "היום מדברים עליך. איך אחרים קוראים אותך."],
+        ["B", "נתחיל מתנוחת הכוח? שתי דקות בעמידת סופרמן?"],
+        ["A", "כאן צריך להיות כנים. מחקר מפורסם מ-2010 טען ששתי דקות בתנוחת כוח משנות הורמונים. ניסויים גדולים יותר אחר כך לא מצאו את השינוי ההורמונלי, וגם לא שינוי בהתנהגות."],
+        ["B", "אז זה לא עובד בכלל?"],
+        ["A", "נשאר ממצא קטן: חלק מהאנשים מרגישים קצת יותר חזקים. זה הכל. מה שבאמת משפיע על איך שרואים אותך זה דברים פשוטים יותר."],
+        ["B", "כמו מה?"],
+        ["A", "קשר עין. כשמקשיבים, אנשים מחזיקים מבט בערך שישים עד שבעים אחוז מהזמן. כשמדברים, פחות. זה טבעי להסיט מבט כשחושבים."],
+        ["B", "ואם אני מחזיק מבט כל הזמן?"],
+        ["A", "זה כבר נעיצה, וזה מלחיץ. דבר שני: ידיים גלויות. אנשים נרגעים כשהם רואים ידיים. ידיים עמוק בכיסים או מאחורי הגב משאירות את הצד השני לנחש."],
+        ["B", "שלוש: קצב. מי שמדבר קצת לאט ועושה הפסקות נשמע בטוח יותר. מי שממהר נשמע כאילו הוא מבקש רשות לדבר."],
+        ["A", "וארבע: לתפוס מקום בנוחות. לא להתכווץ, לא להתנפח. כתפיים משוחררות, נשימה מהבטן."],
+        ["B", "התרגיל: היום, בשיחה אחת, תעשה הפסקה של שנייה מלאה לפני שאתה עונה. רק שנייה. תשים לב איך זה מרגיש לך, ואיך מגיבים אליך."]
+      ]},
+      { id: "bl3", title: "נוחות ואי נוחות", lines: [
+        ["A", "הפעם נלמד לזהות נוחות ואי נוחות. זה הדבר הכי שימושי ששפת גוף נותנת."],
+        ["B", "למה דווקא זה, ולא לזהות שקרים?"],
+        ["A", "כי אי אפשר לזהות שקר מהגוף באופן אמין. ניתוח של יותר ממאתיים ניסויים מצא שאנשים מזהים שקר בדיוק של בערך חמישים וארבעה אחוז. קצת יותר מהטלת מטבע. אבל לזהות שמשהו מעיק על מישהו, את זה כבר אפשר."],
+        ["B", "איך זה נראה?"],
+        ["A", "סימני הרגעה עצמית: נגיעה בצוואר, שפשוף ידיים, משחק עם טבעת או עט, נשיפה ארוכה. הגוף מנסה להרגיע את עצמו."],
+        ["B", "וזה אומר שהוא משקר?"],
+        ["A", "זה אומר שמשהו בנושא הזה מלחיץ אותו. אולי הוא משקר, אולי הוא נבוך, ואולי הוא פשוט חושש שלא תאמין לו. זה סימן לשאול בעדינות, לא להאשים."],
+        ["B", "ומה הסימנים של נוחות?"],
+        ["A", "גוף שמופנה אליך, כולל הרגליים. הגוף פונה למה שמעניין אותו. חיקוי טבעי: כששניים בשיחה טובה, הם מתחילים לשבת דומה ולזוז באותו קצב. וגם פנים רפויות ונשימה איטית."],
+        ["B", "אפשר לחקות בכוונה כדי ליצור קשר?"],
+        ["A", "יש מחקרים שמראים שחיקוי עדין מגביר אהדה. אבל כשעושים את זה בגסות, אנשים מרגישים ונרתעים. עדיף להתעניין באמת. החיקוי יגיע לבד."],
+        ["B", "התרגיל: בשיחה הבאה, שים לב לאן מופנות הרגליים של האדם שמולך. ואם אתה רואה אי נוחות כשעולה נושא, תגיד משהו כמו: נראה שזה נושא לא פשוט, אפשר להשאיר אותו. ותראה מה קורה."]
+      ]}
+    ]
+  },
+  {
+    id: "faces", title: "הבעות פנים", short: "שבע ההבעות ומיקרו-הבעות", hue: 340,
+    episodes: [
+      { id: "fc1", title: "שבע ההבעות", lines: [
+        ["A", "היום מתחילים בפנים. הפסיכולוג פול אקמן חקר הבעות במשך עשרות שנים, וזיהה שבע הבעות שנראות דומה בתרבויות רבות: שמחה, עצב, כעס, פחד, הפתעה, גועל ובוז."],
+        ["B", "בואי נעבור עליהן ככה שאוכל לזהות."],
+        ["A", "שמחה אמיתית: לא רק הפה. הלחיים עולות, העיניים מצטמצמות, ונוצרים קמטוטים בזוויות העיניים. זה נקרא חיוך דושן. חיוך של נימוס עובד בעיקר עם הפה."],
+        ["B", "עצב?"],
+        ["A", "הקצוות הפנימיים של הגבות עולים למעלה ולמרכז, כמו גג משופע. וזוויות הפה יורדות. את תנועת הגבות הזאת רוב האנשים לא מצליחים לעשות בכוונה."],
+        ["B", "כעס."],
+        ["A", "גבות יורדות ומתקרבות, מבט נוקב, העפעפיים העליונים מורמים, והשפתיים לחוצות זו לזו."],
+        ["B", "פחד והפתעה נשמעים לי דומים."],
+        ["A", "בשניהם הגבות עולות והעיניים נפתחות. בהפתעה הגבות מעוגלות, הלסת נשמטת, וזה נמשך רגע קצר. בפחד הגבות עולות וגם מתקרבות זו לזו, והשפתיים נמתחות לצדדים."],
+        ["B", "גועל?"],
+        ["A", "האף מתקמט והשפה העליונה עולה. כמו כשמריחים חלב מקולקל."],
+        ["B", "ובוז?"],
+        ["A", "ההבעה היחידה שהיא חד צדדית: זווית פה אחת מתהדקת ועולה, כמו חצי חיוך עקום. תזכור אותה, נחזור אליה."],
+        ["B", "וכמה אפשר לסמוך על זה?"],
+        ["A", "שאלה טובה. החוקרת ליסה פלדמן בארט הראתה שאנשים לא תמיד מבטאים רגש באותו פרצוף, ושההקשר משנה מאוד. אז הבעה היא רמז חזק, לא קוד סגור."],
+        ["B", "התרגיל: היום, תסתכל על חיוך אחד של מישהו ותבדוק: האם העיניים השתתפו? רק לשים לב."]
+      ]},
+      { id: "fc2", title: "מיקרו-הבעות: מה אמיתי", lines: [
+        ["A", "מיקרו-הבעה היא הבעה שמופיעה לשבריר שנייה, בערך בין עשירית לחצי שנייה, ונעלמת. בדרך כלל כשאדם מנסה להסתיר רגש."],
+        ["B", "כמו בסדרות טלוויזיה, שהחוקר מסתכל על הפנים ויודע הכל."],
+        ["A", "והסדרות האלה הגזימו מאוד. בוא נפריד. מה נכון: מיקרו-הבעות קיימות, ואפשר להתאמן לזהות אותן. יש אימונים כאלה, ומחקרים מראים שאחרי אימון אנשים מזהים הבעות מהירות טוב יותר."],
+        ["B", "ומה לא נכון?"],
+        ["A", "שזה גלאי שקר. במחקר של פורטר וטן ברינקה, מיקרו-הבעות מלאות היו נדירות מאוד, והופיעו גם אצל אנשים שאמרו אמת. כלומר, מיקרו-הבעה אומרת: יש כאן רגש. היא לא אומרת: הוא משקר."],
+        ["B", "אז למה בכלל ללמוד את זה?"],
+        ["A", "כי לזהות רגש שמישהו מנסה להסתיר, זה כוח אמיתי של אמפתיה. אם בת הזוג שלך אומרת שהכל בסדר, ואתה רואה לשבריר שנייה עצב בגבות, אתה יודע לשאול שוב, ברכות."],
+        ["B", "איך מתאמנים?"],
+        ["A", "הדרך הכי פשוטה: לצפות בראיונות בלי קול, ולעצור כשרואים שינוי מהיר בפנים. לשאול: מה זה היה? ולבדוק מול ההקשר."],
+        ["B", "ומה הכי חשוב לזכור?"],
+        ["A", "שלושה דברים. אחד: שינוי מקו הבסיס. שתיים: התאמה או חוסר התאמה בין הפנים למילים. שלוש: להשתמש בזה כדי לשאול, לא כדי לשפוט."],
+        ["B", "התרגיל: צפה בשתי דקות של ראיון עם הקול כבוי. נסה לתפוס הבעה אחת שהופיעה ונעלמה מהר. מה היא הייתה?"]
+      ]},
+      { id: "fc3", title: "מה הפנים שלך משדרים", lines: [
+        ["A", "עד עכשיו קראנו פנים של אחרים. עכשיו נדבר על שלך."],
+        ["B", "אני בכלל לא יודע איך אני נראה כשאני מקשיב."],
+        ["A", "רוב האנשים לא יודעים. הרבה אנשים מכווצים גבות כשהם מתרכזים, והצד השני קורא את זה ככעס או כביקורת."],
+        ["B", "אז מה עושים?"],
+        ["A", "קודם כל בודקים. מצלמים את עצמך בווידאו בשיחה, או שואלים מישהו קרוב: איך אני נראה כשאני מקשיב? זה מביך, וזה המידע הכי שווה שתקבל."],
+        ["B", "ויש גם השפעה הפוכה? שהפנים משנים את הרגש?"],
+        ["A", "יש. ניתוח של עשרות מחקרים מצא שההשפעה קיימת, אבל קטנה. חיוך לא יהפוך יום רע לטוב, אבל הוא יכול להזיז קצת."],
+        ["B", "ומאיפה מגיע חום?"],
+        ["A", "מהעיניים. גבות רכות, עיניים שמצטמצמות קצת, כמו כשאתה רואה חבר ותיק. זה מה שאנשים זוכרים מפגישה איתך."],
+        ["B", "והבוז שדיברנו עליו?"],
+        ["A", "זה החשוב מכולם. חוקר הזוגיות ג'ון גוטמן מצא שבוז הוא אחד המנבאים החזקים ביותר לפרידה. גלגול עיניים, חצי חיוך עקום, נשיפה של זלזול. תשים לב אם זה יוצא ממך, ותעצור."],
+        ["B", "התרגיל: היום, תשאל אדם אחד שאתה סומך עליו: מה הפנים שלי משדרים כשאני מקשיב? ותקשיב לתשובה בלי להתגונן."]
+      ]}
+    ]
+  },
+  {
+    id: "saving", title: "לחסוך כסף", short: "לדעת, לאטמט, לצמוח", hue: 150,
+    episodes: [
+      { id: "sv1", title: "לאן הכסף הולך", lines: [
+        ["A", "היום מדברים על כסף, ונתחיל מהשלב שרוב האנשים מדלגים עליו: לדעת לאן הכסף הולך."],
+        ["B", "אני בערך יודע."],
+        ["A", "כמעט כולם בערך יודעים, ורובם מגלים הפתעות כשהם בודקים. אז הצעד הראשון: לפתוח את דפי החשבון ואת פירוט האשראי של שלושת החודשים האחרונים, ולחלק לשלוש קבוצות."],
+        ["B", "איזה קבוצות?"],
+        ["A", "קבועות: שכירות או משכנתא, ביטוחים, מנויים. משתנות חיוניות: אוכל, דלק, תרופות. ופינוקים: מסעדות, משלוחים, קניות אונליין."],
+        ["B", "ומה מחפשים?"],
+        ["A", "שני דברים. אחד: מנויים שאתה כבר לא משתמש בהם. כמעט לכל אחד יש. שתיים: הוצאה קטנה וקבועה שמצטברת. משלוח של שמונים שקל פעמיים בשבוע זה יותר משמונת אלפים שקל בשנה."],
+        ["B", "וואו."],
+        ["A", "ועוד דבר חשוב: המינוס. ריבית על מינוס בבנק היא מהיקרות שיש. אם אתה במינוס קבוע, זה הדבר הראשון לטפל בו, לפני כל חיסכון."],
+        ["B", "ומה לגבי ביטוחים?"],
+        ["A", "שווה לבדוק שאין לך ביטוחים כפולים. יש אתר ממשלתי בשם הר הביטוח, שבו רואים את כל הביטוחים שלך במקום אחד. ויש גם הר הכסף, שבו מוצאים כספים שנשכחו בקופות ובחשבונות ישנים."],
+        ["B", "התרגיל: היום, תפתח את פירוט האשראי של החודש האחרון ותמצא מנוי אחד לבטל. רק אחד."]
+      ]},
+      { id: "sv2", title: "שלם לעצמך קודם", lines: [
+        ["A", "הכלל הכי חזק בחיסכון: לא לחסוך את מה שנשאר בסוף החודש. כי בדרך כלל לא נשאר."],
+        ["B", "אז מה כן?"],
+        ["A", "לשלם לעצמך קודם. ביום שהמשכורת נכנסת, הוראת קבע אוטומטית מעבירה סכום קבוע לחשבון חיסכון נפרד. בלי שיקול דעת ובלי כוח רצון. אוטומטי."],
+        ["B", "כמה?"],
+        ["A", "מתחילים במה שלא כואב. גם חמישה אחוזים מהמשכורת. אחרי כמה חודשים מעלים. הקסם הוא בהרגל, לא בסכום הראשון."],
+        ["B", "ומה המטרה הראשונה?"],
+        ["A", "קרן חירום. שלושה עד שישה חודשים של הוצאות, במקום נזיל ובטוח, כמו פיקדון או קרן כספית. זה מה שמונע ממך להיכנס למינוס כשהרכב מתקלקל."],
+        ["B", "יש עוד טריק?"],
+        ["A", "כן. עיכוב של ארבעים ושמונה שעות. כל קנייה לא מתוכננת מעל סכום שתבחר, נגיד שלוש מאות שקל, מחכה יומיים."],
+        ["B", "ורוב הפעמים הרצון עובר."],
+        ["A", "בדיוק. ועוד אחד: כשאתה מקבל העלאה, תעביר חצי ממנה ישר לחיסכון. ככה אתה גם מרגיש את השיפור, וגם בונה עתיד."],
+        ["B", "התרגיל: היום, תקבע הוראת קבע, אפילו של מאה שקל, לחשבון חיסכון, שתצא יום אחרי המשכורת."]
+      ]},
+      { id: "sv3", title: "ריבית דריבית ודמי ניהול", lines: [
+        ["A", "היום נדבר על הכוח הכי גדול שעובד בשבילך, או נגדך: ריבית דריבית."],
+        ["B", "תסבירי פשוט."],
+        ["A", "אם הכסף שלך מרוויח, נגיד, שבעה אחוזים בשנה, אז הרווחים עצמם מתחילים להרוויח. בתשואה כזאת הכסף מוכפל בערך כל עשר שנים. לכן מי שמתחיל עשר שנים מוקדם יותר, יכול לסיים עם בערך פי שניים."],
+        ["B", "אבל אף אחד לא מבטיח שבעה אחוזים."],
+        ["A", "נכון מאוד. השוק עולה ויורד, ויש שנים של ירידות חדות. היסטורית, מדדי מניות רחבים עלו לאורך זמן, אבל עבר לא מבטיח עתיד. לכן כסף שתצטרך בשנים הקרובות לא צריך להיות במניות."],
+        ["B", "ומה עם דמי ניהול?"],
+        ["A", "כאן הרבה ישראלים מפסידים בשקט. בפנסיה יש שני סוגים: דמי ניהול מההפקדה, ודמי ניהול מהצבירה. הבדל של חצי אחוז בשנה מהצבירה, לאורך שלושים שנה, יכול להגיע לעשרות ואפילו מאות אלפי שקלים."],
+        ["B", "מה עושים?"],
+        ["A", "מתקשרים לקרן ומבקשים הורדה, או עוברים לקרן זולה יותר. זה מותר, וזה לוקח שיחה אחת. ואם אתה שכיר, תבדוק שיש לך קרן השתלמות. זו אחת ההטבות הכי טובות בישראל, עם פטור ממס על הרווחים בתנאים מסוימים."],
+        ["B", "ולמי שרוצה להשקיע לבד?"],
+        ["A", "האפשרות שרוב המחקרים תומכים בה למשקיע רגיל: קרן שמחקה מדד רחב, עם דמי ניהול נמוכים, לטווח ארוך, בלי לנסות לתזמן את השוק. רוב מנהלי ההשקעות המקצועיים לא מצליחים לנצח את המדד לאורך זמן."],
+        ["B", "וזה לא ייעוץ השקעות."],
+        ["A", "נכון. זה ידע כללי. להחלטות גדולות, כדאי לדבר עם יועץ פנסיוני או מתכנן פיננסי בלתי תלוי."],
+        ["B", "התרגיל: היום, תיכנס לאזור האישי של קרן הפנסיה שלך ותבדוק כמה דמי ניהול אתה משלם. רק לבדוק."]
+      ]}
+    ]
+  },
+  {
+    id: "earning", title: "לעשות כסף טוב", short: "ערך, משא ומתן, הכנסה נוספת", hue: 44,
+    episodes: [
+      { id: "er1", title: "הכסף הולך אחרי ערך", lines: [
+        ["A", "הכנסה טובה היא בדרך כלל תוצאה של שלושה דברים: לפתור בעיה שחשובה לאנשים, לעשות את זה טוב, ושיֵדעו שאתה עושה את זה."],
+        ["B", "זה נשמע פשוט מדי."],
+        ["A", "פשוט, לא קל. נתחיל מהראשון. הכסף נמצא איפה שיש כאב יקר. עסק שמפסיד לקוחות, אדם שמבזבז זמן, בעיה שעולה כסף. ככל שהבעיה יקרה יותר, ופחות אנשים יודעים לפתור אותה, המחיר עולה."],
+        ["B", "והשני?"],
+        ["A", "להיות טוב באמת. ויש פה עיקרון חשוב: שילוב מיומנויות. קשה להיות הכי טוב בעולם בדבר אחד. אבל להיות טוב מאוד בשניים או שלושה דברים שנדיר לראות יחד, זה הרבה יותר אפשרי, וזה שווה הרבה. למשל, חשמלאי שגם יודע לשווק את עצמו ולבנות אתר."],
+        ["B", "והשלישי, שיֵדעו."],
+        ["A", "הרבה אנשים מוכשרים מרוויחים מעט, כי אף אחד לא יודע מה הם יודעים. להראות עבודה, לבקש המלצות, לספר לאנשים במה אתה טוב. זה לא שחצנות. זה מידע."],
+        ["B", "ומה עם כסף מהיר? מסחר יומי, מטבעות דיגיטליים?"],
+        ["A", "מחקרים על סוחרים יומיים מצאו שהרוב הגדול מפסידים כסף לאורך זמן. מי שמבטיח לך תשואה מהירה וגבוהה בלי סיכון, משקר או לא מבין. עושר אמיתי נבנה מהכנסה טובה, חיסכון עקבי, והשקעה משעממת לאורך זמן."],
+        ["B", "התרגיל: היום, תגיד בקול: איזו בעיה אני יודע לפתור, ומי היה משלם כדי שאפתור אותה?"]
+      ]},
+      { id: "er2", title: "לבקש יותר", lines: [
+        ["A", "הדרך הכי מהירה להעלות הכנסה היא לרוב לא עבודה חדשה. היא שיחה אחת שרוב האנשים לא עושים."],
+        ["B", "בקשת העלאה."],
+        ["A", "כן. מחקרים מראים שמי שמנהל משא ומתן על השכר כבר בהתחלה מקבל לעיתים קרובות יותר, וההפרש הזה מצטבר כל שנה."],
+        ["B", "אז איך עושים את זה נכון?"],
+        ["A", "שלב אחד: מידע. לבדוק כמה משלמים בשוק על התפקיד שלך. סקרי שכר, אנשים בתחום, מודעות דרושים. בלי מספר, אתה מנחש."],
+        ["B", "שלב שתיים?"],
+        ["A", "להביא תוצאות, לא מאמץ. לא: אני עובד קשה. אלא: חסכתי לחברה כך וכך, הבאתי שלושה לקוחות, קיצרתי תהליך בחצי."],
+        ["B", "ושלוש?"],
+        ["A", "לדעת מה החלופה שלך. מה תעשה אם לא תגיעו להסכמה. מי שיש לו חלופה טובה, מדבר רגוע יותר."],
+        ["B", "ומי אומר מספר ראשון?"],
+        ["A", "מחקרים על עיגון מראים שהמספר הראשון שנאמר מושך את השיחה אליו. אם יש לך מידע טוב, לפעמים כדאי שאתה תגיד ראשון מספר שאפתני אבל מבוסס. ואז לשתוק. השקט אחרי המספר הוא חלק מהמשא ומתן."],
+        ["B", "ואם אומרים לא?"],
+        ["A", "שואלים: מה אני צריך להשיג כדי שבעוד שלושה חודשים נגיע לזה? ומבקשים את זה בכתב. ככה ה-לא הופך לתוכנית."],
+        ["B", "התרגיל: היום, תמצא שלושה מקורות שמראים כמה משלמים בשוק על מה שאתה עושה."]
+      ]},
+      { id: "er3", title: "הכנסה נוספת בלי ליפול בפח", lines: [
+        ["A", "היום נדבר על הכנסה נוספת. לא הכנסה פסיבית שמוכרים ברשתות, אלא משהו אמיתי."],
+        ["B", "מה ההבדל?"],
+        ["A", "כמעט כל הכנסה שנקראת פסיבית דורשת הרבה עבודה בהתחלה. אז עדיף להתחיל ממה שאתה כבר יודע לעשות. שירות לפני מוצר."],
+        ["B", "למה שירות?"],
+        ["A", "כי שירות מכניס כסף מהר יותר, ומלמד אותך מה אנשים באמת צריכים. אחרי שעשית את אותו דבר לעשרים לקוחות, אתה יודע מה שווה להפוך למוצר."],
+        ["B", "איך מוצאים לקוח ראשון?"],
+        ["A", "מהמעגל הקרוב. לספר לעשרה אנשים מה אתה מציע, לבקש מהם לחשוב על מישהו שצריך את זה, ולתת מחיר ברור. אנשים לא קונים כשהם לא מבינים כמה זה עולה."],
+        ["B", "וכמה לגבות?"],
+        ["A", "טעות נפוצה היא לתמחר רק לפי שעות. עדיף לחשוב על התוצאה ללקוח. אם עזרת לעסק להרוויח הרבה, המחיר יכול לשקף את זה."],
+        ["B", "ומה עם מס?"],
+        ["A", "בישראל, כשמתחילים לקבל הכנסה נוספת, צריך לפתוח תיק במס הכנסה, במע״מ ובביטוח לאומי. שווה פגישה אחת עם רואה חשבון בהתחלה. זה חוסך הרבה כאב ראש."],
+        ["B", "והכלל הכי חשוב?"],
+        ["A", "לא לשרוף את העבודה הראשית ולא את השינה. מתחילים בכמה שעות בשבוע, בודקים שיש ביקוש, ורק אז מגדילים."],
+        ["B", "התרגיל: היום, תגיד לשלושה אנשים במה אתה טוב, ושאתה פתוח לעזור בזה בתשלום."]
+      ]}
+    ]
+  },
+  {
+    id: "confidence", title: "ביטחון עצמי", short: "פעולה, קול פנימי, אישיות", hue: 210,
+    episodes: [
+      { id: "cf1", title: "ביטחון בא אחרי פעולה", lines: [
+        ["A", "הטעות הגדולה בביטחון עצמי היא לחשוב שקודם מרגישים בטוחים, ואז עושים. בפועל זה הפוך."],
+        ["B", "כלומר?"],
+        ["A", "הפסיכולוג אלברט בנדורה חקר את מה שהוא קרא לו מסוגלות עצמית: האמונה שאני מסוגל. הוא מצא שהמקור הכי חזק שלה הוא חוויות של הצלחה. עושים משהו, רואים שהצלחת, והמוח מתעדכן."],
+        ["B", "אז איך מתחילים כשאין ביטחון?"],
+        ["A", "בצעדים קטנים מספיק כדי להצליח. אם אתה מפחד לדבר מול קבוצה, אל תתחיל בהרצאה. תתחיל בשאלה אחת בפגישה."],
+        ["B", "ומה עוד בונה ביטחון?"],
+        ["A", "לראות מישהו דומה לך מצליח, לקבל עידוד ממישהו שאתה מעריך, ולהבין נכון את הגוף שלך. דופק מהיר לפני אירוע זה לא סימן שאתה לא מוכן."],
+        ["B", "איך זה מתחבר?"],
+        ["A", "במחקר של אליסון ווד ברוקס מהרווארד, אנשים שאמרו לעצמם: אני מתרגש, לפני נאום או שירה, הופיעו טוב יותר מאנשים שניסו להירגע. התרגשות ולחץ מרגישים כמעט אותו דבר בגוף, וקל יותר לשנות את השם מאשר להוריד את הדופק."],
+        ["B", "עוד משהו?"],
+        ["A", "הבטחות לעצמך. כל פעם שאתה אומר: מחר אני קם בשש, ולא קם, אתה מלמד את עצמך שאי אפשר לסמוך עליך. אז תבטיח פחות, ותקיים תמיד."],
+        ["B", "התרגיל: היום, תבטיח לעצמך דבר אחד קטן, ממש קטן, ותקיים אותו. ואם משהו מלחיץ אותך, תגיד בקול: אני מתרגש."]
+      ]},
+      { id: "cf2", title: "הקול הפנימי", lines: [
+        ["A", "איך אתה מדבר אל עצמך כשאתה טועה?"],
+        ["B", "בדרך כלל לא יפה."],
+        ["A", "רוב האנשים מדברים לעצמם בצורה שלעולם לא היו מדברים לחבר. והרבה חושבים שזה מה שמניע אותם קדימה."],
+        ["B", "וזה לא נכון?"],
+        ["A", "החוקרת קריסטין נף ואחרים מצאו שחמלה עצמית קשורה לפחות חרדה ודיכאון, ובחלק מהמחקרים גם ליותר מוטיבציה לתקן טעויות. כי מי שמפחד מהביקורת של עצמו, נמנע מלנסות."],
+        ["B", "וזה לא הופך לרחמים עצמיים?"],
+        ["A", "לא. חמלה עצמית זה לא: הכל בסדר, לא משנה. זה: טעיתי, זה אנושי, מה אני לומד מזה. לשים לב לכאב בלי לנפח אותו, לזכור שכולם טועים, ולדבר לעצמך בחום."],
+        ["B", "יש טריק מעשי?"],
+        ["A", "כן. לדבר לעצמך בשם שלך. מחקרים של איתן קרוס מראים שכשאתה אומר: {name}, מה אתה צריך עכשיו? זה יוצר מרחק, ועוזר לחשוב בבהירות תחת לחץ."],
+        ["B", "ומה עם השוואה לאחרים?"],
+        ["A", "ברשתות אתה רואה את הרגעים הכי טובים של אחרים מול הרגעים הרגילים שלך. ההשוואה היחידה ששווה משהו היא אתה, מול אתה של לפני שנה."],
+        ["B", "התרגיל: בפעם הבאה שאתה טועה היום, תגיד לעצמך את מה שהיית אומר לחבר טוב באותו מצב. בקול, אם אפשר."]
+      ]},
+      { id: "cf3", title: "האם אפשר לשנות אישיות", lines: [
+        ["A", "האם אפשר לשנות אישיות?"],
+        ["B", "אומרים שאופי לא משתנה."],
+        ["A", "המחקר אומר אחרת. תכונות אישיות משתנות לאורך החיים, ורוב האנשים נעשים יציבים, אחראיים ונעימים יותר עם הגיל. ויש מחקרים, למשל של נתן הדסון, שמראים שאנשים שמתרגלים בכוונה התנהגויות של תכונה שהם רוצים, משתנים קצת, אבל באמת, בתוך כמה חודשים."],
+        ["B", "איך זה נראה בפועל?"],
+        ["A", "נגיד שאתה רוצה להיות יותר פתוח לאנשים. לא מחכים להרגיש חברותי. מתחייבים להתנהגות קטנה: לפתוח שיחה עם אדם אחד ביום. התכונה נבנית מהרגלים."],
+        ["B", "ומה הבסיס לכל זה?"],
+        ["A", "ערכים. אדם עם ביטחון אמיתי יודע מה חשוב לו, ופועל לפי זה גם כשלא נוח. תשאל את עצמך: מה שלושת הדברים שהייתי רוצה שיגידו עליי? אמין? אמיץ? נדיב?"],
+        ["B", "ואז?"],
+        ["A", "ואז כל יום, החלטה אחת קטנה לפי הערכים. לומר את האמת כשזה לא נוח. לעזור בלי שביקשו. ככה נבנה כבוד עצמי, וכבוד עצמי הוא הבסיס של ביטחון."],
+        ["B", "התרגיל: בחר תכונה אחת שאתה רוצה לחזק, ופעולה אחת קטנה שמבטאת אותה. ותעשה אותה היום."]
+      ]}
+    ]
+  },
+  {
+    id: "presence", title: "נוכחות", short: "כלפי אחרים וכלפי עצמך", hue: 265,
+    episodes: [
+      { id: "pr1", title: "להיות כאן באמת", lines: [
+        ["A", "נוכחות זה לא כריזמה מסתורית. זה בעיקר קשב. אנשים מרגישים כשאתה באמת איתם."],
+        ["B", "אז מה גונב את הנוכחות?"],
+        ["A", "המוח שנודד. מחקר מהרווארד של קילינגסוורת' וגילברט מצא שאנשים חושבים על משהו אחר ממה שהם עושים כמעט חצי מהזמן, ושברגעים האלה הם פחות מאושרים."],
+        ["B", "וגם הטלפון."],
+        ["A", "כן. יש מחקרים שמראים שעצם זה שהטלפון מונח על השולחן מוריד את תחושת הקרבה בשיחה. אז הצעד הראשון: טלפון בכיס או בתיק, לא על השולחן."],
+        ["B", "ומה עוד?"],
+        ["A", "הקשבה אמיתית. לא לחכות לתור שלך לדבר. לשאול שאלת המשך על מה שהאדם אמר. מחקר מהרווארד מצא שאנשים ששואלים יותר שאלות המשך נתפסים כחביבים יותר."],
+        ["B", "ומה עם הקול?"],
+        ["A", "לדבר קצת יותר לאט ממה שנוח לך, ולא לפחד משקט. אנשים עם נוכחות לא ממלאים כל רווח."],
+        ["B", "התרגיל: בשיחה אחת היום, הטלפון מחוץ לטווח הראייה, ושלוש שאלות המשך על מה שהאדם מספר."]
+      ]},
+      { id: "pr2", title: "לחזור לעצמך: נשימה וגוף", lines: [
+        ["A", "לפני שאפשר להיות נוכח מול אחרים, צריך לדעת לחזור לעצמך."],
+        ["B", "איך?"],
+        ["A", "דרך הגוף. הנשימה היא הדרך הכי מהירה להשפיע על מערכת העצבים. במחקר מסטנפורד מ-2023 השוו כמה תרגילי נשימה, ותרגיל שנקרא אנחה מחזורית שיפר את מצב הרוח והוריד לחץ, יותר ממדיטציית קשב באותו זמן."],
+        ["B", "איך עושים אותו?"],
+        ["A", "שאיפה דרך האף, ואז עוד שאיפה קצרה נוספת כדי למלא את הריאות עד הסוף. ואז נשיפה ארוכה ואיטית דרך הפה. בוא ננסה ביחד."],
+        ["A", "שאיפה דרך האף."], ["P", 2500],
+        ["A", "עוד שאיפה קטנה."], ["P", 1200],
+        ["A", "ועכשיו נשיפה ארוכה, לאט, דרך הפה."], ["P", 5500],
+        ["A", "עוד פעם. שאיפה."], ["P", 2500],
+        ["A", "עוד קצת."], ["P", 1200],
+        ["A", "ונשיפה ארוכה."], ["P", 5500],
+        ["B", "וואו, זה מרגיש אחרת."],
+        ["A", "במחקר עשו את זה חמש דקות ביום. אבל גם שלוש נשימות כאלה לפני שיחה קשה עוזרות."],
+        ["B", "ומה עוד?"],
+        ["A", "סריקת גוף. לעצור ולשאול: איפה אני מתוח עכשיו? לסת? כתפיים? בטן? ולשחרר. הרבה אנשים מסתובבים עם לסת נעולה כל היום ולא יודעים."],
+        ["B", "ומה עם מחשבות מטרידות?"],
+        ["A", "לתת להן שם. הנה הדאגה על העבודה. מחקרים על תיוג רגשות מראים שעצם זה שנותנים שם לרגש, מוריד קצת מהעוצמה שלו."],
+        ["B", "התרגיל: היום, שלוש פעמים, לעצור לשלוש אנחות מחזוריות. בבוקר, בצהריים ולפני השינה."]
+      ]},
+      { id: "pr3", title: "נוכחות כשקשה", lines: [
+        ["A", "נוכחות נבחנת דווקא ברגעים הקשים: כשמבקרים אותך, כשמישהו כועס, כשאתה לחוץ."],
+        ["B", "ומה קורה לנו אז?"],
+        ["A", "הגוף נכנס למצב של הילחם או ברח. הדופק עולה, הנשימה נהיית שטחית, והחשיבה נהיית צרה. זה טבעי."],
+        ["B", "אז איך שומרים על נוכחות?"],
+        ["A", "שלושה צעדים. אחד: לשים לב. אני מרגיש שאני מתחמם. רק לזהות. שתיים: להאט את הגוף. נשיפה ארוכה, להוריד כתפיים, להרגיש את הרגליים על הרצפה. שלוש: להאט את התגובה. מותר לומר: תן לי רגע לחשוב על זה."],
+        ["B", "וכשמבקרים אותי?"],
+        ["A", "במקום להתגונן מיד, לשאול: מה בדיוק לא עבד בעיניך? זה משדר ביטחון ונותן לך זמן. אחר כך אתה מחליט מה מהביקורת נכון, ומה לא."],
+        ["B", "ואם זה ממש לא הוגן?"],
+        ["A", "אז אפשר לומר בשקט וברור: אני רואה את זה אחרת. בלי להרים קול. מי שנשאר רגוע הוא בדרך כלל זה שקובע את הטון."],
+        ["B", "התרגיל: בפעם הבאה שמשהו מעצבן אותך היום, לפני שאתה עונה, נשיפה ארוכה אחת, ולהרגיש את כפות הרגליים על הרצפה."]
+      ]}
+    ]
+  },
+  {
+    id: "relationship", title: "זוגיות", short: "קשר, ויכוח נכון, חום", hue: 2,
+    episodes: [
+      { id: "rl1", title: "ההזמנות הקטנות", lines: [
+        ["A", "ג'ון וג'ולי גוטמן חקרו אלפי זוגות לאורך שנים. הם גילו שמה שמבדיל זוגות מאושרים זה לא החופשות הגדולות. זה הרגעים הקטנים."],
+        ["B", "איזה רגעים?"],
+        ["A", "הם קראו להם הזמנות לקשר. כשבת הזוג אומרת: תראה איזו ציפור יפה, זו לא באמת שיחה על ציפורים. זו בקשה קטנה: תהיה איתי רגע."],
+        ["B", "ומה אפשר לעשות עם הזמנה כזאת?"],
+        ["A", "שלוש תגובות. לפנות אליה: איפה? וואו. להתעלם: להמשיך בטלפון. או לפנות נגד: אני עסוק עכשיו. במחקר, זוגות שהיו עדיין יחד שש שנים אחר כך, פנו להזמנות בערך שמונים ושישה אחוז מהזמן. אלה שנפרדו, רק בערך שליש מהזמן."],
+        ["B", "זה הבדל עצום."],
+        ["A", "וזה דורש שנייה. להרים את הראש מהטלפון ולהגיב. ויש עוד דבר: איך מגיבים לבשורה טובה. החוקרת שלי גייבל מצאה שזה חשוב לקשר, אולי אפילו יותר מאיך מגיבים לבשורה רעה."],
+        ["B", "ואיך עונים נכון?"],
+        ["A", "בהתלהבות ובשאלות. קיבלת את הפרויקט? איך הרגשת כשאמרו לך? ספרי הכל. לעומת יופי, בלי להרים את הראש."],
+        ["B", "התרגיל: היום, שים לב לשלוש הזמנות קטנות של בת הזוג, ותפנה לכל אחת מהן. להוריד את הטלפון, ולהגיב באמת."]
+      ]},
+      { id: "rl2", title: "לריב נכון", lines: [
+        ["A", "כל הזוגות רבים. גוטמן מצא שרוב הוויכוחים בזוגיות הם על בעיות שלא נפתרות אף פעם, כי הן נובעות מהבדלי אופי. השאלה היא לא אם רבים, אלא איך."],
+        ["B", "אז מה הורס?"],
+        ["A", "ארבעה דפוסים. ביקורת: לתקוף את האישיות במקום את ההתנהגות. את תמיד מאחרת, את לא מתחשבת. בוז: זלזול, לעג, גלגול עיניים, וזה המסוכן מכולם. התגוננות: זה לא אני, זה את. והסתגרות: להפסיק להגיב, כמו קיר."],
+        ["B", "ומה התרופה?"],
+        ["A", "לכל אחד יש תרופה. במקום ביקורת, פתיחה רכה: אני מרגיש לחוץ כשאנחנו מאחרים, אפשר לצאת עשר דקות קודם? במקום בוז, להזכיר לעצמך מה אתה מעריך בה, ולהגיד את זה. במקום התגוננות, לקחת אחריות על חלק, אפילו קטן. ובמקום הסתגרות, הפסקה."],
+        ["B", "הפסקה?"],
+        ["A", "כשהדופק עולה מאוד, החשיבה נסגרת. גוטמן קרא לזה הצפה. ההמלצה: לעצור לפחות עשרים דקות, לעשות משהו מרגיע, לא לתכנן תשובות ניצחון, ואז לחזור. ולהגיד שאתם תחזרו לזה, כדי שזה לא ירגיש כמו נטישה."],
+        ["B", "ועוד?"],
+        ["A", "ניסיונות תיקון. בדיחה קטנה, מגע, או: אוקיי, זה יצא לא טוב, אני מתחיל שוב. זוגות מאושרים עושים את זה הרבה, ומקבלים את זה אחד מהשני."],
+        ["B", "התרגיל: בפעם הבאה שמשהו מפריע לך, תתחיל במשפט: אני מרגיש... לגבי... ואני צריך... בלי: את תמיד."]
+      ]},
+      { id: "rl3", title: "לראות אותה באמת", lines: [
+        ["A", "גוטמן מצא שאצל זוגות יציבים, גם בזמן ויכוח, יש בערך חמש אינטראקציות חיוביות על כל אחת שלילית."],
+        ["B", "חמש לאחת."],
+        ["A", "אז השאלה היא איך מוסיפים חיוביות ביומיום. הדרך הכי פשוטה: הערכה ספציפית. לא: את מדהימה. אלא: ראיתי איך דיברת עם אמא שלך היום, היית סבלנית מאוד, וזה ריגש אותי."],
+        ["B", "למה ספציפי עדיף?"],
+        ["A", "כי זה מוכיח שראית אותה באמת. וזה בדיוק מה שרוב האנשים רוצים מבן זוג: להיות נראים."],
+        ["B", "ומה עם הקשבה?"],
+        ["A", "כשבן זוג מספר על בעיה, הרבה אנשים קופצים ישר לפתרון. לפעמים זה מתאים. אבל הרבה פעמים מה שצריך זה להבין. אפשר פשוט לשאול: את רוצה שאעזור לפתור, או שאקשיב?"],
+        ["B", "שאלה פשוטה שחוסכת הרבה."],
+        ["A", "ומגע. חיבוק ארוך, לא חיבוק של שנייה. וזמן ביחד בלי מסכים, אפילו עשרים דקות בערב, לדבר על היום."],
+        ["B", "התרגיל: היום, תגיד לבת הזוג הערכה אחת ספציפית: מה ראית שהיא עשתה, ולמה זה חשוב לך."]
+      ]}
+    ]
+  },
+  {
+    id: "body", title: "הגוף", short: "שינה, כוח, להרגיש בבית", hue: 180,
+    episodes: [
+      { id: "bd1", title: "שינה: הבסיס לכל השאר", lines: [
+        ["A", "לפני הכל, שינה. כמעט כל מה שדיברנו עליו, ביטחון, סבלנות בזוגיות, החלטות על כסף, נפגע כשלא ישנים מספיק."],
+        ["B", "כמה צריך?"],
+        ["A", "לפי ההמלצות של איגודי רפואת השינה, מבוגרים צריכים שבע עד תשע שעות. מעט מאוד אנשים מתפקדים טוב עם פחות לאורך זמן, גם אם הם בטוחים שכן."],
+        ["B", "איך משפרים בלי לסבך?"],
+        ["A", "ארבעה דברים. אחד: שעת קימה קבועה, גם בסוף השבוע. זה מכייל את השעון הביולוגי. שתיים: אור יום בבוקר, כמה דקות בחוץ בשעה הראשונה אחרי שקמים. שלוש: בלי קפאין אחרי הצהריים. זמן מחצית החיים של קפאין הוא בערך חמש שעות, כך שקפה בארבע עדיין פועל בחצות."],
+        ["B", "וארבע?"],
+        ["A", "חדר חשוך, שקט וקריר. ועוד מילה על אלכוהול: הוא עוזר להירדם, אבל פוגע באיכות השינה בחלק השני של הלילה."],
+        ["B", "ומה עם הטלפון לפני השינה?"],
+        ["A", "הבעיה הגדולה היא פחות האור, ויותר התוכן שמעורר אותך וגונב זמן שינה. אז הכלל הפשוט: הטלפון נטען רחוק מהמיטה."],
+        ["B", "התרגיל: הלילה, תקבע שעת קימה למחר ותתחייב אליה. והטלפון נטען רחוק מהמיטה."]
+      ]},
+      { id: "bd2", title: "כוח ותנועה: המינימום שעובד", lines: [
+        ["A", "ארגון הבריאות העולמי ממליץ למבוגרים על מאה חמישים עד שלוש מאות דקות של פעילות מתונה בשבוע, ועוד אימון כוח לפחות פעמיים בשבוע."],
+        ["B", "נשמע הרבה."],
+        ["A", "מאה חמישים דקות זה בערך עשרים ושתיים דקות של הליכה מהירה ביום. וכל דקה נחשבת. הקפיצה הכי גדולה בתועלת היא כשעוברים מכלום למשהו."],
+        ["B", "ולמה דווקא כוח?"],
+        ["A", "כי כוח ומסת שריר קשורים לבריאות טובה יותר, לעצמות חזקות, לאיזון סוכר, ואפילו למצב רוח. ועם השנים מאבדים שריר אם לא משתמשים בו."],
+        ["B", "מה המינימום?"],
+        ["A", "שלושה תרגילים: משהו לרגליים, כמו סקוואט. משהו של דחיפה, כמו שכיבות סמיכה. ומשהו של משיכה, כמו חתירה עם גומייה או משקולת. שלושה סטים מכל אחד, פעמיים בשבוע, ולהעלות קושי לאט."],
+        ["B", "ותזונה?"],
+        ["A", "מה שהכי מבוסס: מספיק חלבון, הרבה ירקות, ופחות מזון מעובד מאוד. ועוד טריק פשוט: הליכה של עשר דקות אחרי ארוחה מורידה את הקפיצה בסוכר."],
+        ["B", "התרגיל: היום, עשר דקות הליכה אחרי ארוחה אחת. ושלושה סטים של סקוואט עם משקל הגוף."]
+      ]},
+      { id: "bd3", title: "להרגיש בבית בגוף שלך", lines: [
+        ["A", "הפרק הזה הוא על היחסים שלך עם הגוף. איך אתה מרגיש בתוכו."],
+        ["B", "זה קשור לביטחון?"],
+        ["A", "מאוד. אנשים שמרגישים בנוח בגוף שלהם זזים אחרת, יושבים אחרת ונראים אחרת. וזה לא תלוי בגוף מושלם."],
+        ["B", "אז מה כן?"],
+        ["A", "לעבור מגוף שנראה, לגוף שעושה. במקום להתמקד במראה, לשים לב למה שהגוף שלך יודע לעשות: להרים, ללכת רחוק, לשחות, לחבק. מחקרים מראים שהתמקדות ביכולות של הגוף משפרת את דימוי הגוף."],
+        ["B", "ומה עוד?"],
+        ["A", "להקשיב לאותות. רעב, עייפות, מתח. רוב האנשים דורסים אותם כל היום. אפשר לעצור שלוש פעמים ביום ולשאול: מה הגוף צריך עכשיו? מים? תנועה? הפסקה?"],
+        ["B", "ומראה חיצוני? זה לא שטחי?"],
+        ["A", "טיפוח בסיסי, בגדים במידה שמתאימה לך, תספורת טובה. זה לא שטחי, זה כבוד עצמי. וזה משפיע על איך שאתה מרגיש כשאתה נכנס לחדר."],
+        ["B", "ומה הכי חשוב?"],
+        ["A", "עקביות על פני שלמות. גוף נבנה מהרגלים קטנים שחוזרים, לא מתוכנית קיצונית של שלושה שבועות."],
+        ["B", "התרגיל: היום, תגיד בקול שלושה דברים שהגוף שלך עשה בשבילך השבוע. ותשתה כוס מים עכשיו."]
+      ]}
+    ]
+  }
+];
+
+// Daily task pool. Each is short and doable today.
+window.TASKS = [
+  ["body-language", "בשיחה אחת, שים לב לקו הבסיס של האדם שמולך בשתי הדקות הראשונות."],
+  ["body-language", "לפני שאתה עונה לשאלה, קח הפסקה של שנייה מלאה."],
+  ["body-language", "בשיחה הבאה, שים לב לאן מופנות הרגליים של האדם שמולך."],
+  ["body-language", "דבר עם הידיים גלויות, מחוץ לכיסים, בשיחה אחת."],
+  ["body-language", "כשאתה מקשיב, החזק קשר עין רגוע רוב הזמן, ושחרר כשאתה חושב."],
+  ["faces", "בדוק חיוך אחד של מישהו: האם העיניים השתתפו?"],
+  ["faces", "צפה בשתי דקות של ראיון בלי קול, ונסה לזהות הבעה אחת מהירה."],
+  ["faces", "שאל אדם קרוב: מה הפנים שלי משדרים כשאני מקשיב?"],
+  ["faces", "שים לב אם יוצא ממך גלגול עיניים או חצי חיוך של זלזול, ועצור אותו."],
+  ["faces", "כשמישהו אומר שהכל בסדר, הסתכל על הגבות שלו לרגע."],
+  ["saving", "מצא מנוי אחד בפירוט האשראי ובטל אותו."],
+  ["saving", "קבע הוראת קבע לחיסכון, אפילו מאה שקל, ליום אחרי המשכורת."],
+  ["saving", "בדוק כמה דמי ניהול אתה משלם בקרן הפנסיה."],
+  ["saving", "היכנס לאתר הר הכסף ובדוק אם יש לך כספים שנשכחו."],
+  ["saving", "כל קנייה לא מתוכננת היום מעל שלוש מאות שקל: מחכה יומיים."],
+  ["saving", "סכם כמה הוצאת על משלוחים ומסעדות בחודש האחרון."],
+  ["earning", "אמור בקול: איזו בעיה אני יודע לפתור, ומי היה משלם על זה?"],
+  ["earning", "מצא שלושה מקורות שמראים כמה משלמים בשוק על התפקיד שלך."],
+  ["earning", "רשום שלוש תוצאות מדידות שהשגת בעבודה בחצי השנה האחרונה."],
+  ["earning", "ספר לשלושה אנשים במה אתה טוב, ושאתה פתוח לעזור בזה בתשלום."],
+  ["earning", "למד עשרים דקות מיומנות אחת שתעלה את הערך שלך."],
+  ["confidence", "הבטח לעצמך דבר אחד קטן, וקיים אותו עד הערב."],
+  ["confidence", "לפני משהו מלחיץ, אמור בקול: אני מתרגש."],
+  ["confidence", "כשאתה טועה היום, דבר לעצמך כמו שהיית מדבר לחבר טוב."],
+  ["confidence", "עשה דבר אחד קטן שמפחיד אותך קצת: שאלה בפגישה, פנייה, בקשה."],
+  ["confidence", "בחר ערך אחד שחשוב לך, ועשה פעולה אחת שמבטאת אותו."],
+  ["presence", "בשיחה אחת, הטלפון מחוץ לטווח הראייה."],
+  ["presence", "שאל שלוש שאלות המשך בשיחה אחת."],
+  ["presence", "שלוש אנחות מחזוריות: בבוקר, בצהריים ולפני השינה."],
+  ["presence", "שלוש פעמים היום, סרוק את הגוף ושחרר לסת וכתפיים."],
+  ["presence", "לפני שאתה עונה למשהו מעצבן: נשיפה ארוכה אחת והרגליים על הרצפה."],
+  ["relationship", "שים לב לשלוש הזמנות קטנות של בת הזוג, ופנה לכל אחת."],
+  ["relationship", "אמור לבת הזוג הערכה ספציפית אחת: מה ראית, ולמה זה חשוב לך."],
+  ["relationship", "שאל: את רוצה שאעזור לפתור, או שאקשיב?"],
+  ["relationship", "עשרים דקות ביחד בערב, בלי מסכים."],
+  ["relationship", "חיבוק ארוך אחד היום. לפחות עשר שניות."],
+  ["relationship", "כשהיא מספרת משהו טוב, תגיב בהתלהבות ובשתי שאלות."],
+  ["body", "קבע שעת קימה למחר ותתחייב אליה."],
+  ["body", "הטלפון נטען הלילה רחוק מהמיטה."],
+  ["body", "עשר דקות הליכה אחרי ארוחה אחת."],
+  ["body", "שלושה סטים של סקוואט עם משקל הגוף."],
+  ["body", "חמש דקות של אור יום בחוץ, בשעה הראשונה אחרי שקמת."],
+  ["body", "בלי קפאין אחרי שתיים בצהריים."],
+  ["body", "אמור שלושה דברים שהגוף שלך עשה בשבילך השבוע."]
+];
+</script>
+<script>
+"use strict";
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const TOPIC = Object.fromEntries(TOPICS.map((t) => [t.id, t]));
+const HOSTS = { A: { name: "מאיה", letter: "מ" }, B: { name: "דניאל", letter: "ד" } };
+
+/* ---------- icons ---------- */
+const I = {
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></svg>',
+  pause: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1.5"/><rect x="14" y="4" width="4" height="16" rx="1.5"/></svg>',
+  ear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  spark: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.2 6.3L20.5 10l-6.3 2.2L12 18.5l-2.2-6.3L3.5 10l6.3-1.7zM19 15l1 2.6 2.5.9-2.5 1-1 2.5-1-2.5-2.5-1 2.5-.9z"/></svg>',
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg>',
+  user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" stroke-linecap="round"/></svg>',
+  send: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4l17.5-7.5a1 1 0 0 0 0-1.8L3.4 3.6a.7.7 0 0 0-1 .8L4.5 11l9 1-9 1-2.1 6.6a.7.7 0 0 0 1 .8z" transform="scale(-1,1) translate(-24,0)"/></svg>',
+  back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>',
+  down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+  next: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 6v12h-2V6zM13 12L5 18V6z" transform="scale(-1,1) translate(-24,0)"/></svg>',
+  prev: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 6v12h2V6zM11 12l8 6V6z" transform="scale(-1,1) translate(-24,0)"/></svg>',
+  stop: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
+  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>',
+  open: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
+  upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg>',
+  text: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>',
+  trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>',
+};
+
+/* ---------- state + storage ---------- */
+const today = () => { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); };
+const DEFAULT = { profile: { name: "", about: "", focus: [] }, done: {}, days: {}, memory: [], history: [], settings: { rate: 1, voice: "" }, resume: null };
+let S = structuredClone(DEFAULT);
+const Store = {
+  db: null, uid: null, ref: null, timer: null, busy: false, dirty: false,
+  async init() {
+    try { const raw = localStorage.getItem("growth.state"); if (raw) S = merge(JSON.parse(raw)); } catch {}
+    try {
+      if (!window.claude?.use) return;
+      const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+      if (!db || !user) return;
+      const uid = await user.id();
+      if (!uid) return;
+      this.db = db; this.uid = uid;
+      this.ref = db.collection("data/users/" + uid).doc("state");
+      const snap = await Promise.race([this.ref.get(), new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 10000))]);
+      if (snap?.exists) { const remote = snap.data(); if (remote) { S = merge(remote); render(); } }
+      else this.save();
+    } catch (e) { console.warn("db unavailable", e); }
+  },
+  save() {
+    try { localStorage.setItem("growth.state", JSON.stringify(S)); } catch {}
+    if (!this.ref) return;
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => this.flush(), 900);
+  },
+  async flush() {
+    if (this.busy) { this.dirty = true; return; }
+    this.busy = true;
+    try { await this.ref.set(JSON.parse(JSON.stringify(S))); } catch (e) { console.warn("save failed", e); }
+    this.busy = false;
+    if (this.dirty) { this.dirty = false; this.flush(); }
+  }
+};
+function merge(x) { const o = structuredClone(DEFAULT); for (const k of Object.keys(o)) if (x && x[k] !== undefined) o[k] = (typeof o[k] === "object" && !Array.isArray(o[k]) && o[k]) ? { ...o[k], ...x[k] } : x[k]; return o; }
+const nameOf = () => (S.profile.name || "").trim();
+
+/* local audio (NotebookLM files) in IndexedDB, per device */
+const Audio$ = {
+  dbp: null,
+  open() { if (this.dbp) return this.dbp; this.dbp = new Promise((res, rej) => { try { const r = indexedDB.open("growth-audio", 1); r.onupgradeneeded = () => r.result.createObjectStore("files", { keyPath: "id" }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }); return this.dbp; },
+  async tx(mode, fn) { const db = await this.open(); return new Promise((res, rej) => { const t = db.transaction("files", mode); const st = t.objectStore("files"); const out = fn(st); t.oncomplete = () => res(out.result ?? out); t.onerror = () => rej(t.error); }); },
+  async list(topic) { try { const all = await this.tx("readonly", (st) => st.getAll()); return (all || []).filter((f) => f.topic === topic).sort((a, b) => a.at - b.at); } catch { return []; } },
+  async add(topic, file) { return this.tx("readwrite", (st) => st.put({ id: "a" + Date.now(), topic, name: file.name.replace(/\.[^.]+$/, ""), at: Date.now(), blob: file })); },
+  async del(id) { return this.tx("readwrite", (st) => st.delete(id)); }
+};
+
+/* ---------- speech engine ---------- */
+const Voice = {
+  claude: null, he: [], ready: false,
+  async init() {
+    const load = () => { try { this.he = speechSynthesis.getVoices().filter((v) => /^(he|iw)/i.test(v.lang)); } catch { this.he = []; } };
+    load();
+    try { speechSynthesis.onvoiceschanged = () => { load(); if (view.name === "profile") render(); }; } catch {}
+    setTimeout(load, 800);
+    try { if (window.claude?.use) this.claude = await claude.use("tts"); } catch {}
+  },
+  mode() { if (this.he.length || !this.claude) return "device"; return "claude"; },
+  pick(who) {
+    const pref = S.settings.voice && this.he.find((v) => v.name === S.settings.voice);
+    const list = this.he.slice().sort((a, b) => (/(enhanced|premium|neural|online)/i.test(b.name) ? 1 : 0) - (/(enhanced|premium|neural|online)/i.test(a.name) ? 1 : 0));
+    if (who === "A") return pref || list[0] || null;
+    return list.find((v) => v !== (pref || list[0])) || pref || list[0] || null;
+  },
+  token: 0,
+  speak(text, who = "A") {
+    const my = ++this.token;
+    text = text.replaceAll("{name}", nameOf() || "חבר");
+    if (this.mode() === "claude") {
+      return this.claude.speak(text, { voice: who === "A" ? "airy" : "rounded", language: "he", rate: S.settings.rate }).then(() => my === this.token);
+    }
+    return new Promise((resolve) => {
+      try {
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "he-IL";
+        const v = this.pick(who); if (v) u.voice = v;
+        const distinct = this.pick("A") !== this.pick("B");
+        u.pitch = who === "B" && !distinct ? 0.78 : 1;
+        u.rate = S.settings.rate * (who === "B" && !distinct ? 0.97 : 1);
+        let done = false; const fin = (ok) => { if (done) return; done = true; resolve(ok && my === this.token); };
+        u.onend = () => fin(true); u.onerror = () => fin(false);
+        speechSynthesis.speak(u);
+        // Safety net in case a browser never fires onend
+        setTimeout(() => fin(true), 4000 + text.length * 140 / S.settings.rate);
+      } catch { resolve(false); }
+    });
+  },
+  stop() { this.token++; try { speechSynthesis.cancel(); } catch {} try { this.claude?.stop(); } catch {} }
+};
+
+/* ---------- player ---------- */
+const P = {
+  item: null, idx: 0, playing: false, audio: null, // item: {kind:'ep'|'lines'|'file', title, sub, hue, lines, epId, topic, url}
+  load(item, startIdx = 0) { this.stop(true); this.item = item; this.idx = startIdx; showPlayer(); this.play(); },
+  async play() {
+    if (!this.item) return;
+    this.playing = true; paint();
+    if (this.item.kind === "file") { try { await this.audio.play(); } catch {} return; }
+    const run = ++this.run;
+    while (this.playing && run === this.run && this.idx < this.item.lines.length) {
+      const [who, val] = this.item.lines[this.idx];
+      paint();
+      if (who === "P") { await new Promise((r) => setTimeout(r, val / S.settings.rate)); if (run !== this.run) return; this.idx++; continue; }
+      let ok;
+      try { ok = await Voice.speak(val, who); } catch (e) { ok = false; if (e?.code === "not_granted" || e?.code === "unavailable") { toast("ההקראה כבויה במכשיר הזה"); this.pause(); return; } }
+      if (run !== this.run || !this.playing) return;
+      if (!ok && this.item) { /* skipped or errored; continue */ }
+      this.idx++;
+      if (this.item.epId) { S.resume = { epId: this.item.epId, idx: this.idx }; }
+    }
+    if (run === this.run && this.item && this.idx >= this.item.lines.length) this.finish();
+  },
+  run: 0,
+  pause() { this.playing = false; this.run++; Voice.stop(); if (this.audio) this.audio.pause(); paint(); Store.save(); },
+  toggle() { this.playing ? this.pause() : this.play(); },
+  skip(d) { if (!this.item) return; if (this.item.kind === "file") { this.audio.currentTime = Math.max(0, this.audio.currentTime + d * 15); return; } const was = this.playing; this.run++; Voice.stop(); this.idx = Math.max(0, Math.min(this.item.lines.length - 1, this.idx + d)); while (this.item.lines[this.idx]?.[0] === "P" && this.idx < this.item.lines.length - 1) this.idx += d > 0 ? 1 : -1; this.idx = Math.max(0, this.idx); if (was) this.play(); else paint(); },
+  finish() {
+    this.playing = false;
+    const it = this.item;
+    if (it?.epId) { S.done[it.epId] = Date.now(); S.resume = null; Store.save(); toast("הפרק הושלם"); }
+    paint(); if (view.name === "topic" || view.name === "home") render();
+    if (it?.onEnd) it.onEnd();
+  },
+  stop(silent) { this.playing = false; this.run++; Voice.stop(); if (this.audio) { this.audio.pause(); URL.revokeObjectURL(this.audio.src); this.audio = null; } if (!silent) { this.item = null; $("#player").hidden = true; closeSheet(); } }
+};
+function playEpisode(topicId, epIdx, fromIdx = 0) {
+  const t = TOPIC[topicId], ep = t.episodes[epIdx];
+  P.load({ kind: "ep", title: ep.title, sub: t.title + " · פרק " + (epIdx + 1), hue: t.hue, lines: ep.lines, epId: ep.id, topic: topicId,
+    onEnd: () => { const next = t.episodes[epIdx + 1]; if (next && !S.done[next.id]) setTimeout(() => { if (!P.playing) toastAction("לפרק הבא?", () => playEpisode(topicId, epIdx + 1)); }, 600); } }, fromIdx);
+}
+function playLines(title, sub, hue, lines) { P.load({ kind: "lines", title, sub, hue, lines }); }
+function playFile(rec, topicId) {
+  P.stop(true);
+  const a = new Audio(URL.createObjectURL(rec.blob)); a.preload = "auto"; a.playbackRate = S.settings.rate;
+  a.ontimeupdate = paint; a.onended = () => { P.playing = false; paint(); }; a.onpause = paint;
+  P.audio = a; P.item = { kind: "file", title: rec.name, sub: TOPIC[topicId].title + " · NotebookLM", hue: TOPIC[topicId].hue, lines: [] }; P.idx = 0;
+  showPlayer(); P.play();
+}
+function epLength(ep) { const chars = ep.lines.reduce((n, [w, v]) => n + (w === "P" ? v / 70 : v.length), 0); return Math.max(1, Math.round(chars / 760)); }
+
+/* ---------- generative art ---------- */
+function art(canvas, hue, seed = 1, motion = 0) {
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const w = canvas.clientWidth || 100, h = canvas.clientHeight || 100;
+  if (canvas.width !== Math.round(w * dpr)) { canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr); }
+  const c = canvas.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  let s = seed * 9301 + 49297; const rnd = () => (s = (s * 9301 + 49297) % 233280) / 233280;
+  const g = c.createLinearGradient(0, 0, w, h);
+  g.addColorStop(0, `hsl(${hue} 55% 22%)`); g.addColorStop(1, `hsl(${(hue + 40) % 360} 60% 12%)`);
+  c.fillStyle = g; c.fillRect(0, 0, w, h);
+  const cx = w * (0.25 + rnd() * 0.5), cy = h * (0.3 + rnd() * 0.3);
+  const R = Math.max(w, h);
+  for (let i = 18; i > 0; i--) {
+    const r = R * (i / 18) * 0.9 + Math.sin(motion * 1.5 + i) * (motion ? 4 : 0);
+    c.beginPath();
+    for (let a = 0; a <= Math.PI * 2 + 0.01; a += Math.PI / 90) {
+      const wob = 1 + 0.06 * Math.sin(a * (3 + (i % 4)) + seed + motion * (0.6 + i * 0.05));
+      const x = cx + Math.cos(a) * r * wob, y = cy + Math.sin(a) * r * wob * 0.86;
+      a === 0 ? c.moveTo(x, y) : c.lineTo(x, y);
+    }
+    c.strokeStyle = `hsla(${(hue + i * 4) % 360} 85% ${55 + i * 1.5}% / ${0.10 + (18 - i) * 0.012})`;
+    c.lineWidth = 1.2; c.stroke();
+  }
+  const rg = c.createRadialGradient(cx, cy, 0, cx, cy, R * 0.35);
+  rg.addColorStop(0, `hsla(${hue} 95% 70% / .55)`); rg.addColorStop(1, `hsla(${hue} 95% 60% / 0)`);
+  c.fillStyle = rg; c.fillRect(0, 0, w, h);
+}
+function paintArt(root = document) { root.querySelectorAll("canvas[data-hue]").forEach((cv) => art(cv, +cv.dataset.hue, +(cv.dataset.seed || 1))); }
+
+/* ---------- daily tasks ---------- */
+function hash(str) { let h = 2166136261; for (const ch of str) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
+function dayPlan(date = today()) {
+  if (!S.days[date]) {
+    const focus = S.profile.focus?.length ? S.profile.focus : TOPICS.map((t) => t.id);
+    const order = TOPICS.map((t) => t.id).sort((a, b) => hash(date + a) - hash(date + b));
+    const inF = order.filter((t) => focus.includes(t)), outF = order.filter((t) => !focus.includes(t));
+    // two from the focus topics, one from elsewhere so the week stays broad
+    const chosen = [...inF.slice(0, 2), ...(outF.length ? outF.slice(0, 1) : inF.slice(2, 3))];
+    while (chosen.length < 3) { const x = order.find((t) => !chosen.includes(t)); if (!x) break; chosen.push(x); }
+    const recent = new Set(Object.values(S.days).slice(-6).flatMap((d) => d.items.map((it) => it.i)));
+    const picks = chosen.map((tid) => {
+      const cand = TASKS.map((x, i) => [x, i]).filter(([x]) => x[0] === tid);
+      const fresh = cand.filter(([, i]) => !recent.has(i));
+      const list = fresh.length ? fresh : cand;
+      const [x, i] = list[hash(date + tid + "t") % list.length];
+      return { i, topic: x[0], text: x[1], done: false };
+    });
+    S.days[date] = { items: picks };
+    const keys = Object.keys(S.days).sort(); while (keys.length > 60) delete S.days[keys.shift()];
+    Store.save();
+  }
+  return S.days[date];
+}
+function streakDays() {
+  const out = []; const d = new Date();
+  for (let k = 6; k >= 0; k--) { const x = new Date(d); x.setDate(d.getDate() - k); const key = x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0") + "-" + String(x.getDate()).padStart(2, "0"); const day = S.days[key]; out.push({ key, on: !!day && day.items.some((i) => i.done), today: k === 0 }); }
+  return out;
+}
+
+/* ---------- AI coach ---------- */
+const Coach = {
+  sample: null, tried: false,
+  async get() { if (!this.tried) { this.tried = true; try { this.sample = window.claude?.use ? await claude.use("sample") : null; } catch { this.sample = null; } } return this.sample; },
+  context() {
+    const p = S.profile;
+    const listened = Object.keys(S.done).map((id) => { for (const t of TOPICS) { const e = t.episodes.find((x) => x.id === id); if (e) return t.title + ": " + e.title; } return null; }).filter(Boolean);
+    const dp = S.days[today()];
+    return [
+      "שם: " + (p.name || "לא ידוע"),
+      "על עצמו: " + (p.about || "לא סיפר עדיין"),
+      "נושאי מיקוד: " + ((p.focus || []).map((f) => TOPIC[f]?.title).join(", ") || "הכל"),
+      "דברים שלמדת עליו בשיחות קודמות: " + (S.memory.length ? S.memory.join(" | ") : "אין עדיין"),
+      "פרקים ששמע: " + (listened.join(", ") || "עוד לא"),
+      "משימות היום: " + (dp ? dp.items.map((i) => (i.done ? "[בוצע] " : "") + i.text).join(" | ") : "-"),
+      "שאלות אחרונות: " + (S.history.slice(-4).map((h) => h.q).join(" | ") || "-"),
+    ].join("\n");
+  },
+  rules: `אתה "המאמן" באפליקציית התפתחות אישית בעברית. המשתמש לא קורא, הוא שומע: כל מה שתכתוב יוקרא בקול.
+כללים:
+- עברית מדוברת, חמה וישירה, בלשון זכר, פונה אליו בשמו לפעמים.
+- רק מידע אמיתי ומבוסס. אם המחקר חלש או שנוי במחלוקת, אמור זאת במשפט אחד. אל תמציא מחקרים, מספרים או ציטוטים.
+- במיקרו-הבעות ושפת גוף: לעולם לא להבטיח זיהוי שקרים.
+- בכסף: ידע כללי לישראל, לא המלצה על מוצר ספציפי. בהחלטות גדולות, הפנה ליועץ בלתי תלוי. ברפואה ובנפש: הפנה לאיש מקצוע כשיש סימן לבעיה אמיתית.
+- מבנה: תשובה ברורה בשני משפטים, ואז למה זה עובד, ואז צעד אחד לעשות היום.
+- בלי כוכביות, בלי רשימות ממוספרות, בלי כותרות ובלי אימוג'י. משפטים קצרים שנעים לשמוע.
+- עד 170 מילים.`,
+  async ask(q) {
+    const sample = await this.get();
+    if (!sample) throw Object.assign(new Error("no sample"), { code: "unavailable" });
+    const prompt = `${this.rules}
+
+מה שידוע לך על המשתמש:
+${this.context()}
+
+השאלה שלו: ${q}
+
+החזר JSON בלבד בצורה:
+{"answer": "התשובה המדוברת", "task": "משימה אחת קצרה להיום שנובעת מהתשובה, עד 14 מילים", "remember": ["עובדה חדשה וחשובה שלמדת עליו מהשאלה, אם יש. אחרת מערך ריק"]}`;
+    const r = await sample.json(prompt, { cache: false, modelTier: "default" });
+    if (!r || typeof r.answer !== "string") throw Object.assign(new Error("bad"), { code: "invalid_json" });
+    return r;
+  },
+  async personalTask() {
+    const sample = await this.get();
+    if (!sample) throw Object.assign(new Error("no sample"), { code: "unavailable" });
+    const prompt = `${this.rules}
+
+מה שידוע לך על המשתמש:
+${this.context()}
+
+צור משימה אישית אחת להיום, שמתאימה לו ושונה ממשימות היום. משהו מעשי שלוקח עד עשרים דקות, מבוסס, לא קלישאה.
+החזר JSON בלבד: {"topic": "אחד מ: ${TOPICS.map((t) => t.id).join(", ")}", "task": "המשימה, עד 16 מילים", "why": "משפט אחד למה זה עובד"}`;
+    return sample.json(prompt, { cache: false, modelTier: "default" });
+  }
+};
+function sentences(text) { return text.replace(/\s+/g, " ").match(/[^.!?]+[.!?]*/g)?.map((s) => s.trim()).filter(Boolean) || [text]; }
+
+/* ---------- views ---------- */
+let view = { name: "home" };
+function go(name, arg) { view = { name, arg }; closeDrawer(); render(); window.scrollTo({ top: 0 }); try { localStorage.setItem("growth.view", JSON.stringify(view)); } catch {} }
+function topbar(left) {
+  return `<header class="top"><button class="iconbtn burger" aria-label="תפריט נושאים" data-act="drawer"><div><span></span><span></span><span></span></div></button>
+  <div class="brand">צמי<b>חה</b></div>${left || `<button class="iconbtn" aria-label="המאמן" data-go="coach">${I.spark}</button>`}</header>`;
+}
+function render() {
+  const app = $("#app");
+  if (!nameOf() && view.name !== "profile" && !S.profile.skipped) { app.innerHTML = welcomeView(); bind(app); paintArt(app); renderDrawer(); return; }
+  app.innerHTML = view.name === "topic" ? topicView(view.arg) : view.name === "coach" ? coachView() : view.name === "profile" ? profileView() : homeView();
+  bind(app); paintArt(app); renderDrawer(); if (view.name === "coach") Orb.mount(); else Orb.unmount();
+  if (view.name === "topic") loadOwnAudio(view.arg);
+}
+function welcomeView() {
+  return `<div class="welcome">
+    <div class="cover" style="aspect-ratio:1.4/1"><canvas data-hue="38" data-seed="7"></canvas></div>
+    <h1>לומדים באוזניים.</h1>
+    <p>פרקים קצרים בקול על שפת גוף, הבעות פנים, כסף, ביטחון, נוכחות, זוגיות והגוף. כל יום שלוש משימות, ומאמן שאפשר לשאול הכל.</p>
+    <div class="field"><label for="w-name">איך לקרוא לך?</label><input id="w-name" autocomplete="given-name" placeholder="השם שלך"></div>
+    <div class="field"><label>במה להתמקד קודם?</label><div class="chips" id="w-focus">${TOPICS.map((t) => `<button class="chip" data-focus="${t.id}">${t.title}</button>`).join("")}</div></div>
+    <button class="btn" data-act="start">${I.ear} מתחילים</button>
+  </div>`;
+}
+function homeView() {
+  const dp = dayPlan(); const name = nameOf();
+  const hour = new Date().getHours();
+  const hi = hour < 12 ? "בוקר טוב" : hour < 17 ? "צהריים טובים" : hour < 21 ? "ערב טוב" : "לילה טוב";
+  const doneCount = dp.items.filter((i) => i.done).length;
+  const next = nextEpisode();
+  const dateStr = new Date().toLocaleDateString("he-IL", { weekday: "long", day: "numeric", month: "long" });
+  return `${topbar()}
+  <section class="hero"><canvas data-hue="${next ? TOPIC[next.t].hue : 38}" data-seed="${new Date().getDate()}"></canvas>
+    <div class="in"><div><div class="date">${esc(dateStr)}</div><div class="hi">${hi}${name ? ", " + esc(name) : ""}</div></div>
+    <button class="bigplay" data-act="brief" aria-label="השמע את היום">${I.play}</button></div></section>
+
+  <section class="sec"><div class="sechead"><h3>המשימות של היום</h3><span class="aux">${doneCount}/${dp.items.length}</span></div>
+    <div class="tasks">${dp.items.map((it, k) => taskRow(it, k)).join("")}</div>
+    <div class="row" style="margin-top:10px">
+      <button class="pill" data-act="say-tasks">${I.ear} השמע משימות</button>
+      ${dp.items.some((i) => i.ai) ? "" : `<button class="pill" data-act="ai-task">${I.spark} משימה אישית מהמאמן</button>`}
+    </div></section>
+
+  <section class="sec"><div class="sechead"><h3>7 הימים האחרונים</h3><span class="aux">${streakDays().filter((d) => d.on).length} ימים פעילים</span></div>
+    <div class="streak">${streakDays().map((d) => `<i class="${d.on ? "on" : ""} ${d.today ? "today" : ""}" title="${d.key}"></i>`).join("")}</div></section>
+
+  ${next ? `<section class="sec"><div class="sechead"><h3>${S.resume ? "להמשיך לשמוע" : "הפרק הבא שלך"}</h3></div>
+    <button class="ep" data-play="${next.t}:${next.e}:${next.from}"><span class="num">${I.play}</span><span class="t">${esc(TOPIC[next.t].episodes[next.e].title)}<br><span class="m">${esc(TOPIC[next.t].title)} · ${epLength(TOPIC[next.t].episodes[next.e])} דק׳</span></span></button></section>` : ""}
+
+  <section class="sec"><div class="sechead"><h3>נושאים</h3><span class="aux">${Object.keys(S.done).length}/${TOPICS.reduce((n, t) => n + t.episodes.length, 0)} פרקים</span></div>
+    <div class="grid2">${TOPICS.map((t, i) => `<button class="tile" data-go="topic" data-arg="${t.id}"><canvas data-hue="${t.hue}" data-seed="${i + 2}"></canvas><span class="lab"><b>${t.title}</b><small>${t.episodes.filter((e) => S.done[e.id]).length}/${t.episodes.length}</small></span></button>`).join("")}</div></section>`;
+}
+function taskRow(it, k) {
+  const hue = TOPIC[it.topic]?.hue ?? 38;
+  return `<div class="task ${it.done ? "done" : ""} ${it.ai ? "ai" : ""}"><span class="dot" style="background:hsl(${hue} 70% 55%)"></span>
+    <span class="txt">${esc(it.text)}</span>
+    <button class="act" data-act="say-task" data-k="${k}" aria-label="השמע משימה">${I.ear}</button>
+    <button class="act check ${it.done ? "on" : ""}" data-act="check" data-k="${k}" aria-label="${it.done ? "בטל סימון" : "סמן כבוצע"}">${I.check}</button></div>`;
+}
+function nextEpisode() {
+  if (S.resume) { for (const t of TOPICS) { const e = t.episodes.findIndex((x) => x.id === S.resume.epId); if (e >= 0) return { t: t.id, e, from: Math.max(0, S.resume.idx - 1) }; } }
+  const order = [...(S.profile.focus || []), ...TOPICS.map((t) => t.id)];
+  for (const tid of order) { const t = TOPIC[tid]; const e = t.episodes.findIndex((x) => !S.done[x.id]); if (e >= 0) return { t: tid, e, from: 0 }; }
+  return null;
+}
+function topicView(id) {
+  const t = TOPIC[id]; const idx = TOPICS.indexOf(t);
+  return `${topbar(`<button class="iconbtn" aria-label="חזרה לבית" data-go="home">${I.home}</button>`)}
+  <section class="cover"><canvas data-hue="${t.hue}" data-seed="${idx + 2}"></canvas>
+    <div class="in"><div><h1>${t.title}</h1><p>${t.short} · ${t.episodes.length} פרקים</p></div>
+    <button class="bigplay" data-play="${id}:${Math.max(0, t.episodes.findIndex((e) => !S.done[e.id]))}:0" aria-label="נגן">${I.play}</button></div></section>
+  <div class="eps">${t.episodes.map((e, i) => {
+    const playing = P.item?.epId === e.id;
+    return `<button class="ep ${S.done[e.id] ? "done" : ""} ${playing ? "playing" : ""}" data-play="${id}:${i}:0"><span class="num">${S.done[e.id] ? I.check : i + 1}</span><span class="t">${esc(e.title)}</span><span class="m">${epLength(e)} דק׳</span></button>`;
+  }).join("")}</div>
+  <div class="own" id="own"></div>
+  <section class="nb">
+    <h4>פודקאסט עומק מ-NotebookLM</h4>
+    <div class="steps">
+      <button class="step" data-act="nb-copy" data-arg="${id}"><b>1</b>${I.copy}העתק חומר</button>
+      <a class="step" href="https://notebooklm.google.com/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none"><b>2</b>${I.open}צור סקירת אודיו</a>
+      <button class="step" data-act="nb-up" data-arg="${id}"><b>3</b>${I.upload}הוסף לכאן</button>
+    </div>
+    <button class="mini" data-act="nb-how" style="justify-self:start">${I.ear} איך זה עובד</button>
+  </section>`;
+}
+async function loadOwnAudio(id) {
+  const el = $("#own"); if (!el) return;
+  const files = await Audio$.list(id);
+  el.innerHTML = files.length ? `<div class="sechead" style="margin:16px 0 0"><h3 style="font-size:24px">הפודקאסטים שלך</h3></div>` + files.map((f) => `<div class="ep" style="cursor:default"><button class="num" data-file="${f.id}" aria-label="נגן">${I.play}</button><span class="t">${esc(f.name)}</span><button class="mini" data-act="file-del" data-id="${f.id}" aria-label="מחק">${I.trash}</button></div>`).join("") : "";
+  el.querySelectorAll("[data-file]").forEach((b) => b.onclick = () => { const rec = files.find((f) => f.id === b.dataset.file); if (rec) playFile(rec, id); });
+  el.querySelectorAll("[data-act=file-del]").forEach((b) => b.onclick = async () => { if (b.dataset.armed) { await Audio$.del(b.dataset.id); loadOwnAudio(id); toast("נמחק"); } else { b.dataset.armed = 1; b.textContent = "למחוק?"; setTimeout(() => { delete b.dataset.armed; b.innerHTML = I.trash; }, 2500); } });
+}
+function coachView() {
+  const last = S.history.slice(-1)[0];
+  const ideas = ["איך לזהות אם מישהו לא נוח לו בשיחה?", "איך להתחיל לחסוך כשאין כסף?", "איך לבקש העלאה?", "איך להיות יותר נוכח מול בת הזוג?", "מה לעשות כשאני לחוץ לפני פגישה?", "איך לשפר שינה?"];
+  return `${topbar(`<button class="iconbtn" aria-label="חזרה לבית" data-go="home">${I.home}</button>`)}
+  <div class="orb-wrap"><button class="orb" data-act="orb" aria-label="השמע שוב או עצור"><canvas id="orbc"></canvas><span class="core">${I.spark}</span></button></div>
+  <div class="orb-status" id="orbs">${esc(Orb.status || "שאל אותי כל דבר. אני עונה בקול.")}</div>
+  <form class="ask" id="askf" style="margin-top:16px"><textarea id="askq" rows="1" placeholder="מה תרצה ללמוד? אפשר להכתיב במיקרופון של המקלדת" aria-label="השאלה שלך"></textarea>
+  <button class="send" id="asks" aria-label="שלח">${I.send}</button></form>
+  <div class="chips">${ideas.map((q) => `<button class="chip" data-q="${esc(q)}">${esc(q)}</button>`).join("")}</div>
+  ${last ? answerCard(last) : ""}
+  ${S.history.length > 1 ? `<section class="sec"><div class="sechead"><h3>שיעורים קודמים</h3></div><div class="eps">${S.history.slice(0, -1).slice(-8).reverse().map((h, i) => `<button class="ep" data-replay="${S.history.length - 2 - i}"><span class="num">${I.play}</span><span class="t">${esc(h.q)}</span></button>`).join("")}</div></section>` : ""}`;
+}
+function answerCard(h) {
+  return `<div class="answer"><div class="q">${esc(h.q)}</div>
+  <div class="a" id="ansText" hidden>${esc(h.a)}</div>
+  <div class="tools"><button class="mini" data-act="replay-last">${I.play} שמע שוב</button><button class="mini" data-act="show-text">${I.text} טקסט</button>${h.task ? `<button class="mini" data-act="add-task">${I.check} הוסף למשימות</button>` : ""}</div></div>`;
+}
+function profileView() {
+  const voices = Voice.he; const mode = Voice.mode();
+  return `${topbar(`<button class="iconbtn" aria-label="חזרה לבית" data-go="home">${I.home}</button>`)}
+  <h2 style="font-family:var(--display);font-size:44px;margin:8px 0 0">הפרופיל שלי</h2>
+  <p class="hint">מה שתכתוב כאן עוזר למאמן להכיר אותך. הכל נשמר בחשבון שלך ורק אתה רואה אותו.</p>
+  <div class="field"><label for="p-name">שם</label><input id="p-name" value="${esc(S.profile.name)}"></div>
+  <div class="field"><label for="p-about">ספר על עצמך: גיל, עבודה, מטרות, מה מאתגר אותך</label><textarea id="p-about" rows="4">${esc(S.profile.about)}</textarea></div>
+  <div class="field"><label>נושאי מיקוד</label><div class="chips">${TOPICS.map((t) => `<button class="chip ${S.profile.focus.includes(t.id) ? "on" : ""}" data-pfocus="${t.id}">${t.title}</button>`).join("")}</div></div>
+  <button class="btn" style="margin-top:16px" data-act="save-profile">שמירה</button>
+
+  <div class="card"><h4>קול ההקראה</h4>
+    ${mode === "claude" ? `<p class="hint" style="margin:0">משתמש בקול של Claude.</p>` : voices.length ? `<div class="field" style="margin:0"><label for="p-voice">קול</label><select id="p-voice">${voices.map((v) => `<option ${v.name === S.settings.voice ? "selected" : ""} value="${esc(v.name)}">${esc(v.name)}</option>`).join("")}</select></div>` :
+    `<p class="hint" style="margin:0">לא נמצא קול עברי במכשיר. באייפון: הגדרות, נגישות, תוכן מוקרא, קולות, עברית, ולהוריד קול משופר.</p>`}
+    <p class="hint" style="margin:0">טיפ לאייפון: הורדת הקול "משופר" או "פרימיום" בהגדרות נשמעת הרבה יותר טבעית.</p>
+    <div class="field" style="margin:0"><label for="p-rate">מהירות: <span id="rateV">${S.settings.rate}</span></label><input class="range" id="p-rate" type="range" min="0.7" max="1.4" step="0.05" value="${S.settings.rate}"></div>
+    <button class="pill" data-act="test-voice" style="justify-self:start">${I.ear} בדיקת קול</button></div>
+
+  <div class="card"><h4>מה המאמן זוכר עליך</h4>
+    ${S.memory.length ? `<ul class="memo">${S.memory.map((m, i) => `<li>${esc(m)} <button class="mini" data-act="forget" data-i="${i}">שכח</button></li>`).join("")}</ul>` : `<p class="hint" style="margin:0">עוד כלום. המאמן לומד ממה שאתה שואל.</p>`}</div>
+
+  <div class="card"><h4>להוסיף למסך הבית</h4>
+    <p class="hint" style="margin:0">באייפון: לפתוח את הקישור ב-Safari, ללחוץ על כפתור השיתוף, ואז "הוספה למסך הבית". צריך להיות מחובר ל-Claude בספארי.</p></div>`;
+}
+
+/* drawer */
+function renderDrawer() {
+  $("#drawer").innerHTML = `<h2>נושאים</h2>
+  ${TOPICS.map((t, i) => `<button class="navitem ${view.name === "topic" && view.arg === t.id ? "cur" : ""}" data-go="topic" data-arg="${t.id}"><canvas data-hue="${t.hue}" data-seed="${i + 2}"></canvas><span><span class="t">${t.title}</span><br><span class="s">${t.short}</span></span><span class="meter">${t.episodes.filter((e) => S.done[e.id]).length}/${t.episodes.length}</span></button>`).join("")}
+  <div class="navsep"></div>
+  <button class="navitem ${view.name === "home" ? "cur" : ""}" data-go="home"><span class="navicon">${I.home}</span><span class="t">היום שלי</span></button>
+  <button class="navitem ${view.name === "coach" ? "cur" : ""}" data-go="coach"><span class="navicon">${I.spark}</span><span class="t">המאמן</span></button>
+  <button class="navitem ${view.name === "profile" ? "cur" : ""}" data-go="profile"><span class="navicon">${I.user}</span><span class="t">הפרופיל שלי</span></button>`;
+  bind($("#drawer")); requestAnimationFrame(() => paintArt($("#drawer")));
+}
+function openDrawer() { $("#drawer").classList.add("on"); $("#scrim").classList.add("on"); requestAnimationFrame(() => paintArt($("#drawer"))); }
+function closeDrawer() { $("#drawer").classList.remove("on"); $("#scrim").classList.remove("on"); }
+
+/* player UI */
+function showPlayer() { $("#player").hidden = false; paint(); }
+function paint() {
+  const it = P.item; const pl = $("#player"); if (!it) return;
+  const total = it.kind === "file" ? (P.audio?.duration || 1) : it.lines.length;
+  const pos = it.kind === "file" ? (P.audio?.currentTime || 0) : P.idx;
+  const pct = Math.min(100, (pos / total) * 100);
+  const who = it.kind === "file" ? null : it.lines[Math.min(P.idx, it.lines.length - 1)]?.[0];
+  const playing = it.kind === "file" ? (P.audio && !P.audio.paused) : P.playing;
+  pl.innerHTML = `<div class="pbar"><canvas data-hue="${it.hue}" data-seed="3"></canvas>
+    <button class="meta" data-act="sheet"><b>${esc(it.title)}</b><span>${esc(it.sub)}</span><div class="prog"><i style="width:${pct}%"></i></div></button>
+    <button class="pbtn" data-act="toggle" aria-label="${playing ? "השהה" : "נגן"}">${playing ? I.pause : I.play}</button>
+    <button class="pbtn ghost" data-act="close-player" aria-label="סגור נגן">${I.stop}</button></div>`;
+  bind(pl); paintArt(pl);
+  const sh = $("#sheet");
+  if (sh.classList.contains("on")) {
+    if (!sh.dataset.built || sh.dataset.built !== it.title) buildSheet();
+    $("#sheet [data-act=toggle]").innerHTML = playing ? I.pause : I.play;
+    sh.querySelectorAll(".spk").forEach((s) => s.classList.toggle("on", playing && s.dataset.who === who));
+    $("#sheet .prog i").style.width = pct + "%";
+  }
+  Stage.playing = playing;
+}
+function buildSheet() {
+  const it = P.item; const sh = $("#sheet"); sh.dataset.built = it.title;
+  sh.innerHTML = `<button class="iconbtn close" data-act="close-sheet" aria-label="סגור">${I.down}</button>
+  <div class="stage"><canvas id="stagec" data-hue="${it.hue}"></canvas></div>
+  ${it.kind === "file" ? "" : `<div class="speakers">${["A", "B"].map((w) => `<div class="spk" data-who="${w}"><div class="av" style="background:hsl(${w === "A" ? it.hue : (it.hue + 50) % 360} 60% 45%);color:#fff">${HOSTS[w].letter}</div><small>${HOSTS[w].name}</small></div>`).join("")}</div>`}
+  <div class="ttl"><b>${esc(it.title)}</b><span>${esc(it.sub)}</span><div class="prog" style="max-width:320px;margin:12px auto 0"><i></i></div></div>
+  <div class="ctrls"><button class="sk" data-act="skip" data-d="-1" aria-label="אחורה">${I.prev}</button>
+  <button class="pbtn" data-act="toggle" aria-label="נגן או השהה">${I.play}</button>
+  <button class="sk" data-act="skip" data-d="1" aria-label="קדימה">${I.next}</button></div>
+  <div class="speed">${[0.85, 1, 1.15, 1.3].map((r) => `<button data-rate="${r}" class="${S.settings.rate === r ? "on" : ""}">×${r}</button>`).join("")}</div>`;
+  bind(sh); Stage.mount($("#stagec"));
+}
+function openSheet() { $("#sheet").classList.add("on"); buildSheet(); paint(); }
+function closeSheet() { $("#sheet").classList.remove("on"); Stage.unmount(); }
+const Stage = { cv: null, raf: 0, t: 0, playing: false,
+  mount(cv) { this.cv = cv; cancelAnimationFrame(this.raf); const loop = () => { if (!this.cv) return; this.t += this.playing ? 0.03 : 0.004; art(this.cv, +this.cv.dataset.hue, 5, this.t); this.raf = requestAnimationFrame(loop); }; loop(); },
+  unmount() { this.cv = null; cancelAnimationFrame(this.raf); } };
+const Orb = { raf: 0, t: 0, active: false, status: "",
+  mount() { const cv = $("#orbc"); if (!cv) return; cancelAnimationFrame(this.raf);
+    const loop = () => { if (!document.body.contains(cv)) return; this.t += this.active ? 0.05 : 0.012; const dpr = Math.min(2, devicePixelRatio || 1); cv.width = 250 * dpr; cv.height = 250 * dpr; const c = cv.getContext("2d"); c.scale(dpr, dpr);
+      const acc = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#f2b75b";
+      for (let i = 0; i < 5; i++) { c.beginPath(); for (let a = 0; a <= Math.PI * 2 + 0.01; a += Math.PI / 60) { const r = 72 + i * 11 + Math.sin(a * (3 + i) + this.t * (1 + i * 0.3)) * (this.active ? 7 : 2.5); const x = 125 + Math.cos(a) * r, y = 125 + Math.sin(a) * r; a === 0 ? c.moveTo(x, y) : c.lineTo(x, y); } c.strokeStyle = acc; c.globalAlpha = 0.5 - i * 0.08; c.lineWidth = 1.5; c.stroke(); }
+      this.raf = requestAnimationFrame(loop); }; loop(); },
+  unmount() { cancelAnimationFrame(this.raf); },
+  set(s, active) { this.status = s; this.active = active; const el = $("#orbs"); if (el) el.textContent = s; }
+};
+
+/* toast */
+let toastT;
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2400); }
+function toastAction(msg, fn) { const t = $("#toast"); t.innerHTML = ""; const b = document.createElement("button"); b.textContent = msg; b.style.cssText = "color:inherit;font-weight:700"; b.onclick = () => { t.classList.remove("on"); fn(); }; t.appendChild(b); t.style.pointerEvents = "auto"; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => { t.classList.remove("on"); t.style.pointerEvents = "none"; }, 6000); }
+
+/* ---------- actions ---------- */
+const welcomeFocus = new Set();
+function bind(root) {
+  root.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => go(b.dataset.go, b.dataset.arg));
+  root.querySelectorAll("[data-play]").forEach((b) => b.onclick = () => { const [t, e, f] = b.dataset.play.split(":"); playEpisode(t, +e, +f); if (view.name === "topic") render(); });
+  root.querySelectorAll("[data-act]").forEach((b) => { if (!b.onclick) b.onclick = (ev) => act(b.dataset.act, b, ev); });
+  root.querySelectorAll("[data-focus]").forEach((b) => b.onclick = () => { const id = b.dataset.focus; welcomeFocus.has(id) ? welcomeFocus.delete(id) : welcomeFocus.add(id); b.classList.toggle("on"); });
+  root.querySelectorAll("[data-pfocus]").forEach((b) => b.onclick = () => { const f = S.profile.focus; const id = b.dataset.pfocus; const i = f.indexOf(id); i >= 0 ? f.splice(i, 1) : f.push(id); b.classList.toggle("on"); });
+  root.querySelectorAll("[data-q]").forEach((b) => b.onclick = () => { $("#askq").value = b.dataset.q; askNow(); });
+  root.querySelectorAll("[data-replay]").forEach((b) => b.onclick = () => { const h = S.history[+b.dataset.replay]; if (h) speakAnswer(h); });
+  root.querySelectorAll("[data-rate]").forEach((b) => b.onclick = () => { S.settings.rate = +b.dataset.rate; if (P.audio) P.audio.playbackRate = S.settings.rate; Store.save(); $("#sheet").querySelectorAll("[data-rate]").forEach((x) => x.classList.toggle("on", x === b)); if (P.playing && P.item.kind !== "file") { P.run++; Voice.stop(); P.play(); } });
+  const f = root.querySelector("#askf"); if (f) { f.onsubmit = (e) => { e.preventDefault(); askNow(); }; const ta = $("#askq"); ta.oninput = () => { ta.style.height = "auto"; ta.style.height = Math.min(140, ta.scrollHeight) + "px"; }; ta.onkeydown = (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); askNow(); } }; }
+  const rate = root.querySelector("#p-rate"); if (rate) rate.oninput = () => { S.settings.rate = +rate.value; $("#rateV").textContent = rate.value; Store.save(); };
+  const vs = root.querySelector("#p-voice"); if (vs) vs.onchange = () => { S.settings.voice = vs.value; Store.save(); };
+}
+function act(a, b) {
+  const dp = S.days[today()];
+  switch (a) {
+    case "drawer": openDrawer(); break;
+    case "start": {
+      const n = $("#w-name").value.trim();
+      S.profile.name = n; S.profile.focus = [...welcomeFocus]; if (!n) S.profile.skipped = true;
+      delete S.days[today()]; Store.save(); go("home");
+      playLines("ברוכים הבאים", "היכרות", 38, [
+        ["A", `${n ? "היי " + n + ", " : "היי, "}אני מאיה.`], ["B", "ואני דניאל. אנחנו נלווה אותך כאן."],
+        ["A", "כל נושא בנוי מפרקים קצרים של כמה דקות. אתה לא צריך לקרוא כלום, רק לשמוע."],
+        ["B", "בכל יום מחכות לך שלוש משימות קטנות. הן נבחרות לפי מה שבחרת להתמקד בו."],
+        ["A", "ויש גם מאמן. לוחצים על הכוכב למעלה, שואלים כל שאלה, והוא עונה בקול, לפי מה שהוא יודע עליך."],
+        ["B", "הכל כאן מבוסס על מחקר. וכשהמחקר לא חד, נגיד לך את זה. בוא נתחיל."]
+      ]);
+      break;
+    }
+    case "brief": {
+      const d = dayPlan(); const n = nameOf();
+      const lines = [["A", `${n ? n + ", " : ""}הנה היום שלך.`], ["B", `יש לך ${d.items.filter((i) => !i.done).length || "אפס"} משימות פתוחות.`]];
+      d.items.forEach((it, k) => { if (!it.done) lines.push([k % 2 ? "B" : "A", it.text]); });
+      const nx = nextEpisode();
+      if (nx) { const ep = TOPIC[nx.t].episodes[nx.e]; lines.push(["A", `ומיד אחרי זה, הפרק הבא שלך: ${ep.title}, בנושא ${TOPIC[nx.t].title}.`]); }
+      P.load({ kind: "lines", title: "היום שלך", sub: new Date().toLocaleDateString("he-IL", { weekday: "long" }), hue: 38, lines, onEnd: nx ? () => playEpisode(nx.t, nx.e, nx.from) : null });
+      break;
+    }
+    case "say-tasks": { const d = dayPlan(); playLines("המשימות של היום", "היום שלך", 38, d.items.map((it, k) => [k % 2 ? "B" : "A", `משימה ${k + 1}. ${it.text}`])); break; }
+    case "say-task": { const it = dp.items[+b.dataset.k]; playLines("משימה", TOPIC[it.topic]?.title || "", TOPIC[it.topic]?.hue || 38, [["A", it.text], ...(it.why ? [["B", it.why]] : [])]); break; }
+    case "check": { const it = dp.items[+b.dataset.k]; it.done = !it.done; Store.save(); if (it.done) { toast(dp.items.every((i) => i.done) ? "כל המשימות של היום בוצעו. כל הכבוד." : "בוצע"); } render(); break; }
+    case "ai-task": {
+      b.disabled = true; b.innerHTML = I.spark + " חושב...";
+      Coach.personalTask().then((r) => {
+        if (!r?.task) throw new Error("empty");
+        const topic = TOPIC[r.topic] ? r.topic : "confidence";
+        dayPlan().items.push({ i: -1, topic, text: r.task, why: r.why || "", done: false, ai: true }); Store.save(); render();
+        playLines("משימה אישית", "מהמאמן", TOPIC[topic].hue, [["A", r.task], ...(r.why ? [["B", r.why]] : [])]);
+      }).catch((e) => { toast(coachErr(e)); render(); });
+      break;
+    }
+    case "toggle": P.toggle(); break;
+    case "skip": P.skip(+b.dataset.d); break;
+    case "sheet": openSheet(); break;
+    case "close-sheet": closeSheet(); break;
+    case "close-player": P.stop(); break;
+    case "orb": if (Orb.active) { speakGen++; Voice.stop(); Orb.set("עצרתי.", false); } else { const h = S.history.slice(-1)[0]; if (h) speakAnswer(h); else $("#askq")?.focus(); } break;
+    case "replay-last": { const h = S.history.slice(-1)[0]; if (h) speakAnswer(h); break; }
+    case "show-text": { const t = $("#ansText"); t.hidden = !t.hidden; break; }
+    case "add-task": { const h = S.history.slice(-1)[0]; if (h?.task) { dayPlan().items.push({ i: -1, topic: guessTopic(h.q), text: h.task, done: false, ai: true }); h.task = ""; Store.save(); toast("נוסף למשימות של היום"); render(); } break; }
+    case "save-profile": S.profile.name = $("#p-name").value.trim(); S.profile.about = $("#p-about").value.trim(); delete S.profile.skipped; Store.save(); toast("נשמר"); render(); break;
+    case "test-voice": playLines("בדיקת קול", "הגדרות", 38, [["A", `שלום${nameOf() ? " " + nameOf() : ""}, ככה אני נשמעת.`], ["B", "וככה אני נשמע."]]); break;
+    case "forget": S.memory.splice(+b.dataset.i, 1); Store.save(); render(); break;
+    case "nb-copy": copySource(b.dataset.arg); break;
+    case "nb-up": $("#audioIn").dataset.topic = b.dataset.arg; $("#audioIn").click(); break;
+    case "nb-how": playLines("איך יוצרים פודקאסט עומק", "NotebookLM", 220, [
+      ["A", "NotebookLM של גוגל יודע להפוך חומר לפודקאסט של שני מגישים. זה חינמי, ועושים את זה כך."],
+      ["B", "צעד ראשון: לוחצים על העתק חומר. זה מעתיק את כל החומר של הנושא, יחד עם הוראות."],
+      ["A", "צעד שני: לוחצים על צור סקירת אודיו. זה פותח את NotebookLM. יוצרים מחברת חדשה, מוסיפים מקור מסוג טקסט שהועתק, ומדביקים."],
+      ["B", "אחר כך בוחרים סקירת אודיו. בהגדרות אפשר לבחור שפה, כדאי לבחור עברית. ולחכות כמה דקות."],
+      ["A", "צעד שלישי: מורידים את קובץ האודיו, חוזרים לכאן, ולוחצים על הוסף לכאן. הפודקאסט יישמר בנושא הזה במכשיר שלך."]
+    ]); break;
+  }
+}
+function guessTopic(q) { const m = [["body-language", /גוף|תנוע|ידיים|עמיד/], ["faces", /פנים|הבע|חיוך/], ["saving", /חיסכ|לחסוך|חוב|מינוס|פנסי/], ["earning", /הכנס|משכורת|העלא|עסק|לקוח/], ["relationship", /זוג|אישה|חברה|בת ה|אהב/], ["body", /שינה|כושר|אימון|אוכל|תזונ|גוף שלי/], ["presence", /נוכח|לחץ|נשימ|קשב/]]; for (const [id, re] of m) if (re.test(q)) return id; return "confidence"; }
+function coachErr(e) {
+  const c = e?.code;
+  if (c === "unavailable" || c === "not_granted") return "המאמן זמין כשפותחים את האפליקציה בתוך Claude, מחוברים לחשבון.";
+  if (c === "rate_limited") return "יותר מדי שאלות ברגע. נסה שוב בעוד דקה.";
+  return "לא הצלחתי לקבל תשובה. נסה שוב.";
+}
+async function askNow() {
+  const ta = $("#askq"); const q = ta.value.trim(); if (!q) { ta.focus(); return; }
+  const btn = $("#asks"); btn.disabled = true;
+  P.pause(); Voice.stop();
+  Orb.set("חושב על זה...", true);
+  try {
+    const r = await Coach.ask(q);
+    const h = { q, a: r.answer.trim(), task: (r.task || "").trim(), at: Date.now() };
+    S.history.push(h); if (S.history.length > 40) S.history.splice(0, S.history.length - 40);
+    for (const m of (Array.isArray(r.remember) ? r.remember : [])) if (typeof m === "string" && m.trim() && !S.memory.includes(m.trim())) S.memory.push(m.trim());
+    if (S.memory.length > 30) S.memory.splice(0, S.memory.length - 30);
+    Store.save(); ta.value = "";
+    render(); speakAnswer(h);
+  } catch (e) { Orb.set(coachErr(e), false); }
+  finally { const b2 = $("#asks"); if (b2) b2.disabled = false; }
+}
+let speakGen = 0;
+async function speakAnswer(h) {
+  P.pause(); Voice.stop();
+  const parts = sentences(h.a); const my = ++speakGen;
+  Orb.set("מדבר...", true);
+  let all = true;
+  for (const s of parts) {
+    let ok; try { ok = await Voice.speak(s, "A"); } catch { ok = false; }
+    if (!ok || my !== speakGen) { all = false; break; }
+  }
+  if (my === speakGen) Orb.set(all ? (h.task ? "המשימה שלך: " + h.task : "שאל עוד שאלה.") : "עצרתי. לחץ על העיגול כדי לשמוע שוב.", false);
+}
+async function copySource(id) {
+  const t = TOPIC[id];
+  const body = t.episodes.map((e, i) => `פרק ${i + 1}: ${e.title}\n` + e.lines.filter(([w]) => w !== "P").map(([, v]) => v.replaceAll("{name}", nameOf() || "המאזין")).join("\n")).join("\n\n");
+  const about = S.profile.about ? `\n\nעל המאזין: ${S.profile.about}` : "";
+  const text = `נושא: ${t.title}\n\nהוראות לסקירת האודיו: צרו פודקאסט בעברית, בשיחה בין שני מגישים, שמעמיק בנושא ${t.title}. הסבירו רק מה שמבוסס במחקר, אמרו במפורש איפה המחקר חלש או שנוי במחלוקת, תנו דוגמאות מהחיים בישראל, וסיימו בתרגיל מעשי אחד להיום.${about}\n\nחומר:\n\n${body}`;
+  try { await navigator.clipboard.writeText(text); toast("הועתק. עכשיו פתח את NotebookLM והדבק כמקור."); }
+  catch { const ta = document.createElement("textarea"); ta.value = text; ta.style.cssText = "position:fixed;top:0;left:0;width:100%;height:40vh;z-index:99"; document.body.appendChild(ta); ta.select(); toast("סמן הכל והעתק"); setTimeout(() => ta.remove(), 15000); }
+}
+$("#audioIn").onchange = async (e) => {
+  const f = e.target.files?.[0]; const topic = e.target.dataset.topic; e.target.value = "";
+  if (!f || !topic) return;
+  try { await Audio$.add(topic, f); toast("הפודקאסט נשמר בנושא " + TOPIC[topic].title); if (view.name === "topic") loadOwnAudio(topic); }
+  catch { toast("לא הצלחתי לשמור את הקובץ במכשיר הזה."); }
+};
+$("#scrim").onclick = closeDrawer;
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("#drawer").classList.contains("on")) { e.preventDefault(); closeDrawer(); } });
+document.addEventListener("visibilitychange", () => { if (document.hidden) Store.save(); });
+let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => paintArt(), 150); });
+
+/* boot */
+async function waitClaude(ms = 2000) { const t0 = Date.now(); while (!window.claude?.use && Date.now() - t0 < ms) await new Promise((r) => setTimeout(r, 100)); }
+(async function boot() {
+  try { const v = JSON.parse(localStorage.getItem("growth.view") || "null"); if (v?.name && (v.name !== "topic" || TOPIC[v.arg])) view = v; } catch {}
+  render();
+  await waitClaude();
+  Voice.init();
+  await Store.init();
+  render();
+})();
+</script>
