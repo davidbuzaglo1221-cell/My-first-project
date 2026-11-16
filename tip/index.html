@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>טיפ בקלות</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Heebo:wght@400;500;700&display=swap">
+<style>
+/* Layout: one narrow column, like a check folder: the bill on top, the choices in the middle, a torn receipt slip with the result at the bottom. */
+:root {
+  --bg: #eef2ee;
+  --surface: #ffffff;
+  --ink: #17241e;
+  --muted: #5b6b63;
+  --line: #d3ddd6;
+  --folder: #1e3b31;
+  --folder-ink: #f2efe4;
+  --brass: #a9741f;
+  --brass-soft: #f4e7cf;
+  --chip-on-ink: #17241e;
+  --font-display: "Rubik", "Heebo", system-ui, sans-serif;
+  --font-body: "Heebo", "Rubik", system-ui, sans-serif;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1512; --surface: #18211c; --ink: #e7ede9; --muted: #9aaba2; --line: #2b3832;
+    --folder: #22463a; --folder-ink: #f2efe4; --brass: #e0ac52; --brass-soft: #3a2f1c; --chip-on-ink: #17241e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1512; --surface: #18211c; --ink: #e7ede9; --muted: #9aaba2; --line: #2b3832;
+  --folder: #22463a; --folder-ink: #f2efe4; --brass: #e0ac52; --brass-soft: #3a2f1c; --chip-on-ink: #17241e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5;
+  direction: rtl;
+}
+.wrap {
+  max-width: 480px; margin: 0 auto;
+  padding-block: 20px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 16px;
+}
+.num { font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }
+h1, h2 { font-family: var(--font-display); margin: 0; text-wrap: balance; }
+
+/* Bill folder */
+.folder {
+  background: var(--folder); color: var(--folder-ink); border-radius: 20px;
+  padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 10px;
+}
+.folder-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.folder h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: .01em; }
+.cur { display: flex; gap: 4px; background: rgba(255,255,255,.08); padding: 3px; border-radius: 999px; }
+.cur button {
+  border: 0; background: transparent; color: var(--folder-ink); font: 500 .95rem var(--font-body);
+  width: 34px; height: 30px; border-radius: 999px; cursor: pointer;
+}
+.cur button[aria-pressed="true"] { background: var(--folder-ink); color: var(--folder); font-weight: 700; }
+.bill-label { font-size: .85rem; opacity: .8; letter-spacing: .04em; }
+.bill-row { display: flex; align-items: baseline; gap: 8px; direction: ltr; }
+.bill-row .sym { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--brass); }
+#bill {
+  flex: 1; min-width: 0; background: transparent; border: 0; border-bottom: 2px solid rgba(255,255,255,.22);
+  color: var(--folder-ink); font: 800 2.8rem/1.1 var(--font-display); padding: 2px 0 6px; outline: none;
+  font-variant-numeric: tabular-nums; direction: ltr; text-align: left;
+}
+#bill:focus { border-bottom-color: var(--brass); }
+#bill::placeholder { color: rgba(242,239,228,.35); }
+.hint { font-size: .8rem; opacity: .75; min-height: 1.2em; }
+
+/* Sections */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.panel h2 { font-size: 1rem; font-weight: 700; }
+.panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.panel-head .sub { color: var(--muted); font-size: .85rem; }
+
+.chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.chip {
+  border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 12px;
+  padding: 8px 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0;
+  font-family: var(--font-body);
+}
+.chip b { font: 700 1.15rem var(--font-display); font-variant-numeric: tabular-nums; }
+.chip span { font-size: .75rem; color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--brass); border-color: var(--brass); color: var(--chip-on-ink); }
+.chip[aria-pressed="true"] span { color: var(--chip-on-ink); opacity: .8; }
+.chip:focus-visible, .cur button:focus-visible, .step:focus-visible, .seg button:focus-visible, .btn:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
+
+.slider-row { display: flex; align-items: center; gap: 12px; }
+#pct { flex: 1; accent-color: var(--brass); direction: ltr; }
+.pct-out { font: 700 1.1rem var(--font-display); min-width: 3.4em; text-align: center; }
+
+.people { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.stepper { display: flex; align-items: center; gap: 4px; direction: ltr; }
+.step {
+  width: 44px; height: 44px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface);
+  color: var(--ink); font: 700 1.4rem var(--font-display); cursor: pointer;
+}
+.step:disabled { opacity: .35; cursor: default; }
+#count { font: 800 1.6rem var(--font-display); min-width: 2.2em; text-align: center; }
+
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: var(--bg); padding: 4px; border-radius: 12px; }
+.seg button {
+  border: 0; background: transparent; color: var(--muted); font: 500 .85rem var(--font-body);
+  padding: 8px 4px; border-radius: 9px; cursor: pointer; line-height: 1.25;
+}
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+
+/* Receipt slip */
+.slip {
+  background: var(--surface); border-radius: var(--r) var(--r) 0 0; padding: 18px 18px 26px; position: relative;
+  border: 1px solid var(--line); border-bottom: 0;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.slip::after {
+  content: ""; position: absolute; left: -1px; right: -1px; bottom: -10px; height: 12px;
+  background:
+    linear-gradient(135deg, var(--surface) 50%, transparent 50%) 0 0 / 14px 12px repeat-x,
+    linear-gradient(225deg, var(--surface) 50%, transparent 50%) 0 0 / 14px 12px repeat-x;
+}
+.hero { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.hero > div { background: var(--brass-soft); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.hero .k { font-size: .8rem; color: var(--muted); letter-spacing: .03em; }
+.hero .v { font: 800 1.9rem/1.1 var(--font-display); }
+.hero .v small { font-size: .6em; font-weight: 700; color: var(--brass); }
+.rows { display: flex; flex-direction: column; gap: 6px; border-top: 1px dashed var(--line); padding-top: 12px; }
+.r { display: flex; justify-content: space-between; gap: 12px; font-size: .95rem; }
+.r .k { color: var(--muted); }
+.r.total { font-weight: 700; font-size: 1.05rem; border-top: 1px dashed var(--line); padding-top: 8px; margin-top: 2px; }
+.cash { border-top: 1px dashed var(--line); padding-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.cash .k { font-size: .85rem; color: var(--muted); }
+.notes { display: flex; flex-wrap: wrap; gap: 6px; }
+.note {
+  display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--line); border-radius: 8px;
+  padding: 4px 10px; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.note.coin { border-radius: 999px; }
+.note i { font-style: normal; font-weight: 500; color: var(--muted); font-size: .85rem; }
+
+.actions { display: flex; gap: 8px; margin-top: 14px; }
+.btn {
+  flex: 1; border: 0; border-radius: 12px; padding: 13px 10px; font: 700 1rem var(--font-body); cursor: pointer;
+  background: var(--folder); color: var(--folder-ink);
+}
+.btn.ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+#copyArea { width: 100%; min-height: 120px; border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: var(--surface); color: var(--ink); font: .9rem var(--font-body); }
+.toast { text-align: center; font-size: .9rem; color: var(--muted); min-height: 1.4em; }
+
+.guide { color: var(--muted); font-size: .88rem; display: flex; flex-direction: column; gap: 6px; }
+.guide summary { cursor: pointer; color: var(--ink); font-weight: 700; }
+.guide ul { margin: 6px 0 0; padding-inline-start: 18px; display: flex; flex-direction: column; gap: 4px; }
+
+/* Waiter view */
+.waiter {
+  position: fixed; inset: 0; background: var(--folder); color: var(--folder-ink); z-index: 20;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px));
+}
+.waiter .big { font: 800 clamp(3.5rem, 18vw, 6rem)/1 var(--font-display); color: var(--brass); }
+.waiter .lbl { font-size: 1.2rem; opacity: .85; }
+.waiter .thanks { font: 700 1.6rem var(--font-display); margin-top: 8px; }
+.waiter .btn { flex: none; background: var(--folder-ink); color: var(--folder); margin-top: 24px; padding-inline: 28px; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero .v { transition: color .2s; }
+}
+@media (max-width: 360px) {
+  .chips { grid-template-columns: repeat(2, 1fr); }
+  .hero .v { font-size: 1.6rem; }
+}
+</style>
+
+<div class="wrap">
+  <section class="folder" aria-label="החשבון">
+    <div class="folder-top">
+      <h1>טיפ בקלות</h1>
+      <div class="cur" role="group" aria-label="מטבע">
+        <button type="button" data-cur="ILS" aria-pressed="true">₪</button>
+        <button type="button" data-cur="USD" aria-pressed="false">$</button>
+        <button type="button" data-cur="EUR" aria-pressed="false">€</button>
+      </div>
+    </div>
+    <label class="bill-label" for="bill">סכום החשבון</label>
+    <div class="bill-row">
+      <span class="sym" id="sym">₪</span>
+      <input id="bill" type="text" inputmode="decimal" autocomplete="off" placeholder="0" value="286">
+    </div>
+    <div class="hint" id="billHint">זה סכום לדוגמה. הקלידו את הסכום שבחשבון שלכם.</div>
+  </section>
+
+  <section class="panel" aria-labelledby="h-service">
+    <div class="panel-head">
+      <h2 id="h-service">איך היה השירות?</h2>
+      <span class="sub">בישראל נהוג 10%–15%</span>
+    </div>
+    <div class="chips" id="chips">
+      <button type="button" class="chip" data-pct="10"><b>10%</b><span>סביר</span></button>
+      <button type="button" class="chip" data-pct="12"><b>12%</b><span>טוב</span></button>
+      <button type="button" class="chip" data-pct="15"><b>15%</b><span>מעולה</span></button>
+      <button type="button" class="chip" data-pct="18"><b>18%</b><span>מדהים</span></button>
+    </div>
+    <div class="slider-row">
+      <label for="pct" class="sub" style="color:var(--muted);font-size:.85rem">אחוז אחר</label>
+      <input id="pct" type="range" min="0" max="30" step="1" value="12">
+      <span class="pct-out num" id="pctOut">12%</span>
+    </div>
+  </section>
+
+  <section class="panel" aria-labelledby="h-people">
+    <div class="people">
+      <div>
+        <h2 id="h-people">כמה סועדים?</h2>
+        <div class="sub" style="color:var(--muted);font-size:.85rem">החשבון מתחלק שווה בשווה</div>
+      </div>
+      <div class="stepper">
+        <button type="button" class="step" id="minus" aria-label="פחות סועדים">−</button>
+        <output id="count" class="num" aria-live="polite">1</output>
+        <button type="button" class="step" id="plus" aria-label="עוד סועד">+</button>
+      </div>
+    </div>
+    <div>
+      <h2 style="margin-bottom:8px">עיגול</h2>
+      <div class="seg" id="round" role="group" aria-label="עיגול">
+        <button type="button" data-round="none" aria-pressed="false">בלי עיגול</button>
+        <button type="button" data-round="tip" aria-pressed="true">טיפ לשקל שלם</button>
+        <button type="button" data-round="person" aria-pressed="false">סכום שלם לאדם</button>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-result">
+    <div class="slip">
+      <h2 id="h-result" style="font-size:1rem">כמה משלמים</h2>
+      <div class="hero">
+        <div><span class="k" id="kTip">טיפ</span><span class="v num" id="vTip">—</span></div>
+        <div><span class="k" id="kTotal">סה״כ לתשלום</span><span class="v num" id="vTotal">—</span></div>
+      </div>
+      <div class="rows">
+        <div class="r"><span class="k">חשבון</span><span class="num" id="rBill">—</span></div>
+        <div class="r"><span class="k" id="rTipK">טיפ</span><span class="num" id="rTip">—</span></div>
+        <div class="r total"><span>סה״כ</span><span class="num" id="rTotal">—</span></div>
+        <div class="r" id="rPerRow" hidden><span class="k">לכל סועד</span><span class="num" id="rPer">—</span></div>
+      </div>
+      <div class="cash">
+        <span class="k" id="cashK">הטיפ במזומן</span>
+        <div class="notes" id="notes"></div>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn" id="showWaiter">להראות למלצר</button>
+      <button type="button" class="btn ghost" id="copy">העתקה לקבוצה</button>
+    </div>
+    <textarea id="copyArea" readonly hidden aria-label="סיכום להעתקה"></textarea>
+    <div class="toast" id="toast" role="status"></div>
+  </section>
+
+  <details class="guide">
+    <summary>כמה מקובל להשאיר?</summary>
+    <ul>
+      <li>במסעדה בישראל: 10% מינימום, 12% על שירות טוב, 15% ומעלה על שירות מצוין.</li>
+      <li>אם כתוב בחשבון "שירות כלול", הטיפ כבר בפנים ולא צריך להוסיף.</li>
+      <li>במקומות רבים הטיפ באשראי לא מגיע במלואו למלצרים, ולכן מקובל לשלם את החשבון בכרטיס ואת הטיפ במזומן.</li>
+      <li>בארה״ב נהוג 18%–22%, ובאירופה לרוב מעגלים למעלה או משאירים 5%–10%.</li>
+    </ul>
+  </details>
+</div>
+
+<div class="waiter" id="waiter" hidden role="dialog" aria-modal="true" aria-label="טיפ למלצר">
+  <div class="lbl" id="wLbl">טיפ</div>
+  <div class="big num" id="wTip">—</div>
+  <div class="lbl" id="wSub"></div>
+  <div class="thanks">תודה על השירות!</div>
+  <button type="button" class="btn" id="closeWaiter">חזרה</button>
+</div>
+
+<script>
+(function () {
+  var CUR = {
+    ILS: { sym: "₪", notes: [200, 100, 50, 20], coins: [10, 5, 2, 1], unit: "שקל" },
+    USD: { sym: "$", notes: [100, 50, 20, 10, 5, 1], coins: [], unit: "דולר" },
+    EUR: { sym: "€", notes: [100, 50, 20, 10, 5], coins: [2, 1], unit: "יורו" }
+  };
+  var state = { cur: "ILS", pct: 12, people: 1, round: "tip" };
+  try {
+    var saved = JSON.parse(localStorage.getItem("tip-prefs") || "null");
+    if (saved && typeof saved === "object") {
+      if (CUR[saved.cur]) state.cur = saved.cur;
+      if (saved.pct >= 0 && saved.pct <= 30) state.pct = saved.pct;
+      if (["none", "tip", "person"].indexOf(saved.round) >= 0) state.round = saved.round;
+    }
+  } catch (e) {}
+  function save() {
+    try { localStorage.setItem("tip-prefs", JSON.stringify({ cur: state.cur, pct: state.pct, round: state.round })); } catch (e) {}
+  }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var billEl = $("bill"), touched = false;
+
+  function parseBill() {
+    var s = billEl.value.replace(/[,\s]/g, "").replace(/[^\d.]/g, "");
+    var v = parseFloat(s);
+    return isFinite(v) && v > 0 ? v : 0;
+  }
+  function r2(x) { return Math.round(x * 100) / 100; }
+  function fmt(x) {
+    var c = CUR[state.cur];
+    var whole = Math.abs(x - Math.round(x)) < 0.005;
+    return c.sym + x.toLocaleString("en-US", { minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: 2 });
+  }
+
+  // Pure calculation, kept separate so it is easy to check.
+  function calc(bill, pct, people, round) {
+    var raw = bill * pct / 100, tip, total;
+    if (round === "tip") { tip = Math.ceil(r2(raw)); total = bill + tip; }
+    else if (round === "person") {
+      var per = Math.ceil(r2((bill + raw) / people));
+      total = per * people; tip = r2(total - bill);
+    } else { tip = r2(raw); total = r2(bill + tip); }
+    return {
+      tip: tip, total: total,
+      perTip: r2(tip / people), perTotal: r2(total / people),
+      effPct: bill > 0 ? tip / bill * 100 : 0
+    };
+  }
+  window.__tipCalc = calc;
+
+  function cashBreakdown(amount) {
+    var c = CUR[state.cur], left = Math.ceil(r2(amount)), out = [];
+    c.notes.concat(c.coins).forEach(function (d) {
+      var n = Math.floor(left / d);
+      if (n > 0) { out.push({ d: d, n: n, coin: c.coins.indexOf(d) >= 0 }); left -= n * d; }
+    });
+    return out;
+  }
+
+  function render() {
+    var c = CUR[state.cur];
+    $("sym").textContent = c.sym;
+    document.querySelectorAll(".cur button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.cur === state.cur)); });
+    document.querySelectorAll(".chip").forEach(function (b) { b.setAttribute("aria-pressed", String(+b.dataset.pct === state.pct)); });
+    document.querySelectorAll("#round button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.round === state.round)); });
+    $("round").querySelector('[data-round="tip"]').textContent = "טיפ ל" + c.unit + " שלם";
+    $("pct").value = state.pct;
+    $("pctOut").textContent = state.pct + "%";
+    $("count").textContent = state.people;
+    $("minus").disabled = state.people <= 1;
+
+    var bill = parseBill(), multi = state.people > 1;
+    $("billHint").textContent = touched ? "" : "זה סכום לדוגמה. הקלידו את הסכום שבחשבון שלכם.";
+    if (!bill) {
+      ["vTip", "vTotal", "rBill", "rTip", "rTotal", "rPer"].forEach(function (id) { $(id).textContent = "—"; });
+      $("notes").innerHTML = ""; $("rTipK").textContent = "טיפ";
+      $("rPerRow").hidden = !multi;
+      return null;
+    }
+    var res = calc(bill, state.pct, state.people, state.round);
+    var pctLabel = Math.abs(res.effPct - state.pct) < 0.05 ? state.pct + "%" : res.effPct.toFixed(1) + "%";
+
+    $("kTip").textContent = multi ? "טיפ לכל סועד" : "טיפ";
+    $("kTotal").textContent = multi ? "כל סועד משלם" : "סה״כ לתשלום";
+    $("vTip").textContent = fmt(multi ? res.perTip : res.tip);
+    $("vTotal").textContent = fmt(multi ? res.perTotal : res.total);
+    $("rBill").textContent = fmt(bill);
+    $("rTipK").textContent = "טיפ (" + pctLabel + ")";
+    $("rTip").textContent = fmt(res.tip);
+    $("rTotal").textContent = fmt(res.total);
+    $("rPerRow").hidden = !multi;
+    $("rPer").textContent = fmt(res.perTotal) + " (מתוכם טיפ " + fmt(res.perTip) + ")";
+
+    var cashAmt = multi ? res.perTip : res.tip;
+    $("cashK").textContent = (multi ? "הטיפ במזומן לכל סועד: " : "הטיפ במזומן: ") + fmt(Math.ceil(r2(cashAmt)));
+    var notes = $("notes"); notes.innerHTML = "";
+    cashBreakdown(cashAmt).forEach(function (p) {
+      var el = document.createElement("span");
+      el.className = "note" + (p.coin ? " coin" : "");
+      el.innerHTML = '<span class="num"></span><i></i>';
+      el.firstChild.textContent = c.sym + p.d;
+      el.lastChild.textContent = "× " + p.n;
+      notes.appendChild(el);
+    });
+    return { bill: bill, res: res, pctLabel: pctLabel };
+  }
+
+  function update() { save(); render(); }
+
+  billEl.addEventListener("input", function () { touched = true; render(); });
+  billEl.addEventListener("focus", function () { if (!touched) { billEl.select(); } });
+  document.querySelectorAll(".cur button").forEach(function (b) { b.addEventListener("click", function () { state.cur = b.dataset.cur; update(); }); });
+  document.querySelectorAll(".chip").forEach(function (b) { b.addEventListener("click", function () { state.pct = +b.dataset.pct; update(); }); });
+  document.querySelectorAll("#round button").forEach(function (b) { b.addEventListener("click", function () { state.round = b.dataset.round; update(); }); });
+  $("pct").addEventListener("input", function (e) { state.pct = +e.target.value; update(); });
+  $("plus").addEventListener("click", function () { if (state.people < 30) { state.people++; render(); } });
+  $("minus").addEventListener("click", function () { if (state.people > 1) { state.people--; render(); } });
+
+  function toast(msg) { $("toast").textContent = msg; clearTimeout(toast.t); toast.t = setTimeout(function () { $("toast").textContent = ""; }, 2500); }
+
+  $("copy").addEventListener("click", function () {
+    var d = render();
+    if (!d) { toast("הקלידו קודם את סכום החשבון"); return; }
+    var lines = [
+      "החשבון: " + fmt(d.bill),
+      "טיפ " + d.pctLabel + ": " + fmt(d.res.tip),
+      "סה״כ: " + fmt(d.res.total)
+    ];
+    if (state.people > 1) lines.push(state.people + " סועדים, כל אחד משלם " + fmt(d.res.perTotal) + " (מתוכם טיפ " + fmt(d.res.perTip) + ")");
+    var text = lines.join("\n"), area = $("copyArea");
+    function fallback() { area.value = text; area.hidden = false; area.focus(); area.select(); toast("סמנו את הטקסט והעתיקו ידנית"); }
+    try {
+      navigator.clipboard.writeText(text).then(function () { area.hidden = true; toast("הסיכום הועתק, אפשר להדביק בוואטסאפ"); }, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  $("showWaiter").addEventListener("click", function () {
+    var d = render();
+    if (!d) { toast("הקלידו קודם את סכום החשבון"); return; }
+    $("wTip").textContent = fmt(d.res.tip);
+    $("wLbl").textContent = "טיפ (" + d.pctLabel + ")";
+    $("wSub").textContent = "סה״כ כולל טיפ: " + fmt(d.res.total);
+    $("waiter").hidden = false;
+    $("closeWaiter").focus();
+  });
+  function closeWaiter() { $("waiter").hidden = true; $("showWaiter").focus(); }
+  $("closeWaiter").addEventListener("click", closeWaiter);
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("waiter").hidden) closeWaiter(); });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
