@@ -121,6 +121,18 @@ Notes:
 
 ## 6. Quality gate (before any important delivery)
 
+**Never deliver a first visual attempt as the final result.** Every visual result goes through:
+
+**CREATE → INSPECT → CRITIQUE → REDESIGN → REFINE → VERIFY**
+
+- Create a complete first version, then render it and look at the real output.
+- Critique it harshly against world-class products and studios, not against "acceptable".
+- If anything reads generic, predictable, cheap, cluttered or AI-generated, redesign that part;
+  do not just polish it.
+- Refine the details (spacing, type, motion, states), then verify everything works.
+- Repeat until it feels distinctive, premium, intentional and exceptionally polished. The goal
+  is not complexity; it is the reaction "this is insanely good".
+
 Review the work as a demanding creative director, not as its author:
 
 1. Is the concept strong and clear in one sentence?
