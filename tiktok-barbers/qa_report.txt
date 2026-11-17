@@ -1,0 +1,16 @@
+PASS  hook     WER  0.0%
+PASS  tip 1    WER  0.0%
+PASS  tip 2    WER  6.7%
+        script: שתיים. תכבד את הזמן שלו. איחור של רבע שעה אומר לו שהוא לא חשוב לך.
+        heard : שתיים, תכבד את הזמן שלו. איחור של רבע שעה אומר לא שהוא לא חשוב לך.
+PASS  tip 3    WER  0.0%
+PASS  tip 4    WER  0.0%
+PASS  tip 5    WER  0.0%
+PASS  tip 6    WER  0.0%
+PASS  tip 7    WER  0.0%
+PASS  tip 8    WER  0.0%
+PASS  tip 9    WER  0.0%
+PASS  tip 10   WER  0.0%
+PASS  cta      WER  0.0%
+
+OVERALL WER 0.7%  |  12/12 segments pass (threshold 15%)

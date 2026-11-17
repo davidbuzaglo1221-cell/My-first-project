@@ -13,6 +13,7 @@ TL = json.load(open('build/timeline.json'))
 S = json.load(open('script.json'))
 DUR = TL['duration']
 SEGS = TL['segments']
+NT = len(S['tips'])
 
 # ---------------- palette ----------------
 BG0 = (9, 9, 13); BG1 = (24, 20, 28)
@@ -134,6 +135,14 @@ def seg_at(t):
 CUTS = [s['start'] for s in SEGS[1:]]
 
 def words_timing(chunk):
+    ws = chunk['text'].split()
+    tw = chunk.get('words') or []
+    if len(tw) == len(ws):   # exact per-word timings from the TTS engine
+        out = []
+        for i, (w_, (_, a, b)) in enumerate(zip(ws, tw)):
+            nxt = tw[i + 1][1] if i + 1 < len(tw) else max(b, chunk['end'])
+            out.append((w_, a, max(b, nxt - 0.01)))
+        return out
     ws = chunk['text'].split(); L = [len(w) + 1.5 for w in ws]; tot = sum(L)
     out, acc = [], chunk['start']; span = chunk['end'] - chunk['start']
     for w_, l in zip(ws, L):
@@ -187,20 +196,20 @@ def draw_brand(c, t, alpha=1.0):
     place(c, pill, W - 60 - wtot / 2, 250, 1, alpha)
 
 def draw_progress(c, t, n, seg):
-    """20 segment progress bar + 'טיפ n/20'"""
+    """NT-segment progress bar + 'טיפ n/NT'"""
     if n == 0: return
     x0, x1, y = 60, W - 60, 315
-    gap = 8; segw = (x1 - x0 - gap * 19) / 20
+    gap = 10; segw = (x1 - x0 - gap * (NT - 1)) / NT
     d = ImageDraw.Draw(c)
     p = ease_out_cubic(prog(t, seg['start'], 0.5))
-    for i in range(20):
+    for i in range(NT):
         # RTL: tip 1 starts at right
         xr = x1 - i * (segw + gap); xl = xr - segw
         d.rounded_rectangle((xl, y, xr, y + 10), 5, fill=(255, 255, 255, 40))
         if i + 1 < n: d.rounded_rectangle((xl, y, xr, y + 10), 5, fill=GOLD)
         elif i + 1 == n and p > 0.02:
             d.rounded_rectangle((xr - max(segw * p, 10), y, xr, y + 10), 5, fill=GOLD2)
-    lab = text_sprite(f"טיפ {n}/20", HE_B, 38, CREAM + (220,))
+    lab = text_sprite(f"טיפ {n}/{NT}", HE_B, 38, CREAM + (220,))
     place(c, lab, 60 + lab.width / 2, 250, 1, 1)
 
 def draw_captions(c, t, seg, y=1400):
@@ -214,25 +223,26 @@ def draw_captions(c, t, seg, y=1400):
     pages, cur = [], []
     for w_ in wt:
         cur.append(w_)
-        if len(cur) == 4 or w_[0].endswith((',', '.', '?')) and len(cur) >= 2: pages.append(cur); cur = []
+        if len(cur) == 4 or w_[0].endswith(('.', '?')) or (w_[0].endswith(',') and len(cur) >= 2): pages.append(cur); cur = []
     if cur: pages.append(cur)
     page = pages[0]
     for pg in pages:
         if t >= pg[0][1] - 0.05: page = pg
-    size = 76; font = HE_BLACK; maxw = 900
+    size = 76; font = HE_BLACK; maxw = 820
     # line breaking
     lines, line, lw = [], [], 0
     for w_ in page:
-        ww = text_w(w_[0], font, size) + 26
+        ww = text_w(w_[0], font, size) + 44
         if lw + ww > maxw and line: lines.append(line); line, lw = [], 0
         line.append(w_); lw += ww
     if line: lines.append(line)
-    pin = ease_out_back(prog(t, page[0][1] - 0.05, 0.22), 1.4)
+    pr_ = prog(t, page[0][1] - 0.05, 0.22)
+    pin = 0.75 + 0.25 * ease_out_back(pr_, 1.4); pal = clamp(pr_ * 3)
     lh = 104
     ytop = y - (len(lines) - 1) * lh / 2
     for li, ln in enumerate(lines):
         widths = [text_w(w_[0], font, size) for w_ in ln]
-        total = sum(widths) + 26 * (len(ln) - 1)
+        total = sum(widths) + 44 * (len(ln) - 1)
         x = W / 2 + total / 2  # start from right edge (RTL)
         for (word, a, b), ww in zip(ln, widths):
             active = a - 0.03 <= t < b + 0.02
@@ -248,8 +258,8 @@ def draw_captions(c, t, seg, y=1400):
             else:
                 col = (CREAM + (255,)) if spoken else (CREAM + (255,))
                 sp = text_sprite(word, font, size, col, 7, INK, 6)
-                place(c, sp, cx, cy, pin, 1.0 if spoken else 0.92)
-            x -= ww + 26
+                place(c, sp, cx, cy, pin, pal * (1.0 if spoken else 0.92))
+            x -= ww + 44
 
 def stripe_wipe(c, t):
     """barber-pole stripe band sweeping right->left across each cut"""
@@ -312,14 +322,14 @@ def scene_hook(c, t, seg):
         ps = ease_out_cubic(prog(t, ch[1]['start'] + 0.35, 0.3))
         if sp.width * ps > 22:
             d = ImageDraw.Draw(c); x1 = W / 2 + sp.width / 2; xl = x1 - sp.width * ps
-            d.rounded_rectangle((xl, 932, x1, 952), 10, fill=GOLD)
+            d.rounded_rectangle((xl, 1030, x1, 1042), 6, fill=GOLD)
         pq = ease_out_back(prog(t, ch[1]['start'] + 0.5, 0.3))
-        place(c, text_sprite("זה כן בידיים שלך", HE_B, 70, GOLD2 + (255,), 0, INK, 6), W / 2, 1130, pq, clamp(pq))
+        place(c, text_sprite("זה כן בידיים שלך", HE_B, 70, GOLD2 + (255,), 0, INK, 6), W / 2, 1150, pq, clamp(pq))
     # chunk 2: big "20"
     if t >= ch[2]['start']:
         p = ease_out_back(prog(t, ch[2]['start'], 0.45), 1.6)
-        place(c, glow_sprite('20', NUM, 520, GOLD, 40), W / 2, 820, (2.2 - 1.2 * p), clamp(p) * 0.9)
-        place(c, text_sprite('20', NUM, 520, GOLD + (255,), 0, INK, 10), W / 2, 820, (2.2 - 1.2 * p), clamp(p * 1.4))
+        place(c, glow_sprite(str(NT), NUM, 520, GOLD, 40), W / 2, 820, (2.2 - 1.2 * p), clamp(p) * 0.9)
+        place(c, text_sprite(str(NT), NUM, 520, GOLD + (255,), 0, INK, 10), W / 2, 820, (2.2 - 1.2 * p), clamp(p * 1.4))
         p2 = ease_out_cubic(prog(t, ch[2]['start'] + 0.35, 0.35))
         place(c, text_sprite("טיפים לספרים", HE_BLACK, 120, CREAM + (255,), 0, INK, 8), W / 2, 1160 + 60 * (1 - p2), 1, p2)
         p3 = ease_out_cubic(prog(t, ch[2]['start'] + 0.7, 0.35))
@@ -418,7 +428,7 @@ def render_frame(fi):
     if seg['kind'] == 'hook': scene_hook(fg, t, seg)
     elif seg['kind'] == 'tip': scene_tip(fg, t, seg)
     else: scene_cta(fg, t, seg)
-    if seg['kind'] != 'hook': draw_captions(fg, t, seg)
+    if seg['kind'] == 'tip': draw_captions(fg, t, seg)
     dx, dy = shake(t)
     c.alpha_composite(fg, (int(dx) if dx > 0 else 0, int(dy) if dy > 0 else 0), (int(-dx) if dx < 0 else 0, int(-dy) if dy < 0 else 0))
     z = punch_zoom(t)
@@ -427,7 +437,7 @@ def render_frame(fi):
         c = c.crop((int((W - cw) / 2), int((H - chh) / 2), int((W + cw) / 2), int((H + chh) / 2))).resize((W, H), Image.BILINEAR)
     # HUD (not zoomed)
     draw_brand(c, t, clamp(t / 0.6))
-    draw_progress(c, t, seg['index'] if seg['kind'] == 'tip' else (20 if seg['kind'] == 'cta' else 0), seg)
+    draw_progress(c, t, seg['index'] if seg['kind'] == 'tip' else (NT if seg['kind'] == 'cta' else 0), seg)
     stripe_wipe(c, t)
     draw_grain(c, t)
     # fade in / out
