@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="fonts/fontsource-heebo/300.css">
+<link rel="stylesheet" href="fonts/fontsource-heebo/400.css">
+<link rel="stylesheet" href="fonts/fontsource-heebo/500.css">
+<link rel="stylesheet" href="fonts/fontsource-heebo/700.css">
+<link rel="stylesheet" href="fonts/fontsource-heebo/800.css">
+<link rel="stylesheet" href="fonts/fontsource-heebo/900.css">
+<link rel="stylesheet" href="fonts/fontsource-frank-ruhl-libre/400.css">
+<link rel="stylesheet" href="fonts/fontsource-frank-ruhl-libre/500.css">
+<link rel="stylesheet" href="fonts/fontsource-frank-ruhl-libre/700.css">
+<script src="tl.js"></script>
+<style>
+:root{
+  --bg:#000; --white:#F5F5F7; --gray:#86868B; --dim:#3A3A3C; --line:#1C1C1E;
+  --green:#30D158; --mint:#66E3C4; --teal:#5AC8FA; --lime:#B8F27C;
+  --grad:linear-gradient(135deg,#B8F27C 0%,#30D158 45%,#2FD3B4 100%);
+  --gradT:linear-gradient(135deg,#7CF2D2 0%,#38D7C0 45%,#5AC8FA 100%);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;background:#000;overflow:hidden}
+body{font-family:'Heebo',sans-serif;color:var(--white);-webkit-font-smoothing:antialiased}
+#stage{position:absolute;inset:0;overflow:hidden;background:#000}
+#glow{position:absolute;left:50%;top:40%;width:1500px;height:1500px;margin:-750px 0 0 -750px;border-radius:50%;
+  background:radial-gradient(circle,rgba(48,209,88,.16) 0%,rgba(48,209,88,.05) 35%,rgba(0,0,0,0) 65%);}
+#grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:screen;pointer-events:none}
+.scene{position:absolute;inset:0;display:none}
+.shot{position:absolute;inset:0;display:none}
+.center{position:absolute;left:0;right:0;top:0;height:1240px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 110px}
+.a{will-change:opacity,transform,filter}
+.eyebrow{font-weight:600;font-size:40px;letter-spacing:.06em;color:var(--green);margin-bottom:34px}
+.eyebrow.t{color:var(--mint)}
+.h1{font-weight:800;font-size:122px;line-height:1.02;letter-spacing:-.01em}
+.h2{font-weight:700;font-size:92px;line-height:1.08}
+.sub{font-weight:300;font-size:50px;color:var(--gray);margin-top:30px;line-height:1.3}
+.num{font-weight:900;font-size:420px;line-height:.9;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.04em;padding:0 20px}
+.gt{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.gtT{background:var(--gradT);-webkit-background-clip:text;background-clip:text;color:transparent}
+.serif{font-family:'Frank Ruhl Libre',serif}
+.quote{font-family:'Frank Ruhl Libre',serif;font-weight:500;font-size:92px;line-height:1.22}
+.g{color:var(--green)}
+.gray{color:var(--gray)}
+/* captions */
+#cap{position:absolute;left:90px;right:90px;top:1300px;height:200px;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:76px;line-height:1.15;text-align:center;flex-wrap:wrap;gap:0 22px}
+#cap span{display:inline-block;color:var(--green);transition:none}
+/* top progress */
+#prog{position:absolute;top:262px;left:50%;transform:translateX(-50%);display:flex;gap:14px;direction:rtl}
+#prog div{width:118px;height:6px;border-radius:3px;background:#262628;overflow:hidden;position:relative}
+#prog div i{position:absolute;top:0;bottom:0;right:0;background:var(--green);border-radius:3px}
+/* book page */
+.page{width:520px;height:660px;border:3px solid #3A3A3C;border-radius:22px;position:relative;padding:70px 60px;display:flex;flex-direction:column;gap:30px}
+.page .ln{height:14px;border-radius:7px;background:#5A5A5E}
+.chips{display:flex;flex-direction:column;gap:30px;align-items:center}
+.chip{font-weight:700;font-size:84px;padding:18px 60px;border-radius:999px;border:3px solid #2C2C2E;position:relative}
+.chip.off{color:#6E6E73}
+.chip.off::after{content:'';position:absolute;right:40px;left:40px;top:52%;height:6px;border-radius:3px;background:#FF453A;transform-origin:right center;transform:scaleX(var(--s,0))}
+.chip.on{color:#000;background:var(--green);border-color:var(--green)}
+.bar{width:780px;height:22px;border-radius:11px;background:#1C1C1E;position:relative;overflow:visible}
+.bar i{position:absolute;right:0;top:0;bottom:0;border-radius:11px;background:var(--grad)}
+.mark{position:absolute;top:-92px;font-weight:700;font-size:44px;color:var(--white);transform:translateX(50%)}
+.tick{position:absolute;top:-24px;width:4px;height:70px;background:var(--white);border-radius:2px;transform:translateX(50%)}
+.para{font-family:'Frank Ruhl Libre',serif;font-size:58px;line-height:1.6;color:#8E8E93;text-align:right;width:820px;position:relative}
+.para u{text-decoration:none;color:var(--white);position:relative;white-space:nowrap}
+.para u svg{position:absolute;right:-6px;bottom:-16px;width:calc(100% + 12px);height:34px;overflow:visible}
+.note{position:absolute;left:-30px;top:-70px;font-family:'Frank Ruhl Libre',serif;font-style:italic;color:var(--green);font-size:54px;transform:rotate(-8deg)}
+.people{display:flex;align-items:center;gap:0;direction:ltr}
+.dot{width:150px;height:150px;border-radius:50%;border:5px solid var(--white)}
+.dot.g2{border-color:var(--mint);box-shadow:0 0 60px rgba(102,227,196,.45)}
+.link{width:300px;height:5px;background:linear-gradient(90deg,#F5F5F7,#66E3C4);transform-origin:left center}
+.bm{width:150px;height:200px}
+.wm{position:absolute;bottom:150px;left:0;right:0;text-align:center;font-weight:500;font-size:30px;letter-spacing:.3em;color:#48484A}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="glow"></div>
+  <canvas id="grain" width="540" height="960" style="width:1080px;height:1920px"></canvas>
+
+  <!-- HOOK -->
+  <div class="scene" data-s="hook">
+    <div class="shot" data-k="a">
+      <div class="center">
+        <div class="page a" id="hpage">
+          <div class="ln" style="width:100%"></div><div class="ln" style="width:92%"></div><div class="ln" style="width:100%"></div>
+          <div class="ln" style="width:85%"></div><div class="ln" style="width:97%"></div><div class="ln" style="width:100%"></div>
+          <div class="ln" style="width:78%"></div><div class="ln" style="width:94%"></div><div class="ln" style="width:60%"></div>
+        </div>
+        <div class="sub a" id="hlabel" style="margin-top:60px;font-weight:500;font-size:46px;letter-spacing:.06em"><span class="g">7</span> ימים אחרי</div>
+      </div>
+    </div>
+    <div class="shot" data-k="b">
+      <div class="center">
+        <div class="h1 a" style="font-size:150px">לא זוכרים</div>
+        <div class="h1 a gt" style="font-size:150px">כלום.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TITLE -->
+  <div class="scene" data-s="title">
+    <div class="shot" data-k="a">
+      <div class="center">
+        <div class="num a">3</div>
+        <div class="h2 a" style="margin-top:10px">טיפים לקריאה</div>
+        <div class="sub a">שנשארת איתכם.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIP 1 -->
+  <div class="scene" data-s="tip1">
+    <div class="shot" data-k="a"><div class="center">
+      <div class="eyebrow a">טיפ 01</div>
+      <div class="h1 a">קראו</div>
+      <div class="h1 a gt">עם עיפרון.</div>
+    </div></div>
+    <div class="shot" data-k="b"><div class="center">
+      <div class="para a">
+        <span class="note a" id="note">חשוב!</span>
+        כל ספר טוב מתחיל בשאלה. <u id="ul">הקורא הוא שותף לכתיבה<svg viewBox="0 0 400 34" preserveAspectRatio="none"><path id="ulp" d="M2 20 C 80 8, 160 30, 240 16 S 360 10, 398 22" fill="none" stroke="#30D158" stroke-width="7" stroke-linecap="round"/></svg></u>, והעיפרון הוא הקול שלו בשוליים.
+      </div>
+    </div></div>
+    <div class="shot" data-k="c"><div class="center">
+      <div class="quote a">ספר שכותבים בו</div>
+      <div class="quote a">הוא ספר <span class="g">שזוכרים.</span></div>
+    </div></div>
+  </div>
+
+  <!-- TIP 2 -->
+  <div class="scene" data-s="tip2">
+    <div class="shot" data-k="a"><div class="center">
+      <div class="eyebrow a">טיפ 02</div>
+      <div class="h1 a"><span class="gt" style="font-size:200px;font-weight:900">20</span></div>
+      <div class="h1 a">עמודים ביום.</div>
+    </div></div>
+    <div class="shot" data-k="b"><div class="center">
+      <div class="chips">
+        <div class="chip off a" id="c1">לא שעה</div>
+        <div class="chip off a" id="c2">לא פרק</div>
+        <div class="chip on a" id="c3">20 עמודים</div>
+      </div>
+    </div></div>
+    <div class="shot" data-k="c"><div class="center">
+      <div class="sub a" style="margin:0 0 10px;font-size:44px;letter-spacing:.04em"><span style="direction:ltr;unicode-bidi:isolate">20 × 365 = 7,300</span> עמודים</div>
+      <div class="num a" id="cnt" style="font-size:380px;direction:ltr;unicode-bidi:isolate">~30</div>
+      <div class="h2 a">ספרים בשנה.</div>
+    </div></div>
+  </div>
+
+  <!-- TIP 3 -->
+  <div class="scene" data-s="tip3">
+    <div class="shot" data-k="a"><div class="center">
+      <div class="eyebrow a">טיפ 03</div>
+      <div class="h1 a">מותר</div>
+      <div class="h1 a gt">להפסיק.</div>
+    </div></div>
+    <div class="shot" data-k="b"><div class="center">
+      <div class="sub a" style="margin:0 0 150px;color:var(--white);font-weight:700;font-size:64px">לא תפס אתכם?</div>
+      <div class="bar a"><i id="bar"></i><div class="tick" id="tick" style="right:16.6%"></div><div class="mark" id="mark" style="right:16.6%">עמ׳ 50</div></div>
+      <div class="h2 a" id="close" style="margin-top:120px">סגרו אותו.</div>
+    </div></div>
+    <div class="shot" data-k="c"><div class="center">
+      <div class="quote a">החיים קצרים מדי</div>
+      <div class="quote a gray">לספרים בינוניים.</div>
+    </div></div>
+  </div>
+
+  <!-- TWIST -->
+  <div class="scene" data-s="twist">
+    <div class="shot" data-k="a"><div class="center">
+      <div class="eyebrow t a">ובונוס</div>
+      <div class="h1 a gtT" style="font-size:170px">הטוויסט.</div>
+    </div></div>
+    <div class="shot" data-k="b"><div class="center">
+      <div class="sub a" style="margin:0 0 50px;color:var(--white);font-weight:500;font-size:62px">הדרך הכי טובה לזכור ספר</div>
+      <div class="h1 a gray" id="tw1" style="position:relative;display:inline-block">לא לקרוא שוב.<i id="tws" style="position:absolute;right:-10px;left:-10px;top:54%;height:8px;border-radius:4px;background:#FF453A;transform-origin:right center"></i></div>
+      <div class="h1 a gtT" style="font-size:190px;margin-top:20px">ללמד.</div>
+    </div></div>
+    <div class="shot" data-k="c"><div class="center">
+      <div class="people a"><div class="dot"></div><div class="link" id="lnk"></div><div class="dot g2"></div></div>
+      <div class="h2 a" style="margin-top:90px">ספרו למישהו אחד</div>
+      <div class="h2 a gtT">מה למדתם.</div>
+    </div></div>
+  </div>
+
+  <!-- OUTRO -->
+  <div class="scene" data-s="outro">
+    <div class="shot" data-k="a"><div class="center">
+      <svg class="bm a" viewBox="0 0 150 200"><path id="bmp" d="M10 10 H140 V190 L75 145 L10 190 Z" fill="none" stroke="#30D158" stroke-width="7" stroke-linejoin="round"/><path id="bmf" d="M10 10 H140 V190 L75 145 L10 190 Z" fill="#30D158" opacity="0"/></svg>
+      <div class="h1 a" style="margin-top:70px">שמרו.</div>
+      <div class="h1 a gt">תתחילו היום.</div>
+    </div></div>
+  </div>
+
+  <div id="prog"><div><i></i></div><div><i></i></div><div><i></i></div></div>
+  <div id="cap"></div>
+</div>
+
+<script>
+const TL = window.TL;
+const NIK = /[֑-ׇ]/g;
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const easeOut=x=>1-Math.pow(1-clamp(x),3);
+const easeIO=x=>{x=clamp(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2};
+const S = Object.fromEntries(TL.scenes.map(s=>[s.id,s]));
+function W(sid, txt, n=0){ // time of nth occurrence of word in scene
+  const idx = TL.scenes.findIndex(s=>s.id===sid);
+  const ws = TL.words.filter(w=>w.s===idx && w.w.replace(NIK,'')===txt);
+  if(!ws[n]) throw new Error('missing word '+sid+' '+txt+' '+n);
+  return ws[n].t;
+}
+// shot start times (absolute). first shot starts at scene start.
+const SHOTS = {
+  hook:{a:S.hook.start, b:W('hook','לא')-0.05},
+  title:{a:S.title.start},
+  tip1:{a:S.tip1.start, b:W('tip1','סמנו')-0.08, c:W('tip1','ספר',0)-0.08},
+  tip2:{a:S.tip2.start, b:W('tip2','לא',0)-0.08, c:W('tip2','ובסוף')-0.08},
+  tip3:{a:S.tip3.start, b:W('tip3','ספר')-0.08, c:W('tip3','החיים')-0.08},
+  twist:{a:S.twist.start, b:W('twist','הדרך')-0.08, c:W('twist','ספרו')-0.08},
+  outro:{a:S.outro.start},
+};
+// per-element entrance times (absolute); default = shot start + stagger
+const ENTER = {
+  hlabel: W('hook','ושבוע'),
+  c1: W('tip2','לא',0), c2: W('tip2','לא',1), c3: W('tip2','רק'),
+  close: W('tip3','סגרו'),
+  note: W('tip1','בשוליים'),
+};
+const els = {};
+document.querySelectorAll('[id]').forEach(e=>els[e.id]=e);
+const scenes=[...document.querySelectorAll('.scene')];
+
+// grain
+const gc = els.grain.getContext('2d'); const gimg = gc.createImageData(540,960);
+function grain(seed){ let s=seed*9301+49297; for(let i=0;i<gimg.data.length;i+=4){ s=(s*1103515245+12345)&0x7fffffff; const v=(s>>16)&255; gimg.data[i]=gimg.data[i+1]=gimg.data[i+2]=v; gimg.data[i+3]=255;} gc.putImageData(gimg,0,0); }
+
+function enter(el, t0, t, dy=34){
+  const p = easeOut((t-t0)/0.55);
+  const b = (1-p)*14;
+  el.style.opacity = clamp((t-t0)/0.35);
+  el.style.transform = `translateY(${(1-p)*dy}px)`;
+  el.style.filter = b>0.2?`blur(${b}px)`:'none';
+}
+
+function seek(t){
+  grain(Math.floor(t*30));
+  // scene
+  let cur=null;
+  for(const sc of scenes){
+    const d=S[sc.dataset.s]; const on = t>=d.start && t<d.end;
+    sc.style.display = on?'block':'none'; if(on) cur=sc;
+  }
+  if(cur){
+    const sid=cur.dataset.s, sh=SHOTS[sid];
+    const keys=Object.keys(sh); let k=keys[0];
+    for(const kk of keys) if(t>=sh[kk]) k=kk;
+    cur.querySelectorAll('.shot').forEach(s=>{
+      const on = s.dataset.k===k; s.style.display=on?'block':'none';
+      if(!on) return;
+      const t0 = sh[k], tnext = (()=>{const i=keys.indexOf(k);return i+1<keys.length?sh[keys[i+1]]:S[sid].end})();
+      // subtle push-in for each shot (Apple-like slow drift)
+      const prog=(t-t0)/Math.max(.1,(tnext-t0));
+      s.style.transform=`scale(${1.0+0.035*prog})`;
+      let i=0;
+      s.querySelectorAll('.a').forEach(el=>{
+        const te = (el.id && ENTER[el.id]!==undefined)? ENTER[el.id] : t0 + 0.05 + i*0.12;
+        if(!(el.id && ENTER[el.id]!==undefined)) i++;
+        enter(el, te, t);
+      });
+    });
+    // scene specific
+    if(sid==='hook'){
+      const lines=[...els.hpage.querySelectorAll('.ln')];
+      const tf=W('hook','ושבוע');
+      lines.forEach((l,j)=>{ const p=easeIO((t-tf-0.1-j*0.09)/0.45); l.style.opacity=1-p; l.style.transform=`translateX(${-p*40}px)`; });
+    }
+    if(sid==='tip1' && k==='b'){
+      const p=easeIO((t-W('tip1','סמנו')-0.15)/0.7);
+      const path=els.ulp, L=460; path.style.strokeDasharray=L; path.style.strokeDashoffset=L*(1-p);
+    }
+    if(sid==='tip2' && k==='b'){
+      [['c1',W('tip2','לא',0)],['c2',W('tip2','לא',1)]].forEach(([id,tt])=>{ els[id].style.setProperty('--s', easeIO((t-tt-0.35)/0.35)); });
+    }
+    if(sid==='tip2' && k==='c'){
+      const p=easeOut((t-sh.c-0.15)/1.6); els.cnt.textContent = (p>=0.98?'~':'')+Math.round(30*p);
+    }
+    if(sid==='tip3' && k==='b'){
+      const p=easeIO((t-sh.b-0.25)/1.3)*0.166; els.bar.style.width=(p*100)+'%';
+      const cp=easeIO((t-ENTER.close)/0.4);
+      els.bar.style.filter=`grayscale(${cp})`; els.bar.style.opacity=1-0.55*cp;
+    }
+    if(sid==='twist' && k==='b'){
+      els.tws.style.transform=`scaleX(${easeIO((t-W('twist','אלא')+0.05)/0.35)})`;
+    }
+    if(sid==='twist' && k==='c'){
+      els.lnk.style.transform=`scaleX(${easeIO((t-sh.c-0.3)/0.6)})`;
+    }
+    if(sid==='outro'){
+      const p=easeIO((t-sh.a-0.5)/0.5); els.bmf.setAttribute('opacity', p);
+    }
+    // twist recolors the glow
+    const tw = sid==='twist';
+    els.glow.style.background = tw
+      ? 'radial-gradient(circle,rgba(90,200,250,.17) 0%,rgba(102,227,196,.06) 35%,rgba(0,0,0,0) 65%)'
+      : 'radial-gradient(circle,rgba(48,209,88,.15) 0%,rgba(48,209,88,.05) 35%,rgba(0,0,0,0) 65%)';
+  }
+  els.glow.style.transform=`translate(${Math.sin(t*.35)*60}px,${Math.cos(t*.27)*50}px) scale(${1+0.05*Math.sin(t*.5)})`;
+  // progress (tips only)
+  const tipIds=['tip1','tip2','tip3'];
+  const inTips = t>=S.tip1.start && t<S.tip3.end;
+  els.prog.style.opacity = inTips?1:0;
+  [...els.prog.children].forEach((d,j)=>{ const s=S[tipIds[j]]; d.firstChild.style.width = (clamp((t-s.start)/(s.end-s.start))*100)+'%'; });
+  // captions
+  const c = TL.caps.find(c=>t>=c.t && t<c.e);
+  const cap=els.cap;
+  if(!c){ cap.innerHTML=''; return; }
+  if(cap.dataset.t!=String(c.t)){ cap.dataset.t=String(c.t); cap.innerHTML=c.w.map(w=>`<span>${w.w}</span>`).join(''); }
+  const sp=[...cap.children];
+  const pin=easeOut((t-c.t)/0.18);
+  cap.style.transform=`scale(${0.94+0.06*pin})`; cap.style.opacity=clamp((t-c.t)/0.1);
+  c.w.forEach((w,j)=>{
+    const said = t>=w.t-0.02;
+    const active = said && (j===c.w.length-1 || t<c.w[j+1].t);
+    sp[j].style.opacity = said?1:0.38;
+    sp[j].style.textShadow = active?'0 0 34px rgba(48,209,88,.55)':'none';
+    sp[j].style.transform = active?'translateY(-4px)':'none';
+  });
+}
+window.seek=seek;
+window.READY = document.fonts.ready.then(()=>true);
+</script>
+</body>
+</html>
