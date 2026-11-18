@@ -1,76 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { categories } from '../content'
 import type { CategoryId } from '../content/types'
-import { pause } from '../engine/player'
-import { hebrewVoices, onVoices, pickVoice, speechSupported, voiceLabel } from '../engine/voices'
 import { navigate } from '../lib/router'
 import { store, updateSettings, useStore, type AppState } from '../lib/store'
-import { IconAscend, IconCheck, IconPlay } from '../ui/Icons'
+import { IconAscend } from '../ui/Icons'
 import { BackButton, Segmented } from '../ui/Kit'
 import { toast } from '../ui/uiState'
 import { Assessment } from './Growth'
-
-const SAMPLE = 'שלום. אני הקול שילווה אותך בשיעורים. כל יום, צעד אחד קטן.'
-
-export function useHebrewVoices() {
-  const [v, setV] = useState(hebrewVoices())
-  useEffect(() => {
-    setV(hebrewVoices())
-    return onVoices(setV) as () => void
-  }, [])
-  return v
-}
-
-export function speakSample(voiceURI?: string) {
-  if (!speechSupported()) return false
-  pause()
-  speechSynthesis.cancel()
-  const u = new SpeechSynthesisUtterance(SAMPLE)
-  u.lang = 'he-IL'
-  const v = pickVoice(voiceURI)
-  if (v) u.voice = v
-  u.rate = store.get().settings.rate
-  speechSynthesis.speak(u)
-  return !!v
-}
-
-export function VoicePicker() {
-  const voices = useHebrewVoices()
-  const current = useStore((s) => s.settings.voiceURI)
-  const chosen = pickVoice(current)
-  if (!speechSupported() || voices.length === 0)
-    return (
-      <div className="voice-missing">
-        <p>לא נמצא במכשיר קול עברי. השיעורים יוצגו ככתוביות מתוזמנות עד שיותקן קול.</p>
-        <ul>
-          <li>iPhone: הגדרות, נגישות, תוכן מוקרא, קולות, עברית. מומלץ להוריד את הגרסה המשופרת.</li>
-          <li>Android: הגדרות, נגישות, המרת טקסט לדיבור, ולהתקין נתוני קול בעברית.</li>
-          <li>מחשב: Safari או Edge כוללים קולות עבריים טבעיים.</li>
-        </ul>
-      </div>
-    )
-  return (
-    <div className="voices" role="radiogroup" aria-label="קול קריינות">
-      {voices.map((v) => {
-        const on = chosen?.voiceURI === v.voiceURI
-        return (
-          <div key={v.voiceURI} className={`voice ${on ? 'is-on' : ''}`}>
-            <button role="radio" aria-checked={on} className="voice__pick" onClick={() => updateSettings({ voiceURI: v.voiceURI })}>
-              <span className="voice__radio">{on && <IconCheck size={13} />}</span>
-              <span>
-                {voiceLabel(v)}
-                <small>{v.localService ? 'במכשיר' : 'בענן'}</small>
-              </span>
-            </button>
-            <button className="icon-btn icon-btn--sm" onClick={() => speakSample(v.voiceURI)} aria-label={`השמע דוגמה: ${voiceLabel(v)}`}>
-              <IconPlay size={13} />
-            </button>
-          </div>
-        )
-      })}
-    </div>
-  )
-}
 
 export function Settings() {
   const s = useStore((x) => x)
@@ -142,7 +78,9 @@ export function Settings() {
 
       <section className="group">
         <h2 className="group__title">קריינות</h2>
-        <VoicePicker />
+        <button className="btn btn--ghost btn--wide" onClick={() => navigate('/voices')}>
+          האזן ובחר קריין
+        </button>
         <div className="field">
           <span>דילוג קדימה ואחורה</span>
           <Segmented label="דילוג" value={String(s.settings.skip)} onChange={(v) => updateSettings({ skip: Number(v) })} options={['10', '15', '30'].map((m) => ({ id: m, label: `${m} שנ׳` }))} />

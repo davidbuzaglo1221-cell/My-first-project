@@ -62,6 +62,8 @@ export interface AppState {
   lastTrack?: string
   cps?: number
   files: AudioFileMeta[]
+  /** ElevenLabs voice chosen on the voice test screen. */
+  narrator?: string
 }
 
 const KEY = 'ascend:v1'

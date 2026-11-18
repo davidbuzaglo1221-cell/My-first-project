@@ -105,3 +105,72 @@ export const IconPen = (p: P) => (
 export const IconLock = (p: P) => (
   <svg {...base(p)}><rect x="5.5" y="11" width="13" height="9" rx="2" /><path d="M8.5 11V8a3.5 3.5 0 0 1 7 0v3" /></svg>
 )
+
+/** One line icon per learning area. */
+export function AreaIcon({ id, size = 22 }: { id: string; size?: number }) {
+  const p = base({ size, strokeWidth: 1.5 })
+  switch (id) {
+    case 'money':
+      return (
+        <svg {...p}>
+          <ellipse cx="12" cy="7" rx="7" ry="3" />
+          <path d="M5 7v5c0 1.7 3.1 3 7 3s7-1.3 7-3V7M5 12v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5" />
+        </svg>
+      )
+    case 'persuasion':
+      return (
+        <svg {...p}>
+          <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h7A2.5 2.5 0 0 1 16 6.5v4a2.5 2.5 0 0 1-2.5 2.5H9l-3.5 3v-3A2.5 2.5 0 0 1 4 10.5z" />
+          <path d="M16 9h1.5A2.5 2.5 0 0 1 20 11.5v4a2.5 2.5 0 0 1-2 2.45V20l-3-2h-3" />
+        </svg>
+      )
+    case 'psychology':
+      return (
+        <svg {...p}>
+          <path d="M9.5 20v-3H7a2 2 0 0 1-2-2v-2.5L3.5 11 5 8.5A7 7 0 0 1 19 9c0 2.4-1 4-2.5 5.2V20" />
+          <path d="M10 9.5a2 2 0 1 1 3 1.7V13" />
+        </svg>
+      )
+    case 'communication':
+      return (
+        <svg {...p}>
+          <circle cx="8" cy="8" r="3" />
+          <circle cx="16.5" cy="9.5" r="2.5" />
+          <path d="M2.5 19a5.5 5.5 0 0 1 11 0M13.5 15.2A4.5 4.5 0 0 1 21 18.5" />
+        </svg>
+      )
+    case 'confidence':
+      return (
+        <svg {...p}>
+          <path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z" />
+        </svg>
+      )
+    case 'discipline':
+      return (
+        <svg {...p}>
+          <circle cx="12" cy="13" r="7.5" />
+          <path d="M12 9v4l2.5 2M9.5 2.5h5M12 2.5v3" />
+        </svg>
+      )
+    case 'business':
+      return (
+        <svg {...p}>
+          <rect x="3.5" y="7.5" width="17" height="12" rx="2.5" />
+          <path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3.5 13h17" />
+        </svg>
+      )
+    case 'leadership':
+      return (
+        <svg {...p}>
+          <path d="M3.5 8 7.5 12 12 5l4.5 7 4-4-1.8 10.5H5.3z" />
+        </svg>
+      )
+    default:
+      return (
+        <svg {...p}>
+          <path d="M12 20c-4.4 0-8-3.4-8-8 3.9 0 6.8 1.7 8 4.6M12 20c4.4 0 8-3.4 8-8-3.9 0-6.8 1.7-8 4.6M12 16.6V9" />
+          <path d="M12 9c-1.6-1.4-1.9-3.4-.9-5.5 2 .8 2.9 2.6 2.4 4.5" />
+        </svg>
+      )
+  }
+}

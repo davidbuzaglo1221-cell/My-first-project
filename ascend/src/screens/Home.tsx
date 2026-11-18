@@ -1,55 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
 import { bookById, bookSeconds, books, categories, categoryById, curatedPaths, estimateSeconds, formatMinutes, lessonIndex } from '../content'
-import { usePlayer } from '../engine/player'
-import { dayKey, greeting } from '../lib/dates'
-import { currentStreak, focusAreas, growthIndex, pathProgress, recommendations, todaySeconds } from '../lib/insights'
+import { hasNarration, load, usePlayer } from '../engine/player'
+import { dayKey, greeting, lastNDays, hebrewWeekday } from '../lib/dates'
+import { currentStreak, focusAreas, isActiveDay, pathProgress, recommendations, resolvePath, todaySeconds } from '../lib/insights'
 import { navigate } from '../lib/router'
-import { toggleHabitToday, useStore } from '../lib/store'
+import { useStore } from '../lib/store'
 import { Art, Cover, bookHue, bookMotif } from '../ui/Cover'
-import { IconCheck, IconFlame, IconPlay } from '../ui/Icons'
-import { Bar, PlayGlyph, SectionHead, startLesson } from '../ui/Kit'
+import { AreaIcon, IconCheck, IconFlame, IconHeadphones, IconPlay, IconSearch } from '../ui/Icons'
+import { Eq, PlayGlyph, SectionHead, startLesson } from '../ui/Kit'
+import { openPlayer } from '../ui/uiState'
 
-/** 270° gauge, opening at the bottom. */
-function Gauge({ value, size = 132, children }: { value: number; size?: number; children?: React.ReactNode }) {
-  const sw = 9
-  const r = (size - sw) / 2 - 2
-  const c = 2 * Math.PI * r
-  const arc = c * 0.75
-  const v = Math.max(0, Math.min(1, value))
-  return (
-    <div className="gauge" style={{ width: size, height: size }}>
-      <svg viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
-        <defs>
-          <linearGradient id="gaugeG" x1="0" y1="1" x2="1" y2="0">
-            <stop offset="0" stopColor="var(--em-600)" />
-            <stop offset="1" stopColor="var(--em-300)" />
-          </linearGradient>
-        </defs>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" className="gauge__track" strokeWidth={sw} strokeDasharray={`${arc} ${c}`} strokeLinecap="round" transform={`rotate(135 ${size / 2} ${size / 2})`} />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={r}
-          fill="none"
-          stroke="url(#gaugeG)"
-          className="gauge__value"
-          strokeWidth={sw}
-          strokeDasharray={`${arc * v} ${c}`}
-          strokeLinecap="round"
-          transform={`rotate(135 ${size / 2} ${size / 2})`}
-        />
-      </svg>
-      <div className="gauge__inner">{children}</div>
-    </div>
-  )
+const fmtListen = (sec: number) => {
+  const m = Math.floor(sec / 60)
+  return m < 60 ? { v: String(m), u: 'דק׳' } : { v: `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`, u: 'שע׳' }
 }
 
 /** Center-focused shelf: the book nearest the middle grows, its neighbours recede. */
 function Showcase({ ids }: { ids: string[] }) {
   const ref = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
-  const cps = useStore((s) => s.cps)
-
   useEffect(() => {
     const el = ref.current
     if (!el) return
@@ -61,10 +30,9 @@ function Showcase({ ids }: { ids: string[] }) {
       let bestD = Infinity
       Array.from(el.children).forEach((child, i) => {
         const b = (child as HTMLElement).getBoundingClientRect()
-        const d = (b.left + b.width / 2 - mid) / b.width
-        const c = Math.max(-1.6, Math.min(1.6, d))
-        ;(child as HTMLElement).style.setProperty('--d', String(c))
-        ;(child as HTMLElement).style.setProperty('--a', String(Math.abs(c)))
+        const d = Math.max(-1.6, Math.min(1.6, (b.left + b.width / 2 - mid) / b.width))
+        ;(child as HTMLElement).style.setProperty('--d', String(d))
+        ;(child as HTMLElement).style.setProperty('--a', String(Math.abs(d)))
         if (Math.abs(d) < bestD) {
           bestD = Math.abs(d)
           best = i
@@ -82,9 +50,7 @@ function Showcase({ ids }: { ids: string[] }) {
       cancelAnimationFrame(raf)
     }
   }, [])
-
   const book = bookById[ids[active]]
-  const first = book.lessons[0]
   return (
     <section className="showcase" aria-label="ספרים נבחרים">
       <div className="showcase__glow" style={{ ['--hue' as string]: bookHue(book) }} aria-hidden="true" />
@@ -101,33 +67,35 @@ function Showcase({ ids }: { ids: string[] }) {
         ))}
       </div>
       <div className="showcase__info" key={book.id}>
+        <p className="showcase__area">{categoryById[book.category].short}</p>
         <h3 className="showcase__title">{book.title}</h3>
         <p className="showcase__author">{book.author}</p>
-        <dl className="showcase__stats">
-          <div>
-            <dt>שיעורים</dt>
-            <dd>{book.lessons.length}</dd>
-          </div>
-          <div>
-            <dt>האזנה</dt>
-            <dd>{formatMinutes(bookSeconds(book))}</dd>
-          </div>
-          <div>
-            <dt>תחום</dt>
-            <dd>{categoryById[book.category].short}</dd>
-          </div>
-        </dl>
+        <p className="showcase__tag">{book.tagline}</p>
         <div className="showcase__actions">
-          <button className="btn btn--primary" onClick={() => startLesson(first.id)}>
-            <IconPlay size={14} /> האזן לשיעור הראשון
+          <button className="btn btn--primary" onClick={() => startLesson(book.lessons[0].id)}>
+            <IconPlay size={14} /> האזן עכשיו
           </button>
-          <button className="btn btn--ghost" onClick={() => navigate(`/book/${book.id}`)}>
-            על הספר
-          </button>
+          <span className="showcase__len">
+            {book.lessons.length} שיעורים
+            <span className="sep" aria-hidden="true" />
+            {formatMinutes(bookSeconds(book))}
+          </span>
         </div>
-        <span className="sr-only">{formatMinutes(estimateSeconds(first, cps))}</span>
       </div>
     </section>
+  )
+}
+
+/** Curated list shown as a small fanned stack of its books. */
+function Stack({ ids }: { ids: string[] }) {
+  return (
+    <span className="stack" aria-hidden="true">
+      {ids.slice(0, 3).map((id, i) => (
+        <span key={id} className={`stack__book stack__book--${i}`}>
+          <Cover book={bookById[id]} size="sm" />
+        </span>
+      ))}
+    </span>
   )
 }
 
@@ -137,76 +105,106 @@ export function Home() {
   const today = todaySeconds(s)
   const goal = s.dailyGoalMin * 60
   const streak = currentStreak(s)
-  const recs = recommendations(s, 5)
-  const daily = recs.find((r) => !s.progress[r.lessonId]?.pos) ?? recs[0]
-  const dailyRef = daily ? lessonIndex[daily.lessonId] : undefined
-  const habits = s.habits.filter((h) => !h.archived)
-  const k = dayKey()
+  const recs = recommendations(s, 6)
+  const week = lastNDays(7)
+  const weekSec = week.reduce((a, d) => a + (s.log[dayKey(d)] ?? 0), 0)
+  const t = fmtListen(today)
 
   const continuing = Object.entries(s.progress)
     .filter(([id, pr]) => lessonIndex[id] && !pr.done && pr.pos > 3)
     .sort((a, b) => b[1].last - a[1].last)
     .map(([id]) => id)
-  const continueIds = continuing.length ? continuing.slice(0, 4) : recs.slice(0, 2).map((r) => r.lessonId)
+    .slice(0, 6)
+
+  const path = resolvePath(s, s.activePathId)
+  const pp = pathProgress(s, path)
+  const plan = path.lessonIds.filter((id) => !s.progress[id]?.done).slice(0, 4)
+  const planStart = path.lessonIds.indexOf(plan[0])
+  // The daily lesson complements the plan instead of repeating its next step.
+  const daily = recs.find((r) => !continuing.includes(r.lessonId) && r.lessonId !== plan[0]) ?? recs[0]
+  const dailyRef = daily ? lessonIndex[daily.lessonId] : undefined
 
   const focus = focusAreas(s).map((a) => a.id)
-  const featured = [...new Set([...focus.flatMap((c) => books.filter((b) => b.category === c).map((b) => b.id))])]
+  const featured = [...new Set(focus.flatMap((c) => books.filter((b) => b.category === c).map((b) => b.id)))]
     .filter((id) => id !== dailyRef?.book.id && !bookById[id].lessons.every((l) => s.progress[l.id]?.done))
     .slice(0, 7)
-  const areas = categories
-    .filter((c) => s.goals.includes(c.id))
-    .concat(categories.filter((c) => !s.goals.includes(c.id)))
-    .slice(0, 4)
+  const quick = focus.flatMap((c) => books.filter((b) => b.category === c && !b.lessons.some((l) => s.progress[l.id])).slice(0, 1)).slice(0, 8)
   const initial = (s.name || 'A').trim().charAt(0)
 
   return (
-    <div className="screen home2">
-      <header className="topbar">
+    <div className="screen home3">
+      <header className="h3top">
         <button className="avatar" onClick={() => navigate('/settings')} aria-label="פרופיל והגדרות">
           {initial}
         </button>
         <span className="wordmark" lang="en">
           ASCEND
         </span>
-        <button className="streakpill" onClick={() => navigate('/progress')} aria-label={`${streak} ימים ברצף`}>
-          <IconFlame size={15} />
-          <span>{streak}</span>
+        <button className="icon-btn icon-btn--glass" onClick={() => navigate('/explore')} aria-label="חיפוש">
+          <IconSearch size={19} />
         </button>
       </header>
 
-      <div className="welcome">
-        <p className="welcome__hello">
+      <div className="h3title">
+        <p>
           {greeting()}
           {s.name ? `, ${s.name}` : ''}
         </p>
-        <h1 className="welcome__title">{streak > 1 ? `${streak} ימים ברצף. ממשיכים לטפס.` : today > 0 ? 'התחלה טובה. נמשיך?' : 'מה נלמד היום?'}</h1>
+        <h1>בית</h1>
       </div>
 
-      {continueIds.length > 0 && (
+      {/* Two quiet stat cards: time and consistency. */}
+      <div className="duo">
+        <button className="duo__card" onClick={() => navigate('/progress')}>
+          <span className="duo__label">
+            <IconHeadphones size={15} /> זמן האזנה היום
+          </span>
+          <span className="duo__value">
+            <strong>{t.v}</strong> {t.u}
+          </span>
+          <span className="duo__sub">השבוע {Math.round(weekSec / 60)} דק׳</span>
+          <span className="duo__bar">
+            <i style={{ transform: `scaleX(${Math.min(1, today / goal)})` }} />
+          </span>
+        </button>
+        <button className="duo__card" onClick={() => navigate('/progress')}>
+          <span className="duo__label">
+            <IconFlame size={15} /> רצף למידה
+          </span>
+          <span className="duo__value">
+            <strong>{streak}</strong> {streak === 1 ? 'יום' : 'ימים'}
+          </span>
+          <span className="duo__sub">יעד יומי {s.dailyGoalMin} דק׳</span>
+          <span className="duo__dots" aria-label="שבעת הימים האחרונים">
+            {week.map((d) => (
+              <i key={dayKey(d)} className={isActiveDay(s, dayKey(d)) ? 'is-on' : ''} title={hebrewWeekday(d)} />
+            ))}
+          </span>
+        </button>
+      </div>
+
+      {continuing.length > 0 && (
         <section className="block block--tight">
-          <SectionHead title={continuing.length ? 'להמשיך להאזין' : 'מתחילים'} />
-          <div className="conts" role="list">
-            {continueIds.map((id) => {
+          <SectionHead title="להמשיך להאזין" action="הספרייה" onAction={() => navigate('/library')} />
+          <div className="cgrid" role="list">
+            {continuing.map((id) => {
               const ref = lessonIndex[id]
               const pr = s.progress[id]
               const ratio = pr?.dur ? pr.pos / pr.dur : 0
               const playing = p.track?.id === id && p.status === 'playing'
+              const left = pr?.dur ? pr.dur - pr.pos : estimateSeconds(ref.lesson, s.cps)
               return (
-                <div key={id} role="listitem" className="cont" style={{ ['--hue' as string]: bookHue(ref.book) }}>
-                  <Art seed={ref.book.id} motif={bookMotif(ref.book)} hue={bookHue(ref.book)} square className="cont__bg" />
-                  <button className="cont__main" onClick={() => navigate(`/book/${ref.book.id}`)}>
-                    <Cover book={ref.book} size="sm" />
-                    <span className="cont__text">
-                      <span className="cont__title">{ref.lesson.title}</span>
-                      <span className="cont__book">{ref.book.title}</span>
-                      <span className="cont__meta">{ratio > 0 ? `${Math.round(ratio * 100)}%` : `שיעור ${ref.index + 1}`}</span>
-                    </span>
-                  </button>
-                  <button className="cont__play" onClick={() => startLesson(id)} aria-label={`${playing ? 'השהה' : 'נגן'}: ${ref.lesson.title}`}>
-                    <PlayGlyph playing={playing} size={16} />
-                  </button>
-                  {ratio > 0 && <Bar value={ratio} className="cont__bar" />}
-                </div>
+                <button key={id} role="listitem" className="cgrid__item" onClick={() => startLesson(id)} aria-label={`${playing ? 'מתנגן' : 'המשך'}: ${ref.lesson.title}`}>
+                  <span className="cgrid__cover">
+                    <Cover book={ref.book} size="md" />
+                    <span className="cgrid__play">{playing ? <Eq /> : <IconPlay size={13} />}</span>
+                  </span>
+                  <span className="cgrid__bar">
+                    <i style={{ transform: `scaleX(${ratio})` }} />
+                  </span>
+                  <span className="cgrid__title">{ref.lesson.title}</span>
+                  <span className="cgrid__meta">נותרו {formatMinutes(left)}</span>
+                </button>
               )
             })}
           </div>
@@ -227,6 +225,12 @@ export function Home() {
                 {dailyRef.book.title}
                 <span className="sep" aria-hidden="true" />
                 {formatMinutes(estimateSeconds(dailyRef.lesson, s.cps))}
+                {hasNarration(dailyRef.lesson.id) && (
+                  <>
+                    <span className="sep" aria-hidden="true" />
+                    קריינות
+                  </>
+                )}
               </span>
               <span className="daily__why">{daily!.reason}</span>
             </span>
@@ -238,33 +242,60 @@ export function Home() {
       )}
 
       <section className="block">
-        <div className="goalpanel">
-          <Gauge value={today / goal}>
-            <strong>{Math.floor(today / 60)}</strong>
-            <span>מתוך {s.dailyGoalMin} דק׳</span>
-          </Gauge>
-          <div className="goalpanel__side">
-            <h2>{today >= goal ? 'עמדת ביעד היומי' : 'היעד של היום'}</h2>
-            <p>{today >= goal ? 'כל דקה נוספת היא בונוס. המוח שלך מודה לך.' : `עוד ${formatMinutes(goal - today)} של האזנה, ואתה שם.`}</p>
-            {dailyRef && today < goal && (
-              <button className="btn btn--primary btn--sm" onClick={() => startLesson(dailyRef.lesson.id)}>
-                <IconPlay size={12} /> המשך עכשיו
-              </button>
-            )}
-          </div>
-          <ul className="areachips" aria-label="מדד הצמיחה בתחומים שלך">
-            {areas.map((c) => (
-              <li key={c.id}>
-                <button onClick={() => navigate('/growth')}>
-                  <i style={{ ['--hue' as string]: c.hue }} />
-                  {c.short}
-                  <strong>{growthIndex(s, c.id)}</strong>
-                </button>
-              </li>
-            ))}
-          </ul>
+        <SectionHead title="תחומים" />
+        <div className="areas" role="list">
+          {categories.map((c) => (
+            <button key={c.id} role="listitem" className={`area ${s.goals.includes(c.id) ? 'is-goal' : ''}`} onClick={() => navigate(`/explore/${c.id}`)}>
+              <span className="area__icon">
+                <AreaIcon id={c.id} />
+              </span>
+              <span className="area__name">{c.short}</span>
+            </button>
+          ))}
         </div>
       </section>
+
+      {plan.length > 0 && (
+        <section className="block">
+          <SectionHead title="תוכנית הלמידה שלך" action="לכל המסלול" onAction={() => navigate(`/path/${path.id}`)} />
+          <div className="plan">
+            <div className="plan__head">
+              <span className="plan__name">{path.title}</span>
+              <span className="plan__count">
+                {pp.done}/{pp.total}
+              </span>
+            </div>
+            <ol className="plan__steps">
+              {plan.map((id) => {
+                const ref = lessonIndex[id]
+                const done = s.progress[id]?.done
+                const isNext = id === path.lessonIds[planStart] && !done
+                const playing = p.track?.id === id && p.status === 'playing'
+                return (
+                  <li key={id} className={`pstep ${done ? 'is-done' : ''} ${isNext ? 'is-next' : ''}`}>
+                    <button onClick={() => startLesson(id)}>
+                      <span className="pstep__mark">{done ? <IconCheck size={13} /> : playing ? <Eq /> : path.lessonIds.indexOf(id) + 1}</span>
+                      <span className="pstep__body">
+                        <strong>{ref.lesson.title}</strong>
+                        <span>
+                          {ref.book.title}
+                          <span className="sep" aria-hidden="true" />
+                          {formatMinutes(estimateSeconds(ref.lesson, s.cps))}
+                        </span>
+                      </span>
+                      {isNext && (
+                        <span className="pstep__go" aria-hidden="true">
+                          <IconPlay size={12} />
+                        </span>
+                      )}
+                    </button>
+                  </li>
+                )
+              })}
+            </ol>
+          </div>
+        </section>
+      )}
 
       {featured.length > 0 && (
         <section className="block">
@@ -273,42 +304,42 @@ export function Home() {
         </section>
       )}
 
-      {habits.length > 0 && (
-        <section className="block">
-          <SectionHead title="הפעולות של היום" action="כל ההרגלים" onAction={() => navigate('/growth')} />
-          <ul className="checklist">
-            {habits.slice(0, 4).map((h) => {
-              const on = h.checks.includes(k)
-              return (
-                <li key={h.id}>
-                  <button className={`check ${on ? 'is-on' : ''}`} onClick={() => toggleHabitToday(h.id)} aria-pressed={on}>
-                    <span className="check__box">{on && <IconCheck size={15} />}</span>
-                    <span className="check__text">{h.text}</span>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-        </section>
-      )}
-
       <section className="block">
-        <SectionHead title="מסלולי למידה" action="הכל" onAction={() => navigate('/explore')} />
-        <div className="packs" role="list">
+        <SectionHead title="רשימות קריאה" sub="מסלולים שמחברים כמה ספרים סביב מטרה אחת" />
+        <div className="lists" role="list">
           {curatedPaths.map((path) => {
+            const bookIds = [...new Set(path.lessonIds.map((id) => lessonIndex[id].book.id))]
             const pr = pathProgress(s, path)
             return (
-              <button key={path.id} role="listitem" className="pack" onClick={() => navigate(`/path/${path.id}`)}>
-                <Art seed={path.id} motif={path.motif} hue={path.hue} className="pack__art" />
-                <span className="pack__body">
-                  <span className="pack__title">{path.title}</span>
-                  <span className="pack__meta">{pr.done ? `${pr.done}/${pr.total} שיעורים` : `${pr.total} שיעורים`}</span>
+              <button key={path.id} role="listitem" className="list-card" onClick={() => navigate(`/path/${path.id}`)} style={{ ['--hue' as string]: path.hue }}>
+                <Stack ids={bookIds} />
+                <span className="list-card__title">{path.title}</span>
+                <span className="list-card__meta">
+                  {bookIds.length} ספרים
+                  <span className="sep" aria-hidden="true" />
+                  {pr.done ? `${pr.done}/${pr.total}` : `${pr.total} שיעורים`}
                 </span>
               </button>
             )
           })}
         </div>
       </section>
+
+      {quick.length > 0 && (
+        <section className="block">
+          <SectionHead title="הספר בדקה" sub="הרעיונות המרכזיים, ליום עמוס" />
+          <div className="shelf" role="list">
+            {quick.map((b) => (
+              <button key={b.id} role="listitem" className="shelf__item" onClick={() => (load(`${b.id}-quick`, { autoplay: true, from: 0 }), openPlayer())} aria-label={`הספר בדקה: ${b.title}`}>
+                <Cover book={b} size="md" />
+                <span className="shelf__meta">
+                  <IconPlay size={10} /> {b.author}
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   )
 }

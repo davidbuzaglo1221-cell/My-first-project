@@ -5,7 +5,6 @@ import { store, useStore } from '../lib/store'
 import { Art } from '../ui/Cover'
 import { IconCheck } from '../ui/Icons'
 import { Assessment } from './Growth'
-import { VoicePicker, speakSample } from './Settings'
 
 export function Onboarding() {
   const [step, setStep] = useState(0)
@@ -100,17 +99,10 @@ export function Onboarding() {
             <span>איך לקרוא לך? (לא חובה)</span>
             <input value={s.name} onChange={(e) => store.set({ name: e.target.value })} placeholder="שם פרטי" />
           </label>
-          <div className="field">
-            <span>הקול שילווה אותך</span>
-            <VoicePicker />
-          </div>
           <div className="onb__nav">
             <button
               className="btn btn--primary btn--big btn--wide"
-              onClick={() => {
-                speakSample(s.settings.voiceURI)
-                finish()
-              }}
+              onClick={finish}
             >
               כניסה לאוניברסיטה
             </button>

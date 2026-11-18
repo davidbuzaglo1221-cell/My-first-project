@@ -14,6 +14,7 @@ import { NowPlaying } from './screens/NowPlaying'
 import { Onboarding } from './screens/Onboarding'
 import { Progress } from './screens/Progress'
 import { Settings } from './screens/Settings'
+import { Voices } from './screens/Voices'
 import { MiniPlayer, TabBar } from './ui/Chrome'
 import { bookHue, bookMotif } from './ui/Cover'
 import { coverPng } from './ui/coverArt'
@@ -93,6 +94,9 @@ export function App() {
       break
     case 'settings':
       screen = <Settings />
+      break
+    case 'voices':
+      screen = <Voices />
       break
   }
 

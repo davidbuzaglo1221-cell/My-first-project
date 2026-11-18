@@ -299,7 +299,8 @@ export async function load(id: string, opts: { autoplay?: boolean; from?: number
     const o = offsets(segments)
     starts = o.starts
     totalChars = o.total
-    const hasVoice = speechSupported() && !!pickVoice(store.get().settings.voiceURI)
+    // The device's speech engine sounds robotic, so it is never used: unrecorded lessons show guided captions only.
+    const hasVoice = false
     const duration = totalChars / cps
     let segment = 0
     while (segment + 1 < segments.length && segStart(segment + 1) <= from) segment++
@@ -312,7 +313,7 @@ export async function load(id: string, opts: { autoplay?: boolean; from?: number
       position: from > 0 ? segStart(segment) : 0,
       duration,
       rate,
-      notice: hasVoice ? undefined : 'לא נמצא קול עברי במכשיר, ולכן השיעור מוצג ככתוביות מתוזמנות. אפשר להתקין קול עברי בהגדרות המכשיר.',
+      notice: hasVoice ? undefined : 'השיעור הזה עוד בהקלטה באולפן. בינתיים הוא מוצג ככתוביות מתוזמנות.',
       endedId: undefined,
     })
   }
