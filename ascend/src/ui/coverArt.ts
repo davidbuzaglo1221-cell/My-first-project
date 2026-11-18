@@ -126,8 +126,17 @@ function motifPaths(m: Motif, r: () => number, cx: number, cy: number): string {
 const cache = new Map<string, string>()
 
 /** Original generative artwork for a book or path. Pure SVG, no external assets. */
-export function coverSvg(seedId: string, motif: Motif, hue: number, opts: { square?: boolean } = {}) {
-  const key = `${seedId}|${motif}|${hue}|${opts.square ? 1 : 0}`
+export type CoverStyle = 'noir' | 'emerald' | 'ivory'
+
+/** Each book gets one of three printed finishes, so a shelf reads like real books rather than one template. */
+export function coverStyle(seedId: string): CoverStyle {
+  const n = hash(seedId + ':style') % 10
+  return n < 5 ? 'noir' : n < 8 ? 'emerald' : 'ivory'
+}
+
+export function coverSvg(seedId: string, motif: Motif, hue: number, opts: { square?: boolean; style?: CoverStyle } = {}) {
+  const style = opts.style ?? 'noir'
+  const key = `${seedId}|${motif}|${hue}|${opts.square ? 1 : 0}|${style}`
   const hit = cache.get(key)
   if (hit) return hit
   const r = rng(hash(seedId))
@@ -137,18 +146,24 @@ export function coverSvg(seedId: string, motif: Motif, hue: number, opts: { squa
   const lx = 60 + r() * 80
   const ly = opts.square ? 70 : 70 + r() * 60
   const id = 'c' + hash(key).toString(36)
+  const P =
+    style === 'ivory'
+      ? { top: '#f1ece2', bot: '#ddd5c5', light: `hsl(${hue} 60% 55%)`, lightOp: '.18', stroke: `hsl(${hue} 55% 24%)`, fill: `hsl(${hue} 65% 20%)`, glow: 0.6, noise: '.16', vig: '.22' }
+      : style === 'emerald'
+        ? { top: `hsl(${hue} 58% 19%)`, bot: `hsl(${hue} 62% 7%)`, light: `hsl(${hue} 70% 45%)`, lightOp: '.45', stroke: '#e6cd93', fill: '#f4e3b8', glow: 1.6, noise: '.08', vig: '.55' }
+        : { top: `hsl(${hue} 34% 8%)`, bot: `hsl(${hue} 40% 2.5%)`, light: `hsl(${hue} 72% 46%)`, lightOp: '.62', stroke: `hsl(${hue} 72% 74%)`, fill: `hsl(${hue} 85% 82%)`, glow: 2.4, noise: '.07', vig: '.7' }
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 ${H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
 <defs>
-<linearGradient id="${id}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="hsl(${hue} 34% 8%)"/><stop offset="1" stop-color="hsl(${hue} 40% 2.5%)"/></linearGradient>
-<radialGradient id="${id}l" cx="${f(lx / 2)}%" cy="${f((ly / H) * 100)}%" r="62%"><stop offset="0" stop-color="hsl(${hue} 72% 46%)" stop-opacity=".62"/><stop offset=".45" stop-color="hsl(${hue} 70% 30%)" stop-opacity=".22"/><stop offset="1" stop-color="hsl(${hue} 70% 20%)" stop-opacity="0"/></radialGradient>
-<radialGradient id="${id}v" cx="50%" cy="45%" r="75%"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
-<filter id="${id}g" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-<filter id="${id}n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .5 0"/></filter>
+<linearGradient id="${id}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${P.top}"/><stop offset="1" stop-color="${P.bot}"/></linearGradient>
+<radialGradient id="${id}l" cx="${f(lx / 2)}%" cy="${f((ly / H) * 100)}%" r="62%"><stop offset="0" stop-color="${P.light}" stop-opacity="${P.lightOp}"/><stop offset="1" stop-color="${P.light}" stop-opacity="0"/></radialGradient>
+<radialGradient id="${id}v" cx="50%" cy="45%" r="75%"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="${P.vig}"/></radialGradient>
+<filter id="${id}g" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="${P.glow}" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="${id}n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 ${style === 'ivory' ? 0.3 : 1}  0 0 0 0 ${style === 'ivory' ? 0.25 : 1}  0 0 0 0 ${style === 'ivory' ? 0.2 : 1}  0 0 0 .5 0"/></filter>
 </defs>
 <rect width="200" height="${H}" fill="url(#${id}b)"/>
 <rect width="200" height="${H}" fill="url(#${id}l)"/>
-<g fill="none" stroke="hsl(${hue} 72% 74%)" stroke-width=".7" filter="url(#${id}g)" style="--fill:hsl(${hue} 80% 80%)">${motifPaths(motif, r, cx, cy).replace(/class="fill"/g, `fill="hsl(${hue} 85% 82%)" stroke="none"`)}</g>
-<rect width="200" height="${H}" filter="url(#${id}n)" opacity=".07"/>
+<g fill="none" stroke="${P.stroke}" stroke-width="${style === 'ivory' ? 0.9 : 0.7}" filter="url(#${id}g)">${motifPaths(motif, r, cx, cy).replace(/class="fill"/g, `fill="${P.fill}" stroke="none"`)}</g>
+<rect width="200" height="${H}" filter="url(#${id}n)" opacity="${P.noise}"/>
 <rect width="200" height="${H}" fill="url(#${id}v)"/>
 </svg>`
   cache.set(key, svg)
@@ -176,7 +191,7 @@ export function coverPng(seedId: string, motif: Motif, hue: number): Promise<str
           }
         }
         img.onerror = () => resolve('')
-        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(coverSvg(seedId, motif, hue, { square: true }))
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(coverSvg(seedId, motif, hue, { square: true, style: coverStyle(seedId) }))
       }),
     )
   }
