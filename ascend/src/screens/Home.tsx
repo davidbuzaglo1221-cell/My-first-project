@@ -5,7 +5,7 @@ import { dayKey, greeting, lastNDays, hebrewWeekday } from '../lib/dates'
 import { currentStreak, focusAreas, isActiveDay, pathProgress, recommendations, resolvePath, todaySeconds } from '../lib/insights'
 import { navigate } from '../lib/router'
 import { useStore } from '../lib/store'
-import { Art, Cover, bookHue, bookMotif } from '../ui/Cover'
+import { Art, Cover, bookHue, bookMotif, coverUrl, hasRealCover } from '../ui/Cover'
 import { AreaIcon, IconCheck, IconFlame, IconHeadphones, IconPlay, IconSearch } from '../ui/Icons'
 import { Eq, PlayGlyph, SectionHead, startLesson } from '../ui/Kit'
 import { openPlayer } from '../ui/uiState'
@@ -214,7 +214,11 @@ export function Home() {
       {dailyRef && (
         <section className="block">
           <button className="daily" onClick={() => startLesson(dailyRef.lesson.id)} style={{ ['--hue' as string]: bookHue(dailyRef.book) }}>
-            <Art seed={dailyRef.book.id + ':daily'} motif={bookMotif(dailyRef.book)} hue={bookHue(dailyRef.book)} className="daily__art" />
+            {hasRealCover(dailyRef.book.id) ? (
+              <img className="daily__art daily__photo" src={coverUrl(dailyRef.book.id)} alt="" aria-hidden="true" />
+            ) : (
+              <Art seed={dailyRef.book.id + ':daily'} motif={bookMotif(dailyRef.book)} hue={bookHue(dailyRef.book)} className="daily__art" />
+            )}
             <span className="daily__book" aria-hidden="true">
               <Cover book={dailyRef.book} size="lg" />
             </span>
@@ -332,6 +336,7 @@ export function Home() {
             {quick.map((b) => (
               <button key={b.id} role="listitem" className="shelf__item" onClick={() => (load(`${b.id}-quick`, { autoplay: true, from: 0 }), openPlayer())} aria-label={`הספר בדקה: ${b.title}`}>
                 <Cover book={b} size="md" />
+                <span className="shelf__title">{b.title}</span>
                 <span className="shelf__meta">
                   <IconPlay size={10} /> {b.author}
                 </span>
