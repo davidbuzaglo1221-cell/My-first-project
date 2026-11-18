@@ -5,7 +5,7 @@ import { dayKey, greeting, lastNDays, hebrewWeekday } from '../lib/dates'
 import { currentStreak, focusAreas, isActiveDay, pathProgress, recommendations, resolvePath, todaySeconds } from '../lib/insights'
 import { navigate } from '../lib/router'
 import { useStore } from '../lib/store'
-import { Art, Cover, bookHue, bookMotif, coverUrl, hasRealCover } from '../ui/Cover'
+import { Backdrop, Cover, CoverFan, bookHue } from '../ui/Cover'
 import { AreaIcon, IconCheck, IconFlame, IconHeadphones, IconPlay, IconSearch } from '../ui/Icons'
 import { Eq, PlayGlyph, SectionHead, startLesson } from '../ui/Kit'
 import { openPlayer } from '../ui/uiState'
@@ -83,19 +83,6 @@ function Showcase({ ids }: { ids: string[] }) {
         </div>
       </div>
     </section>
-  )
-}
-
-/** Curated list shown as a small fanned stack of its books. */
-function Stack({ ids }: { ids: string[] }) {
-  return (
-    <span className="stack" aria-hidden="true">
-      {ids.slice(0, 3).map((id, i) => (
-        <span key={id} className={`stack__book stack__book--${i}`}>
-          <Cover book={bookById[id]} size="sm" />
-        </span>
-      ))}
-    </span>
   )
 }
 
@@ -214,11 +201,7 @@ export function Home() {
       {dailyRef && (
         <section className="block">
           <button className="daily" onClick={() => startLesson(dailyRef.lesson.id)} style={{ ['--hue' as string]: bookHue(dailyRef.book) }}>
-            {hasRealCover(dailyRef.book.id) ? (
-              <img className="daily__art daily__photo" src={coverUrl(dailyRef.book.id)} alt="" aria-hidden="true" />
-            ) : (
-              <Art seed={dailyRef.book.id + ':daily'} motif={bookMotif(dailyRef.book)} hue={bookHue(dailyRef.book)} className="daily__art" />
-            )}
+            <Backdrop book={dailyRef.book} className="daily__art" />
             <span className="daily__book" aria-hidden="true">
               <Cover book={dailyRef.book} size="lg" />
             </span>
@@ -316,7 +299,7 @@ export function Home() {
             const pr = pathProgress(s, path)
             return (
               <button key={path.id} role="listitem" className="list-card" onClick={() => navigate(`/path/${path.id}`)} style={{ ['--hue' as string]: path.hue }}>
-                <Stack ids={bookIds} />
+                <CoverFan books={bookIds.map((id) => bookById[id])} />
                 <span className="list-card__title">{path.title}</span>
                 <span className="list-card__meta">
                   {bookIds.length} ספרים

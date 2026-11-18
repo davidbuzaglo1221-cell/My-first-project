@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { categories } from '../content'
 import type { CategoryId } from '../content/types'
 import { store, useStore } from '../lib/store'
-import { Art } from '../ui/Cover'
-import { IconCheck } from '../ui/Icons'
+import { CoverFan } from '../ui/Cover'
+import { bookById } from '../content'
+import { AreaIcon, IconCheck } from '../ui/Icons'
 import { Assessment } from './Growth'
 
 export function Onboarding() {
@@ -28,7 +29,7 @@ export function Onboarding() {
       {step === 0 && (
         <div className="onb__step onb__intro">
           <div className="onb__mark" aria-hidden="true">
-            <Art seed="ascend-intro" motif="stairs" hue={156} square />
+            <CoverFan books={['psychology-of-money', 'atomic-habits', 'how-to-win-friends'].map((id) => bookById[id])} className="onb__fan" />
           </div>
           <p className="onb__brand" lang="en">
             ASCEND
@@ -50,7 +51,9 @@ export function Onboarding() {
               const on = goals.includes(c.id)
               return (
                 <button key={c.id} className={`onb__cat ${on ? 'is-on' : ''}`} aria-pressed={on} onClick={() => toggle(c.id)}>
-                  <Art seed={'cat-' + c.id} motif={c.motif} hue={c.hue} square className="onb__catart" />
+                  <span className="onb__caticon">
+                    <AreaIcon id={c.id} size={22} />
+                  </span>
                   <span>{c.name}</span>
                   {on && (
                     <b className="onb__tick">

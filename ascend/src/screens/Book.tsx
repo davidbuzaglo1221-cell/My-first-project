@@ -2,7 +2,7 @@ import { bookById, bookSeconds, booksByCategory, categoryById, formatMinutes } f
 import { load, usePlayer } from '../engine/player'
 import { navigate } from '../lib/router'
 import { toggleSaved, useStore } from '../lib/store'
-import { Art, Cover, bookHue, bookMotif } from '../ui/Cover'
+import { Backdrop, Cover, bookHue } from '../ui/Cover'
 import { IconBookmark, IconSpark } from '../ui/Icons'
 import { BackButton, LessonRow, PlayGlyph, SectionHead, startLesson } from '../ui/Kit'
 import { openPlayer } from '../ui/uiState'
@@ -26,7 +26,7 @@ export function BookScreen({ id }: { id: string }) {
     <div className="screen book" style={{ ['--hue' as string]: hue }}>
       <div className="bhero">
         <div className="bhero__ambient" aria-hidden="true">
-          <Art seed={b.id} motif={bookMotif(b)} hue={hue} square />
+          <Backdrop book={b} />
         </div>
         <BackButton fallback="/explore" />
         <Cover book={b} size="xl" className="bhero__cover" />

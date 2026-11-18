@@ -9,8 +9,20 @@ import { pickVoice, speechSupported } from './voices'
 export type TrackKind = 'lesson' | 'quick' | 'file'
 
 /** Studio narration rendered ahead of time: duration and the start time of every sentence. */
-const narrated = audioManifest as Record<string, { d: number; s: number[] }>
-export const hasNarration = (id: string) => !!narrated[id]
+type Narration = Record<string, { d: number; s: number[] }>
+const byVoice = audioManifest as Record<string, Narration>
+export const DEFAULT_VOICE = 'michael'
+/** The narrator the listener chose on the voice screen, if that voice is rendered. */
+export const currentVoice = () => {
+  const v = store.get().narrator
+  return v && byVoice[v] ? v : byVoice[DEFAULT_VOICE] ? DEFAULT_VOICE : Object.keys(byVoice)[0]
+}
+const narrationFor = (id: string) => {
+  const v = currentVoice()
+  return v ? byVoice[v]?.[id] : undefined
+}
+const narrationSrc = (id: string) => `audio/${currentVoice()}/${id}.mp3`
+export const hasNarration = (id: string) => !!narrationFor(id)
 
 export interface Track {
   id: string
@@ -57,7 +69,7 @@ export function trackFor(id: string): Track | undefined {
       ...book.ideas.map((i) => `${i.title}. ${i.body}`),
       'זה הסיכום בדקה. כשיהיה לך זמן, השיעורים המלאים מחכים לך.',
     ].join('\n')
-    return { id, kind: 'quick', title: 'הספר בדקה', subtitle: book.title, author: book.author, bookId: book.id, script, src: narrated[id] ? `audio/${id}.mp3` : undefined }
+    return { id, kind: 'quick', title: 'הספר בדקה', subtitle: book.title, author: book.author, bookId: book.id, script, src: narrationFor(id) ? narrationSrc(id) : undefined }
   }
   const ref = lessonIndex[id]
   if (!ref) return
@@ -69,7 +81,7 @@ export function trackFor(id: string): Track | undefined {
     author: ref.book.author,
     bookId: ref.book.id,
     script: ref.lesson.script,
-    src: ref.lesson.audioUrl ?? (narrated[id] ? `audio/${id}.mp3` : undefined),
+    src: ref.lesson.audioUrl ?? (narrationFor(id) ? narrationSrc(id) : undefined),
   }
 }
 
@@ -274,7 +286,7 @@ export async function load(id: string, opts: { autoplay?: boolean; from?: number
     a.src = src!
     a.playbackRate = rate
     ;(a as HTMLAudioElement & { preservesPitch?: boolean }).preservesPitch = true
-    const n = narrated[id]
+    const n = narrationFor(id)
     const segments = n && track.script ? toSegments(track.script) : []
     fileTimes = n && segments.length === n.s.length ? n.s : []
     emit({
@@ -481,3 +493,14 @@ function updatePositionState() {
 
 /** Test and automation hook. */
 if (typeof window !== 'undefined') (window as unknown as { __ascend: unknown }).__ascend = { player, load, play, pause, seek, skip, setRate, store }
+
+/** Switch narrator: the current lesson continues from the same point in the new voice. */
+export function setNarrator(voice: string) {
+  store.set({ narrator: voice }, { immediate: true })
+  const t = snap.track
+  if (!t || t.kind === 'file') return
+  const ratio = snap.duration ? snap.position / snap.duration : 0
+  const wasPlaying = snap.status === 'playing'
+  const n = narrationFor(t.id)
+  load(t.id, { autoplay: wasPlaying, from: n ? ratio * n.d : snap.position })
+}

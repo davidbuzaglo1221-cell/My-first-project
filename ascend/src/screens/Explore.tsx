@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react'
-import { bookSeconds, books, booksByCategory, categories, categoryById, curatedPaths, formatMinutes } from '../content'
+import { bookSeconds, books, booksByCategory, categories, categoryById, curatedPaths, formatMinutes, lessonIndex } from '../content'
 import type { CategoryId } from '../content/types'
 import { categoryMastery, pathProgress } from '../lib/insights'
 import { navigate } from '../lib/router'
 import { useStore } from '../lib/store'
-import { Art, Cover } from '../ui/Cover'
-import { IconSearch } from '../ui/Icons'
+import { Cover, CoverFan } from '../ui/Cover'
+import { AreaIcon, IconSearch } from '../ui/Icons'
 import { BackButton, Bar, SectionHead } from '../ui/Kit'
 
 const norm = (t: string) => t.toLowerCase().replace(/[׳״"'\-]/g, '')
@@ -49,7 +49,9 @@ export function Explore() {
                 const pr = pathProgress(s, p)
                 return (
                   <button key={p.id} role="listitem" className="pathcard" onClick={() => navigate(`/path/${p.id}`)}>
-                    <Art seed={p.id} motif={p.motif} hue={p.hue} className="pathcard__art" />
+                    <span className="pathcard__fan">
+                      <CoverFan books={[...new Set(p.lessonIds.map((id) => lessonIndex[id].book))]} />
+                    </span>
                     <span className="pathcard__body">
                       <span className="pathcard__title">{p.title}</span>
                       <span className="pathcard__sub">{p.subtitle}</span>
@@ -68,7 +70,10 @@ export function Explore() {
                 const m = categoryMastery(s, c.id)
                 return (
                   <button key={c.id} className="cat" onClick={() => navigate(`/explore/${c.id}`)}>
-                    <Art seed={'cat-' + c.id} motif={c.motif} hue={c.hue} className="cat__art" square />
+                    <span className="cat__icon">
+                      <AreaIcon id={c.id} size={20} />
+                    </span>
+                    <CoverFan books={booksByCategory(c.id)} className="cat__fan" />
                     <span className="cat__name">{c.name}</span>
                     <span className="cat__meta">
                       {booksByCategory(c.id).length} ספרים
@@ -138,7 +143,7 @@ export function CategoryScreen({ id }: { id: string }) {
   return (
     <div className="screen category">
       <div className="cathero">
-        <Art seed={'cat-' + c.id} motif={c.motif} hue={c.hue} className="cathero__art" />
+        <CoverFan books={list} className="cathero__fan" />
         <BackButton fallback="/explore" />
         <div className="cathero__body">
           <h1 className="cathero__title">{c.name}</h1>

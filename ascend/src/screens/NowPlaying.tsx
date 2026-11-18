@@ -4,7 +4,7 @@ import { dismissNotice, jumpToSegment, seek, setRate, setSleep, skip, toggle, us
 import { hebrewVoices, pickVoice, voiceLabel } from '../engine/voices'
 import { navigate } from '../lib/router'
 import { useStore } from '../lib/store'
-import { Art, Cover, bookHue, bookMotif } from '../ui/Cover'
+import { Backdrop, Cover, bookHue } from '../ui/Cover'
 import { IconBack, IconDown, IconForward, IconHeadphones, IconList, IconMoon } from '../ui/Icons'
 import { LessonRow, PlayGlyph, Sheet } from '../ui/Kit'
 import { closePlayer, showComplete, useUI } from '../ui/uiState'
@@ -48,7 +48,7 @@ export function NowPlaying() {
       {t && (
         <>
           <div className="np__ambient" aria-hidden="true">
-            {book ? <Art seed={book.id} motif={bookMotif(book)} hue={hue} square /> : <Art seed={t.id} motif="wave" hue={hue} square />}
+            {book ? <Backdrop book={book} /> : <div className="backdrop backdrop--tone" />}
           </div>
           <div className="np__scroll">
             <header className="np__head">

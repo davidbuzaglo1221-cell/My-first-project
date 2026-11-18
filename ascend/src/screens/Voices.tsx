@@ -1,22 +1,29 @@
 import { useEffect, useRef, useState } from 'react'
-import samples from '../content/voiceSamples.json'
-import { pause as pausePlayer } from '../engine/player'
-import { store, useStore } from '../lib/store'
-import { IconCheck, IconHeadphones } from '../ui/Icons'
+import audioManifest from '../content/audioManifest.json'
+import { currentVoice, pause as pausePlayer, setNarrator } from '../engine/player'
+import { useStore } from '../lib/store'
+import { IconCheck } from '../ui/Icons'
 import { BackButton, PlayGlyph } from '../ui/Kit'
 import { toast } from '../ui/uiState'
 
-type Sample = { id: string; name: string; desc: string }
+/** The four narrators. Every one is rendered for the whole library and checked with Hebrew speech recognition. */
+export const NARRATORS = [
+  { id: 'michael', name: 'מיכאל', desc: 'קול עמוק ורגוע, בסגנון מגיש פודקאסט. הקריין המומלץ.' },
+  { id: 'michael-calm', name: 'מיכאל, קצב איטי', desc: 'אותו קול, בקצב איטי ונינוח יותר. טוב להאזנה לפני שינה.' },
+  { id: 'shaul', name: 'שאול', desc: 'קול בהיר ואנרגטי, מבוסס על הקלטות של מגיש פודקאסט אמיתי.' },
+  { id: 'ido', name: 'עידו', desc: 'קול בינוני וחם, קצב שיחה טבעי.' },
+]
+const SAMPLE = 'psychology-of-money-quick'
+const available = audioManifest as Record<string, Record<string, unknown>>
 
-/** Listen to each candidate narrator reading the same passage, then choose one. */
 export function Voices() {
-  const list = samples as Sample[]
-  const chosen = useStore((s) => s.narrator)
+  useStore((s) => s.narrator)
+  const chosen = currentVoice()
   const [playing, setPlaying] = useState<string>()
   const [progress, setProgress] = useState(0)
   const audio = useRef<HTMLAudioElement>(null)
-
   useEffect(() => () => audio.current?.pause(), [])
+  const list = NARRATORS.filter((n) => available[n.id]?.[SAMPLE])
 
   function toggle(id: string) {
     const a = audio.current!
@@ -26,9 +33,13 @@ export function Voices() {
       return
     }
     pausePlayer()
-    a.src = `audio/voices/${id}.mp3`
+    a.src = `audio/${id}/${SAMPLE}.mp3`
     a.currentTime = 0
-    a.play().then(() => setPlaying(id), () => toast('לא הצלחנו לנגן את הדוגמה. נסה שוב.'))
+    setProgress(0)
+    a.play().then(
+      () => setPlaying(id),
+      () => toast('לא הצלחנו לנגן את הדוגמה. נסה שוב.'),
+    )
   }
 
   return (
@@ -37,7 +48,7 @@ export function Voices() {
         <BackButton fallback="/settings" />
         <h1 className="page-title">בחירת קריין</h1>
       </header>
-      <p className="page-sub">שלושה קולות קוראים את אותו קטע. תקשיב לכל אחד ובחר את הקול שילווה אותך בכל השיעורים.</p>
+      <p className="page-sub">כל קול מקריא את אותו סיכום, "הפסיכולוגיה של הכסף בדקה". תקשיב ובחר את הקול שילווה אותך בכל השיעורים.</p>
 
       <audio
         ref={audio}
@@ -46,47 +57,40 @@ export function Voices() {
         onEnded={() => (setPlaying(undefined), setProgress(0))}
       />
 
-      {list.length === 0 ? (
-        <div className="voicewait">
-          <IconHeadphones size={28} />
-          <h2>הדוגמאות עוד לא הוקלטו</h2>
-          <p>הקולות נוצרים בשרת דרך ElevenLabs. ברגע שמפתח ה־API יאושר, שלוש הדוגמאות יופיעו כאן.</p>
-        </div>
-      ) : (
-        <ul className="vcards">
-          {list.map((v, i) => {
-            const on = playing === v.id
-            const isChosen = chosen === v.id
-            return (
-              <li key={v.id} className={`vcard ${on ? 'is-playing' : ''} ${isChosen ? 'is-chosen' : ''}`}>
-                <button className="vcard__play" onClick={() => toggle(v.id)} aria-label={`${on ? 'עצור' : 'השמע'} את ${v.name}`}>
-                  <svg viewBox="0 0 100 100" className="vcard__ring" aria-hidden="true">
-                    <circle cx="50" cy="50" r="46" pathLength={100} strokeDasharray={`${on ? progress * 100 : 0} 100`} transform="rotate(-90 50 50)" />
-                  </svg>
-                  <PlayGlyph playing={on} size={22} />
-                </button>
-                <div className="vcard__body">
-                  <span className="vcard__n">קול {i + 1}</span>
-                  <strong>{v.name}</strong>
-                  {v.desc && <span className="vcard__desc">{v.desc}</span>}
-                </div>
-                <button
-                  className={`btn btn--sm ${isChosen ? 'btn--done' : 'btn--ghost'}`}
-                  onClick={() => (store.set({ narrator: v.id }, { immediate: true }), toast(`נבחר: ${v.name}. נקליט איתו את כל השיעורים.`))}
-                >
-                  {isChosen ? (
-                    <>
-                      <IconCheck size={14} /> נבחר
-                    </>
-                  ) : (
-                    'בחר'
-                  )}
-                </button>
-              </li>
-            )
-          })}
-        </ul>
-      )}
+      <ul className="vcards">
+        {list.map((v) => {
+          const on = playing === v.id
+          const isChosen = chosen === v.id
+          return (
+            <li key={v.id} className={`vcard ${on ? 'is-playing' : ''} ${isChosen ? 'is-chosen' : ''}`}>
+              <button className="vcard__play" onClick={() => toggle(v.id)} aria-label={`${on ? 'עצור' : 'השמע'} את ${v.name}`}>
+                <svg viewBox="0 0 100 100" className="vcard__ring" aria-hidden="true">
+                  <circle cx="50" cy="50" r="46" pathLength={100} strokeDasharray={`${on ? progress * 100 : 0} 100`} transform="rotate(-90 50 50)" />
+                </svg>
+                <PlayGlyph playing={on} size={22} />
+              </button>
+              <div className="vcard__body">
+                <strong>{v.name}</strong>
+                <span className="vcard__desc">{v.desc}</span>
+              </div>
+              <button
+                className={`btn btn--sm ${isChosen ? 'btn--done' : 'btn--ghost'}`}
+                onClick={() => (setNarrator(v.id), toast(`הקריין שלך: ${v.name}`))}
+                aria-pressed={isChosen}
+              >
+                {isChosen ? (
+                  <>
+                    <IconCheck size={14} /> נבחר
+                  </>
+                ) : (
+                  'בחר'
+                )}
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+      {list.length < NARRATORS.length && <p className="muted-line">קולות נוספים בהקלטה ויופיעו כאן בקרוב.</p>}
     </div>
   )
 }

@@ -5,7 +5,7 @@ import { dayKey, lastNDays } from '../lib/dates'
 import { focusAreas, growthIndex, pathProgress, resolvePath } from '../lib/insights'
 import { navigate } from '../lib/router'
 import { addHabit, archiveHabit, store, toggleHabitToday, useStore } from '../lib/store'
-import { Art } from '../ui/Cover'
+import { CoverFan } from '../ui/Cover'
 import { IconCheck, IconPlay, IconPlus, IconTrash } from '../ui/Icons'
 import { BackButton, SectionHead, Sheet, startLesson } from '../ui/Kit'
 import { NotFound } from './Explore'
@@ -255,7 +255,7 @@ export function PathScreen({ id }: { id: string }) {
   return (
     <div className="screen pathscreen">
       <div className="cathero">
-        <Art seed={path.id} motif={path.motif} hue={path.hue} className="cathero__art" />
+        <CoverFan books={[...new Set(path.lessonIds.map((id) => lessonIndex[id].book))]} className="cathero__fan" />
         <BackButton fallback="/explore" />
         <div className="cathero__body">
           <h1 className="cathero__title">{path.title}</h1>
