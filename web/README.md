@@ -25,6 +25,21 @@ Locally, put them in `web/.env.local` (see `.env.example`). On Vercel: Project â
 
 Each photo costs a few cents of API usage. Photos are resized on the phone (1280 px) before upload, and only a small thumbnail is kept, on the phone.
 
+## Listening (lessons read aloud)
+
+Every lesson has a player: play/pause, previous/next/repeat sentence, speed 0.75-1.5x (pitch kept),
+voice choice, progress, the sentence being read highlighted (tap one to jump), continue-listening, and
+lock-screen controls. Text is prepared for speech first (`src/lib/speech/`: Hebrew numbers with gender,
+ranges, units, dates, times, abbreviations, English terms), then spoken by:
+
+| variable | what it does |
+| --- | --- |
+| `GOOGLE_TTS_API_KEY` | Google Cloud Text-to-Speech key: Chirp 3 HD voices (default engine) |
+| `AZURE_SPEECH_KEY`, `AZURE_SPEECH_REGION` | Azure Speech instead (or both, and pick with `TTS_PROVIDER`) |
+
+Without a key, the phone's own Hebrew voice reads (offline too). Tests: `npm test`, and
+`node e2e-listen.cjs` against `next start -p 3100`. Speech QA tooling: `../.claude/skills/speech-quality-testing`.
+
 ## Deploy (Vercel)
 
 1. Import the GitHub repository in Vercel, with **Root Directory** set to `web`.

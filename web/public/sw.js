@@ -46,7 +46,8 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
-      for (const key of await caches.keys()) if (key !== CACHE) await caches.delete(key);
+      // Spoken clips (tts-*) are paid for and do not change with a deploy: keep them.
+      for (const key of await caches.keys()) if (key !== CACHE && !key.startsWith("tts-")) await caches.delete(key);
       await self.clients.claim();
     })(),
   );
