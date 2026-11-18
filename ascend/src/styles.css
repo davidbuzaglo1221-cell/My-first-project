@@ -3439,3 +3439,34 @@ input::placeholder {
     linear-gradient(to top, rgba(1, 3, 2, 0.97) 14%, rgba(1, 3, 2, 0.6) 40%, transparent 62%),
     radial-gradient(60% 40% at 50% 28%, hsl(var(--hue) 70% 45% / 0.35), transparent 70%);
 }
+.np__playwrap {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  display: grid;
+  place-items: center;
+}
+.np__ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(-1); /* progress runs counter-clockwise, the reading direction in Hebrew */
+}
+.np__ring circle {
+  fill: none;
+  stroke-width: 2.5;
+}
+.np__ring-track {
+  stroke: rgba(205, 255, 232, 0.1);
+}
+.np__ring-value {
+  stroke: var(--em-300);
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px var(--glow));
+  transition: stroke-dasharray 0.3s linear;
+}
+.np__play {
+  width: 74px;
+  height: 74px;
+}

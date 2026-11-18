@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:single": "vite build --mode single && node scripts/artifact.mjs",
+    "build:single": "node scripts/audio-manifest.mjs && vite build --mode single && node scripts/artifact.mjs",
+    "build:pwa": "node scripts/audio-manifest.mjs && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"

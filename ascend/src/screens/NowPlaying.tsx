@@ -133,9 +133,15 @@ export function NowPlaying() {
               <button className="icon-btn icon-btn--lg" onClick={() => skip(-skipBy)} aria-label={`אחורה ${skipBy} שניות`}>
                 <IconBack size={34} seconds={skipBy} />
               </button>
-              <button className="np__play" onClick={toggle} aria-label={playing ? 'השהה' : 'נגן'}>
-                <PlayGlyph playing={playing} size={34} />
-              </button>
+              <div className="np__playwrap">
+                <svg className="np__ring" viewBox="0 0 100 100" aria-hidden="true">
+                  <circle cx="50" cy="50" r="47" className="np__ring-track" />
+                  <circle cx="50" cy="50" r="47" className="np__ring-value" pathLength={100} strokeDasharray={`${p.duration ? (pos / p.duration) * 100 : 0} 100`} transform="rotate(-90 50 50)" />
+                </svg>
+                <button className="np__play" onClick={toggle} aria-label={playing ? 'השהה' : 'נגן'}>
+                  <PlayGlyph playing={playing} size={32} />
+                </button>
+              </div>
               <button className="icon-btn icon-btn--lg" onClick={() => skip(skipBy)} aria-label={`קדימה ${skipBy} שניות`}>
                 <IconForward size={34} seconds={skipBy} />
               </button>
@@ -146,7 +152,7 @@ export function NowPlaying() {
 
             <div className="np__foot">
               <span className="np__voice">
-                {p.mode === 'file' ? 'קובץ אודיו' : p.mode === 'voice' ? `קריינות: ${voice ? voiceLabel(voice) : 'קול המכשיר'}` : 'כתוביות מתוזמנות'}
+                {p.mode === 'file' ? (t.kind === 'file' ? 'קובץ אודיו' : 'קריינות ASCEND') : p.mode === 'voice' ? `קריינות: ${voice ? voiceLabel(voice) : 'קול המכשיר'}` : 'כתוביות מתוזמנות'}
               </span>
               {ref && (
                 <button className="link" onClick={() => showComplete(t.id)}>

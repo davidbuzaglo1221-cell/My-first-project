@@ -1,11 +1,16 @@
 import { useSyncExternalStore } from 'react'
 import { BASE_CPS, bookById, lessonIndex } from '../content'
+import audioManifest from '../content/audioManifest.json'
 import { getFile } from '../lib/idb'
 import { addListening, completeLesson, setLessonPosition, store } from '../lib/store'
 import { offsets, toSegments } from './sentences'
 import { pickVoice, speechSupported } from './voices'
 
 export type TrackKind = 'lesson' | 'quick' | 'file'
+
+/** Studio narration rendered ahead of time: duration and the start time of every sentence. */
+const narrated = audioManifest as Record<string, { d: number; s: number[] }>
+export const hasNarration = (id: string) => !!narrated[id]
 
 export interface Track {
   id: string
@@ -52,7 +57,7 @@ export function trackFor(id: string): Track | undefined {
       ...book.ideas.map((i) => `${i.title}. ${i.body}`),
       'זה הסיכום בדקה. כשיהיה לך זמן, השיעורים המלאים מחכים לך.',
     ].join('\n')
-    return { id, kind: 'quick', title: 'הספר בדקה', subtitle: book.title, author: book.author, bookId: book.id, script }
+    return { id, kind: 'quick', title: 'הספר בדקה', subtitle: book.title, author: book.author, bookId: book.id, script, src: narrated[id] ? `audio/${id}.mp3` : undefined }
   }
   const ref = lessonIndex[id]
   if (!ref) return
@@ -64,7 +69,7 @@ export function trackFor(id: string): Track | undefined {
     author: ref.book.author,
     bookId: ref.book.id,
     script: ref.lesson.script,
-    src: ref.lesson.audioUrl,
+    src: ref.lesson.audioUrl ?? (narrated[id] ? `audio/${id}.mp3` : undefined),
   }
 }
 
@@ -103,6 +108,7 @@ let ticker: ReturnType<typeof setInterval> | undefined
 let audio: HTMLAudioElement | undefined
 let keepAlive: HTMLAudioElement | undefined
 let objectUrl: string | undefined
+let fileTimes: number[] = []
 
 const SILENCE = 'data:audio/wav;base64,UklGRmQGAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
 
@@ -199,8 +205,14 @@ function tick() {
   if (snap.status !== 'playing') return
 
   let position = snap.position
-  if (snap.mode === 'file' && audio) position = audio.currentTime
-  else {
+  if (snap.mode === 'file' && audio) {
+    position = audio.currentTime
+    if (fileTimes.length) {
+      let i = 0
+      while (i + 1 < fileTimes.length && fileTimes[i + 1] <= position + 0.05) i++
+      if (i !== snap.segment) emit({ segment: i })
+    }
+  } else {
     position = voicePosition()
     const i = snap.segment
     const real = (now - segBeganAt) / 1000
@@ -262,7 +274,21 @@ export async function load(id: string, opts: { autoplay?: boolean; from?: number
     a.src = src!
     a.playbackRate = rate
     ;(a as HTMLAudioElement & { preservesPitch?: boolean }).preservesPitch = true
-    emit({ track, mode: 'file', segments: [], segment: 0, status: 'paused', position: from, duration: saved?.dur ?? 0, rate, notice: undefined, endedId: undefined })
+    const n = narrated[id]
+    const segments = n && track.script ? toSegments(track.script) : []
+    fileTimes = n && segments.length === n.s.length ? n.s : []
+    emit({
+      track,
+      mode: 'file',
+      segments: fileTimes.length ? segments : [],
+      segment: 0,
+      status: 'paused',
+      position: from,
+      duration: n?.d ?? saved?.dur ?? 0,
+      rate,
+      notice: undefined,
+      endedId: undefined,
+    })
     const seekWhenReady = () => {
       if (from > 0 && from < (a.duration || Infinity) - 1) a.currentTime = from
     }
@@ -358,7 +384,7 @@ export const skip = (delta: number) => {
   seek(snap.position + delta)
 }
 
-export const jumpToSegment = (i: number) => seek(segStart(i) + 0.01, true)
+export const jumpToSegment = (i: number) => seek((snap.mode === 'file' && fileTimes.length ? fileTimes[i] : segStart(i)) + 0.01, true)
 
 export function setRate(rate: number) {
   store.set((s) => ({ settings: { ...s.settings, rate } }), { immediate: true })
