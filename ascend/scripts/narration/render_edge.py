@@ -17,13 +17,13 @@ def key(voice, text, rate='+0%'):
 
 async def synth_one(sem, voice, text, rate='+0%'):
     path = key(voice, text, rate)
-    if os.path.exists(path) and os.path.getsize(path) > 600: return
+    if os.path.exists(path) and os.path.getsize(path) > max(600, len(text) * 130): return
     async with sem:
         for attempt in range(5):
             try:
                 c = edge_tts.Communicate(text, VOICES[voice], rate=rate)
                 data = b''.join([ch['data'] async for ch in c.stream() if ch['type'] == 'audio'])
-                if len(data) > 600:
+                if len(data) > max(600, len(text) * 130):  # ~48 kbps at ~14 chars/s: anything far shorter is a cut-off stream
                     open(path + '.tmp', 'wb').write(data); os.replace(path + '.tmp', path); return
             except Exception as e:
                 await asyncio.sleep(2 + attempt * 3)

@@ -5196,3 +5196,8 @@ html:has(.reader--ivory) {
 .voicepick__row span { font-size: 13px; color: var(--text-3); line-height: 1.45; }
 .voicepick__row.is-on strong { color: var(--em-300); }
 .voicepick__row.is-on::after { content: '✓'; position: absolute; left: 16px; top: 14px; color: var(--em-300); font-weight: 800; }
+.vcards { display: block; border-radius: 16px; background: var(--row-bg); overflow: hidden; gap: 0; }
+.vcard { border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; padding: 14px; }
+.vcard + .vcard { border-top: 0.5px solid var(--sep) !important; }
+.vcard.is-chosen .vcard__body strong { color: var(--em-300); }
+.vcard__desc { -webkit-line-clamp: unset !important; display: block !important; overflow: visible !important; }

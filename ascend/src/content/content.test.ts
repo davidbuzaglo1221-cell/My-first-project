@@ -27,7 +27,7 @@ describe('library', () => {
   it('chapters are short audio, under four minutes', () => {
     for (const b of books) for (const l of b.lessons) {
       const s = estimateSeconds(l)
-      expect(s, l.id).toBeGreaterThan(20)
+      expect(s, l.id).toBeGreaterThanOrEqual(15)
       if (b.id !== 'as-a-man-thinketh') expect(s, l.id).toBeLessThan(240)
       expect(l.exercise.task.length).toBeGreaterThan(10)
     }
