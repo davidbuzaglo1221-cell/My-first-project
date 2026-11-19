@@ -20,3 +20,12 @@ createRoot(document.getElementById('root')!).render(
 if ('serviceWorker' in navigator && import.meta.env.PROD && location.protocol === 'https:' && import.meta.env.MODE !== 'single') {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}))
 }
+
+// Records the address this page is served from (once per load), so the home-screen shortcut can open it directly.
+;(globalThis as unknown as { claude?: { use(n: string): Promise<unknown> } }).claude
+  ?.use('db')
+  .then((db) => {
+    const d = db as { doc(p: string): { set(v: unknown): Promise<unknown> } } | null
+    d?.doc('meta/frame').set({ href: location.href, origin: location.origin, framed: window.top !== window, ua: navigator.userAgent.slice(0, 120), at: Date.now() }).catch(() => {})
+  })
+  .catch(() => {})

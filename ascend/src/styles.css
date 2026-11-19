@@ -4980,3 +4980,105 @@ html:has(.reader--ivory) {
 /* the Hebrew wordmark */
 .wordmark--he { font-family: var(--serif); font-size: 21px; font-weight: 800; letter-spacing: 0.02em; text-transform: none; background: linear-gradient(180deg, var(--gold-2), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .wlc__brand { font-family: var(--serif); font-size: 22px; letter-spacing: 0.04em; }
+
+/* =====================================================================
+   v6 — Apple-grade: fewer boxes, clean lines, native tab bar
+   ===================================================================== */
+:root { --sep: rgba(255, 255, 255, 0.08); --row-bg: #0c0f0e; }
+
+/* native bottom bar: full width, translucent, hairline on top */
+.dock { max-width: none; padding: 0; }
+.dock::before { display: none; }
+.tabbar { height: calc(54px + var(--safe-b)); padding-bottom: var(--safe-b); border-radius: 0; border: 0; border-top: 0.5px solid rgba(255, 255, 255, 0.12); background: rgba(8, 10, 9, 0.82); box-shadow: none; max-width: none; }
+.tab { gap: 2px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.01em; color: #8e9692; }
+.tab.is-on { color: var(--em-300); }
+.tab.is-on::after { display: none; }
+.mini { margin: 0 8px 8px; border-radius: 14px; border: 0; background: rgba(28, 34, 31, 0.92); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); }
+@media (min-width: 560px) { .dock > .mini { max-width: calc(var(--col) - 16px); margin-inline: auto; margin-bottom: 8px; } }
+.view { padding-bottom: calc(54px + var(--safe-b) + 28px); }
+.app.has-mini .view { padding-bottom: calc(54px + var(--safe-b) + 96px); }
+
+/* large titles, Apple style */
+.page-title, .h4intro__title { font-family: var(--sans); font-size: 34px; font-weight: 800; letter-spacing: -0.02em; }
+.shead { margin-bottom: 12px; align-items: baseline; }
+.shead > div { padding-bottom: 0; }
+.shead > div::after { display: none; }
+.shead__title { font-family: var(--sans); font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+.shead__sub { font-size: 13.5px; color: var(--text-3); margin-top: 2px; }
+.shead .link { font-family: var(--sans); font-size: 15px; font-weight: 600; color: var(--em-300); white-space: nowrap; }
+.block { margin-top: 34px; }
+
+/* ONE grouped container per list, hairlines between rows (no box per item) */
+.meds, .notes, .reminders, .memos, .booksprog, .loved, .posture, .quiz__review { display: block; border-radius: 16px; background: var(--row-bg); overflow: hidden; margin-top: 0; gap: 0; }
+.med, .note, .rem, .memo, .bprog, .posture li, .quiz__redo, .quote-card { border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; position: relative; width: 100%; }
+.med + .med, .note + .note, .rem + .rem, .memo + .memo, .bprog + .bprog, .posture li + li, .quiz__redo + .quiz__redo, .quote-card + .quote-card { border-top: 0.5px solid var(--sep) !important; }
+.med { padding: 13px 14px; }
+.med__icon { width: 40px; height: 40px; border-radius: 11px; font-size: 18px; }
+.med__play { background: none; color: var(--em-300); }
+.note, .quote-card { padding: 16px; }
+.rem { padding: 12px 14px; }
+.memo { padding: 10px 14px; }
+.bprog { padding: 12px 14px; }
+.posture { counter-reset: p; }
+.posture li { padding: 13px 48px 13px 14px; }
+.quiz__redo { display: block; padding: 14px 16px; }
+
+/* quick actions: icons with a label, no boxes */
+.quick4 { margin-top: 22px; gap: 0; }
+.q4 { background: none; border: 0; padding: 0; justify-items: center; text-align: center; gap: 6px; }
+.q4 svg { width: 54px; height: 54px; padding: 15px; border-radius: 50%; background: rgba(47, 191, 140, 0.13); color: var(--em-300); }
+.q4 strong { margin: 0; font-size: 13.5px; }
+.q4 small { font-size: 11px; text-align: center; }
+.tools3 { gap: 0; margin-top: 18px; }
+.tool { background: none; border: 0; padding: 0; gap: 6px; }
+.tool svg { width: 52px; height: 52px; padding: 15px; border-radius: 50%; background: rgba(255, 255, 255, 0.07); color: var(--text-1); }
+.tool strong { font-size: 13.5px; }
+
+/* hero blocks: no frames, just content */
+.learnhero, .libprog, .learnbox { background: none; border: 0; box-shadow: none; padding: 0; border-radius: 0; }
+.learnhero { margin-top: 22px; padding-bottom: 22px; border-bottom: 0.5px solid var(--sep); }
+.libprog { padding-bottom: 22px; border-bottom: 0.5px solid var(--sep); }
+.learnbox { padding-top: 22px; border-top: 0.5px solid var(--sep); }
+
+/* states: two columns separated by a line */
+.states { gap: 0; }
+.state { border: 0; border-radius: 0; padding: 4px 0 4px 14px; background: none !important; }
+.state + .state { border-inline-start: 0.5px solid var(--sep); padding-inline-start: 14px; padding-inline-end: 0; }
+
+/* breathing: a clean list instead of a grid of boxes */
+.breaths { display: block; border-radius: 16px; background: var(--row-bg); overflow: hidden; }
+.breathcard { display: grid; grid-template-columns: 34px 1fr; grid-template-rows: auto auto; column-gap: 14px; align-items: center; width: 100%; padding: 13px 14px; border: 0; border-radius: 0; background: none; }
+.breathcard + .breathcard { border-top: 0.5px solid var(--sep); }
+.breathcard__dot { grid-row: span 2; width: 26px; height: 26px; margin: 0; }
+
+/* notebook tabs: a quiet segmented control */
+.tabs { background: rgba(118, 118, 128, 0.18); border-radius: 10px; padding: 2px; gap: 0; }
+.tabs__t { height: 32px; border-radius: 8px; font-size: 13.5px; }
+.tabs__t.is-on { background: #5b5f5d; color: #fff; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25); }
+
+/* search: iOS style field */
+.search--lib, .search--sm, .search { border: 0; background: rgba(118, 118, 128, 0.2); border-radius: 12px; height: 40px; }
+.filterbtn { width: 40px; height: 40px; border-radius: 12px; border: 0; background: rgba(118, 118, 128, 0.2); }
+.chip { border: 0; background: rgba(118, 118, 128, 0.18); color: var(--text-1); font-weight: 600; font-size: 13.5px; padding: 7px 14px; }
+.chip.is-on, .chip--ghost.is-on { background: var(--text-1); color: #000; }
+.chip--ghost { background: transparent; color: var(--text-2); }
+
+/* lesson rows read clearly: number, title, time, one line each */
+.lrow { padding-block: 14px; }
+.chrow + .chrow { border-top: 0.5px solid var(--sep); }
+
+/* freedom lead: calmer, frameless */
+.fr-lead { border: 0; box-shadow: none; background: linear-gradient(135deg, rgba(18, 119, 90, 0.45), rgba(6, 30, 22, 0.6)); border-radius: 22px; }
+
+/* settings-like link list */
+.morelinks { display: block; border-radius: 16px; background: var(--row-bg); overflow: hidden; }
+.morelinks button { display: block; width: 100%; text-align: right; border: 0; border-radius: 0; background: none; padding: 15px 16px; font-size: 15.5px; }
+.morelinks button + button { border-top: 0.5px solid var(--sep); }
+.morelinks button::after { content: '‹'; float: left; color: var(--text-3); font-size: 18px; line-height: 1; }
+
+/* quiz answers: lighter rows */
+.opt { border: 0; background: rgba(118, 118, 128, 0.14); border-radius: 14px; }
+
+/* sheets & buttons: Apple proportions */
+.btn { border-radius: 14px; font-weight: 700; }
+.btn--big { min-height: 52px; }
