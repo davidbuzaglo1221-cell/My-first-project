@@ -1,10 +1,10 @@
 # Builds the ASCEND web app (ascend/) and publishes it to GitHub Pages.
 # Needs: repository public (or GitHub Pro), and Settings → Pages → Source: "GitHub Actions".
-name: Deploy ASCEND to GitHub Pages
+name: Deploy הספריה to GitHub Pages
 
 on:
   push:
-    branches: [claude/ascend-app-build-52sxwe, main]
+    branches: [main]
     paths: ['ascend/**', '.github/workflows/ascend-pages.yml']
   workflow_dispatch:
 
