@@ -6,8 +6,9 @@ import { currentStreak, focusAreas, isActiveDay, pathProgress, recommendations, 
 import { navigate } from '../lib/router'
 import { useStore } from '../lib/store'
 import { Backdrop, Cover, CoverFan, bookHue } from '../ui/Cover'
-import { AreaIcon, IconCheck, IconFlame, IconHeadphones, IconPlay, IconSearch } from '../ui/Icons'
-import { Eq, PlayGlyph, SectionHead, startLesson } from '../ui/Kit'
+import { AreaIcon, IconBook, IconCheck, IconFlame, IconHeadphones, IconPlay, IconSearch } from '../ui/Icons'
+import { bookChapters } from './Reader'
+import { Bar, Eq, PlayGlyph, SectionHead, startLesson } from '../ui/Kit'
 import { openPlayer } from '../ui/uiState'
 
 const fmtListen = (sec: number) => {
@@ -86,6 +87,8 @@ function Showcase({ ids }: { ids: string[] }) {
   )
 }
 
+const MUST_READ = ['how-to-win-friends', 'think-and-grow-rich', 'rich-dad-poor-dad', 'psychology-of-money', 'atomic-habits', 'seven-habits', 'thinking-fast-and-slow', 'start-with-why']
+
 export function Home() {
   const s = useStore((x) => x)
   const p = usePlayer()
@@ -117,6 +120,11 @@ export function Home() {
     .slice(0, 7)
   const quick = focus.flatMap((c) => books.filter((b) => b.category === c && !b.lessons.some((l) => s.progress[l.id])).slice(0, 1)).slice(0, 8)
   const initial = (s.name || 'A').trim().charAt(0)
+  const readingNow = Object.entries(s.reading ?? {})
+    .filter(([id]) => bookById[id])
+    .sort((a, b) => b[1].last - a[1].last)
+    .slice(0, 2)
+    .map(([id, r]) => ({ b: bookById[id], r }))
 
   return (
     <div className="screen home3">
@@ -227,6 +235,65 @@ export function Home() {
           </button>
         </section>
       )}
+
+      {readingNow.length > 0 && (
+        <section className="block">
+          <SectionHead title="להמשיך לקרוא" />
+          <div className="readrows">
+            {readingNow.map(({ b, r }) => {
+              const total = bookChapters(b).chapters.length
+              return (
+                <button key={b.id} className="readrow" onClick={() => navigate(`/read/${b.id}`)}>
+                  <Cover book={b} size="sm" />
+                  <span className="readrow__body">
+                    <strong>{b.title}</strong>
+                    <span>
+                      פרק {r.ch + 1} מתוך {total}
+                    </span>
+                    <Bar value={(r.ch + 0.5) / total} />
+                  </span>
+                  <span className="readrow__go">
+                    <IconBook size={18} />
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </section>
+      )}
+
+      <section className="block">
+        <button className="fullbook" onClick={() => navigate('/book/as-a-man-thinketh')}>
+          <span className="fullbook__cover">
+            <Cover book={bookById['as-a-man-thinketh']} size="lg" />
+          </span>
+          <span className="fullbook__body">
+            <span className="fullbook__tag">ספר שלם בעברית</span>
+            <strong>כאשר יחשוב אדם</strong>
+            <span className="fullbook__by">ג׳יימס אלן, 1902</span>
+            <span className="fullbook__desc">הקלאסיקה שהשפיעה על נפוליאון היל ודייל קרנגי. כל הספר, בתרגום חדש, לקריאה ולהאזנה.</span>
+            <span className="fullbook__cta">
+              <IconBook size={15} /> לקרוא ולהאזין
+            </span>
+          </span>
+        </button>
+      </section>
+
+      <section className="block">
+        <SectionHead title="ספרי חובה" sub="הספרים שכל אחד צריך להכיר" />
+        <div className="shelf shelf--big" role="list">
+          {MUST_READ.map((id) => {
+            const b = bookById[id]
+            return (
+              <button key={id} role="listitem" className="shelf__item" onClick={() => navigate(`/book/${id}`)}>
+                <Cover book={b} size="md" />
+                <span className="shelf__title">{b.title}</span>
+                <span className="shelf__meta">{b.author}</span>
+              </button>
+            )
+          })}
+        </div>
+      </section>
 
       <section className="block">
         <SectionHead title="תחומים" />

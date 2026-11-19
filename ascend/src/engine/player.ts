@@ -17,11 +17,16 @@ export const currentVoice = () => {
   const v = store.get().narrator
   return v && byVoice[v] ? v : byVoice[DEFAULT_VOICE] ? DEFAULT_VOICE : Object.keys(byVoice)[0]
 }
-const narrationFor = (id: string) => {
+/** The chosen voice, or the main narrator when the chosen voice has no recording of this track. */
+const voiceFor = (id: string) => {
   const v = currentVoice()
-  return v ? byVoice[v]?.[id] : undefined
+  return v && byVoice[v]?.[id] ? v : byVoice[DEFAULT_VOICE]?.[id] ? DEFAULT_VOICE : undefined
 }
-const narrationSrc = (id: string) => `audio/${currentVoice()}/${id}.mp3`
+const narrationFor = (id: string) => {
+  const v = voiceFor(id)
+  return v ? byVoice[v][id] : undefined
+}
+const narrationSrc = (id: string) => `audio/${voiceFor(id)}/${id}.mp3`
 export const hasNarration = (id: string) => !!narrationFor(id)
 
 export interface Track {

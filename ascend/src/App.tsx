@@ -15,6 +15,7 @@ import { Onboarding } from './screens/Onboarding'
 import { Progress } from './screens/Progress'
 import { Settings } from './screens/Settings'
 import { Voices } from './screens/Voices'
+import { Reader } from './screens/Reader'
 import { MiniPlayer, TabBar } from './ui/Chrome'
 import { bookHue, bookMotif } from './ui/Cover'
 import { coverPng } from './ui/coverArt'
@@ -98,10 +99,13 @@ export function App() {
     case 'voices':
       screen = <Voices />
       break
+    case 'read':
+      screen = <Reader id={route.id} />
+      break
   }
 
   return (
-    <div className={`app ${p.track ? 'has-mini' : ''} ${ui.playerOpen ? 'player-open' : ''}`}>
+    <div className={`app ${p.track ? 'has-mini' : ''} ${ui.playerOpen ? 'player-open' : ''} ${route.name === 'read' ? 'is-reading' : ''}`}>
       <main ref={main} tabIndex={-1} key={hash} className="view" inert={ui.playerOpen || undefined}>
         {screen}
       </main>

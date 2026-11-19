@@ -62,8 +62,11 @@ export interface AppState {
   lastTrack?: string
   cps?: number
   files: AudioFileMeta[]
-  /** ElevenLabs voice chosen on the voice test screen. */
+  /** Narrator chosen on the voice screen. */
   narrator?: string
+  /** Where the reader stopped in each book. */
+  reading?: Record<string, { ch: number; y: number; last: number }>
+  readerPrefs?: { size: number; paper: 'night' | 'ivory' }
 }
 
 const KEY = 'ascend:v1'

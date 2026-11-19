@@ -174,3 +174,8 @@ export function AreaIcon({ id, size = 22 }: { id: string; size?: number }) {
       )
   }
 }
+export const IconBook = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M12 6.5C10 5 7 4.5 4 5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V5c-3-.5-6 0-8 1.5zM12 6.5V19" />
+  </svg>
+)

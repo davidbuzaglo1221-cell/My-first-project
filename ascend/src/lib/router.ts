@@ -11,6 +11,7 @@ export type Route =
   | { name: 'path'; id: string }
   | { name: 'settings' }
   | { name: 'voices' }
+  | { name: 'read'; id: string }
 
 export function parse(hash: string): Route {
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent)
@@ -31,6 +32,8 @@ export function parse(hash: string): Route {
       return { name: 'settings' }
     case 'voices':
       return { name: 'voices' }
+    case 'read':
+      return { name: 'read', id: parts[1] ?? '' }
     default:
       return { name: 'home' }
   }
@@ -51,4 +54,4 @@ export const back = (fallback = '/') => (history.length > 1 ? history.back() : n
 
 /** Tab a route belongs to, for the tab bar highlight. */
 export const tabOf = (r: Route) =>
-  r.name === 'category' || r.name === 'book' || r.name === 'path' ? 'explore' : r.name === 'settings' || r.name === 'voices' ? 'home' : r.name
+  r.name === 'category' || r.name === 'book' || r.name === 'path' || r.name === 'read' ? 'explore' : r.name === 'settings' || r.name === 'voices' ? 'home' : r.name

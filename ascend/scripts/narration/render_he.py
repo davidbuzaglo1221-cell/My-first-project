@@ -3,13 +3,17 @@ import json, os, subprocess, sys, time, numpy as np
 sys.path.insert(0, '/home/user/tts')
 from he_tts import say, phonemes, flush_cache
 voice, model, pace = sys.argv[1], sys.argv[2], float(sys.argv[3])
+ONLY = sys.argv[4] if len(sys.argv) > 4 else ''
+CHAIN = open('/home/user/tts/master_chain.txt').read().strip()
 OUT = f'/home/user/My-first-project/ascend/public/audio/{voice}'
 os.makedirs(OUT, exist_ok=True)
 items = json.load(open('/home/user/tts/scripts.json'))
 SENT_GAP, PARA_GAP = 0.32, 0.62
 for it in items:
     mp3, meta = f"{OUT}/{it['id']}.mp3", f"{OUT}/{it['id']}.json"
-    if os.path.exists(mp3) and os.path.exists(meta): continue
+    if os.path.exists(mp3) and os.path.exists(meta) and not os.environ.get('FORCE'): continue
+    if ONLY and not it['id'].startswith(ONLY): continue
+    if os.environ.get('EXCLUDE') and it['id'].startswith(os.environ['EXCLUDE']): continue
     t0 = time.time(); chunks = []; segs = []; cur = 0.0; sr = 22050
     for pi, para in enumerate(it['paras']):
         for si, text in enumerate(para):
@@ -23,7 +27,7 @@ for it in items:
     audio = np.concatenate(chunks).astype(np.float32)
     raw = mp3 + '.f32'; audio.tofile(raw)
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'f32le', '-ar', str(sr), '-ac', '1', '-i', raw,
-                    '-af', 'highpass=f=60,loudnorm=I=-17:TP=-1.5:LRA=9', '-ar', '44100', '-ac', '1', '-b:a', '56k', mp3], check=True)
+                    '-af', CHAIN, '-ar', '44100', '-ac', '1', '-b:a', '48k', mp3], check=True)
     os.remove(raw)
     json.dump({'duration': round(cur, 2), 'segments': segs, 'voice': voice}, open(meta, 'w'), ensure_ascii=False)
     print(f"{voice} {it['id']} {cur:.0f}s in {time.time()-t0:.1f}s", flush=True)

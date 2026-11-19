@@ -9,6 +9,7 @@ import { disciplineBooks } from './books/discipline'
 import { businessBooks } from './books/business'
 import { leadershipBooks } from './books/leadership'
 import { mindsetBooks } from './books/mindset'
+import { classicBooks } from './books/classics'
 
 export { categories, categoryById }
 export type * from './types'
@@ -23,6 +24,7 @@ export const books: Book[] = [
   ...businessBooks,
   ...leadershipBooks,
   ...mindsetBooks,
+  ...classicBooks,
 ]
 
 export const bookById: Record<string, Book> = Object.fromEntries(books.map((b) => [b.id, b]))

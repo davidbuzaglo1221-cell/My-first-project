@@ -4195,3 +4195,444 @@ input::placeholder {
 .cat__fan {
   inset: 34px 0 auto;
 }
+
+/* ======================================================================
+   v4 — reading, and a sharper, more classic finish
+   ====================================================================== */
+
+:root {
+  --ink-0: #000;
+  --ink-1: #07090a;
+  --ink-2: #0c1011;
+  --hair: rgba(255, 255, 255, 0.08);
+  --hair-2: rgba(255, 255, 255, 0.14);
+  --text-1: #fbfcfb;
+  --text-2: #b4bdb9;
+  --gold-line: rgba(111, 224, 179, 0.38);
+}
+body {
+  background: #000;
+}
+
+/* sharper headings */
+.page-title,
+.h3title h1,
+.shead__title,
+.bhero__title,
+.showcase__title,
+.daily__title {
+  color: var(--text-1);
+  letter-spacing: -0.012em;
+}
+.shead__title {
+  font-size: 23px;
+  font-weight: 600;
+}
+.h3title h1 {
+  font-size: 48px;
+}
+/* a thin emerald rule under each section title: classic, quiet */
+.shead > div {
+  position: relative;
+  padding-bottom: 10px;
+}
+.shead > div::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  inset-inline-start: 0;
+  width: 28px;
+  height: 1px;
+  background: var(--em-300);
+}
+.shead {
+  margin-bottom: 18px;
+}
+
+/* books: bigger, crisper, real shadow */
+.cover {
+  box-shadow:
+    0 0 0 0.5px rgba(255, 255, 255, 0.08) inset,
+    0 24px 36px -20px rgba(0, 0, 0, 1),
+    0 6px 12px -6px rgba(0, 0, 0, 0.8);
+}
+.cgrid__item,
+.cgrid__cover .cover--md {
+  width: 148px;
+}
+.shelf__item {
+  width: 140px;
+}
+.shelf__item .cover--md {
+  width: 140px;
+}
+.tabbar {
+  background: rgba(6, 8, 8, 0.86);
+  border-color: rgba(255, 255, 255, 0.09);
+}
+.tab.is-on svg {
+  filter: none;
+}
+.tab.is-on::after {
+  content: '';
+  position: absolute;
+  bottom: 7px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--em-300);
+}
+.duo__card,
+.plan,
+.list-card,
+.goalpanel {
+  background: #07090a;
+  border-color: rgba(255, 255, 255, 0.09);
+}
+
+/* book page: listen and read side by side */
+.bhero__actions {
+  max-width: 420px;
+}
+.btn--read {
+  background: #fff;
+  color: #000;
+  box-shadow: 0 10px 30px -12px rgba(255, 255, 255, 0.25);
+}
+.bhero__full {
+  margin-top: 22px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--em-200);
+  border: 1px solid var(--gold-line);
+  background: rgba(47, 191, 140, 0.08);
+}
+.bhero__full + .bhero__title {
+  margin-top: 12px;
+}
+
+/* reader */
+.app.is-reading .tabbar {
+  display: none;
+}
+.app.is-reading .view {
+  padding-bottom: calc(var(--safe-b) + 120px);
+}
+.reader {
+  --paper: #000;
+  --ink: #ece9e2;
+  --ink-soft: #9a9a93;
+  --rule: rgba(255, 255, 255, 0.1);
+  min-height: 100dvh;
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: clip;
+}
+.reader--ivory {
+  --paper: #f3eee4;
+  --ink: #1c1a16;
+  --ink-soft: #6d665a;
+  --rule: rgba(28, 26, 22, 0.14);
+}
+
+.reader__progress {
+  position: fixed;
+  top: 0;
+  inset-inline: 0;
+  height: 2px;
+  background: var(--em-400);
+  transform-origin: right;
+  z-index: 40;
+  transition: transform 0.2s linear;
+}
+.reader__bar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  padding: calc(var(--safe-t) + 8px) var(--gutter) 8px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--rule);
+}
+.reader__bar .icon-btn,
+.reader__bar .back-btn {
+  color: var(--ink);
+  background: transparent;
+  border-color: var(--rule);
+}
+.reader__where {
+  display: grid;
+  text-align: center;
+  color: var(--ink);
+}
+.reader__where span {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+.reader__where strong {
+  font-size: 14px;
+  font-weight: 700;
+}
+.reader__page {
+  max-width: 36em;
+  margin: 0 auto;
+  padding: 26px var(--gutter) 40px;
+}
+.reader__titlepage {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 6px;
+  padding: 18px 0 40px;
+  margin-bottom: 30px;
+  border-bottom: 1px solid var(--rule);
+}
+.reader__titlepage .cover {
+  margin-bottom: 18px;
+}
+.reader__titlepage h1 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 34px;
+  line-height: 1.1;
+}
+.reader__author {
+  color: var(--ink-soft);
+  font-size: 16px;
+}
+.reader__badge {
+  margin-top: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--em-400);
+}
+.reader__badge--quiet {
+  color: var(--ink-soft);
+}
+.reader__chnum {
+  font-size: 13px;
+  color: var(--em-400);
+  font-weight: 700;
+}
+.reader__chtitle {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 1.15;
+  margin: 6px 0 14px;
+  text-wrap: balance;
+}
+.reader__listen {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--em-400);
+  padding: 6px 0 22px;
+}
+.reader__text p {
+  font-family: var(--serif);
+  font-size: var(--rsize, 19px);
+  line-height: 1.85;
+  margin-bottom: 1.1em;
+  text-align: start;
+}
+
+.reader__nav {
+  display: grid;
+  gap: 6px;
+  margin-top: 38px;
+  padding-top: 26px;
+  border-top: 1px solid var(--rule);
+}
+.reader__nav .btn--quiet {
+  color: var(--ink-soft);
+}
+.reader__end {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 20px;
+}
+.reader__note {
+  margin-top: 28px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+.reader__prefs {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.reader__prefs .seg {
+  margin: 0;
+  flex: 1;
+}
+.reader__sizes {
+  display: flex;
+  border: 1px solid var(--hair-2);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.reader__sizes button {
+  width: 52px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  font-family: var(--serif);
+  font-size: 15px;
+}
+.reader__sizes button + button {
+  border-inline-start: 1px solid var(--hair-2);
+}
+.reader__sizes button:disabled {
+  opacity: 0.3;
+}
+.toc {
+  display: grid;
+}
+.toc button {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  width: 100%;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--hair);
+  text-align: start;
+  font-size: 16px;
+}
+.toc button.is-on {
+  color: var(--em-200);
+  font-weight: 700;
+}
+.toc__n {
+  font-family: var(--serif);
+  color: var(--text-3);
+  width: 18px;
+}
+
+/* home: reading rows, the full book, must-reads */
+.readrows {
+  display: grid;
+  gap: 10px;
+}
+.readrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border-radius: 20px;
+  background: #07090a;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  text-align: start;
+}
+.readrow .cover--sm {
+  width: 52px;
+}
+.readrow__body {
+  display: grid;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+.readrow__body strong {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+}
+.readrow__body > span {
+  font-size: 13px;
+  color: var(--text-3);
+}
+.readrow__go {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  color: #000;
+}
+.fullbook {
+  position: relative;
+  display: flex;
+  gap: 18px;
+  width: 100%;
+  padding: 20px;
+  border-radius: 26px;
+  text-align: start;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(90% 120% at 100% 0%, rgba(23, 154, 112, 0.28), transparent 60%),
+    linear-gradient(180deg, #0a0d0c, #050606);
+  border: 1px solid var(--gold-line);
+}
+.fullbook__cover .cover--lg {
+  width: 112px;
+  transform: rotate(-3deg);
+}
+.fullbook__body {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+}
+.fullbook__tag {
+  justify-self: start;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #000;
+  background: var(--em-300);
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-bottom: 6px;
+}
+.fullbook__body strong {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.fullbook__by {
+  font-size: 13px;
+  color: var(--text-2);
+}
+.fullbook__desc {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.5;
+  margin-top: 6px;
+}
+.fullbook__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--em-200);
+}
+.shelf--big .shelf__item,
+.shelf--big .shelf__item .cover--md {
+  width: 150px;
+}
+
+body:has(.reader--ivory),
+html:has(.reader--ivory) {
+  background: #f3eee4;
+}
+.app.is-reading .dock::before {
+  display: none;
+}

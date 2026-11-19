@@ -3,7 +3,8 @@ import { load, usePlayer } from '../engine/player'
 import { navigate } from '../lib/router'
 import { toggleSaved, useStore } from '../lib/store'
 import { Backdrop, Cover, bookHue } from '../ui/Cover'
-import { IconBookmark, IconSpark } from '../ui/Icons'
+import { IconBook, IconBookmark, IconSpark } from '../ui/Icons'
+import { fullTexts } from '../content/fulltext'
 import { BackButton, LessonRow, PlayGlyph, SectionHead, startLesson } from '../ui/Kit'
 import { openPlayer } from '../ui/uiState'
 import { NotFound } from './Explore'
@@ -21,6 +22,8 @@ export function BookScreen({ id }: { id: string }) {
   const saved = s.saved.includes(b.id)
   const hue = bookHue(b)
   const related = booksByCategory(b.category).filter((x) => x.id !== b.id)
+  const reading = s.reading?.[b.id]
+  const full = !!fullTexts[b.id]
 
   return (
     <div className="screen book" style={{ ['--hue' as string]: hue }}>
@@ -30,6 +33,7 @@ export function BookScreen({ id }: { id: string }) {
         </div>
         <BackButton fallback="/explore" />
         <Cover book={b} size="xl" className="bhero__cover" />
+        {full && <span className="bhero__full">הספר המלא בעברית, לקריאה ולהאזנה</span>}
         <h1 className="bhero__title">{b.title}</h1>
         <p className="bhero__author">{b.author}</p>
         <p className="bhero__orig" lang="en" dir="ltr">
@@ -38,7 +42,11 @@ export function BookScreen({ id }: { id: string }) {
         <div className="bhero__actions">
           <button className="btn btn--primary btn--big" onClick={() => startLesson(nextLesson.id)}>
             <PlayGlyph playing={playingHere} size={18} />
-            {playingHere ? 'מתנגן עכשיו' : doneCount === b.lessons.length ? 'האזן שוב' : started ? 'המשך ללמוד' : 'התחל ללמוד'}
+            {playingHere ? 'מתנגן' : started ? 'המשך האזנה' : 'האזנה'}
+          </button>
+          <button className="btn btn--read btn--big" onClick={() => navigate(`/read/${b.id}`)}>
+            <IconBook size={18} />
+            {reading ? 'המשך קריאה' : full ? 'קרא את הספר' : 'קריאה'}
           </button>
           <button className={`icon-btn icon-btn--ring ${saved ? 'is-on' : ''}`} onClick={() => toggleSaved(b.id)} aria-pressed={saved} aria-label={saved ? 'הסר משמורים' : 'שמור לספרייה'}>
             <IconBookmark filled={saved} size={20} />

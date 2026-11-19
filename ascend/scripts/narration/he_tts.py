@@ -32,8 +32,8 @@ def phonemes(text):
     return _cache[text]
 def flush_cache():
     _json.dump(_cache, open(_CACHE_PATH, 'w'), ensure_ascii=False)
-def say(text, name, pace=1.12):
+def say(text, name, pace=1.12, ns=None, nw=None):
     ph = phonemes(text)
     v = voice(name)
-    samples, sr = v.create(ph, is_phonemes=True, length_scale=pace)
+    samples, sr = v.create(ph, is_phonemes=True, length_scale=pace, noise_scale=ns, noise_w=nw)
     return np.asarray(samples, dtype=np.float32), sr

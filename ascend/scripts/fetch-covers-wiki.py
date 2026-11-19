@@ -1,15 +1,6 @@
 """Real book covers from each book's Wikipedia article (the article's lead image)."""
 import json, subprocess, os, sys, urllib.parse
-ARTICLES = {
- 'psychology-of-money': 'The Psychology of Money', 'think-and-grow-rich': 'Think and Grow Rich', 
- 'intelligent-investor': 'The Intelligent Investor', 'influence': 'Influence: Science and Practice',
- 'getting-to-yes': 'Getting to Yes', 'thinking-fast-and-slow': 'Thinking, Fast and Slow', 'laws-of-human-nature': 'The Laws of Human Nature',
-  'how-to-win-friends': 'How to Win Friends and Influence People', 'crucial-conversations': 'Crucial Conversations',
- 'nonviolent-communication': 'Nonviolent Communication', 'charisma-myth': 'The Charisma Myth', 'six-pillars-self-esteem': 'The Six Pillars of Self-Esteem',
- 'courage-to-be-disliked': 'The Courage to Be Disliked', 'atomic-habits': 'Atomic Habits', 'deep-work': 'Deep Work', 'essentialism': 'Essentialism: The Disciplined Pursuit of Less',
- 'lean-startup': 'The Lean Startup', 'zero-to-one': 'Zero to One', 'e-myth-revisited': 'The E-Myth Revisited', 'seven-habits': 'The 7 Habits of Highly Effective People',
- 'start-with-why': 'Start with Why', 'extreme-ownership': 'Extreme Ownership',
-}
+ARTICLES = {}  # all reliable covers fetched; add an entry only after checking its article shows the cover
 UA = 'ASCEND-app-cover-fetch/1.0'
 def curl(url, out=None):
     import time as _t
