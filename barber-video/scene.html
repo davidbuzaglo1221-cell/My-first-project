@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>Barber Tips Video</title>
+<style>
+  @font-face { font-family: 'Heebo'; font-weight: 400; src: url(fonts/Heebo_wght_400.ttf); }
+  @font-face { font-family: 'Heebo'; font-weight: 700; src: url(fonts/Heebo_wght_700.ttf); }
+  @font-face { font-family: 'Heebo'; font-weight: 900; src: url(fonts/Heebo_wght_900.ttf); }
+  @font-face { font-family: 'Bebas'; src: url(fonts/Bebas_Neue.ttf); }
+  @font-face { font-family: 'Secular'; src: url(fonts/Secular_One.ttf); }
+  html, body { margin: 0; background: #000; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+// =====================================================================
+//  30-second vertical video: 3 tips for barbers. Deterministic renderer:
+//  window.renderFrame(t) draws the frame at time t (seconds).
+// =====================================================================
+const W = 1080, H = 1920, DUR = 30;
+const out = document.getElementById('c');
+const octx = out.getContext('2d');
+const scene = document.createElement('canvas'); scene.width = W; scene.height = H;
+const ctx = scene.getContext('2d');
+
+const C = {
+  bg0: '#0b0a0c', bg1: '#1b1510', gold: '#E2B254', gold2: '#F6D88E', goldDeep: '#9C7128',
+  cream: '#F4ECDD', red: '#E0383B', blue: '#2F5FD0', skin: '#C98E67', skinShade: '#A66F4D',
+  skinLight: '#E2AC86', hair: '#17110D', ok: '#4CD07D'
+};
+
+// ---------- helpers ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, k) => a + (b - a) * k;
+const smooth = k => k * k * (3 - 2 * k);
+const easeOut = k => 1 - Math.pow(1 - k, 3);
+const easeIn = k => k * k * k;
+const easeInOut = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const backOut = k => { const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); };
+const elastic = k => k === 0 ? 0 : k === 1 ? 1 : Math.pow(2, -10 * k) * Math.sin((k * 10 - .75) * (2 * Math.PI / 3)) + 1;
+function rng(seed) { let s = seed >>> 0; return () => { s = (s + 0x6D2B79F5) >>> 0; let t = s; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function hexA(hex, a) { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; }
+
+// ---------- static assets (built once) ----------
+const grain = document.createElement('canvas'); grain.width = 512; grain.height = 512;
+{ const g = grain.getContext('2d'); const id = g.createImageData(512, 512); const r = rng(7);
+  for (let i = 0; i < id.data.length; i += 4) { const v = r() * 255; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 22; }
+  g.putImageData(id, 0, 0); }
+
+// dust particles (background gold motes)
+const motes = []; { const r = rng(11); for (let i = 0; i < 70; i++) motes.push({ x: r() * W, y: r() * H, s: 1 + r() * 3.5, v: 10 + r() * 30, ph: r() * 6.28, a: .15 + r() * .45 }); }
+
+// ---------- head geometry ----------
+// REAR VIEW (origin = skull centre). Units = px at scale 1.
+function rearSkull() { const p = new Path2D(); p.ellipse(0, -40, 232, 272, 0, 0, Math.PI * 2); return p; }
+function rearHairMask() { const p = new Path2D(); p.moveTo(-300, -400); p.lineTo(300, -400); p.lineTo(300, 175);
+  p.bezierCurveTo(150, 175, 90, 215, 0, 222); p.bezierCurveTo(-90, 215, -150, 175, -300, 175); p.closePath(); return p; }
+// SIDE PROFILE facing left (origin = roughly ear).
+function sideHead() {
+  const p = new Path2D();
+  p.moveTo(30, -300);
+  p.bezierCurveTo(170, -305, 275, -200, 280, -60);   // crown -> back
+  p.bezierCurveTo(285, 60, 240, 160, 185, 215);       // occipital -> nape
+  p.bezierCurveTo(165, 260, 165, 320, 175, 560);      // back of neck
+  p.lineTo(-95, 560);
+  p.bezierCurveTo(-85, 420, -80, 340, -95, 300);      // throat
+  p.bezierCurveTo(-140, 290, -175, 282, -205, 262);   // under jaw
+  p.bezierCurveTo(-232, 245, -238, 222, -236, 200);   // chin
+  p.bezierCurveTo(-252, 190, -250, 174, -238, 168);   // lower lip
+  p.bezierCurveTo(-256, 158, -252, 140, -240, 132);   // upper lip
+  p.bezierCurveTo(-250, 122, -262, 112, -270, 100);   // philtrum to nose
+  p.bezierCurveTo(-300, 92, -296, 70, -280, 52);      // nose tip
+  p.bezierCurveTo(-262, 25, -246, 0, -244, -24);      // nose bridge
+  p.bezierCurveTo(-258, -40, -254, -62, -246, -80);   // brow
+  p.bezierCurveTo(-240, -200, -150, -298, 30, -300);  // forehead -> top
+  p.closePath(); return p;
+}
+function sideHairMask() {
+  const p = new Path2D();
+  p.moveTo(-320, -500); p.lineTo(400, -500); p.lineTo(400, 222);
+  p.lineTo(196, 222);                                  // nape line
+  p.bezierCurveTo(160, 150, 140, 90, 125, 40);         // behind ear
+  p.bezierCurveTo(110, -40, 40, -40, 30, 20);          // over ear
+  p.bezierCurveTo(25, 60, 10, 100, -12, 110);          // sideburn bottom
+  p.lineTo(-38, 105);
+  p.bezierCurveTo(-40, 40, -48, -40, -62, -95);        // temple
+  p.bezierCurveTo(-120, -150, -190, -170, -232, -175); // front hairline
+  p.lineTo(-320, -200); p.closePath(); return p;
+}
+// hair-strand sample points inside each mask
+function samplePoints(pathA, pathB, box, n, seed) {
+  const r = rng(seed), pts = [];
+  let guard = 0;
+  while (pts.length < n && guard++ < n * 20) {
+    const x = lerp(box[0], box[2], r()), y = lerp(box[1], box[3], r());
+    if (ctx.isPointInPath(pathA, x, y) && ctx.isPointInPath(pathB, x, y)) pts.push({ x, y, a: r() * Math.PI, l: 5 + r() * 9, j: r() });
+  }
+  return pts;
+}
+const P = {}; // built after fonts load
+
+// density functions: 1 = full hair, 0 = skin
+const goodRear = y => smooth(clamp((205 - y) / 270));
+const badRear = y => { const v = clamp((205 - y) / 270); return Math.min(1, Math.ceil(v * 4) / 4 * (v > 0.02 ? 1 : 0)); };
+const goodSide = y => smooth(clamp((218 - y) / 300));
+
+function fillDensity(c, mask, clipPath, dens, y0, y1, hairCol, x0 = -400, x1 = 400, hard = false) {
+  c.save(); c.clip(clipPath); c.clip(mask);
+  const g = c.createLinearGradient(0, y0, 0, y1);
+  const N = 60;
+  for (let i = 0; i <= N; i++) { const y = lerp(y0, y1, i / N); const d = dens(y); g.addColorStop(i / N, hexA(hairCol, 0.12 + 0.88 * d)); }
+  c.fillStyle = g; c.fillRect(x0, y0, x1 - x0, y1 - y0);
+  c.restore();
+}
+function drawStrands(c, pts, dens, col, clipPath, mask, alpha = 1) {
+  c.save(); c.clip(clipPath); c.clip(mask);
+  c.strokeStyle = col; c.lineCap = 'round';
+  for (const p of pts) {
+    const d = dens(p.y, p.x); if (d < 0.03) continue;
+    const show = p.j < d * 1.15; if (!show) continue;
+    c.globalAlpha = alpha * (0.35 + 0.65 * d);
+    c.lineWidth = 1.2 + d * 1.6;
+    const l = p.l * (0.25 + 0.9 * d);
+    c.beginPath(); c.moveTo(p.x, p.y); c.lineTo(p.x + Math.cos(p.a) * l * .35, p.y - Math.sin(p.a) * l); c.stroke();
+  }
+  c.restore(); c.globalAlpha = 1;
+}
+
+// Rear view head with configurable hair density
+function drawRearHead(c, x, y, s, dens, opts = {}) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  // shoulders + neck
+  const sh = c.createLinearGradient(0, 250, 0, 760); sh.addColorStop(0, '#2a2420'); sh.addColorStop(1, '#0f0c0a');
+  c.fillStyle = sh; c.beginPath(); c.moveTo(-470, 760); c.bezierCurveTo(-450, 470, -260, 420, -150, 400); c.lineTo(150, 400); c.bezierCurveTo(260, 420, 450, 470, 470, 760); c.closePath(); c.fill();
+  // barber cape collar line
+  c.strokeStyle = hexA(C.gold, .35); c.lineWidth = 4; c.beginPath(); c.moveTo(-170, 405); c.quadraticCurveTo(0, 440, 170, 405); c.stroke();
+  const ng = c.createLinearGradient(-130, 0, 130, 0); ng.addColorStop(0, C.skinShade); ng.addColorStop(.5, C.skin); ng.addColorStop(1, C.skinShade);
+  c.fillStyle = ng; c.beginPath(); c.moveTo(-125, 150); c.lineTo(125, 150); c.bezierCurveTo(128, 300, 140, 380, 165, 410); c.lineTo(-165, 410); c.bezierCurveTo(-140, 380, -128, 300, -125, 150); c.fill();
+  // ears
+  for (const sx of [-1, 1]) { c.fillStyle = C.skinShade; c.beginPath(); c.ellipse(sx * 232, 30, 34, 68, sx * 0.15, 0, Math.PI * 2); c.fill();
+    c.fillStyle = C.skin; c.beginPath(); c.ellipse(sx * 236, 28, 22, 54, sx * 0.15, 0, Math.PI * 2); c.fill(); }
+  // skull skin
+  const skull = P.rearSkull;
+  const sg = c.createRadialGradient(-60, -120, 40, 0, -40, 300); sg.addColorStop(0, C.skinLight); sg.addColorStop(.6, C.skin); sg.addColorStop(1, C.skinShade);
+  c.fillStyle = sg; c.fill(skull);
+  // hair
+  fillDensity(c, P.rearMask, skull, dens, -320, 240, C.hair);
+  drawStrands(c, P.rearPts, dens, '#050302', skull, P.rearMask);
+  // subtle sheen
+  c.save(); c.clip(skull); const hl = c.createRadialGradient(-80, -200, 10, -80, -200, 220); hl.addColorStop(0, 'rgba(255,240,220,.10)'); hl.addColorStop(1, 'rgba(255,240,220,0)'); c.fillStyle = hl; c.fillRect(-300, -400, 600, 600); c.restore();
+  if (opts.after) opts.after(c);
+  c.restore();
+}
+
+// Side profile head with configurable density
+function drawSideHead(c, x, y, s, dens, opts = {}) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  // shoulders
+  const sh = c.createLinearGradient(0, 420, 0, 900); sh.addColorStop(0, '#2a2420'); sh.addColorStop(1, '#0f0c0a');
+  c.fillStyle = sh; c.beginPath(); c.moveTo(-420, 900); c.bezierCurveTo(-400, 600, -250, 520, -100, 500); c.lineTo(190, 500); c.bezierCurveTo(330, 520, 480, 600, 500, 900); c.closePath(); c.fill();
+  c.strokeStyle = hexA(C.gold, .35); c.lineWidth = 4; c.beginPath(); c.moveTo(-110, 505); c.quadraticCurveTo(40, 540, 200, 505); c.stroke();
+  const head = P.sideHead;
+  const hg = c.createLinearGradient(-280, 0, 280, 0); hg.addColorStop(0, C.skinLight); hg.addColorStop(.55, C.skin); hg.addColorStop(1, C.skinShade);
+  c.fillStyle = hg; c.fill(head);
+  // jaw shadow
+  c.save(); c.clip(head); c.fillStyle = 'rgba(80,40,20,.18)'; c.beginPath(); c.ellipse(-60, 330, 150, 60, -0.3, 0, Math.PI * 2); c.fill(); c.restore();
+  // hair
+  fillDensity(c, P.sideMask, head, dens, -320, 240, C.hair);
+  drawStrands(c, P.sidePts, dens, '#050302', head, P.sideMask);
+  // face details
+  c.strokeStyle = 'rgba(60,30,15,.85)'; c.lineWidth = 6; c.lineCap = 'round';
+  c.beginPath(); c.moveTo(-232, -55); c.quadraticCurveTo(-200, -72, -165, -62); c.stroke();     // brow
+  c.lineWidth = 5; c.beginPath(); c.moveTo(-226, -22); c.quadraticCurveTo(-205, -30, -186, -20); c.stroke(); // eye
+  c.lineWidth = 4; c.beginPath(); c.moveTo(-262, 98); c.quadraticCurveTo(-246, 104, -240, 92); c.stroke(); // nostril
+  // ear
+  c.fillStyle = C.skinShade; c.beginPath(); c.ellipse(80, 40, 46, 76, 0.18, 0, Math.PI * 2); c.fill();
+  c.fillStyle = C.skin; c.beginPath(); c.ellipse(76, 38, 32, 60, 0.18, 0, Math.PI * 2); c.fill();
+  c.strokeStyle = 'rgba(90,45,25,.7)'; c.lineWidth = 5; c.beginPath(); c.arc(80, 30, 22, -1.9, 1.4); c.stroke();
+  if (opts.after) opts.after(c);
+  c.restore();
+}
+
+// ---------- icons ----------
+function drawClipper(c, x, y, s, rot, buzz) {
+  c.save(); c.translate(x + (buzz ? Math.sin(buzz * 90) * 2.5 : 0), y + (buzz ? Math.cos(buzz * 77) * 2.5 : 0)); c.rotate(rot); c.scale(s, s);
+  c.shadowColor = 'rgba(0,0,0,.6)'; c.shadowBlur = 30; c.shadowOffsetY = 12;
+  const bg = c.createLinearGradient(-60, 0, 60, 0); bg.addColorStop(0, '#2b2b31'); bg.addColorStop(.5, '#4a4a54'); bg.addColorStop(1, '#1d1d22');
+  c.fillStyle = bg; rr(c, -58, -20, 116, 280, 46); c.fill(); c.shadowBlur = 0; c.shadowOffsetY = 0;
+  const gg = c.createLinearGradient(-60, 0, 60, 0); gg.addColorStop(0, C.goldDeep); gg.addColorStop(.5, C.gold2); gg.addColorStop(1, C.goldDeep);
+  c.fillStyle = gg; rr(c, -66, -62, 132, 52, 10); c.fill();       // blade housing
+  c.fillStyle = '#d8d8de'; c.fillRect(-62, -78, 124, 18);          // blade
+  c.fillStyle = '#8a8a92'; for (let i = -58; i < 60; i += 9) c.fillRect(i, -86, 5, 10); // teeth
+  c.fillStyle = gg; rr(c, -16, 40, 32, 60, 14); c.fill();          // lever
+  c.strokeStyle = 'rgba(255,255,255,.08)'; c.lineWidth = 2; for (let i = 120; i < 240; i += 14) { c.beginPath(); c.moveTo(-40, i); c.lineTo(40, i); c.stroke(); }
+  c.restore();
+}
+function drawTrimmer(c, x, y, s, rot, buzz) {
+  c.save(); c.translate(x + (buzz ? Math.sin(buzz * 101) * 2 : 0), y); c.rotate(rot); c.scale(s, s);
+  c.shadowColor = 'rgba(0,0,0,.6)'; c.shadowBlur = 24; c.shadowOffsetY = 10;
+  const bg = c.createLinearGradient(-36, 0, 36, 0); bg.addColorStop(0, C.goldDeep); bg.addColorStop(.5, C.gold2); bg.addColorStop(1, C.goldDeep);
+  c.fillStyle = bg; rr(c, -34, -10, 68, 250, 30); c.fill(); c.shadowBlur = 0; c.shadowOffsetY = 0;
+  c.fillStyle = '#e6e6ea'; c.fillRect(-40, -34, 80, 26);
+  c.fillStyle = '#9a9aa2'; for (let i = -38; i < 40; i += 7) c.fillRect(i, -42, 4, 10);
+  c.fillStyle = '#1a1a1e'; for (let i = 60; i < 220; i += 18) { c.beginPath(); c.arc(0, i, 6, 0, 7); c.fill(); }
+  c.restore();
+}
+function drawScissors(c, x, y, s, open, rot = 0) {
+  c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s); c.lineCap = 'round';
+  for (const sg of [-1, 1]) {
+    c.save(); c.rotate(sg * open);
+    c.fillStyle = '#e8e8ee'; c.beginPath(); c.moveTo(0, -8); c.lineTo(-150, sg * -2); c.lineTo(0, 8); c.closePath(); c.fill();
+    c.strokeStyle = C.gold; c.lineWidth = 12; c.beginPath(); c.moveTo(0, 0); c.lineTo(60, sg * 10); c.stroke();
+    c.beginPath(); c.ellipse(92, sg * 22, 34, 24, sg * .3, 0, 7); c.stroke();
+    c.restore();
+  }
+  c.fillStyle = C.gold2; c.beginPath(); c.arc(0, 0, 9, 0, 7); c.fill();
+  c.restore();
+}
+function rr(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+
+function drawPole(c, x, y, w, h, t) {
+  c.save(); c.translate(x, y);
+  // caps
+  const cap = c.createLinearGradient(-w / 2 - 14, 0, w / 2 + 14, 0); cap.addColorStop(0, C.goldDeep); cap.addColorStop(.5, C.gold2); cap.addColorStop(1, C.goldDeep);
+  c.fillStyle = cap; rr(c, -w / 2 - 16, -h / 2 - 46, w + 32, 40, 14); c.fill(); rr(c, -w / 2 - 16, h / 2 + 6, w + 32, 40, 14); c.fill();
+  c.beginPath(); c.arc(0, -h / 2 - 60, 22, 0, 7); c.fill();
+  // glass
+  c.save(); rr(c, -w / 2, -h / 2, w, h, w / 2.2); c.clip();
+  c.fillStyle = '#f7f3ea'; c.fillRect(-w / 2, -h / 2, w, h);
+  const sp = 120, off = (t * 160) % (sp * 3);
+  c.save(); c.transform(1, -0.55, 0, 1, 0, 0);
+  for (let k = -12; k < 20; k++) { const yy = -h / 2 + k * sp - off + 200; c.fillStyle = (k % 3 + 3) % 3 === 0 ? C.red : (k % 3 + 3) % 3 === 1 ? '#f7f3ea' : C.blue; c.fillRect(-w, yy, w * 2, sp * .62); }
+  c.restore();
+  const gl = c.createLinearGradient(-w / 2, 0, w / 2, 0); gl.addColorStop(0, 'rgba(0,0,0,.45)'); gl.addColorStop(.3, 'rgba(255,255,255,.35)'); gl.addColorStop(.45, 'rgba(255,255,255,0)'); gl.addColorStop(1, 'rgba(0,0,0,.5)');
+  c.fillStyle = gl; c.fillRect(-w / 2, -h / 2, w, h);
+  c.restore(); c.restore();
+}
+
+// ---------- text ----------
+function font(w, s, fam = 'Heebo') { return `${w} ${s}px ${fam}`; }
+// Word-by-word pop-in, RTL. words: [{w, c}] or strings.
+function words(c, list, cx, y, size, t, t0, stag = .07, opts = {}) {
+  c.save(); c.direction = 'rtl'; c.textBaseline = 'alphabetic';
+  const fam = opts.fam || 'Heebo', wt = opts.weight || 900;
+  c.font = font(wt, size, fam);
+  const items = list.map(o => typeof o === 'string' ? { w: o } : o);
+  const space = size * 0.28;
+  const widths = items.map(o => c.measureText(o.w).width);
+  const total = widths.reduce((a, b) => a + b, 0) + space * (items.length - 1);
+  let x = cx + total / 2;
+  items.forEach((o, i) => {
+    const k = seg(t, t0 + i * stag, t0 + i * stag + .38);
+    if (k <= 0) { x -= widths[i] + space; return; }
+    const sc = lerp(1.6, 1, backOut(k)), a = clamp(k * 2.2);
+    const mx = x - widths[i] / 2;
+    c.save(); c.translate(mx, y - size * .32); c.scale(sc, sc); c.translate(-mx, -(y - size * .32));
+    c.globalAlpha = a * (opts.alpha ?? 1);
+    c.textAlign = 'right';
+    if (opts.stroke) { c.lineWidth = opts.stroke; c.strokeStyle = 'rgba(0,0,0,.85)'; c.lineJoin = 'round'; c.strokeText(o.w, x, y); }
+    if (o.c === 'gold') { const g = c.createLinearGradient(0, y - size, 0, y); g.addColorStop(0, C.gold2); g.addColorStop(1, C.gold); c.fillStyle = g; c.shadowColor = hexA(C.gold, .55); c.shadowBlur = 30; }
+    else c.fillStyle = o.c || C.cream;
+    c.fillText(o.w, x, y);
+    c.restore();
+    x -= widths[i] + space;
+  });
+  c.restore();
+}
+function label(c, txt, x, y, size, t, t0, opts = {}) {
+  const k = seg(t, t0, t0 + .35); if (k <= 0) return;
+  c.save(); c.direction = 'rtl'; c.font = font(opts.weight || 700, size); c.textAlign = 'center'; c.textBaseline = 'middle';
+  const w = c.measureText(txt).width + size * 1.1, h = size * 1.75;
+  const sc = backOut(k);
+  c.translate(x, y); c.scale(sc, sc); c.globalAlpha = clamp(k * 2) * (opts.alpha ?? 1);
+  c.fillStyle = opts.bg || 'rgba(12,10,9,.88)'; rr(c, -w / 2, -h / 2, w, h, h / 2); c.fill();
+  c.strokeStyle = opts.border || C.gold; c.lineWidth = 3; c.stroke();
+  c.fillStyle = opts.color || C.cream; c.fillText(txt, 0, 3);
+  c.restore();
+}
+function tipChip(c, n, t, t0) {
+  const k = seg(t, t0, t0 + .5); if (k <= 0) return;
+  c.save(); c.translate(W / 2, 250); const sc = backOut(k); c.scale(sc, sc); c.globalAlpha = clamp(k * 2);
+  c.fillStyle = C.gold; rr(c, -150, -46, 300, 92, 46); c.fill();
+  c.direction = 'rtl'; c.fillStyle = '#120e0a'; c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.font = font(900, 46); c.fillText('טיפ', 50, 4);
+  c.direction = 'ltr'; c.font = `78px Bebas`; c.fillText(n, -52, 8);
+  c.restore();
+}
+
+// ---------- background ----------
+function background(c, t, tint = 0) {
+  const g = c.createRadialGradient(W / 2, H * .42, 80, W / 2, H * .5, H * .8);
+  g.addColorStop(0, '#2a2017'); g.addColorStop(.55, C.bg1); g.addColorStop(1, C.bg0);
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+  // diagonal pole stripes, very faint
+  c.save(); c.globalAlpha = .045; c.translate(W / 2, H / 2); c.rotate(-0.6);
+  const off = (t * 40) % 180;
+  for (let i = -16; i < 16; i++) { c.fillStyle = i % 3 === 0 ? C.red : i % 3 === 1 ? '#ffffff' : C.blue; c.fillRect(-1600, i * 180 + off, 3200, 70); }
+  c.restore();
+  // floor glow under subject
+  const fg = c.createRadialGradient(W / 2, H * .62, 20, W / 2, H * .62, 620); fg.addColorStop(0, hexA(C.gold, .16 + tint)); fg.addColorStop(1, hexA(C.gold, 0));
+  c.fillStyle = fg; c.fillRect(0, 0, W, H);
+  // motes
+  for (const m of motes) { const y = (m.y - t * m.v + H * 10) % H, x = m.x + Math.sin(t * .8 + m.ph) * 18;
+    c.globalAlpha = m.a * (.6 + .4 * Math.sin(t * 2 + m.ph)); c.fillStyle = C.gold2; c.beginPath(); c.arc(x, y, m.s, 0, 7); c.fill(); }
+  c.globalAlpha = 1;
+}
+
+// Falling hair clippings (deterministic, spawned by time)
+function clippings(c, t, from, to, ox, oy, spread, seed, rate = 40) {
+  const r = rng(seed); const n = Math.floor((to - from) * rate);
+  c.save(); c.strokeStyle = '#0a0706'; c.lineCap = 'round';
+  for (let i = 0; i < n; i++) {
+    const born = from + i / rate + r() * .02, vx = (r() - .5) * spread, vy = -80 - r() * 200, rot0 = r() * 6, vr = (r() - .5) * 10, len = 6 + r() * 14, sx = ox + (r() - .5) * 60, sy = oy + (r() - .5) * 60;
+    const age = t - born; if (age < 0 || age > 1.6) continue;
+    const x = sx + vx * age, y = sy + vy * age + 900 * age * age;
+    c.globalAlpha = 1 - age / 1.6; c.lineWidth = 2.5;
+    const a = rot0 + vr * age; c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.cos(a) * len, y + Math.sin(a) * len); c.stroke();
+  }
+  c.restore(); c.globalAlpha = 1;
+}
+
+function dashedLine(c, pts, k, col, w = 6, dash = [18, 14]) {
+  // draw polyline progressively, k in 0..1
+  let total = 0; const L = [];
+  for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); L.push(d); total += d; }
+  let rem = total * k; c.save(); c.strokeStyle = col; c.lineWidth = w; c.setLineDash(dash); c.lineCap = 'round'; c.shadowColor = col; c.shadowBlur = 18;
+  c.beginPath(); c.moveTo(pts[0][0], pts[0][1]); let end = pts[0];
+  for (let i = 1; i < pts.length && rem > 0; i++) { const f = Math.min(1, rem / L[i - 1]); end = [lerp(pts[i - 1][0], pts[i][0], f), lerp(pts[i - 1][1], pts[i][1], f)]; c.lineTo(end[0], end[1]); rem -= L[i - 1]; }
+  c.stroke(); c.setLineDash([]);
+  if (k > 0 && k < 1) { c.fillStyle = '#fff'; c.beginPath(); c.arc(end[0], end[1], w * 1.4, 0, 7); c.fill(); }
+  c.restore(); return end;
+}
+function curvePts(fn, n = 60) { const a = []; for (let i = 0; i <= n; i++) a.push(fn(i / n)); return a; }
+
+// Progress bar (story style)
+function progress(c, t) {
+  const segs = [[0, 4], [4, 12], [12, 20], [20, 27], [27, 30]];
+  const gap = 12, x0 = 60, total = W - 120, w = (total - gap * (segs.length - 1)) / segs.length;
+  segs.forEach(([a, b], i) => {
+    // RTL: first segment on the right
+    const x = x0 + total - (i + 1) * w - i * gap;
+    c.fillStyle = 'rgba(255,255,255,.22)'; rr(c, x, 70, w, 8, 4); c.fill();
+    const k = seg(t, a, b); if (k > 0) { c.fillStyle = C.gold; rr(c, x + w * (1 - k), 70, w * k, 8, 4); c.fill(); }
+  });
+}
+
+// =====================================================================
+//  SCENES
+// =====================================================================
+function sceneHook(c, t) {
+  background(c, t);
+  // --- 0.0 - 2.0 : bad fade ---
+  if (t < 2.05) {
+    const zin = lerp(1.25, 1.0, easeOut(seg(t, 0, 1.2)));
+    const shake = t < .25 ? (1 - t / .25) * 18 : 0;
+    drawRearHead(c, W / 2 + Math.sin(t * 80) * shake, 1080, 1.55 * zin, badRear, {
+      after: (cc) => {
+        // flag the harsh lines
+        const k = seg(t, .75, 1.2);
+        if (k > 0) {
+          for (const [i, by] of [[0, 205 - 270 * .25], [1, 205 - 270 * .5], [2, 205 - 270 * .75]].map(([i, v]) => [i, v])) {
+            const kk = seg(t, .75 + i * .12, 1.05 + i * .12); if (kk <= 0) continue;
+            cc.save(); cc.strokeStyle = C.red; cc.lineWidth = 7; cc.shadowColor = C.red; cc.shadowBlur = 25; cc.globalAlpha = .95;
+            cc.beginPath(); cc.moveTo(-250, by + 2); cc.lineTo(lerp(-250, 250, easeOut(kk)), by + 2); cc.stroke(); cc.restore();
+          }
+        }
+      }
+    });
+    // flash at start
+    if (t < .35) { c.fillStyle = `rgba(255,245,225,${(1 - t / .35) * .9})`; c.fillRect(0, 0, W, H); }
+    words(c, ['הפייד', 'שלך'], W / 2, 430, 150, t, .15, .1, { stroke: 14 });
+    words(c, [{ w: 'נראה', c: 'gold' }, { w: 'ככה?', c: 'gold' }], W / 2, 600, 170, t, .4, .12, { stroke: 14 });
+    // stamp X
+    const k = seg(t, 1.35, 1.6);
+    if (k > 0) {
+      c.save(); c.translate(W / 2, 1330); const sc = lerp(2.4, 1, easeOut(k)); c.scale(sc, sc); c.rotate(-.12); c.globalAlpha = clamp(k * 1.6);
+      c.strokeStyle = C.red; c.lineWidth = 16; c.beginPath(); c.arc(0, 0, 130, 0, 7); c.stroke();
+      c.lineWidth = 26; c.lineCap = 'round'; c.beginPath(); c.moveTo(-60, -60); c.lineTo(60, 60); c.moveTo(60, -60); c.lineTo(-60, 60); c.stroke();
+      c.restore();
+      label(c, 'קווים = לקוח שלא חוזר', W / 2, 1560, 54, t, 1.5, { border: C.red });
+    }
+  }
+  // --- 2.0 - 4.0 : "3 tips" title card ---
+  if (t >= 2.0) {
+    const k = seg(t, 2.0, 2.45);
+    // giant 3
+    c.save(); c.translate(W / 2, 950); const sc = lerp(3.2, 1, easeOut(k)) * (1 + .02 * Math.sin(t * 6)); c.scale(sc, sc);
+    c.globalAlpha = clamp(k * 2);
+    c.font = '760px Bebas'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.direction = 'ltr';
+    const g = c.createLinearGradient(0, -330, 0, 330); g.addColorStop(0, C.gold2); g.addColorStop(.55, C.gold); g.addColorStop(1, C.goldDeep);
+    c.shadowColor = hexA(C.gold, .7); c.shadowBlur = 80; c.fillStyle = g; c.fillText('3', 0, 40);
+    c.shadowBlur = 0; c.lineWidth = 6; c.strokeStyle = 'rgba(255,255,255,.35)'; c.strokeText('3', 0, 40);
+    c.restore();
+    // scissors snapping across the 3
+    const ks = seg(t, 2.25, 2.9);
+    if (ks > 0 && ks < 1) drawScissors(c, lerp(W + 200, -200, easeInOut(ks)), 920, 1.6, Math.abs(Math.sin(ks * 18)) * .45, Math.PI);
+    words(c, [{ w: 'טיפים', c: C.cream }], W / 2, 1460, 170, t, 2.25, .1, { stroke: 12 });
+    words(c, ['לתספורת', 'שהלקוח', { w: 'יצלם', c: 'gold' }], W / 2, 1610, 84, t, 2.55, .09, { weight: 700, stroke: 10 });
+    label(c, '30 שניות · בלי בולשיט', W / 2, 520, 50, t, 2.8);
+  }
+}
+
+function sceneTip1(c, t) {
+  background(c, t);
+  const lt = t - 4;
+  const zin = lerp(1.08, 1, easeOut(seg(lt, 0, 1)));
+  const hx = W / 2, hy = 1160, s = 1.28 * zin;
+  // Full hair (before cut) slightly faded at nape
+  const dens = y => smooth(clamp((240 - y) / 120));
+  drawRearHead(c, hx, hy, s, dens, {
+    after: (cc) => {
+      // 1) parietal ridge
+      const k1 = seg(lt, .7, 1.5);
+      if (k1 > 0) dashedLine(cc, curvePts(u => [lerp(-245, 245, u), -95 - Math.sin(u * Math.PI) * 26]), easeOut(k1), C.gold, 7);
+      // 2) occipital bone
+      const k2 = seg(lt, 2.3, 3.0);
+      if (k2 > 0) dashedLine(cc, curvePts(u => [lerp(-170, 170, u), 95 + Math.sin(u * Math.PI) * 38]), easeOut(k2), '#7FC8FF', 7);
+      // 3) crown swirl
+      const k3 = seg(lt, 3.9, 4.8);
+      if (k3 > 0) { cc.save(); cc.strokeStyle = C.gold2; cc.lineWidth = 6; cc.shadowColor = C.gold2; cc.shadowBlur = 16; cc.beginPath();
+        const N = Math.floor(90 * easeOut(k3)); for (let i = 0; i <= N; i++) { const a = i / 90 * Math.PI * 5 + lt * 2, r = 4 + i / 90 * 60; const x = 30 + Math.cos(a) * r, y = -215 + Math.sin(a) * r * .7; i ? cc.lineTo(x, y) : cc.moveTo(x, y); }
+        cc.stroke(); cc.restore(); }
+      // 4) symmetry axis
+      const k4 = seg(lt, 5.5, 6.2);
+      if (k4 > 0) { cc.save(); cc.strokeStyle = 'rgba(255,255,255,.9)'; cc.lineWidth = 4; cc.setLineDash([10, 12]); cc.beginPath(); cc.moveTo(0, -330); cc.lineTo(0, lerp(-330, 260, easeOut(k4))); cc.stroke(); cc.setLineDash([]);
+        for (const sx of [-1, 1]) { const a = seg(lt, 6.0, 6.4); cc.globalAlpha = a; cc.fillStyle = C.ok; cc.beginPath(); cc.arc(sx * 150, -95 - 20, 14, 0, 7); cc.fill(); cc.beginPath(); cc.arc(sx * 120, 110, 14, 0, 7); cc.fill(); }
+        cc.restore(); }
+    }
+  });
+  // labels (screen space)
+  const toS = (x, y) => [hx + x * s, hy + y * s];
+  let [lx, ly] = toS(0, -95); label(c, 'רכס הקודקוד · כאן הפייד נגמר', W / 2, ly - 175, 46, lt, 1.2);
+  [lx, ly] = toS(0, 120); label(c, 'עצם העורף · נקודת המעבר', W / 2, ly + 210, 46, lt, 2.8, { border: '#7FC8FF' });
+  [lx, ly] = toS(30, -215); label(c, 'כיוון צמיחה · חותכים בזהירות', W / 2, ly - 230, 44, lt, 4.5, { border: C.gold2 });
+  if (lt > 5.9) label(c, 'סימטריה ✓ בדוק משני הצדדים', W / 2, 1720, 48, lt, 6.0, { border: C.ok });
+  // title
+  tipChip(c, '01', lt, .05);
+  words(c, ['קרא', 'את', { w: 'הראש', c: 'gold' }], W / 2, 450, 128, lt, .2, .08, { stroke: 12 });
+  words(c, ['לפני', 'שאתה', 'נוגע'], W / 2, 565, 92, lt, .45, .08, { weight: 700, stroke: 10 });
+}
+
+function sceneTip2(c, t) {
+  background(c, t);
+  const lt = t - 12;
+  const hx = W / 2 - 120, hy = 1120, s = 1.32;
+  // zones (bottom -> top) and guards
+  const zones = [{ g: '0', y0: 222, y1: 172 }, { g: '0.5', y0: 172, y1: 122 }, { g: '1', y0: 122, y1: 72 }, { g: '1.5', y0: 72, y1: 22 }, { g: '2', y0: 22, y1: -28 }, { g: '3', y0: -28, y1: -88 }];
+  const cutStart = .9, perZone = .72;
+  const zoneK = i => seg(lt, cutStart + i * perZone, cutStart + (i + 1) * perZone);
+  // density: blend from full (1) to the target fade as each zone gets cut
+  const dens = y => {
+    let cut = 0;
+    for (let i = 0; i < zones.length; i++) { const z = zones[i]; if (y <= z.y0 + 6 && y >= z.y1 - 6) cut = Math.max(cut, smooth(zoneK(i))); }
+    if (y > 222) cut = Math.max(cut, smooth(zoneK(0)));
+    return lerp(1, goodSide(y), cut);
+  };
+  const activeZone = Math.min(5, Math.max(0, Math.floor((lt - cutStart) / perZone)));
+  const cutting = lt > cutStart && lt < cutStart + zones.length * perZone;
+  const zk = cutting ? (lt - cutStart) / perZone - activeZone : 0;
+  drawSideHead(c, hx, hy, s, dens, {
+    after: (cc) => {
+      // scoop motion arc for active zone
+      if (cutting) { const z = zones[activeZone];
+        cc.save(); cc.strokeStyle = hexA(C.gold2, .7); cc.lineWidth = 5; cc.setLineDash([4, 12]); cc.lineCap = 'round';
+        cc.beginPath(); cc.moveTo(250, z.y0 + 10); cc.quadraticCurveTo(200, z.y1 - 10, 330, z.y1 - 70); cc.stroke(); cc.restore(); }
+      // shimmer when finished
+      const ks = seg(lt, 5.6, 6.6);
+      if (ks > 0 && ks < 1) { cc.save(); cc.clip(P.sideHead); cc.clip(P.sideMask);
+        const x = lerp(-300, 420, ks); const g = cc.createLinearGradient(x - 120, 0, x + 120, 0); g.addColorStop(0, 'rgba(255,230,170,0)'); g.addColorStop(.5, 'rgba(255,230,170,.55)'); g.addColorStop(1, 'rgba(255,230,170,0)');
+        cc.fillStyle = g; cc.fillRect(-320, -340, 760, 600); cc.restore(); }
+    }
+  });
+  // clipper
+  if (cutting) {
+    const z = zones[activeZone];
+    const u = zk; // scoop: up and out
+    const px = 250 - Math.sin(u * Math.PI) * 25 + u * 60, py = lerp(z.y0 + 10, z.y1 - 50, easeInOut(u));
+    const sx = hx + px * s, sy = hy + py * s;
+    drawClipper(c, sx + 30, sy + 40, .7, -0.35 - u * .55, t);
+    clippings(c, t, cutStart + 12, cutStart + 12 + zones.length * perZone, sx, sy, 500, 21, 26);
+  } else if (lt > cutStart + zones.length * perZone) {
+    clippings(c, t, cutStart + 12, cutStart + 12 + zones.length * perZone, hx + 300 * s, hy, 500, 21, 26);
+  }
+  // guard ladder (left side of the screen = behind... place at right edge aligned to zones)
+  zones.forEach((z, i) => {
+    const y = hy + (z.y0 + z.y1) / 2 * s; const k = seg(lt, .4 + i * .06, .75 + i * .06); if (k <= 0) return;
+    const done = zoneK(i) >= 1, active = cutting && i === activeZone;
+    const x = 975;
+    c.save(); c.globalAlpha = clamp(k * 2); c.translate(lerp(80, 0, easeOut(k)), 0);
+    c.fillStyle = active ? C.gold : done ? hexA(C.gold, .28) : 'rgba(255,255,255,.08)';
+    rr(c, x - 64, y - 30, 128, 60, 16); c.fill();
+    c.strokeStyle = active ? C.gold2 : hexA(C.gold, .6); c.lineWidth = 3; c.stroke();
+    c.fillStyle = active ? '#120e0a' : C.cream; c.font = '54px Bebas'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.direction = 'ltr';
+    c.fillText('#' + z.g, x, y + 4);
+    // connector to head
+    c.strokeStyle = active ? hexA(C.gold2, .9) : hexA(C.gold, .25); c.lineWidth = 2; c.setLineDash([6, 8]); c.beginPath(); c.moveTo(x - 66, y); c.lineTo(hx + 250 * s, y); c.stroke();
+    c.restore();
+  });
+  c.save(); c.globalAlpha = seg(lt, .5, .9); c.fillStyle = hexA(C.gold, .9); c.font = font(700, 34); c.textAlign = 'center'; c.direction = 'rtl';
+  c.fillText('מסרק', 975, hy + -88 * s - 70); c.restore();
+  // titles
+  tipChip(c, '02', lt, .05);
+  words(c, ['בנה', 'את', { w: 'הפייד', c: 'gold' }], W / 2, 450, 128, lt, .2, .08, { stroke: 12 });
+  words(c, ['בשלבים,', 'לא', 'בבת', 'אחת'], W / 2, 565, 92, lt, .45, .08, { weight: 700, stroke: 10 });
+  label(c, 'מסרק אחד לכל אזור', W / 2, 1600, 50, lt, 1.3);
+  label(c, 'תנועת "סקופ" החוצה = בלי קווים', W / 2, 1712, 50, lt, 3.0);
+  // success badge
+  const kb = seg(lt, 6.0, 6.45);
+  if (kb > 0) {
+    c.save(); c.translate(W / 2 + 250, 870); c.scale(elastic(kb), elastic(kb)); c.rotate(.12);
+    c.fillStyle = C.ok; c.beginPath(); c.arc(0, 0, 105, 0, 7); c.fill();
+    c.strokeStyle = '#08200f'; c.lineWidth = 20; c.lineCap = 'round'; c.lineJoin = 'round';
+    c.beginPath(); c.moveTo(-45, 2); c.lineTo(-12, 36); c.lineTo(50, -34); c.stroke();
+    c.restore();
+    words(c, [{ w: 'חלק', c: C.ok }, { w: 'לגמרי', c: C.ok }], W / 2 + 250, 1035, 64, lt, 6.1, .06, { stroke: 10 });
+  }
+}
+
+function sceneTip3(c, t) {
+  background(c, t);
+  const lt = t - 20;
+  const hx = W / 2 + lerp(120, 250, easeInOut(seg(t - 20, 2.6, 3.5))), hy = 1150;
+  const zoom = lerp(1.55, 1.25, easeInOut(seg(lt, 2.5, 3.4)));
+  // line-up path along hairline (head coords)
+  const line = curvePts(u => {
+    // forehead -> temple -> sideburn (follow sideHairMask)
+    if (u < .45) { const k = u / .45; return [lerp(-228, -62, k), lerp(-176, -100, k) - Math.sin(k * Math.PI) * 18]; }
+    if (u < .75) { const k = (u - .45) / .3; return [lerp(-62, -42, k), lerp(-100, 100, k)]; }
+    const k = (u - .75) / .25; return [lerp(-42, -10, k), lerp(100, 110, k)];
+  }, 80);
+  const kl = seg(lt, .7, 2.3);
+  let tip = null;
+  drawSideHead(c, hx, hy, zoom, goodSide, {
+    after: (cc) => {
+      if (kl > 0) {
+        cc.save(); cc.strokeStyle = C.gold2; cc.lineWidth = 7; cc.shadowColor = C.gold; cc.shadowBlur = 28; cc.lineCap = 'round'; cc.lineJoin = 'round';
+        const n = Math.max(1, Math.floor(line.length * easeInOut(kl)));
+        cc.beginPath(); cc.moveTo(line[0][0], line[0][1]); for (let i = 1; i < n; i++) cc.lineTo(line[i][0], line[i][1]); cc.stroke();
+        // crisp edge: darken hair edge slightly
+        cc.restore(); tip = line[n - 1];
+      }
+    }
+  });
+  if (tip && kl < 1) { const sx = hx + tip[0] * zoom, sy = hy + tip[1] * zoom; drawTrimmer(c, sx - 40, sy - 20, .8, 2.3, t);
+    // sparks
+    const r = rng(Math.floor(t * 30)); for (let i = 0; i < 6; i++) { c.fillStyle = hexA(C.gold2, .9); c.beginPath(); c.arc(sx + (r() - .5) * 60, sy + (r() - .5) * 60, 2 + r() * 3, 0, 7); c.fill(); } }
+  label(c, 'קו חד עם טרימר', W / 2, 1640, 52, lt, 1.0);
+  // mirror with rear view
+  const km = seg(lt, 2.9, 3.5);
+  if (km > 0) {
+    const mx = lerp(W + 300, 300, backOut(km)), my = 960;
+    c.save(); c.translate(mx, my); c.rotate(-.08);
+    c.shadowColor = 'rgba(0,0,0,.7)'; c.shadowBlur = 50;
+    const fr = c.createLinearGradient(-200, -280, 200, 280); fr.addColorStop(0, C.gold2); fr.addColorStop(.5, C.goldDeep); fr.addColorStop(1, C.gold);
+    c.fillStyle = fr; c.beginPath(); c.ellipse(0, 0, 215, 290, 0, 0, 7); c.fill(); c.shadowBlur = 0;
+    c.save(); c.beginPath(); c.ellipse(0, 0, 192, 266, 0, 0, 7); c.clip();
+    const mg = c.createLinearGradient(0, -260, 0, 260); mg.addColorStop(0, '#3c3630'); mg.addColorStop(1, '#16120f'); c.fillStyle = mg; c.fillRect(-200, -280, 400, 560);
+    drawRearHead(c, 0, 10, .55, goodRear);
+    const gl = c.createLinearGradient(-200, -260, 200, 260); gl.addColorStop(0, 'rgba(255,255,255,.22)'); gl.addColorStop(.35, 'rgba(255,255,255,0)'); gl.addColorStop(.7, 'rgba(255,255,255,0)'); gl.addColorStop(.8, 'rgba(255,255,255,.12)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
+    c.fillStyle = gl; c.fillRect(-200, -280, 400, 560);
+    c.restore(); c.restore();
+    label(c, 'תראה לו את הגב במראה', W / 2, 1752, 52, lt, 3.4);
+  }
+  // camera viewfinder + flash
+  const kv = seg(lt, 4.4, 5.0);
+  if (kv > 0) {
+    const inset = lerp(0, 120, easeOut(kv)), L = 110;
+    c.save(); c.strokeStyle = '#fff'; c.lineWidth = 10; c.lineCap = 'round'; c.globalAlpha = clamp(kv * 2);
+    const x0 = inset, y0 = 330 + inset * .6, x1 = W - inset, y1 = 1540 - inset * .4;
+    for (const [x, y, dx, dy] of [[x0, y0, 1, 1], [x1, y0, -1, 1], [x0, y1, 1, -1], [x1, y1, -1, -1]]) { c.beginPath(); c.moveTo(x, y + dy * L); c.lineTo(x, y); c.lineTo(x + dx * L, y); c.stroke(); }
+    // focus box
+    c.lineWidth = 4; c.strokeStyle = C.gold2; const fs = lerp(220, 150, easeOut(seg(lt, 4.7, 5.1))); c.strokeRect(W / 2 - fs / 2 + 140, 980 - fs / 2, fs, fs);
+    // REC dot
+    c.fillStyle = C.red; c.beginPath(); c.arc(x0 + 60, y0 + 60, 14, 0, 7); c.fill();
+    c.restore();
+  }
+  const kf = seg(lt, 5.2, 5.7);
+  if (kf > 0 && kf < 1) { c.fillStyle = `rgba(255,255,255,${(1 - kf) * .95})`; c.fillRect(0, 0, W, H); }
+  if (lt > 5.25) label(c, 'צלם ופרסם = לקוחות חדשים', W / 2, 1640 - 0, 52, lt, 5.3, { bg: C.gold, color: '#120e0a', border: C.gold2 });
+  // titles
+  tipChip(c, '03', lt, .05);
+  words(c, ['הגימור', { w: 'מוכר', c: 'gold' }], W / 2, 450, 128, lt, .2, .08, { stroke: 12 });
+  words(c, ['את', 'התספורת'], W / 2, 565, 92, lt, .45, .08, { weight: 700, stroke: 10 });
+}
+
+function sceneCTA(c, t) {
+  background(c, t, .08);
+  const lt = t - 27;
+  // ring burst
+  const kr = seg(lt, 0, .8);
+  c.save(); c.strokeStyle = hexA(C.gold, (1 - kr) * .9); c.lineWidth = 10 * (1 - kr) + 2; c.beginPath(); c.arc(W / 2, 900, lerp(60, 900, easeOut(kr)), 0, 7); c.stroke(); c.restore();
+  // pole
+  const kp = seg(lt, 0, .5);
+  c.save(); c.translate(W / 2, 900); c.scale(backOut(kp), backOut(kp)); drawPole(c, 0, 0, 150, 520, t); c.restore();
+  drawScissors(c, W / 2 - 230, 700, .9, .35 + Math.sin(t * 10) * .12, -0.6);
+  drawScissors(c, W / 2 + 230, 1110, .9, .35 + Math.sin(t * 10 + 1) * .12, Math.PI - 0.6);
+  words(c, ['שמור', 'את', { w: 'הסרטון', c: 'gold' }], W / 2, 400, 120, lt, .15, .08, { stroke: 12 });
+  words(c, ['ושלח', 'לספר', 'שצריך', 'את', 'זה'], W / 2, 1430, 84, lt, .5, .07, { weight: 700, stroke: 10 });
+  // arrow bounce
+  const ka = seg(lt, .9, 1.3);
+  if (ka > 0) { c.save(); c.globalAlpha = ka; c.translate(W / 2, 1560 + Math.sin(t * 8) * 14); c.strokeStyle = C.gold; c.lineWidth = 14; c.lineCap = 'round'; c.lineJoin = 'round'; c.beginPath(); c.moveTo(-50, -25); c.lineTo(0, 25); c.lineTo(50, -25); c.stroke(); c.restore(); }
+  // recap pills
+  c.save(); c.globalAlpha = seg(lt, 1.1, 1.5); c.direction = 'rtl'; c.textAlign = 'center'; c.font = font(700, 40); c.fillStyle = hexA(C.cream, .8);
+  c.fillText('קרא את הראש  ·  בנה בשלבים  ·  גימור + צילום', W / 2, 1720); c.restore();
+}
+
+// =====================================================================
+//  COMPOSITOR: transitions, punch zoom, vignette, grain
+// =====================================================================
+const CUTS = [2.0, 4.0, 12.0, 20.0, 27.0];
+function sceneAt(c, t) {
+  if (t < 4) sceneHook(c, t); else if (t < 12) sceneTip1(c, t); else if (t < 20) sceneTip2(c, t); else if (t < 27) sceneTip3(c, t); else sceneCTA(c, t);
+  progress(c, t);
+}
+const prev = document.createElement('canvas'); prev.width = W; prev.height = H; const pctx = prev.getContext('2d');
+
+window.renderFrame = function (t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  sceneAt(ctx, t);
+  // razor-slash transition: for 0.35s after a cut, the previous scene slides apart along a diagonal
+  let slash = null;
+  for (const cu of CUTS.slice(1)) if (t >= cu && t < cu + .4) slash = { cu, k: (t - cu) / .4 };
+  if (slash) {
+    pctx.setTransform(1, 0, 0, 1, 0, 0); sceneAt(pctx, slash.cu - 1 / 30);
+  }
+  octx.setTransform(1, 0, 0, 1, 0, 0); octx.fillStyle = '#000'; octx.fillRect(0, 0, W, H);
+  // punch zoom on every cut
+  let punch = 0; for (const cu of CUTS) { const d = t - cu; if (d >= 0 && d < .3) punch = Math.max(punch, (1 - d / .3)); }
+  const z = 1 + .06 * easeOut(punch);
+  octx.save(); octx.translate(W / 2, H / 2); octx.scale(z, z); octx.translate(-W / 2, -H / 2);
+  octx.drawImage(scene, 0, 0);
+  octx.restore();
+  if (slash) {
+    const k = easeIn(slash.k), d = k * 1400;
+    // diagonal through centre at angle a
+    const a = -0.95, nx = Math.cos(a), ny = Math.sin(a);
+    for (const side of [1, -1]) {
+      octx.save(); octx.beginPath();
+      const L = 4000, px = -ny, py = nx; // line direction
+      octx.moveTo(W / 2 + px * L, H / 2 + py * L); octx.lineTo(W / 2 - px * L, H / 2 - py * L);
+      octx.lineTo(W / 2 - px * L + side * nx * L, H / 2 - py * L + side * ny * L); octx.lineTo(W / 2 + px * L + side * nx * L, H / 2 + py * L + side * ny * L); octx.closePath(); octx.clip();
+      octx.globalAlpha = 1 - k * .6;
+      octx.drawImage(prev, side * nx * d * .25 + side * px * d, side * ny * d * .25 + side * py * d);
+      octx.restore();
+    }
+    // the razor line itself
+    octx.save(); octx.globalAlpha = 1 - slash.k; octx.strokeStyle = '#fff'; octx.lineWidth = 10 + 30 * (1 - slash.k); octx.shadowColor = C.gold2; octx.shadowBlur = 60;
+    const px = -ny, py = nx; octx.beginPath(); octx.moveTo(W / 2 + px * 2000, H / 2 + py * 2000); octx.lineTo(W / 2 - px * 2000, H / 2 - py * 2000); octx.stroke(); octx.restore();
+  }
+  // pre-cut swipe line (razor flashes across just before the cut)
+  for (const cu of CUTS.slice(1)) { const k = seg(t, cu - .18, cu); if (k > 0 && k < 1) {
+    octx.save(); octx.strokeStyle = hexA(C.gold2, .9); octx.lineWidth = 8; octx.shadowColor = C.gold2; octx.shadowBlur = 40;
+    const x = lerp(-300, W + 300, easeIn(k)); octx.beginPath(); octx.moveTo(x + 500, -100); octx.lineTo(x - 500, H + 100); octx.stroke(); octx.restore(); } }
+  // vignette
+  const v = octx.createRadialGradient(W / 2, H / 2, H * .3, W / 2, H / 2, H * .75); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.65)');
+  octx.fillStyle = v; octx.fillRect(0, 0, W, H);
+  // grain
+  const r = rng(Math.floor(t * 30) + 99); octx.globalAlpha = .9; octx.globalCompositeOperation = 'overlay';
+  for (let y = -Math.floor(r() * 512); y < H; y += 512) for (let x = -Math.floor(r() * 512); x < W; x += 512) octx.drawImage(grain, x, y);
+  octx.globalCompositeOperation = 'source-over'; octx.globalAlpha = 1;
+  // fade out at the very end
+  const fo = seg(t, 29.55, 30); if (fo > 0) { octx.fillStyle = `rgba(0,0,0,${fo})`; octx.fillRect(0, 0, W, H); }
+};
+
+window.ready = (async () => {
+  await document.fonts.load('900 40px Heebo'); await document.fonts.load('700 40px Heebo'); await document.fonts.load('400 40px Heebo');
+  await document.fonts.load('40px Bebas'); await document.fonts.load('40px Secular');
+  P.rearSkull = rearSkull(); P.rearMask = rearHairMask(); P.sideHead = sideHead(); P.sideMask = sideHairMask();
+  P.rearPts = samplePoints(P.rearSkull, P.rearMask, [-240, -320, 240, 240], 5200, 3);
+  P.sidePts = samplePoints(P.sideHead, P.sideMask, [-300, -310, 290, 240], 5200, 5);
+  const q = new URLSearchParams(location.search); window.renderFrame(parseFloat(q.get('t') || '0'));
+  return true;
+})();
+</script>
+</body>
+</html>
