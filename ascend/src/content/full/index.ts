@@ -8,5 +8,6 @@ import discipline from './discipline'
 import business from './business'
 import leadership from './leadership'
 import mindset from './mindset'
+import attraction from './attraction'
 
-export const completeBooks: Record<string, string> = { ...money, ...persuasion, ...psychology, ...communication, ...confidence, ...discipline, ...business, ...leadership, ...mindset }
+export const completeBooks: Record<string, string> = { ...money, ...persuasion, ...psychology, ...communication, ...confidence, ...discipline, ...business, ...leadership, ...mindset, ...attraction }

@@ -8,6 +8,7 @@ export type CategoryId =
   | 'business'
   | 'leadership'
   | 'mindset'
+  | 'attraction'
 
 export type Motif = 'rings' | 'arc' | 'grid' | 'wave' | 'orbit' | 'stairs' | 'prism' | 'pillar' | 'sun'
 

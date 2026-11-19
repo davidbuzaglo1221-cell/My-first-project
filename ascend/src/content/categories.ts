@@ -9,6 +9,7 @@ export const categories: Category[] = [
   { id: 'discipline', name: 'משמעת ופרודוקטיביות', short: 'משמעת', promise: 'מערכות קטנות שמייצרות תוצאות גדולות.', motif: 'stairs', hue: 160 },
   { id: 'business', name: 'עסקים ויזמות', short: 'יזמות', promise: 'לבנות משהו שאנשים באמת צריכים.', motif: 'grid', hue: 176 },
   { id: 'leadership', name: 'מנהיגות והשפעה', short: 'מנהיגות', promise: 'לקחת אחריות ולהוביל אנשים אל מעבר למה שחשבו שאפשר.', motif: 'pillar', hue: 150 },
+  { id: 'attraction', name: 'משיכה, דייטים וזוגיות', short: 'משיכה וזוגיות', promise: 'למשוך את האנשים הנכונים בביטחון ובכנות, ולבנות קשר שמחזיק.', motif: 'wave', hue: 154 },
   { id: 'mindset', name: 'בריאות, מיינדסט וצמיחה אישית', short: 'מיינדסט', promise: 'שקט פנימי, משמעות ויכולת לצמוח מכל דבר.', motif: 'orbit', hue: 168 },
 ]
 

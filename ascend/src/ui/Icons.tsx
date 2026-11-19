@@ -159,6 +159,13 @@ export function AreaIcon({ id, size = 22 }: { id: string; size?: number }) {
           <path d="M9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M3.5 13h17" />
         </svg>
       )
+    case 'attraction':
+      return (
+        <svg {...p}>
+          <path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z" />
+          <path d="M9 11.5c.8-1 2-1.3 3-.6" />
+        </svg>
+      )
     case 'leadership':
       return (
         <svg {...p}>
