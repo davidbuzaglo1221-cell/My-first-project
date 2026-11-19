@@ -14,6 +14,9 @@ import { Learned } from '../ui/Books'
 import { NoteEditor } from './Notebook'
 import { useState } from 'react'
 
+/** Asking the book needs Claude around the page; a standalone install hides it. */
+const canAsk = !!(globalThis as unknown as { claude?: unknown }).claude
+
 export function BookScreen({ id }: { id: string }) {
   const [note, setNote] = useState(false)
   const b = bookById[id]
@@ -93,11 +96,13 @@ export function BookScreen({ id }: { id: string }) {
             <strong>מבחן</strong>
             <small>{best !== undefined ? `שיא: ${Math.round(best * 100)}%` : 'עשר שאלות'}</small>
           </button>
-          <button className="tool" onClick={() => navigate(`/ask/${b.id}`)}>
-            <IconChat size={20} />
-            <strong>שאל את הספר</strong>
-            <small>כל שאלה, תשובה מהספר</small>
-          </button>
+          {canAsk && (
+            <button className="tool" onClick={() => navigate(`/ask/${b.id}`)}>
+              <IconChat size={20} />
+              <strong>שאל את הספר</strong>
+              <small>כל שאלה, תשובה מהספר</small>
+            </button>
+          )}
           <button className="tool" onClick={() => setNote(true)}>
             <IconPen size={20} />
             <strong>פתק</strong>
