@@ -33,7 +33,7 @@ export function Library() {
       <header className="page-head">
         <h1 className="page-title">הספרייה</h1>
         <p className="page-sub">
-          {allLessons.length} שיעורים מ־{Object.keys(bookById).length} ספרים
+          {allLessons.length} פרקים מ־{Object.keys(bookById).length} ספרים
         </p>
       </header>
       <Segmented<Tab>
@@ -42,7 +42,7 @@ export function Library() {
         onChange={setTab}
         options={[
           { id: 'progress', label: 'בתהליך' },
-          { id: 'lessons', label: 'כל השיעורים' },
+          { id: 'lessons', label: 'כל הפרקים' },
           { id: 'saved', label: 'שמורים' },
           { id: 'mine', label: 'האודיו שלי' },
         ]}
@@ -51,7 +51,7 @@ export function Library() {
       {tab === 'progress' && (
         <section className="block">
           {inProgress.length === 0 && recentDone.length === 0 ? (
-            <Empty title="עוד לא התחלת להאזין" body="בחר שיעור מהצעד הבא במסך הבית, או עבור לכל השיעורים." action="לכל השיעורים" onAction={() => setTab('lessons')} />
+            <Empty title="עוד לא התחלת להאזין" body="בחר ספר מהספרייה, או עבור לכל הפרקים." action="לכל הפרקים" onAction={() => setTab('lessons')} />
           ) : (
             <>
               {inProgress.length > 0 && <h2 className="subhead">ממשיכים</h2>}
@@ -91,7 +91,7 @@ export function Library() {
               <LessonRow key={r.lesson.id} id={r.lesson.id} />
             ))}
           </div>
-          {lessons.length === 0 && <Empty title="אין שיעורים בסינון הזה" body="נסה תחום אחר, או בטל את הסינון לפי אורך." />}
+          {lessons.length === 0 && <Empty title="אין פרקים בסינון הזה" body="נסה תחום אחר, או בטל את הסינון לפי אורך." />}
         </section>
       )}
 

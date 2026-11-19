@@ -59,7 +59,7 @@ export function NowPlaying() {
                 <span>{book ? categoryById[book.category].short : 'האודיו שלי'}</span>
                 <strong>{t.subtitle}</strong>
               </button>
-              <button className="icon-btn" onClick={() => setSheet('chapters')} aria-label="שיעורים בספר" disabled={!book}>
+              <button className="icon-btn" onClick={() => setSheet('chapters')} aria-label="פרקים בספר" disabled={!book}>
                 <IconList size={22} />
               </button>
             </header>
@@ -81,7 +81,7 @@ export function NowPlaying() {
                 {ref && (
                   <span className="np__part">
                     <span className="sep" aria-hidden="true" />
-                    שיעור {ref.index + 1} מתוך {ref.book.lessons.length}
+                    פרק {ref.index + 1} מתוך {ref.book.lessons.length}
                   </span>
                 )}
               </p>
@@ -186,7 +186,7 @@ export function NowPlaying() {
             )}
           </div>
 
-          <Sheet open={sheet === 'chapters'} onClose={() => setSheet(null)} label="שיעורים בספר">
+          <Sheet open={sheet === 'chapters'} onClose={() => setSheet(null)} label="פרקים בספר">
             {book && (
               <>
                 <h3 className="sheet__title">{book.title}</h3>

@@ -60,6 +60,8 @@ export interface Book {
   level: 'יסודות' | 'מתקדם'
   /** Small offset so each cover in a category looks different. */
   shade: number
+  /** True when the lessons cover the whole book, chapter by chapter. */
+  complete?: boolean
 }
 
 export interface LearningPath {

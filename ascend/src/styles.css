@@ -4636,3 +4636,7 @@ html:has(.reader--ivory) {
 .app.is-reading .dock::before {
   display: none;
 }
+
+/* book page actions always fit a phone: buttons shrink, the bookmark keeps its size */
+.bhero__actions .btn--big { min-width: 0; padding: 0 14px; white-space: nowrap; }
+.bhero__actions .icon-btn { flex: none; }

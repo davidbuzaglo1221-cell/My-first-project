@@ -87,7 +87,7 @@ export function Settings() {
         </div>
         <label className="toggle">
           <span>
-            המשך אוטומטי לשיעור הבא
+            המשך אוטומטי לפרק הבא
             <small>כבוי כברירת מחדל, כדי שיהיה רגע לתרגיל</small>
           </span>
           <input type="checkbox" checked={s.settings.autoContinue} onChange={(e) => updateSettings({ autoContinue: e.target.checked })} />
@@ -131,7 +131,7 @@ export function Settings() {
       <section className="group about">
         <IconAscend size={28} />
         <p>
-          <strong>ASCEND</strong> היא אוניברסיטה פרטית לצמיחה אישית. כל השיעורים הם הסברים מקוריים שנכתבו על בסיס הרעיונות שבספרים, ואינם קריינות, תרגום או תקציר מילולי שלהם. הקריינות נעשית בקול העברי של המכשיר, או מקבצי אודיו מורשים שאתה מוסיף לספרייה.
+          <strong>ASCEND</strong> היא אוניברסיטה פרטית לצמיחה אישית. כל ספר מופיע במלואו, פרק אחר פרק, רק העיקר, בניסוח מקורי של ASCEND. זה אינו תרגום מילולי של הספרים. הקריינות מוקלטת מראש בעברית, ואפשר גם להוסיף קבצי אודיו משלך.
         </p>
       </section>
     </div>

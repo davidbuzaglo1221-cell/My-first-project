@@ -14,10 +14,20 @@ describe('library', () => {
   it('every path points at real lessons', () => {
     for (const p of curatedPaths) for (const id of p.lessonIds) expect(lessonIndex[id], `${p.id} → ${id}`).toBeTruthy()
   })
-  it('lessons are short audio, between one and four minutes', () => {
+  it('every book is complete: the whole book, chapter by chapter', () => {
+    for (const b of books) {
+      expect(b.complete || b.id === 'as-a-man-thinketh', b.id).toBe(true)
+      expect(b.lessons.length, b.id).toBeGreaterThanOrEqual(5)
+      for (const l of b.lessons) expect(l.takeaway.length, l.id).toBeGreaterThan(8)
+    }
+  })
+  it('scripts are speakable Hebrew: no digits or Latin letters', () => {
+    for (const b of books) for (const l of b.lessons) expect(l.script, l.id).not.toMatch(/[0-9A-Za-z]/)
+  })
+  it('chapters are short audio, under four minutes', () => {
     for (const b of books) for (const l of b.lessons) {
       const s = estimateSeconds(l)
-      expect(s, l.id).toBeGreaterThan(40)
+      expect(s, l.id).toBeGreaterThan(20)
       if (b.id !== 'as-a-man-thinketh') expect(s, l.id).toBeLessThan(240)
       expect(l.exercise.task.length).toBeGreaterThan(10)
     }

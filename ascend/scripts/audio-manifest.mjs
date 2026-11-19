@@ -9,7 +9,9 @@ if (existsSync(dir))
       const id = f.slice(0, -5)
       if (!existsSync(`${dir}/${voice}/${id}.mp3`)) continue
       const m = JSON.parse(readFileSync(`${dir}/${voice}/${f}`, 'utf8'))
-      tracks[id] = { d: m.duration, s: m.segments.map((x) => x.t) }
+      // One file per book: every chapter points into it with its offset.
+      if (m.tracks) for (const [tid, t] of Object.entries(m.tracks)) tracks[tid] = { f: id, o: t.o, d: t.d, s: t.s }
+      else tracks[id] = { d: m.duration, s: m.segments.map((x) => x.t) }
     }
     if (Object.keys(tracks).length) manifest[voice] = tracks
   }

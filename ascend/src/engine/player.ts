@@ -9,7 +9,8 @@ import { pickVoice, speechSupported } from './voices'
 export type TrackKind = 'lesson' | 'quick' | 'file'
 
 /** Studio narration rendered ahead of time: duration and the start time of every sentence. */
-type Narration = Record<string, { d: number; s: number[] }>
+/** f/o: the chapter lives inside one file per book (f), starting at o seconds. */
+type Narration = Record<string, { d: number; s: number[]; f?: string; o?: number }>
 const byVoice = audioManifest as Record<string, Narration>
 export const DEFAULT_VOICE = 'michael'
 /** The narrator the listener chose on the voice screen, if that voice is rendered. */
@@ -26,7 +27,7 @@ const narrationFor = (id: string) => {
   const v = voiceFor(id)
   return v ? byVoice[v][id] : undefined
 }
-const narrationSrc = (id: string) => `audio/${voiceFor(id)}/${id}.mp3`
+const narrationSrc = (id: string) => `audio/${voiceFor(id)}/${narrationFor(id)?.f ?? id}.mp3`
 export const hasNarration = (id: string) => !!narrationFor(id)
 
 export interface Track {
@@ -72,7 +73,7 @@ export function trackFor(id: string): Track | undefined {
     const script = [
       `${book.title}, מאת ${book.author}. ${book.tagline}`,
       ...book.ideas.map((i) => `${i.title}. ${i.body}`),
-      'זה הסיכום בדקה. כשיהיה לך זמן, השיעורים המלאים מחכים לך.',
+      'זה הסיכום בדקה. כשיהיה לך זמן, הספר המלא מחכה לך כאן, פרק אחר פרק.',
     ].join('\n')
     return { id, kind: 'quick', title: 'הספר בדקה', subtitle: book.title, author: book.author, bookId: book.id, script, src: narrationFor(id) ? narrationSrc(id) : undefined }
   }
@@ -126,6 +127,10 @@ let audio: HTMLAudioElement | undefined
 let keepAlive: HTMLAudioElement | undefined
 let objectUrl: string | undefined
 let fileTimes: number[] = []
+/** Where the current chapter starts inside its book file, and whether its length comes from the manifest. */
+let base = 0
+let fixedDur = false
+const filePos = () => (audio ? Math.max(0, audio.currentTime - base) : 0)
 
 const SILENCE = 'data:audio/wav;base64,UklGRmQGAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YUAGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
 
@@ -133,7 +138,7 @@ function ensureAudio() {
   if (!audio) {
     audio = new Audio()
     audio.preload = 'auto'
-    audio.addEventListener('loadedmetadata', () => emit({ duration: audio!.duration || snap.duration }))
+    audio.addEventListener('loadedmetadata', () => !fixedDur && emit({ duration: audio!.duration || snap.duration }))
     audio.addEventListener('ended', () => finish())
     audio.addEventListener('error', () => snap.mode === 'file' && emit({ status: 'paused', notice: 'לא הצלחנו לנגן את קובץ האודיו.' }))
   }
@@ -223,7 +228,11 @@ function tick() {
 
   let position = snap.position
   if (snap.mode === 'file' && audio) {
-    position = audio.currentTime
+    position = filePos()
+    if (fixedDur && snap.duration && position >= snap.duration - 0.05) {
+      audio.pause()
+      return finish()
+    }
     if (fileTimes.length) {
       let i = 0
       while (i + 1 < fileTimes.length && fileTimes[i + 1] <= position + 0.05) i++
@@ -288,7 +297,11 @@ export async function load(id: string, opts: { autoplay?: boolean; from?: number
       src = objectUrl
     }
     const a = ensureAudio()
-    a.src = src!
+    const n0 = track.kind === 'file' ? undefined : narrationFor(id)
+    base = n0?.o ?? 0
+    fixedDur = !!n0
+    // Chapters of the same book share one file: switching chapters only moves the playhead.
+    if (new URL(src!, location.href).href !== a.src) a.src = src!
     a.playbackRate = rate
     ;(a as HTMLAudioElement & { preservesPitch?: boolean }).preservesPitch = true
     const n = narrationFor(id)
@@ -307,7 +320,7 @@ export async function load(id: string, opts: { autoplay?: boolean; from?: number
       endedId: undefined,
     })
     const seekWhenReady = () => {
-      if (from > 0 && from < (a.duration || Infinity) - 1) a.currentTime = from
+      if (from < (n?.d ?? a.duration ?? Infinity) - 1) a.currentTime = base + from
     }
     if (a.readyState >= 1) seekWhenReady()
     else a.addEventListener('loadedmetadata', seekWhenReady, { once: true })
@@ -361,7 +374,7 @@ export function play() {
 
 export function pause() {
   if (snap.status !== 'playing') return
-  const position = snap.mode === 'file' ? audio?.currentTime ?? snap.position : voicePosition()
+  const position = snap.mode === 'file' ? (audio ? filePos() : snap.position) : voicePosition()
   gen++
   if (snap.mode === 'file') audio?.pause()
   else if (speechSupported()) speechSynthesis.cancel()
@@ -378,7 +391,7 @@ export const toggle = () => (snap.status === 'playing' ? pause() : play())
 export function seek(t: number, andPlay = snap.status === 'playing') {
   const target = Math.max(0, Math.min(t, snap.duration || 0))
   if (snap.mode === 'file') {
-    if (audio) audio.currentTime = target
+    if (audio) audio.currentTime = base + target
     emit({ position: target, status: andPlay ? 'playing' : snap.status === 'ended' ? 'paused' : snap.status })
     if (andPlay && audio?.paused) play()
     return
@@ -429,7 +442,7 @@ function stopInternal() {
 
 function finish() {
   const t = snap.track
-  if (!t) return
+  if (!t || snap.status === 'ended') return
   gen++
   clearInterval(ticker)
   stopKeepAlive()

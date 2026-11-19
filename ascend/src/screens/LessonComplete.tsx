@@ -32,7 +32,7 @@ export function LessonComplete() {
         <div className={`done__seal ${done ? 'is-done' : ''}`} aria-hidden="true">
           <IconCheck size={30} />
         </div>
-        <p className="done__kicker">{done ? 'השיעור הושלם' : `שיעור ${index + 1} ב״${book.title}״`}</p>
+        <p className="done__kicker">{done ? 'הפרק הושלם' : `פרק ${index + 1} ב״${book.title}״`}</p>
         <blockquote className="done__quote">{lesson.takeaway}</blockquote>
 
         <div className="done__task">
@@ -86,10 +86,10 @@ export function LessonComplete() {
         <div className="done__next">
           {next ? (
             <button className="btn btn--wide btn--primary" onClick={() => (close(), load(next.id, { autoplay: true, from: 0 }), openPlayer())}>
-              <IconPlay size={16} /> לשיעור הבא: {next.title}
+              <IconPlay size={16} /> לפרק הבא: {next.title}
             </button>
           ) : (
-            <p className="done__end">סיימת את כל השיעורים של ״{book.title}״.</p>
+            <p className="done__end">סיימת את כל הפרקים של ״{book.title}״.</p>
           )}
           <button className="btn btn--wide btn--quiet" onClick={close}>
             סגור

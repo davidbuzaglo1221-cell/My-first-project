@@ -48,7 +48,7 @@ export function Voices() {
         <BackButton fallback="/settings" />
         <h1 className="page-title">בחירת קריין</h1>
       </header>
-      <p className="page-sub">כל קול מקריא את אותו סיכום, "הפסיכולוגיה של הכסף בדקה". תקשיב ובחר את הקול שילווה אותך בכל השיעורים.</p>
+      <p className="page-sub">כל קול מקריא את אותו סיכום, "הפסיכולוגיה של הכסף בדקה". תקשיב ובחר את הקול שילווה אותך בכל הספרים.</p>
 
       <audio
         ref={audio}

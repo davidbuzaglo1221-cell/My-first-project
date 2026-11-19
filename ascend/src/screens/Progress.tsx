@@ -42,7 +42,7 @@ export function Progress() {
         </div>
         <div className="stat">
           <strong>{completedIds(s).length}</strong>
-          <span>שיעורים הושלמו</span>
+          <span>פרקים הושלמו</span>
         </div>
         <div className="stat">
           <strong>{exercises}</strong>
@@ -91,7 +91,7 @@ export function Progress() {
       </section>
 
       <section className="block">
-        <SectionHead title="שליטה בתחומים" sub="שיעורים שהושלמו בכל תחום" />
+        <SectionHead title="שליטה בתחומים" sub="פרקים שהושלמו בכל תחום" />
         <ul className="mastery">
           {categories.map((c) => {
             const m = categoryMastery(s, c.id)

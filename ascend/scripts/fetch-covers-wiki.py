@@ -1,6 +1,19 @@
 """Real book covers from each book's Wikipedia article (the article's lead image)."""
 import json, subprocess, os, sys, urllib.parse
-ARTICLES = {}  # all reliable covers fetched; add an entry only after checking its article shows the cover
+ARTICLES = {
+  'richest-man-in-babylon': 'The Richest Man in Babylon (book)', 'millionaire-next-door': 'The Millionaire Next Door',
+  'simple-path-to-wealth': 'The Simple Path to Wealth', '48-laws-of-power': 'The 48 Laws of Power', 'made-to-stick': 'Made to Stick',
+  'predictably-irrational': 'Predictably Irrational', 'flow': 'Flow (book)', 'talk-like-ted': 'Talk Like TED',
+  'difficult-conversations': 'Difficult Conversations (book)', 'magic-of-thinking-big': 'The Magic of Thinking Big',
+  'feel-the-fear': 'Feel the Fear and Do It Anyway', 'daring-greatly': 'Daring Greatly', 'power-of-habit': 'The Power of Habit',
+  'cant-hurt-me': "Can't Hurt Me", 'eat-that-frog': 'Eat That Frog!', 'getting-things-done': 'Getting Things Done',
+  'good-to-great': 'Good to Great', 'hard-thing-about-hard-things': 'The Hard Thing About Hard Things',
+  'four-hour-workweek': 'The 4-Hour Workweek', 'blue-ocean-strategy': 'Blue Ocean Strategy',
+  '21-laws-of-leadership': 'The 21 Irrefutable Laws of Leadership', 'five-dysfunctions': 'The Five Dysfunctions of a Team', 'obstacle-is-the-way': 'The Obstacle Is the Way',
+  'power-of-now': 'The Power of Now', 'awaken-the-giant': 'Awaken the Giant Within', 'influence': 'Influence: Science and Practice', 'laws-of-human-nature': 'The Laws of Human Nature',
+  'nonviolent-communication': 'Nonviolent Communication', 'courage-to-be-disliked': 'The Courage to Be Disliked', 'e-myth-revisited': 'The E-Myth Revisited',
+  'extreme-ownership': 'Extreme Ownership', 'mindset': 'Mindset (book)', 'mans-search-for-meaning': "Man's Search for Meaning", 'meditations': 'Meditations',
+}  # verify every fetched image visually before keeping it
 UA = 'ASCEND-app-cover-fetch/1.0'
 def curl(url, out=None):
     import time as _t
@@ -14,7 +27,9 @@ def _curl(url, out=None):
     code = subprocess.run(args, capture_output=True, text=True).stdout.strip()
     return code
 import re, time
-report = {}
+class R(dict):
+    def __setitem__(self, k, v): super().__setitem__(k, v); print(f'{k:28s} {v}', flush=True)
+report = R()
 for bid, title in ARTICLES.items():
     out = f'public/covers/{bid}.jpg'
     if os.path.exists(out): report[bid] = 'have'; continue
@@ -35,4 +50,4 @@ for bid, title in ARTICLES.items():
     time.sleep(1.5)
     code = curl(src, out)
     report[bid] = f"{code} {fname}"
-for k, v in report.items(): print(f'{k:28s} {v}')
+

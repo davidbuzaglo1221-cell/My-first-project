@@ -27,6 +27,12 @@ export function bookChapters(b: Book): { chapters: Chapter[]; full: boolean; not
     chapters.forEach((c, i) => (c.lessonId = b.lessons[Math.max(0, i - 1)]?.id))
     return { chapters, full: true, note: full.source }
   }
+  if (b.complete)
+    return {
+      chapters: b.lessons.map((l) => ({ title: l.title, paragraphs: l.script.split(/\n+/), lessonId: l.id })),
+      full: true,
+      note: 'כל הספר, רק העיקר: כל הפרקים והרעיונות של הספר, בניסוח מקורי ומתומצת של ASCEND, בלי מילוי. זה לא תרגום מילולי של הספר.',
+    }
   const intro: Chapter = { title: 'למה הספר הזה', paragraphs: [b.tagline, b.why, ...b.ideas.map((i) => `${i.title}. ${i.body}`)] }
   return {
     chapters: [intro, ...b.lessons.map((l) => ({ title: l.title, paragraphs: l.script.split(/\n+/), lessonId: l.id }))],
@@ -111,7 +117,7 @@ export function Reader({ id }: { id: string }) {
             <Cover book={b} size="lg" />
             <h1>{b.title}</h1>
             <p className="reader__author">{b.author}</p>
-            {data.full ? <p className="reader__badge">הספר המלא</p> : <p className="reader__badge reader__badge--quiet">מהדורת ASCEND</p>}
+            {data.full ? <p className="reader__badge">{b.complete ? 'כל הספר, רק העיקר' : 'הספר המלא'}</p> : <p className="reader__badge reader__badge--quiet">מהדורת ASCEND</p>}
           </div>
         )}
         <p className="reader__chnum">פרק {ch + 1}</p>

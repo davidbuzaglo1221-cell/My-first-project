@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { bookById, bookSeconds, books, categories, categoryById, curatedPaths, estimateSeconds, formatMinutes, lessonIndex } from '../content'
 import { hasNarration, load, usePlayer } from '../engine/player'
 import { dayKey, greeting, lastNDays, hebrewWeekday } from '../lib/dates'
-import { currentStreak, focusAreas, isActiveDay, pathProgress, recommendations, resolvePath, todaySeconds } from '../lib/insights'
+import { currentStreak, isActiveDay, pathProgress, recommendations, resolvePath, todaySeconds } from '../lib/insights'
 import { navigate } from '../lib/router'
 import { useStore } from '../lib/store'
 import { Backdrop, Cover, CoverFan, bookHue } from '../ui/Cover'
@@ -77,7 +77,7 @@ function Showcase({ ids }: { ids: string[] }) {
             <IconPlay size={14} /> האזן עכשיו
           </button>
           <span className="showcase__len">
-            {book.lessons.length} שיעורים
+            {book.lessons.length} פרקים
             <span className="sep" aria-hidden="true" />
             {formatMinutes(bookSeconds(book))}
           </span>
@@ -114,11 +114,14 @@ export function Home() {
   const daily = recs.find((r) => !continuing.includes(r.lessonId) && r.lessonId !== plan[0]) ?? recs[0]
   const dailyRef = daily ? lessonIndex[daily.lessonId] : undefined
 
-  const focus = focusAreas(s).map((a) => a.id)
-  const featured = [...new Set(focus.flatMap((c) => books.filter((b) => b.category === c).map((b) => b.id)))]
-    .filter((id) => id !== dailyRef?.book.id && !bookById[id].lessons.every((l) => s.progress[l.id]?.done))
-    .slice(0, 7)
-  const quick = focus.flatMap((c) => books.filter((b) => b.category === c && !b.lessons.some((l) => s.progress[l.id])).slice(0, 1)).slice(0, 8)
+  // The whole library, interleaved across areas and rotated daily. Nothing is pushed; the learner chooses.
+  const dayN = Math.floor(Date.now() / 86400000)
+  const byArea = categories.map((c) => books.filter((b) => b.category === c.id))
+  const mixed: string[] = []
+  for (let i = 0; mixed.length < books.length; i++) byArea.forEach((list) => list[i] && mixed.push(list[i].id))
+  const rot = dayN % mixed.length
+  const featured = [...mixed.slice(rot), ...mixed.slice(0, rot)].filter((id) => id !== dailyRef?.book.id)
+  const quick = featured.map((id) => bookById[id]).filter((b) => !b.lessons.some((l) => s.progress[l.id])).slice(0, 12)
   const initial = (s.name || 'A').trim().charAt(0)
   const readingNow = Object.entries(s.reading ?? {})
     .filter(([id]) => bookById[id])
@@ -213,7 +216,7 @@ export function Home() {
             <span className="daily__book" aria-hidden="true">
               <Cover book={dailyRef.book} size="lg" />
             </span>
-            <span className="daily__tag">השיעור של היום</span>
+            <span className="daily__tag">הפרק של היום</span>
             <span className="daily__body">
               <span className="daily__title">{dailyRef.lesson.title}</span>
               <span className="daily__meta">
@@ -353,7 +356,7 @@ export function Home() {
 
       {featured.length > 0 && (
         <section className="block">
-          <SectionHead title="נבחרו בשבילך" sub="לפי התחומים שהכי כדאי לחזק עכשיו" />
+          <SectionHead title="כל הספרייה" sub={`${books.length} ספרים מכל התחומים. אתה בוחר מה ללמוד`} action="לכל הספרים" onAction={() => navigate('/explore')} />
           <Showcase ids={featured} />
         </section>
       )}
@@ -371,7 +374,7 @@ export function Home() {
                 <span className="list-card__meta">
                   {bookIds.length} ספרים
                   <span className="sep" aria-hidden="true" />
-                  {pr.done ? `${pr.done}/${pr.total}` : `${pr.total} שיעורים`}
+                  {pr.done ? `${pr.done}/${pr.total}` : `${pr.total} פרקים`}
                 </span>
               </button>
             )

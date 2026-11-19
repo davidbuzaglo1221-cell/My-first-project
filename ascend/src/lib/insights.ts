@@ -98,10 +98,13 @@ export function recommendations(s: AppState, limit = 4): Recommendation[] {
     .sort((a, b) => Math.max(...b.lessons.map((l) => s.progress[l.id]?.last ?? 0)) - Math.max(...a.lessons.map((l) => s.progress[l.id]?.last ?? 0)))
   started.forEach((b) => push(b.lessons.find((l) => !s.progress[l.id]?.done)?.id, `השיעור הבא ב״${b.title}״`))
 
-  for (const area of focusAreas(s).slice(0, 4)) {
-    const cat = categories.find((c) => c.id === area.id)!
-    const book = booksByCategory(area.id).find((b) => b.lessons.some((l) => !s.progress[l.id]?.done))
-    push(book?.lessons.find((l) => !s.progress[l.id]?.done)?.id, `לחיזוק ${cat.short}`)
+  // Variety across the whole library: one untouched book from every area, rotating daily. No area is favoured.
+  const day = Math.floor(Date.now() / 86400000)
+  const order = categories.map((_, i) => categories[(i + day) % categories.length])
+  for (const cat of order) {
+    const pool = booksByCategory(cat.id).filter((b) => !b.lessons.some((l) => s.progress[l.id]))
+    const book = pool[day % Math.max(1, pool.length)]
+    push(book?.lessons[0]?.id, `מתוך ${cat.short}`)
   }
 
   allLessons.forEach((r) => push(r.lesson.id, 'עוד לא שמעת'))
@@ -115,9 +118,9 @@ export function shortLessons(s: AppState, maxSeconds = 130, limit = 8) {
     .slice(0, limit)
 }
 
-/** A path generated from the three areas that most need attention, interleaving foundational lessons. */
+/** A path built only from the areas the learner chose (all areas if none), interleaving foundational lessons. */
 export function personalPath(s: AppState): LearningPath {
-  const areas = focusAreas(s).slice(0, 3).map((a) => a.id)
+  const areas = (s.goals.length ? categories.filter((c) => s.goals.includes(c.id)) : categories).map((c) => c.id)
   const queues = areas.map((a) =>
     booksByCategory(a)
       .slice()
@@ -125,13 +128,14 @@ export function personalPath(s: AppState): LearningPath {
       .flatMap((b) => b.lessons.slice(0, 2).map((l) => l.id)),
   )
   const lessonIds: string[] = []
-  for (let i = 0; lessonIds.length < 9 && i < 8; i++) queues.forEach((q) => q[i] && lessonIds.length < 9 && lessonIds.push(q[i]))
+  const max = Math.max(9, areas.length * 2)
+  for (let i = 0; lessonIds.length < max && i < 12; i++) queues.forEach((q) => q[i] && lessonIds.length < max && lessonIds.push(q[i]))
   const names = areas.map((a) => categories.find((c) => c.id === a)!.short)
   return {
     id: 'personal',
     title: 'המסלול האישי שלך',
-    subtitle: names.join(', '),
-    description: `נבנה מהתחומים שהכי צריכים חיזוק עכשיו: ${names.join(', ')}. הוא מתעדכן ככל שאתה לומד ומתרגל.`,
+    subtitle: s.goals.length ? names.join(', ') : 'כל התחומים',
+    description: s.goals.length ? `נבנה מהתחומים שבחרת: ${names.join(', ')}. אפשר לשנות את הבחירה בכל רגע, וכל הספרייה פתוחה לך.` : 'שיעור מכל תחום, לסירוגין. כל הספרייה פתוחה לך, ואתה בוחר מה ללמוד.',
     lessonIds,
     hue: 156,
     motif: 'stairs',

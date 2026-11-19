@@ -12,7 +12,7 @@ export function Onboarding() {
   const s = useStore((x) => x)
   const goals = s.goals
   const toggle = (id: CategoryId) =>
-    store.set((x) => ({ goals: x.goals.includes(id) ? x.goals.filter((g) => g !== id) : x.goals.length >= 3 ? x.goals : [...x.goals, id] }))
+    store.set((x) => ({ goals: x.goals.includes(id) ? x.goals.filter((g) => g !== id) : [...x.goals, id] }))
 
   const finish = () => {
     store.set((x) => ({ onboarded: true, initialAssessment: { ...x.assessment, ...x.initialAssessment } }), { immediate: true })
@@ -35,7 +35,7 @@ export function Onboarding() {
             ASCEND
           </p>
           <h1 className="onb__title">האוניברסיטה הפרטית שלך.</h1>
-          <p className="onb__lead">הרעיונות החשובים ביותר מהספרים הגדולים על כסף, השפעה, משמעת ומנהיגות. בשיעורי אודיו קצרים בעברית, עם תרגיל אחרי כל שיעור.</p>
+          <p className="onb__lead">ספרייה שלמה של הספרים הטובים ביותר מכל תחום. כל ספר במלואו, רק העיקר, לקריאה ולהאזנה בעברית.</p>
           <button className="btn btn--primary btn--big btn--wide" onClick={() => setStep(1)}>
             בוא נתחיל
           </button>
@@ -45,7 +45,7 @@ export function Onboarding() {
       {step === 1 && (
         <div className="onb__step">
           <h1 className="onb__title onb__title--sm">במה אתה רוצה לצמוח?</h1>
-          <p className="onb__lead">בחר עד שלושה תחומים. המסלול האישי שלך ייבנה מהם.</p>
+          <p className="onb__lead">סמן כמה תחומים שתרצה, או את כולם. זה רק כדי להתחיל, וכל הספרייה תמיד פתוחה לך.</p>
           <div className="onb__cats">
             {categories.map((c) => {
               const on = goals.includes(c.id)
@@ -65,9 +65,14 @@ export function Onboarding() {
             })}
           </div>
           <div className="onb__nav">
-            <button className="btn btn--primary btn--wide" disabled={!goals.length} onClick={() => setStep(2)}>
-              {goals.length ? 'המשך' : 'בחר לפחות תחום אחד'}
+            <button className="btn btn--primary btn--wide" onClick={() => (!goals.length && store.set({ goals: categories.map((c) => c.id) }), setStep(2))}>
+              {goals.length ? 'המשך' : 'הכל מעניין אותי'}
             </button>
+            {goals.length < categories.length && (
+              <button className="btn btn--quiet" onClick={() => store.set({ goals: categories.map((c) => c.id) })}>
+                בחר את כל התחומים
+              </button>
+            )}
           </div>
         </div>
       )}

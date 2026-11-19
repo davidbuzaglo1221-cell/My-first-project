@@ -23,7 +23,7 @@ export function BookScreen({ id }: { id: string }) {
   const hue = bookHue(b)
   const related = booksByCategory(b.category).filter((x) => x.id !== b.id)
   const reading = s.reading?.[b.id]
-  const full = !!fullTexts[b.id]
+  const full = !!fullTexts[b.id] || !!b.complete
 
   return (
     <div className="screen book" style={{ ['--hue' as string]: hue }}>
@@ -33,16 +33,16 @@ export function BookScreen({ id }: { id: string }) {
         </div>
         <BackButton fallback="/explore" />
         <Cover book={b} size="xl" className="bhero__cover" />
-        {full && <span className="bhero__full">הספר המלא בעברית, לקריאה ולהאזנה</span>}
+        {full && <span className="bhero__full">{b.complete ? 'כל הספר, רק העיקר. לקריאה ולהאזנה' : 'הספר המלא בעברית, לקריאה ולהאזנה'}</span>}
         <h1 className="bhero__title">{b.title}</h1>
         <p className="bhero__author">{b.author}</p>
         <p className="bhero__orig" lang="en" dir="ltr">
-          {b.originalTitle}, {b.year < 1000 ? `c. ${b.year}` : b.year}
+          {b.originalTitle}, {b.year < 0 ? `c. ${-b.year} BC` : b.year < 1000 ? `c. ${b.year}` : b.year}
         </p>
         <div className="bhero__actions">
           <button className="btn btn--primary btn--big" onClick={() => startLesson(nextLesson.id)}>
             <PlayGlyph playing={playingHere} size={18} />
-            {playingHere ? 'מתנגן' : started ? 'המשך האזנה' : 'האזנה'}
+            {playingHere ? 'מתנגן' : started ? 'המשך האזנה' : full ? 'האזן לספר' : 'האזנה'}
           </button>
           <button className="btn btn--read btn--big" onClick={() => navigate(`/read/${b.id}`)}>
             <IconBook size={18} />
@@ -59,7 +59,7 @@ export function BookScreen({ id }: { id: string }) {
         <ul className="bhero__facts">
           <li>
             <strong>{b.lessons.length}</strong>
-            <span>שיעורים</span>
+            <span>{full ? 'פרקים' : 'שיעורים'}</span>
           </li>
           <li>
             <strong>{formatMinutes(bookSeconds(b))}</strong>
@@ -78,7 +78,7 @@ export function BookScreen({ id }: { id: string }) {
       </section>
 
       <section className="block">
-        <SectionHead title="השיעורים" sub={doneCount ? `${doneCount} מתוך ${b.lessons.length} הושלמו` : 'כל שיעור מסתיים בתרגיל מעשי'} />
+        <SectionHead title={full ? 'פרקי הספר' : 'השיעורים'} sub={doneCount ? `${doneCount} מתוך ${b.lessons.length} הושלמו` : full ? 'כל הספר, פרק אחר פרק. כל פרק מסתיים בתרגיל מעשי' : 'כל שיעור מסתיים בתרגיל מעשי'} />
         <div className="list">
           {b.lessons.map((l, i) => (
             <LessonRow key={l.id} id={l.id} index={i + 1} showBook={false} />
@@ -113,7 +113,7 @@ export function BookScreen({ id }: { id: string }) {
       )}
 
       <p className="legal">
-        השיעורים הם הסברים מקוריים של ASCEND על הרעיונות שבספר, ואינם קריינות או תרגום שלו. כדי לקבל את התמונה המלאה, כדאי לקרוא או לשמוע את הספר המקורי מגורם מורשה.
+        {b.complete ? 'הפרקים מסכמים את כל הספר בניסוח מקורי של ASCEND, רק העיקר ובלי מילוי. הם אינם תרגום או קריינות של הטקסט המקורי.' : 'השיעורים הם הסברים מקוריים של ASCEND על הרעיונות שבספר, ואינם קריינות או תרגום שלו.'}
       </p>
     </div>
   )

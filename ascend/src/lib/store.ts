@@ -79,7 +79,7 @@ export const initialState = (): AppState => ({
   dailyGoalMin: 10,
   assessment: {},
   initialAssessment: {},
-  settings: { rate: 1, autoContinue: false, skip: 15 },
+  settings: { rate: 1, autoContinue: true, skip: 15 },
   progress: {},
   log: {},
   habits: [],

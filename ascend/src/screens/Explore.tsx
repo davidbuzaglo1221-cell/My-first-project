@@ -43,7 +43,7 @@ export function Explore() {
       ) : (
         <>
           <section className="block">
-            <SectionHead title="מסלולי למידה" sub="רצף שיעורים מכמה ספרים סביב מטרה אחת" />
+            <SectionHead title="מסלולי למידה" sub="רצף פרקים מכמה ספרים סביב מטרה אחת" />
             <div className="paths" role="list">
               {curatedPaths.map((p) => {
                 const pr = pathProgress(s, p)
@@ -55,7 +55,7 @@ export function Explore() {
                     <span className="pathcard__body">
                       <span className="pathcard__title">{p.title}</span>
                       <span className="pathcard__sub">{p.subtitle}</span>
-                      <span className="pathcard__meta">{pr.done ? `${pr.done} מתוך ${pr.total}` : `${pr.total} שיעורים`}</span>
+                      <span className="pathcard__meta">{pr.done ? `${pr.done} מתוך ${pr.total}` : `${pr.total} פרקים`}</span>
                     </span>
                   </button>
                 )
@@ -116,7 +116,7 @@ export function BookLine({ id }: { id: string }) {
         <span className="bookline__author">{b.author}</span>
         <span className="bookline__tag">{b.tagline}</span>
         <span className="bookline__meta">
-          {b.lessons.length} שיעורים
+          {b.lessons.length} פרקים
           <span className="sep" aria-hidden="true" />
           {formatMinutes(bookSeconds(b))}
           {done > 0 && (
@@ -151,7 +151,7 @@ export function CategoryScreen({ id }: { id: string }) {
           <div className="cathero__progress">
             <Bar value={m.ratio} />
             <span>
-              {m.done} מתוך {m.total} שיעורים
+              {m.done} מתוך {m.total} פרקים
             </span>
           </div>
         </div>

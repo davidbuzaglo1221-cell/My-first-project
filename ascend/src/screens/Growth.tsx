@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { categories, categoryById, estimateSeconds, formatMinutes, lessonIndex } from '../content'
+import { booksByCategory, categories, categoryById, estimateSeconds, formatMinutes, lessonIndex } from '../content'
 import type { CategoryId } from '../content/types'
 import { dayKey, lastNDays } from '../lib/dates'
-import { focusAreas, growthIndex, pathProgress, resolvePath } from '../lib/insights'
+import { growthIndex, pathProgress, resolvePath } from '../lib/insights'
 import { navigate } from '../lib/router'
 import { addHabit, archiveHabit, store, toggleHabitToday, useStore } from '../lib/store'
 import { CoverFan } from '../ui/Cover'
@@ -51,7 +51,7 @@ export function Growth() {
   const s = useStore((x) => x)
   const [assess, setAssess] = useState(false)
   const [newHabit, setNewHabit] = useState('')
-  const areas = focusAreas(s)
+  const areas = categories.map((c) => ({ id: c.id, score: growthIndex(s, c.id) }))
   const now = categories.map((c) => growthIndex(s, c.id))
   const base = categories.map((c) => (s.initialAssessment[c.id] ?? s.assessment[c.id] ?? 3) * 14)
   const path = resolvePath(s, 'personal')
@@ -83,9 +83,9 @@ export function Growth() {
       </section>
 
       <section className="block">
-        <SectionHead title="תחומים לחיזוק" sub="איפה שווה להשקיע עכשיו" />
+        <SectionHead title="כל התחומים" sub="המדד שלך בכל תחום. אתה בוחר מה ללמוד" />
         <ul className="focus">
-          {areas.slice(0, 3).map((a) => {
+          {areas.map((a) => {
             const c = categoryById[a.id]
             return (
               <li key={a.id}>
@@ -93,7 +93,7 @@ export function Growth() {
                   <span className="focus__score">{a.score}</span>
                   <span className="focus__body">
                     <strong>{c.name}</strong>
-                    <span>{a.reason}</span>
+                    <span>{booksByCategory(a.id).length} ספרים</span>
                   </span>
                 </button>
               </li>
@@ -103,16 +103,16 @@ export function Growth() {
       </section>
 
       <section className="block">
-        <SectionHead title="המסלול האישי שלך" sub={`נבנה מהתחומים: ${path.subtitle}`} action="לכל המסלול" onAction={() => navigate('/path/personal')} />
+        <SectionHead title="המסלול האישי שלך" sub={s.goals.length ? `מהתחומים שבחרת: ${path.subtitle}` : 'פרק מכל תחום'} action="לכל המסלול" onAction={() => navigate('/path/personal')} />
         <Roadmap lessonIds={path.lessonIds.slice(0, 5)} />
         <p className="muted-line">
-          {pp.done} מתוך {pp.total} שיעורים במסלול
+          {pp.done} מתוך {pp.total} פרקים במסלול
         </p>
       </section>
 
       <section className="block">
         <SectionHead title="ההרגלים שלך" sub="נבנים מהתרגילים שבסוף כל שיעור" />
-        {habits.length === 0 && <p className="muted-line">עוד אין הרגלים במעקב. בסוף כל שיעור יש הצעה להרגל קטן, ואפשר גם להוסיף כאן הרגל משלך.</p>}
+        {habits.length === 0 && <p className="muted-line">עוד אין הרגלים במעקב. בסוף כל פרק יש הצעה להרגל קטן, ואפשר גם להוסיף כאן הרגל משלך.</p>}
         <ul className="habits">
           {habits.map((h) => {
             const on = h.checks.includes(k)
@@ -155,7 +155,7 @@ export function Growth() {
 
       {s.journal.length > 0 && (
         <section className="block">
-          <SectionHead title="יומן התובנות" sub="מה שכתבת אחרי השיעורים" />
+          <SectionHead title="יומן התובנות" sub="מה שכתבת אחרי הפרקים" />
           <ul className="journal">
             {s.journal.slice(0, 6).map((j) => (
               <li key={j.id}>
@@ -261,7 +261,7 @@ export function PathScreen({ id }: { id: string }) {
           <h1 className="cathero__title">{path.title}</h1>
           <p className="cathero__promise">{path.description}</p>
           <p className="cathero__facts">
-            {path.lessonIds.length} שיעורים
+            {path.lessonIds.length} פרקים
             <span className="sep" aria-hidden="true" />
             {formatMinutes(total)}
             <span className="sep" aria-hidden="true" />
