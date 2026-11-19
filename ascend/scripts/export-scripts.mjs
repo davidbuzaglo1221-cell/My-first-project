@@ -11,7 +11,7 @@ const SPOKEN = [[/מערכת 1/g, 'מערכת אחת'], [/מערכת 2/g, 'מע�
 const spoken = (t) => SPOKEN.reduce((s, [re, to]) => s.replace(re, to), t)
 const items = []
 for (const b of mod.books) {
-  for (const l of b.lessons) items.push({ id: l.id, paras: l.script.split(/\n+/).map((p) => toSegments(p).map(spoken)) })
+  for (const l of b.lessons) items.push({ id: l.id, paras: mod.spokenScript(l).split(/\n+/).map((p) => toSegments(p).map(spoken)) })
   const quick = [`${b.title}, מאת ${b.author}. ${b.tagline}`, ...b.ideas.map((i) => `${i.title}. ${i.body}`), 'זה הסיכום בדקה. כשיהיה לך זמן, הספר המלא מחכה לך כאן, פרק אחר פרק.']
   items.push({ id: `${b.id}-quick`, paras: quick.map((p) => toSegments(p).map(spoken)) })
 }

@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react'
-import { BASE_CPS, bookById, lessonIndex } from '../content'
+import { BASE_CPS, bookById, lessonIndex, spokenScript } from '../content'
 import audioManifest from '../content/audioManifest.json'
 import { getFile } from '../lib/idb'
 import { calmLines, meditationById } from '../content/calm'
@@ -96,7 +96,7 @@ export function trackFor(id: string): Track | undefined {
     subtitle: ref.book.title,
     author: ref.book.author,
     bookId: ref.book.id,
-    script: ref.lesson.script,
+    script: spokenScript(ref.lesson),
     src: ref.lesson.audioUrl ?? (narrationFor(id) ? narrationSrc(id) : undefined),
   }
 }

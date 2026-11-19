@@ -36,6 +36,8 @@ export interface Lesson {
   script: string
   takeaway: string
   exercise: Exercise
+  /** In practice: two or three concrete steps for real life. */
+  steps?: string[]
   /** Optional licensed or pre-rendered audio file. Preferred over device narration. */
   audioUrl?: string
 }

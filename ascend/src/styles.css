@@ -5201,3 +5201,16 @@ html:has(.reader--ivory) {
 .vcard + .vcard { border-top: 0.5px solid var(--sep) !important; }
 .vcard.is-chosen .vcard__body strong { color: var(--em-300); }
 .vcard__desc { -webkit-line-clamp: unset !important; display: block !important; overflow: visible !important; }
+
+/* reader: a clear learning structure — in brief, the text, in practice */
+.reader__brief { margin: 4px 0 22px; padding: 14px 16px; border-radius: 14px; background: rgba(47, 191, 140, 0.1); font-family: var(--serif); font-size: calc(var(--rsize, 19px) * 1.02); line-height: 1.55; font-weight: 600; color: var(--text-1); }
+.reader__brief span, .reader__task span { display: block; font-family: var(--sans); font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: var(--em-300); margin-bottom: 4px; }
+.reader__practice { margin: 28px 0 8px; padding: 18px 18px 14px; border-radius: 16px; background: var(--row-bg); border-inline-start: 3px solid var(--em-400); }
+.reader__practice h3 { font-family: var(--sans); font-size: 17px; font-weight: 800; margin-bottom: 10px; }
+.reader__practice ol { counter-reset: st; display: grid; gap: 10px; }
+.reader__practice li { counter-increment: st; position: relative; padding-inline-start: 34px; font-size: calc(var(--rsize, 19px) * 0.9); line-height: 1.55; color: var(--text-1); }
+.reader__practice li::before { content: counter(st); position: absolute; inset-inline-start: 0; top: 1px; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 800; background: rgba(47, 191, 140, 0.18); color: var(--em-300); }
+.reader__task { margin-top: 14px; padding-top: 12px; border-top: 0.5px solid var(--sep); font-size: 15px; line-height: 1.5; color: var(--text-2); }
+.reader--ivory .reader__brief { background: rgba(18, 119, 90, 0.1); color: #1b1a17; }
+.reader--ivory .reader__practice { background: rgba(0, 0, 0, 0.04); }
+.reader--ivory .reader__practice li { color: #1b1a17; }

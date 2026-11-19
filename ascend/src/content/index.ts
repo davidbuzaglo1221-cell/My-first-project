@@ -13,6 +13,7 @@ import { classicBooks } from './books/classics'
 import { moreBooks } from './books/more'
 import { completeBooks } from './full'
 import { parseBook } from './fullbook'
+import { practice } from './practice'
 
 export { categories, categoryById }
 const order = categories.map((c) => c.id)
@@ -35,6 +36,7 @@ const raw: Book[] = [
 /** Every book with a complete text gets one lesson per chapter: the whole book, only what matters. */
 export const books: Book[] = raw
   .map((b) => (completeBooks[b.id] ? { ...b, lessons: parseBook(b.id, completeBooks[b.id]), complete: true } : b))
+  .map((b) => ({ ...b, lessons: b.lessons.map((l) => (practice[l.id] ? { ...l, steps: practice[l.id] } : l)) }))
   .filter((b) => b.lessons.length > 0)
   .sort((a, b) => order.indexOf(a.category) - order.indexOf(b.category))
 
@@ -141,4 +143,11 @@ export function formatMinutes(seconds: number) {
 export function formatClock(seconds: number) {
   const s = Math.max(0, Math.floor(seconds))
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
+}
+
+/** What the narrator reads for a chapter: the text, then the bottom line, then how to apply it. */
+export function spokenScript(l: Lesson) {
+  const extra = [`השורה התחתונה: ${l.takeaway}`]
+  if (l.steps?.length) extra.push(`ובפועל, ${l.steps.join(' ')}`)
+  return [l.script, ...extra].join('\n')
 }

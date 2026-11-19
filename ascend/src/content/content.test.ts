@@ -40,3 +40,13 @@ describe('library', () => {
     }
   })
 })
+
+describe('learning quality', () => {
+  it('every chapter has a bottom line and two or three practical steps', () => {
+    for (const b of books) for (const l of b.lessons) {
+      expect(l.takeaway.length, l.id).toBeGreaterThan(8)
+      expect(l.steps?.length ?? 0, `${l.id} steps`).toBeGreaterThanOrEqual(2)
+      for (const s of l.steps ?? []) expect(s, l.id).not.toMatch(/[0-9A-Za-z]/)
+    }
+  })
+})
