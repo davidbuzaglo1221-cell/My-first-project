@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- ASCEND app icon: an open book in fine emerald line work on deep black.
+       Full-bleed square on purpose: iOS and Android apply their own corner mask. -->
+  <defs>
+    <radialGradient id="halo" cx="512" cy="528" r="330" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00C982" stop-opacity="0.10"/>
+      <stop offset="0.6" stop-color="#00C982" stop-opacity="0.03"/>
+      <stop offset="1" stop-color="#00C982" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="11"/>
+    </filter>
+    <g id="book" fill="none" stroke="#00C982" stroke-linecap="round" stroke-linejoin="round">
+      <!-- left page -->
+      <path stroke-width="17" d="M512 404 C 452 360, 360 344, 250 356 L 250 652 C 360 640, 452 656, 512 700"/>
+      <!-- right page -->
+      <path stroke-width="17" d="M512 404 C 572 360, 664 344, 774 356 L 774 652 C 664 640, 572 656, 512 700"/>
+      <!-- spine -->
+      <path stroke-width="17" d="M512 404 L 512 700"/>
+      <!-- the page block beneath: two finer edges that meet at the spine -->
+      <path stroke-width="10" opacity="0.6" d="M228 386 L 228 684 C 346 670, 446 688, 512 734 C 578 688, 678 670, 796 684 L 796 386"/>
+    </g>
+  </defs>
+  <rect width="1024" height="1024" fill="#050705"/>
+  <circle cx="512" cy="528" r="330" fill="url(#halo)"/>
+  <use href="#book" filter="url(#glow)" opacity="0.42"/>
+  <use href="#book"/>
+</svg>
