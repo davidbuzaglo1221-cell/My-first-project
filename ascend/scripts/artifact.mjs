@@ -5,7 +5,7 @@ const head = html.match(/<head>([\s\S]*?)<\/head>/)[1]
 const body = html.match(/<body>([\s\S]*?)<\/body>/)[1]
 const styles = [...head.matchAll(/<style[^>]*>[\s\S]*?<\/style>/g)].map((m) => m[0]).join('\n')
 const scripts = [...head.matchAll(/<script[^>]*>[\s\S]*?<\/script>/g)].map((m) => m[0]).join('\n')
-const page = `<title>ASCEND</title>
+const page = `<title>ALEXANDRIA</title>
 <meta name="theme-color" content="#020504">
 <style>:root{color-scheme:dark}html,body{background:#010302;color:#edf4f0}</style>
 ${styles}

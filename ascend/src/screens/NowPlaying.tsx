@@ -56,7 +56,7 @@ export function NowPlaying() {
                 <IconDown size={26} />
               </button>
               <button className="np__from" onClick={goBook} disabled={!book}>
-                <span>{book ? categoryById[book.category].short : 'האודיו שלי'}</span>
+                <span>{book ? categoryById[book.category].short : t.kind === 'calm' ? 'מרחב השקט' : 'האודיו שלי'}</span>
                 <strong>{t.subtitle}</strong>
               </button>
               <button className="icon-btn" onClick={() => setSheet('chapters')} aria-label="פרקים בספר" disabled={!book}>
@@ -67,6 +67,13 @@ export function NowPlaying() {
             <div className="np__stage">
               {book ? (
                 <Cover book={book} size="xl" className="np__cover" />
+              ) : t.kind === 'calm' ? (
+                <div className={`np__calm ${p.status === 'playing' ? 'is-on' : ''}`} aria-hidden="true">
+                  <i />
+                  <i />
+                  <i />
+                  <span />
+                </div>
               ) : (
                 <div className="cover cover--xl np__cover np__cover--file">
                   <IconHeadphones size={56} />
@@ -152,7 +159,7 @@ export function NowPlaying() {
 
             <div className="np__foot">
               <span className="np__voice">
-                {p.mode === 'file' ? (t.kind === 'file' ? 'קובץ אודיו' : 'קריינות ASCEND') : p.mode === 'voice' ? `קריינות: ${voice ? voiceLabel(voice) : 'קול המכשיר'}` : 'כתוביות מתוזמנות'}
+                {p.mode === 'file' ? (t.kind === 'file' ? 'קובץ אודיו' : 'קריינות ALEXANDRIA') : p.mode === 'voice' ? `קריינות: ${voice ? voiceLabel(voice) : 'קול המכשיר'}` : 'כתוביות מתוזמנות'}
               </span>
               {ref && (
                 <button className="link" onClick={() => showComplete(t.id)}>
@@ -181,7 +188,7 @@ export function NowPlaying() {
                     ))}
                   </ol>
                 )}
-                <p className="np__legal">הסבר מקורי של ASCEND על רעיונות הספר. אינו קריינות של הספר ואינו מחליף אותו.</p>
+                <p className="np__legal">הסבר מקורי של ALEXANDRIA על רעיונות הספר. אינו קריינות של הספר ואינו מחליף אותו.</p>
               </section>
             )}
           </div>

@@ -179,3 +179,25 @@ export const IconBook = (p: P) => (
     <path d="M12 6.5C10 5 7 4.5 4 5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V5c-3-.5-6 0-8 1.5zM12 6.5V19" />
   </svg>
 )
+export const IconLotus = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M12 19c-3.5 0-7-2-8.5-5.5 2.6-.4 5 .4 6.6 2M12 19c3.5 0 7-2 8.5-5.5-2.6-.4-5 .4-6.6 2M12 19c-2.2-1.8-3.2-4.2-3-7 .2-2.3 1.4-4.4 3-6 1.6 1.6 2.8 3.7 3 6 .2 2.8-.8 5.2-3 7z" />
+  </svg>
+)
+export const IconQuiz = (p: P) => (
+  <svg {...base(p)}>
+    <rect x="4.5" y="3.5" width="15" height="17" rx="2.5" />
+    <path d="M9.5 9a2.5 2.5 0 1 1 3.4 2.3c-.6.3-.9.8-.9 1.4v.3M12 16.5v.01" />
+  </svg>
+)
+export const IconChat = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v7a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4A2.5 2.5 0 0 1 4 13.5z" />
+    <path d="M8.5 9.5h7M8.5 12.5h4.5" />
+  </svg>
+)
+export const IconHeart = ({ filled, ...p }: P & { filled?: boolean }) => (
+  <svg {...base(p)} fill={filled ? 'currentColor' : 'none'}>
+    <path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z" />
+  </svg>
+)

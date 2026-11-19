@@ -2,11 +2,12 @@ import { useSyncExternalStore } from 'react'
 import { BASE_CPS, bookById, lessonIndex } from '../content'
 import audioManifest from '../content/audioManifest.json'
 import { getFile } from '../lib/idb'
-import { addListening, completeLesson, setLessonPosition, store } from '../lib/store'
+import { calmLines, meditationById } from '../content/calm'
+import { addCalm, addListening, completeLesson, setLessonPosition, store } from '../lib/store'
 import { offsets, toSegments } from './sentences'
 import { pickVoice, speechSupported } from './voices'
 
-export type TrackKind = 'lesson' | 'quick' | 'file'
+export type TrackKind = 'lesson' | 'quick' | 'file' | 'calm'
 
 /** Studio narration rendered ahead of time: duration and the start time of every sentence. */
 /** f/o: the chapter lives inside one file per book (f), starting at o seconds. */
@@ -24,10 +25,11 @@ const voiceFor = (id: string) => {
   return v && byVoice[v]?.[id] ? v : byVoice[DEFAULT_VOICE]?.[id] ? DEFAULT_VOICE : undefined
 }
 const narrationFor = (id: string) => {
+  if (id.startsWith('calm:')) return byVoice.calm?.[id.slice(5)]
   const v = voiceFor(id)
   return v ? byVoice[v][id] : undefined
 }
-const narrationSrc = (id: string) => `audio/${voiceFor(id)}/${narrationFor(id)?.f ?? id}.mp3`
+const narrationSrc = (id: string) => (id.startsWith('calm:') ? `audio/calm/${id.slice(5)}.mp3` : `audio/${voiceFor(id)}/${narrationFor(id)?.f ?? id}.mp3`)
 export const hasNarration = (id: string) => !!narrationFor(id)
 
 export interface Track {
@@ -66,6 +68,11 @@ export function trackFor(id: string): Track | undefined {
     const meta = store.get().files.find((f) => `file:${f.id}` === id)
     if (!meta) return
     return { id, kind: 'file', title: meta.title, subtitle: 'האודיו שלי', author: meta.author }
+  }
+  if (id.startsWith('calm:')) {
+    const m = meditationById[id.slice(5)]
+    if (!m) return
+    return { id, kind: 'calm', title: m.title, subtitle: 'מהישרדות לחופש', author: 'מדיטציה מודרכת', script: calmLines(m).join('\n'), src: narrationFor(id) ? narrationSrc(id) : undefined }
   }
   if (id.endsWith('-quick')) {
     const book = bookById[id.slice(0, -6)]
@@ -267,7 +274,7 @@ function tick() {
 
 function persistPosition() {
   const t = snap.track
-  if (!t || t.kind === 'quick') return
+  if (!t || t.kind === 'quick' || t.kind === 'calm') return
   setLessonPosition(t.id, snap.position, snap.duration)
 }
 
@@ -305,7 +312,7 @@ export async function load(id: string, opts: { autoplay?: boolean; from?: number
     a.playbackRate = rate
     ;(a as HTMLAudioElement & { preservesPitch?: boolean }).preservesPitch = true
     const n = narrationFor(id)
-    const segments = n && track.script ? toSegments(track.script) : []
+    const segments = n && track.script ? (track.kind === 'calm' ? track.script.split('\n') : toSegments(track.script)) : []
     fileTimes = n && segments.length === n.s.length ? n.s : []
     emit({
       track,
@@ -347,7 +354,7 @@ export async function load(id: string, opts: { autoplay?: boolean; from?: number
       endedId: undefined,
     })
   }
-  if (track.kind !== 'quick') store.set({ lastTrack: id })
+  if (track.kind !== 'quick' && track.kind !== 'calm') store.set({ lastTrack: id })
   setMediaSession(track)
   if (opts.autoplay) play()
 }
@@ -448,6 +455,7 @@ function finish() {
   stopKeepAlive()
   emit({ status: 'ended', position: snap.duration, endedId: t.id })
   if (t.kind === 'lesson') completeLesson(t.id, snap.duration)
+  if (t.kind === 'calm') addCalm(Math.round(snap.duration / 60))
   if (t.kind === 'file') setLessonPosition(t.id, 0, snap.duration)
   if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused'
 
@@ -477,7 +485,7 @@ function setMediaSession(t: Track, art?: string) {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: t.title,
       artist: `${t.subtitle} · ${t.author}`,
-      album: 'ASCEND',
+      album: 'ALEXANDRIA',
       artwork: art ? [{ src: art, sizes: '512x512', type: 'image/png' }] : [],
     })
     const skipBy = store.get().settings.skip
@@ -521,4 +529,14 @@ export function setNarrator(voice: string) {
   const wasPlaying = snap.status === 'playing'
   const n = narrationFor(t.id)
   load(t.id, { autoplay: wasPlaying, from: n ? ratio * n.d : snap.position })
+}
+
+/** Where a paragraph of a chapter begins in its narration, in seconds (0 when unknown). */
+export function paragraphStart(id: string, para: number) {
+  const ref = lessonIndex[id]
+  const n = narrationFor(id)
+  if (!ref || !n) return 0
+  const paras = ref.lesson.script.split(/\n+/)
+  const seg = paras.slice(0, para).reduce((a, p) => a + toSegments(p).length, 0)
+  return n.s[seg] ?? 0
 }

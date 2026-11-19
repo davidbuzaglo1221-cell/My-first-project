@@ -12,6 +12,11 @@ export type Route =
   | { name: 'settings' }
   | { name: 'voices' }
   | { name: 'read'; id: string }
+  | { name: 'freedom' }
+  | { name: 'breathe'; id: string }
+  | { name: 'notes'; tab?: string }
+  | { name: 'quiz'; id: string; lesson?: string }
+  | { name: 'ask'; id: string }
 
 export function parse(hash: string): Route {
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent)
@@ -34,6 +39,16 @@ export function parse(hash: string): Route {
       return { name: 'voices' }
     case 'read':
       return { name: 'read', id: parts[1] ?? '' }
+    case 'freedom':
+      return { name: 'freedom' }
+    case 'breathe':
+      return { name: 'breathe', id: parts[1] ?? '' }
+    case 'notes':
+      return { name: 'notes', tab: parts[1] }
+    case 'quiz':
+      return { name: 'quiz', id: parts[1] ?? '', lesson: parts[2] }
+    case 'ask':
+      return { name: 'ask', id: parts[1] ?? '' }
     default:
       return { name: 'home' }
   }
@@ -53,5 +68,11 @@ export const navigate = (path: string) => {
 export const back = (fallback = '/') => (history.length > 1 ? history.back() : navigate(fallback))
 
 /** Tab a route belongs to, for the tab bar highlight. */
-export const tabOf = (r: Route) =>
-  r.name === 'category' || r.name === 'book' || r.name === 'path' || r.name === 'read' ? 'explore' : r.name === 'settings' || r.name === 'voices' ? 'home' : r.name
+export const tabOf = (r: Route): string =>
+  ['category', 'book', 'path', 'read', 'quiz', 'ask'].includes(r.name)
+    ? 'explore'
+    : r.name === 'breathe'
+      ? 'freedom'
+      : ['settings', 'voices', 'growth', 'library'].includes(r.name)
+        ? 'progress'
+        : r.name

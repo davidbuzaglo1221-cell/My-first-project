@@ -16,6 +16,11 @@ import { Progress } from './screens/Progress'
 import { Settings } from './screens/Settings'
 import { Voices } from './screens/Voices'
 import { Reader } from './screens/Reader'
+import { Breathe, Freedom } from './screens/Freedom'
+import { Notebook } from './screens/Notebook'
+import { Quiz } from './screens/Quiz'
+import { Ask } from './screens/Ask'
+import { dueNow, chime } from './lib/remind'
 import { MiniPlayer, TabBar } from './ui/Chrome'
 import { bookHue, bookMotif } from './ui/Cover'
 import { coverPng } from './ui/coverArt'
@@ -65,6 +70,20 @@ export function App() {
     return store.subscribe(check)
   }, [])
 
+  // Reminders ring while the app is open (the calendar export covers the rest).
+  useEffect(() => {
+    let last = ''
+    const t = setInterval(() => {
+      const d = new Date()
+      const stamp = `${d.getHours()}:${d.getMinutes()}`
+      if (stamp === last) return
+      last = stamp
+      const r = (store.get().reminders ?? []).find((x) => dueNow(x, d))
+      if (r) (chime(), toast(`⏰ ${r.text}`))
+    }, 15000)
+    return () => clearInterval(t)
+  }, [])
+
   if (!onboarded) return <Onboarding />
 
   let screen
@@ -102,10 +121,25 @@ export function App() {
     case 'read':
       screen = <Reader id={route.id} />
       break
+    case 'freedom':
+      screen = <Freedom />
+      break
+    case 'breathe':
+      screen = <Breathe id={route.id} />
+      break
+    case 'notes':
+      screen = <Notebook tab={route.tab} />
+      break
+    case 'quiz':
+      screen = <Quiz bookId={route.id} lessonId={route.lesson} />
+      break
+    case 'ask':
+      screen = <Ask bookId={route.id} />
+      break
   }
 
   return (
-    <div className={`app ${p.track ? 'has-mini' : ''} ${ui.playerOpen ? 'player-open' : ''} ${route.name === 'read' ? 'is-reading' : ''}`}>
+    <div className={`app ${p.track ? 'has-mini' : ''} ${ui.playerOpen ? 'player-open' : ''} ${route.name === 'read' ? 'is-reading' : ''} ${route.name === 'breathe' ? 'is-breathing' : ''}`}>
       <main ref={main} tabIndex={-1} key={hash} className="view" inert={ui.playerOpen || undefined}>
         {screen}
       </main>

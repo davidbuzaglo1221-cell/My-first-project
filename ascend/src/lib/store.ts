@@ -42,6 +42,36 @@ export interface Settings {
   skip: number
 }
 
+export interface Note {
+  id: string
+  text: string
+  bookId?: string
+  lessonId?: string
+  /** A quoted paragraph the note is about (a highlight). */
+  quote?: string
+  para?: number
+  kind: 'note' | 'love'
+  at: number
+}
+
+export interface Reminder {
+  id: string
+  text: string
+  /** "HH:MM", daily */
+  time: string
+  days: number[]
+  on: boolean
+  kind: 'learn' | 'breathe' | 'posture' | 'custom'
+}
+
+export interface Memo {
+  id: string
+  title: string
+  bookId?: string
+  seconds: number
+  at: number
+}
+
 export interface AppState {
   v: 1
   onboarded: boolean
@@ -67,6 +97,17 @@ export interface AppState {
   /** Where the reader stopped in each book. */
   reading?: Record<string, { ch: number; y: number; last: number }>
   readerPrefs?: { size: number; paper: 'night' | 'ivory' }
+  /** Chapters read to the end in the reader. */
+  readDone?: Record<string, number>
+  notes?: Note[]
+  reminders?: Reminder[]
+  memos?: Memo[]
+  /** Best quiz score per quiz id (0..1). */
+  quiz?: Record<string, { best: number; last: number; at: number }>
+  /** Memory cards: Leitner box and next due time per chapter. */
+  cards?: Record<string, { box: number; due: number }>
+  /** Minutes of practice in the calm space, per day. */
+  calm?: Record<string, number>
 }
 
 const KEY = 'ascend:v1'
@@ -232,4 +273,61 @@ export function saveJournal(lessonId: string, prompt: string, text: string) {
 
 export function updateSettings(patch: Partial<Settings>) {
   store.set((s) => ({ settings: { ...s.settings, ...patch } }), { immediate: true })
+}
+
+/* ---------- notebook, quizzes, cards, reminders ---------- */
+
+export function addNote(n: Omit<Note, 'id' | 'at'>) {
+  const id = uid()
+  store.set((s) => ({ notes: [{ ...n, id, at: Date.now() }, ...(s.notes ?? [])] }), { immediate: true })
+  return id
+}
+export function updateNote(id: string, text: string) {
+  store.set((s) => ({ notes: (s.notes ?? []).map((n) => (n.id === id ? { ...n, text } : n)) }), { immediate: true })
+}
+export function deleteNote(id: string) {
+  store.set((s) => ({ notes: (s.notes ?? []).filter((n) => n.id !== id) }), { immediate: true })
+}
+export function toggleLove(bookId: string, lessonId: string, para: number, quote: string) {
+  const ex = (store.get().notes ?? []).find((n) => n.kind === 'love' && n.lessonId === lessonId && n.para === para)
+  if (ex) return deleteNote(ex.id), false
+  addNote({ kind: 'love', bookId, lessonId, para, quote, text: '' })
+  return true
+}
+export function markRead(lessonId: string) {
+  if (store.get().readDone?.[lessonId]) return
+  store.set((s) => ({ readDone: { ...s.readDone, [lessonId]: Date.now() } }), { immediate: true })
+}
+export function saveQuiz(id: string, score: number) {
+  store.set((s) => {
+    const prev = s.quiz?.[id]
+    return { quiz: { ...s.quiz, [id]: { best: Math.max(prev?.best ?? 0, score), last: score, at: Date.now() } } }
+  }, { immediate: true })
+}
+const BOX_DAYS = [0, 1, 3, 7, 16, 35]
+export function gradeCard(lessonId: string, knew: boolean) {
+  store.set((s) => {
+    const prev = s.cards?.[lessonId] ?? { box: 0, due: 0 }
+    const box = knew ? Math.min(5, prev.box + 1) : 1
+    return { cards: { ...s.cards, [lessonId]: { box, due: Date.now() + BOX_DAYS[box] * 86400000 } } }
+  }, { immediate: true })
+}
+export function saveReminder(r: Reminder) {
+  store.set((s) => {
+    const list = s.reminders ?? []
+    return { reminders: list.some((x) => x.id === r.id) ? list.map((x) => (x.id === r.id ? r : x)) : [...list, r] }
+  }, { immediate: true })
+}
+export function deleteReminder(id: string) {
+  store.set((s) => ({ reminders: (s.reminders ?? []).filter((r) => r.id !== id) }), { immediate: true })
+}
+export function addMemo(m: Memo) {
+  store.set((s) => ({ memos: [m, ...(s.memos ?? [])] }), { immediate: true })
+}
+export function deleteMemo(id: string) {
+  store.set((s) => ({ memos: (s.memos ?? []).filter((m) => m.id !== id) }), { immediate: true })
+}
+export function addCalm(minutes: number) {
+  const k = dayKey()
+  store.set((s) => ({ calm: { ...s.calm, [k]: (s.calm?.[k] ?? 0) + minutes } }), { immediate: true })
 }

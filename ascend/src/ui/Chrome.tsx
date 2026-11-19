@@ -2,15 +2,15 @@ import { bookById } from '../content'
 import { usePlayer, toggle } from '../engine/player'
 import { navigate, type Route, tabOf } from '../lib/router'
 import { Cover } from './Cover'
-import { IconAscend, IconChart, IconCompass, IconHeadphones, IconHome, IconLibrary } from './Icons'
+import { IconChart, IconHeadphones, IconHome, IconLibrary, IconLotus, IconPen } from './Icons'
 import { PlayGlyph } from './Kit'
 import { openPlayer } from './uiState'
 
 const tabs = [
-  { id: 'home', label: 'היום', path: '/', Icon: IconHome },
-  { id: 'explore', label: 'גלו', path: '/explore', Icon: IconCompass },
-  { id: 'library', label: 'ספרייה', path: '/library', Icon: IconLibrary },
-  { id: 'growth', label: 'צמיחה', path: '/growth', Icon: IconAscend },
+  { id: 'home', label: 'בית', path: '/', Icon: IconHome },
+  { id: 'explore', label: 'ספרייה', path: '/explore', Icon: IconLibrary },
+  { id: 'freedom', label: 'חופש', path: '/freedom', Icon: IconLotus },
+  { id: 'notes', label: 'מחברת', path: '/notes', Icon: IconPen },
   { id: 'progress', label: 'התקדמות', path: '/progress', Icon: IconChart },
 ] as const
 
@@ -36,7 +36,7 @@ export function MiniPlayer() {
   return (
     <div className="mini" role="region" aria-label="נגן">
       <button className="mini__open" onClick={openPlayer} aria-label={`פתח נגן: ${p.track.title}`}>
-        {book ? <Cover book={book} size="xs" /> : <span className="mini__file"><IconHeadphones size={18} /></span>}
+        {book ? <Cover book={book} size="xs" /> : <span className="mini__file">{p.track.kind === 'calm' ? <IconLotus size={18} /> : <IconHeadphones size={18} />}</span>}
         <span className="mini__text">
           <span className="mini__title">{p.track.title}</span>
           <span className="mini__sub">{p.track.subtitle}</span>

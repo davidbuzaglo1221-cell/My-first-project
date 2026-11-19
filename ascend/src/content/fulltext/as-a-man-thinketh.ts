@@ -1,10 +1,10 @@
 // "As a Man Thinketh" by James Allen (1902). Public domain worldwide.
-// Hebrew translation by ASCEND, from the 1913 Thomas Y. Crowell edition (Wikisource).
+// Hebrew translation by ALEXANDRIA, from the 1913 Thomas Y. Crowell edition (Wikisource).
 import type { FullText } from './types'
 
 export const asAManThinketh: FullText = {
   bookId: 'as-a-man-thinketh',
-  source: 'תרגום ASCEND מהמהדורה האנגלית המקורית (1913). היצירה נמצאת בנחלת הכלל.',
+  source: 'תרגום ALEXANDRIA מהמהדורה האנגלית המקורית (1913). היצירה נמצאת בנחלת הכלל.',
   chapters: [
     {
       title: 'פתח דבר',

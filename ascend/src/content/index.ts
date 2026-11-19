@@ -57,7 +57,10 @@ export const booksByCategory = (id: CategoryId) => books.filter((b) => b.categor
 export const BASE_CPS = 12.5
 
 export const scriptChars = (l: Lesson) => l.script.replace(/\s+/g, ' ').length
-export const estimateSeconds = (l: Lesson, cps = BASE_CPS) => Math.round(scriptChars(l) / cps + 1.5)
+import audioManifest from './audioManifest.json'
+const recorded = (audioManifest as Record<string, Record<string, { d: number }>>).michael ?? {}
+/** Real narration length when recorded, otherwise an estimate from the text. */
+export const estimateSeconds = (l: Lesson, cps = BASE_CPS) => Math.round(recorded[l.id]?.d ?? scriptChars(l) / cps + 1.5)
 export const bookSeconds = (b: Book) => b.lessons.reduce((s, l) => s + estimateSeconds(l), 0)
 
 const ids = (...pairs: [string, number[]][]) => pairs.flatMap(([book, ns]) => ns.map((n) => `${book}-${n}`))

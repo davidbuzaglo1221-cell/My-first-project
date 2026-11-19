@@ -1,4 +1,4 @@
-/** Complete books, chapter by chapter: everything the book teaches, only what matters, in original ASCEND wording. */
+/** Complete books, chapter by chapter: everything the book teaches, only what matters, in original ALEXANDRIA wording. */
 import money from './money'
 import persuasion from './persuasion'
 import psychology from './psychology'

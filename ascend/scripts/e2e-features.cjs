@@ -1,0 +1,66 @@
+const { chromium } = require('playwright')
+const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m)
+;(async () => {
+  const b = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] })
+  const p = await b.newPage({ viewport: { width: 390, height: 844 } })
+  const errs = []; p.on('pageerror', (e) => errs.push(e.message))
+  const S = () => p.evaluate(() => window.__ascend.store.get())
+  await p.goto('http://localhost:4173/#/')
+  await p.waitForTimeout(800)
+  // 1. welcome: no questions, one button
+  ok(await p.locator('text=כניסה לספרייה').isVisible(), 'welcome screen has a single entry button')
+  ok((await p.locator('.wlc input, .wlc [role=radio]').count()) === 0, 'welcome asks nothing')
+  await p.click('text=כניסה לספרייה'); await p.waitForTimeout(600)
+  ok(await p.locator('h1:has-text("הספרייה שלך")').isVisible(), 'enters the home library')
+  // 2. library: search + filters
+  await p.goto('http://localhost:4173/#/explore'); await p.waitForTimeout(600)
+  await p.fill('input[type=search]', 'הרגל'); await p.waitForTimeout(300)
+  const n1 = await p.locator('.tile').count(); ok(n1 > 0 && n1 < 20, `search "הרגל" finds ${n1} books`)
+  await p.fill('input[type=search]', ''); await p.click('.chips .chip:has-text("כסף")'); await p.waitForTimeout(300)
+  ok((await p.locator('.tile').count()) === 7, 'topic chip filters to the 7 money books')
+  await p.click('.filterbtn'); await p.waitForTimeout(400); await p.click('.sheet .chip:has-text("הקצרים קודם")'); await p.click('.sheet .btn--primary'); await p.waitForTimeout(400)
+  ok(await p.locator('.filterbtn b').isVisible(), 'filter sheet sets a sort and shows the badge')
+  // 3. reader: love a paragraph, add note, chapter counts when read
+  await p.goto('http://localhost:4173/#/read/atomic-habits'); await p.waitForTimeout(700)
+  await p.locator('.rpara p').first().click(); await p.click('.rpara__bar button:has-text("אהבתי")'); await p.waitForTimeout(300)
+  ok((await S()).notes?.some((n) => n.kind === 'love'), 'paragraph saved to loved')
+  await p.evaluate(() => window.scrollTo(0, document.body.scrollHeight)); await p.waitForTimeout(800)
+  ok(!!(await S()).readDone?.['atomic-habits-1'], 'reading a chapter to the end counts it as learned')
+  // 4. book page shows percent
+  await p.goto('http://localhost:4173/#/book/atomic-habits'); await p.waitForTimeout(600)
+  const pct = await p.locator('.learnbox__pct').innerText(); ok(pct !== '0%', `book shows learned ${pct}`)
+  // 5. quiz: answer all, score saved
+  await p.goto('http://localhost:4173/#/quiz/atomic-habits'); await p.waitForTimeout(600)
+  for (let i = 0; i < 12; i++) {
+    if (!(await p.locator('.opt').count())) break
+    await p.locator('.opt').first().click(); await p.waitForTimeout(120)
+    await p.locator('.quiz__foot .btn').click(); await p.waitForTimeout(150)
+  }
+  ok(await p.locator('.quiz__ring').isVisible(), 'quiz finishes with a score')
+  ok((await S()).quiz?.['book:atomic-habits'] !== undefined, 'quiz score saved')
+  // 6. notebook: add a note, cards due
+  await p.goto('http://localhost:4173/#/notes'); await p.waitForTimeout(500)
+  await p.click('.nb__tools .btn--primary'); await p.fill('.note-input', 'פתק בדיקה'); await p.click('.sheet .btn--primary:has-text("שמור")'); await p.waitForTimeout(300)
+  ok(await p.locator('.note__text:has-text("פתק בדיקה")').isVisible(), 'note added and listed')
+  await p.click('.tabs__t:has-text("לזכור")'); await p.waitForTimeout(300)
+  ok(await p.locator('.flash').isVisible(), 'memory card due for the learned chapter')
+  await p.click('.flash'); await p.click('.cards__grade .btn--primary'); await p.waitForTimeout(200)
+  ok(((await S()).cards?.['atomic-habits-1']?.box ?? 0) === 1, 'card graded and scheduled')
+  await p.click('.tabs__t:has-text("תזכורות")'); await p.locator('.chips .chip').first().click(); await p.waitForTimeout(200)
+  ok(((await S()).reminders ?? []).length === 1, 'reminder added')
+  // 7. freedom: meditation plays from its file
+  await p.goto('http://localhost:4173/#/freedom'); await p.waitForTimeout(600)
+  await p.click('.fr-lead'); await p.waitForTimeout(3000)
+  const pl = await p.evaluate(() => { const s = window.__ascend.player.get(); return { id: s.track?.id, st: s.status, pos: s.position, d: s.duration, segs: s.segments.length } })
+  ok(pl.id === 'calm:freedom' && pl.st === 'playing' && pl.d > 200 && pl.segs > 20, `meditation plays ${JSON.stringify(pl)}`)
+  await p.evaluate(() => window.__ascend.pause())
+  // 8. breathing trainer runs
+  await p.goto('http://localhost:4173/#/breathe/box'); await p.waitForTimeout(400)
+  await p.click('.breathe__actions .btn--primary'); await p.waitForTimeout(5000)
+  ok((await p.locator('.orb__text strong').innerText()) === 'החזק', 'breathing moves from inhale to hold after 4 seconds')
+  // 9. progress shows the books
+  await p.goto('http://localhost:4173/#/progress'); await p.waitForTimeout(500)
+  ok((await p.locator('.bprog').count()) >= 1, 'progress lists learned books')
+  ok(errs.length === 0, 'no page errors ' + errs.join(' | '))
+  await b.close()
+})()

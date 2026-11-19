@@ -30,7 +30,7 @@ export function Settings() {
       store.replace(data)
       toast('הגיבוי שוחזר')
     } catch {
-      toast('הקובץ הזה לא נראה כמו גיבוי של ASCEND.')
+      toast('הקובץ הזה לא נראה כמו גיבוי של ALEXANDRIA.')
     }
   }
 
@@ -131,7 +131,7 @@ export function Settings() {
       <section className="group about">
         <IconAscend size={28} />
         <p>
-          <strong>ASCEND</strong> היא אוניברסיטה פרטית לצמיחה אישית. כל ספר מופיע במלואו, פרק אחר פרק, רק העיקר, בניסוח מקורי של ASCEND. זה אינו תרגום מילולי של הספרים. הקריינות מוקלטת מראש בעברית, ואפשר גם להוסיף קבצי אודיו משלך.
+          <strong>ALEXANDRIA</strong> היא הספרייה הגדולה של הצמיחה האישית. כל ספר מופיע במלואו, פרק אחר פרק, רק העיקר, בניסוח מקורי של ALEXANDRIA. זה אינו תרגום מילולי של הספרים. הקריינות מוקלטת מראש בעברית, ואפשר גם להוסיף קבצי אודיו משלך.
         </p>
       </section>
     </div>

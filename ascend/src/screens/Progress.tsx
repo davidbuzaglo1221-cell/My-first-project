@@ -1,4 +1,7 @@
-import { categories } from '../content'
+import { books, categories } from '../content'
+import { bookPercent, libraryStats } from '../lib/learn'
+import { Learned } from '../ui/Books'
+import { Cover } from '../ui/Cover'
 import { hebrewWeekday } from '../lib/dates'
 import { achievementList, categoryMastery, completedIds, consistency, currentStreak, heatmap, longestStreak, totalSeconds, weekSeries } from '../lib/insights'
 import { navigate } from '../lib/router'
@@ -27,8 +30,17 @@ export function Progress() {
     <div className="screen progress">
       <header className="page-head">
         <h1 className="page-title">ההתקדמות שלך</h1>
-        <p className="page-sub">עקביות חשובה יותר מעוצמה. יום פעיל הוא דקה של האזנה או הרגל אחד שסימנת.</p>
+        <p className="page-sub">כמה למדת, בכל ספר ובכל הספרייה.</p>
       </header>
+
+      <ProgressBooks />
+
+      <nav className="morelinks">
+        <button onClick={() => navigate('/growth')}>הצמיחה וההרגלים שלי</button>
+        <button onClick={() => navigate('/library')}>ההאזנות והקבצים שלי</button>
+        <button onClick={() => navigate('/voices')}>בחירת קריין</button>
+        <button onClick={() => navigate('/settings')}>הגדרות</button>
+      </nav>
 
       <section className="stats">
         <div className="stat stat--lead">
@@ -126,5 +138,55 @@ export function Progress() {
         </ul>
       </section>
     </div>
+  )
+}
+
+function ProgressBooks() {
+  const s = useStore((x) => x)
+  const st = libraryStats(s)
+  const learned = books.map((b) => ({ b, p: bookPercent(s, b) })).filter((x) => x.p > 0).sort((a, b) => b.p - a.p)
+  const quizzes = Object.entries(s.quiz ?? {}).filter(([k]) => k.startsWith('book:'))
+  return (
+    <>
+      <section className="libprog">
+        <div className="libprog__big">
+          <strong>{st.percent}%</strong>
+          <span>מכל הספרייה</span>
+        </div>
+        <Learned value={st.percent} />
+        <div className="libprog__row">
+          <span>
+            <b>{st.done}</b>/{st.chapters} פרקים
+          </span>
+          <span>
+            <b>{st.booksDone}</b> ספרים הושלמו
+          </span>
+          <span>
+            <b>{st.booksActive}</b> בתהליך
+          </span>
+          <span>
+            <b>{quizzes.length}</b> מבחנים
+          </span>
+        </div>
+      </section>
+      <section className="block">
+        <SectionHead title="מה למדתי בכל ספר" sub={learned.length ? undefined : 'כל פרק שתשמע או תקרא עד הסוף ייספר כאן'} />
+        <div className="booksprog">
+          {learned.map(({ b, p }) => {
+            const q = s.quiz?.[`book:${b.id}`]
+            return (
+              <button key={b.id} className="bprog" onClick={() => navigate(`/book/${b.id}`)}>
+                <Cover book={b} size="xs" />
+                <span className="bprog__body">
+                  <strong>{b.title}</strong>
+                  <Learned value={p} />
+                </span>
+                {q && <span className="bprog__quiz">מבחן {Math.round(q.best * 100)}%</span>}
+              </button>
+            )
+          })}
+        </div>
+      </section>
+    </>
   )
 }

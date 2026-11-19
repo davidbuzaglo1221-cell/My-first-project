@@ -1,0 +1,12 @@
+{
+  "appId": "app.alexandria.library",
+  "appName": "ALEXANDRIA",
+  "webDir": "dist",
+  "backgroundColor": "#010302",
+  "ios": { "contentInset": "never", "backgroundColor": "#010302", "limitsNavigationsToAppBoundDomains": true },
+  "android": { "backgroundColor": "#010302" },
+  "plugins": {
+    "SplashScreen": { "launchShowDuration": 600, "backgroundColor": "#010302", "showSpinner": false },
+    "LocalNotifications": { "iconColor": "#2fbf8c" }
+  }
+}

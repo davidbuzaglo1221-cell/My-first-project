@@ -1,7 +1,7 @@
 {
-  "name": "ASCEND",
-  "short_name": "ASCEND",
-  "description": "שיעורי אודיו וספרים בעברית על הספרים החשובים בעולם",
+  "name": "ALEXANDRIA",
+  "short_name": "ALEXANDRIA",
+  "description": "ALEXANDRIA: הספרייה הגדולה של הצמיחה האישית. ספרים מלאים לקריאה ולהאזנה בעברית, מבחנים, מחברת ומדיטציות.",
   "lang": "he",
   "dir": "rtl",
   "start_url": "./",

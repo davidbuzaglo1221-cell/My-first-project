@@ -1,7 +1,7 @@
 import type { Lesson } from './types'
 
 /**
- * Parses a complete book written in the ASCEND chapter format into lessons (one lesson per chapter).
+ * Parses a complete book written in the ALEXANDRIA chapter format into lessons (one lesson per chapter).
  *
  *   # Chapter title
  *   Paragraph… (blank line between paragraphs)

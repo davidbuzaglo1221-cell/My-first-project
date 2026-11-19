@@ -149,7 +149,7 @@ function MyAudio() {
       <div className="mine__intro">
         <IconHeadphones size={22} />
         <p>
-          הוסף ספרי אודיו והרצאות שרכשת או שיש לך זכות להאזין להם. הקבצים נשמרים רק במכשיר הזה, ומתנגנים בנגן של ASCEND עם המשך מאותה נקודה, מהירות ומעקב התקדמות.
+          הוסף ספרי אודיו והרצאות שרכשת או שיש לך זכות להאזין להם. הקבצים נשמרים רק במכשיר הזה, ומתנגנים בנגן של ALEXANDRIA עם המשך מאותה נקודה, מהירות ומעקב התקדמות.
         </p>
       </div>
       <input ref={input} type="file" accept="audio/*" multiple hidden onChange={(e) => onFiles(e.target.files)} />

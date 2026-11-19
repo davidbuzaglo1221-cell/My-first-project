@@ -4,12 +4,19 @@ import { fullTexts } from '../content/fulltext'
 import type { Book } from '../content/types'
 import { load } from '../engine/player'
 import { navigate } from '../lib/router'
-import { addListening, store, useStore } from '../lib/store'
+import { addListening, markRead, store, toggleLove, useStore } from '../lib/store'
+import { paragraphStart } from '../engine/player'
+import { NoteEditor } from './Notebook'
+import { IconHeart, IconPen } from '../ui/Icons'
+import { toast } from '../ui/uiState'
 import { Cover } from '../ui/Cover'
 import { IconHeadphones, IconList } from '../ui/Icons'
 import { BackButton, Sheet } from '../ui/Kit'
 import { openPlayer } from '../ui/uiState'
 import { NotFound } from './Explore'
+
+const EMPTY: never[] = []
+const NOOBJ: Record<string, number> = {}
 
 export interface Chapter {
   title: string
@@ -18,7 +25,7 @@ export interface Chapter {
   lessonId?: string
 }
 
-/** The readable text of a book: the full public-domain translation, or the ASCEND edition built from its lessons. */
+/** The readable text of a book: the full public-domain translation, or the ALEXANDRIA edition built from its lessons. */
 export function bookChapters(b: Book): { chapters: Chapter[]; full: boolean; note: string } {
   const full = fullTexts[b.id]
   if (full) {
@@ -31,13 +38,13 @@ export function bookChapters(b: Book): { chapters: Chapter[]; full: boolean; not
     return {
       chapters: b.lessons.map((l) => ({ title: l.title, paragraphs: l.script.split(/\n+/), lessonId: l.id })),
       full: true,
-      note: 'כל הספר, רק העיקר: כל הפרקים והרעיונות של הספר, בניסוח מקורי ומתומצת של ASCEND, בלי מילוי. זה לא תרגום מילולי של הספר.',
+      note: 'כל הספר, רק העיקר: כל הפרקים והרעיונות של הספר, בניסוח מקורי ומתומצת של ALEXANDRIA, בלי מילוי. זה לא תרגום מילולי של הספר.',
     }
   const intro: Chapter = { title: 'למה הספר הזה', paragraphs: [b.tagline, b.why, ...b.ideas.map((i) => `${i.title}. ${i.body}`)] }
   return {
     chapters: [intro, ...b.lessons.map((l) => ({ title: l.title, paragraphs: l.script.split(/\n+/), lessonId: l.id }))],
     full: false,
-    note: 'מהדורת ASCEND: הסבר מקורי של רעיונות הספר, לא הטקסט של הספר עצמו. את הספר המלא אפשר לרכוש מההוצאה.',
+    note: 'מהדורת ALEXANDRIA: הסבר מקורי של רעיונות הספר, לא הטקסט של הספר עצמו. את הספר המלא אפשר לרכוש מההוצאה.',
   }
 }
 
@@ -49,6 +56,9 @@ export function Reader({ id }: { id: string }) {
   const saved = useStore((s) => s.reading?.[id])
   const [ch, setCh] = useState(saved?.ch ?? 0)
   const [toc, setToc] = useState(false)
+  const [sel, setSel] = useState<number | null>(null)
+  const [noteFor, setNoteFor] = useState<number | null>(null)
+  const loved = (useStore((s) => s.notes) ?? EMPTY).filter((n) => n.kind === 'love' && n.bookId === id)
   const [ratio, setRatio] = useState(0)
   const restored = useRef(false)
   const data = useMemo(() => (b ? bookChapters(b) : undefined), [b])
@@ -67,7 +77,10 @@ export function Reader({ id }: { id: string }) {
     let saveT: ReturnType<typeof setTimeout> | undefined
     const onScroll = () => {
       const h = document.documentElement.scrollHeight - innerHeight
-      setRatio(h > 0 ? Math.min(1, scrollY / h) : 1)
+      const r = h > 0 ? Math.min(1, scrollY / h) : 1
+      setRatio(r)
+      const lid = data?.chapters[ch]?.lessonId
+      if (r > 0.92 && lid) markRead(lid)
       clearTimeout(saveT)
       saveT = setTimeout(() => store.set((s) => ({ reading: { ...s.reading, [id]: { ch, y: scrollY, last: Date.now() } } })), 400)
     }
@@ -91,6 +104,9 @@ export function Reader({ id }: { id: string }) {
   const size = SIZES[prefs.size] ?? SIZES[1]
   const setPrefs = (p: Partial<typeof prefs>) => store.set({ readerPrefs: { ...prefs, ...p } }, { immediate: true })
   const go = (n: number) => {
+    const lid = data.chapters[ch]?.lessonId
+    if (n > ch && lid) markRead(lid)
+    setSel(null)
     setCh(n)
     store.set((s) => ({ reading: { ...s.reading, [id]: { ch: n, y: 0, last: Date.now() } } }), { immediate: true })
   }
@@ -117,7 +133,7 @@ export function Reader({ id }: { id: string }) {
             <Cover book={b} size="lg" />
             <h1>{b.title}</h1>
             <p className="reader__author">{b.author}</p>
-            {data.full ? <p className="reader__badge">{b.complete ? 'כל הספר, רק העיקר' : 'הספר המלא'}</p> : <p className="reader__badge reader__badge--quiet">מהדורת ASCEND</p>}
+            {data.full ? <p className="reader__badge">{b.complete ? 'כל הספר, רק העיקר' : 'הספר המלא'}</p> : <p className="reader__badge reader__badge--quiet">מהדורת ALEXANDRIA</p>}
           </div>
         )}
         <p className="reader__chnum">פרק {ch + 1}</p>
@@ -128,9 +144,27 @@ export function Reader({ id }: { id: string }) {
           </button>
         )}
         <div className="reader__text">
-          {chapter.paragraphs.map((p, i) => (
-            <p key={i}>{p}</p>
-          ))}
+          {chapter.paragraphs.map((p, i) => {
+            const isLoved = !!chapter.lessonId && loved.some((n) => n.lessonId === chapter.lessonId && n.para === i)
+            return (
+              <div key={i} className={`rpara ${sel === i ? 'is-sel' : ''} ${isLoved ? 'is-loved' : ''}`}>
+                <p onClick={() => setSel(sel === i ? null : i)}>{p}</p>
+                {sel === i && chapter.lessonId && (
+                  <div className="rpara__bar">
+                    <button onClick={() => (toast(toggleLove(id, chapter.lessonId!, i, p) ? 'נשמר באהבתי' : 'הוסר מאהבתי'), setSel(null))}>
+                      <IconHeart size={16} filled={isLoved} /> {isLoved ? 'אהבתי' : 'אהבתי'}
+                    </button>
+                    <button onClick={() => (setNoteFor(i), setSel(null))}>
+                      <IconPen size={16} /> פתק
+                    </button>
+                    <button onClick={() => (load(chapter.lessonId!, { autoplay: true, from: paragraphStart(chapter.lessonId!, i) }), openPlayer(), setSel(null))}>
+                      <IconHeadphones size={16} /> השמע מכאן
+                    </button>
+                  </div>
+                )}
+              </div>
+            )
+          })}
         </div>
 
         <nav className="reader__nav" aria-label="מעבר בין פרקים">
@@ -155,6 +189,7 @@ export function Reader({ id }: { id: string }) {
         <p className="reader__note">{data.note}</p>
       </article>
 
+      <NoteEditor open={noteFor !== null} onClose={() => setNoteFor(null)} bookId={id} lessonId={chapter.lessonId} />
       <Sheet open={toc} onClose={() => setToc(false)} label="תוכן העניינים">
         <h3 className="sheet__title">תוכן העניינים</h3>
         <div className="reader__prefs">
