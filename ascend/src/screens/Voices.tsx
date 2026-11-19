@@ -8,13 +8,12 @@ import { toast } from '../ui/uiState'
 
 /** The four narrators. Every one is rendered for the whole library and checked with Hebrew speech recognition. */
 export const NARRATORS = [
-  { id: 'michael', name: 'מיכאל', desc: 'קול עמוק ורגוע, בסגנון מגיש פודקאסט. הקריין המומלץ.' },
-  { id: 'michael-calm', name: 'מיכאל, קצב איטי', desc: 'אותו קול, בקצב איטי ונינוח יותר. טוב להאזנה לפני שינה.' },
-  { id: 'shaul', name: 'שאול', desc: 'קול בהיר ואנרגטי, מבוסס על הקלטות של מגיש פודקאסט אמיתי.' },
-  { id: 'ido', name: 'עידו', desc: 'קול בינוני וחם, קצב שיחה טבעי.' },
+  { id: 'avri', name: 'אבי', desc: 'קול גברי חם וטבעי, עברית ילידית. מדבר אליך כמו חבר שמספר לך על ספר טוב.' },
+  { id: 'hila', name: 'הילה', desc: 'קול נשי רך וברור, עברית ילידית. נעים להאזנה ארוכה.' },
+  { id: 'duo', name: 'אבי והילה', desc: 'שני הקולות לסירוגין, פסקה אחרי פסקה, כמו שיחה בין שני חברים. הכי ערני וחי.' },
 ]
 const SAMPLE = 'psychology-of-money-quick'
-const available = audioManifest as Record<string, Record<string, unknown>>
+const available = audioManifest as Record<string, Record<string, { f?: string; o?: number; d: number }>>
 
 export function Voices() {
   useStore((s) => s.narrator)
@@ -22,6 +21,8 @@ export function Voices() {
   const [playing, setPlaying] = useState<string>()
   const [progress, setProgress] = useState(0)
   const audio = useRef<HTMLAudioElement>(null)
+  const start = useRef(0)
+  const end = useRef(0)
   useEffect(() => () => audio.current?.pause(), [])
   const list = NARRATORS.filter((n) => available[n.id]?.[SAMPLE])
 
@@ -33,8 +34,11 @@ export function Voices() {
       return
     }
     pausePlayer()
-    a.src = `audio/${id}/${SAMPLE}.mp3`
-    a.currentTime = 0
+    const n = available[id][SAMPLE]
+    end.current = (n.o ?? 0) + n.d
+    start.current = n.o ?? 0
+    a.src = `audio/${id}/${n.f ?? SAMPLE}.mp3`
+    a.currentTime = start.current
     setProgress(0)
     a.play().then(
       () => setPlaying(id),
@@ -48,12 +52,18 @@ export function Voices() {
         <BackButton fallback="/settings" />
         <h1 className="page-title">בחירת קריין</h1>
       </header>
-      <p className="page-sub">כל קול מקריא את אותו סיכום, "הפסיכולוגיה של הכסף בדקה". תקשיב ובחר את הקול שילווה אותך בכל הספרים.</p>
+      <p className="page-sub">שלושה קולות אנושיים בעברית ילידית. כל אחד מקריא את אותו סיכום, "הפסיכולוגיה של הכסף בדקה". תקשיב ובחר.</p>
 
       <audio
         ref={audio}
         preload="none"
-        onTimeUpdate={(e) => setProgress(e.currentTarget.duration ? e.currentTarget.currentTime / e.currentTarget.duration : 0)}
+        onLoadedMetadata={(e) => (e.currentTarget.currentTime = start.current)}
+        onTimeUpdate={(e) => {
+          const a = e.currentTarget
+          const len = end.current - start.current
+          setProgress(len > 0 ? Math.max(0, (a.currentTime - start.current) / len) : 0)
+          if (end.current && a.currentTime >= end.current) (a.pause(), setPlaying(undefined), setProgress(0))
+        }}
         onEnded={() => (setPlaying(undefined), setProgress(0))}
       />
 

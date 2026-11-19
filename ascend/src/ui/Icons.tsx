@@ -201,3 +201,35 @@ export const IconHeart = ({ filled, ...p }: P & { filled?: boolean }) => (
     <path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z" />
   </svg>
 )
+/* transport, Apple-style: in RTL "next" points left */
+export const IconNextTrack = (p: P) => (
+  <svg {...base(p)} fill="currentColor" stroke="none">
+    <path d="M13 6.2v11.6a.7.7 0 0 1-1.1.6L3.6 12.6a.7.7 0 0 1 0-1.2l8.3-5.8a.7.7 0 0 1 1.1.6z" />
+    <path d="M21.5 6.2v11.6a.7.7 0 0 1-1.1.6l-8.3-5.8a.7.7 0 0 1 0-1.2l8.3-5.8a.7.7 0 0 1 1.1.6z" opacity="1" />
+  </svg>
+)
+export const IconPrevTrack = (p: P) => (
+  <svg {...base(p)} fill="currentColor" stroke="none" style={{ transform: 'scaleX(-1)' }}>
+    <path d="M13 6.2v11.6a.7.7 0 0 1-1.1.6L3.6 12.6a.7.7 0 0 1 0-1.2l8.3-5.8a.7.7 0 0 1 1.1.6z" />
+    <path d="M21.5 6.2v11.6a.7.7 0 0 1-1.1.6l-8.3-5.8a.7.7 0 0 1 0-1.2l8.3-5.8a.7.7 0 0 1 1.1.6z" />
+  </svg>
+)
+export const IconLyrics = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M4 5.5h16a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-9l-4.5 3.5v-3.5H4A1.5 1.5 0 0 1 2.5 15V7A1.5 1.5 0 0 1 4 5.5z" />
+    <path d="M7 9.5h8M7 12.5h5" />
+  </svg>
+)
+export const IconQueue = (p: P) => (
+  <svg {...base(p)}>
+    <path d="M4 6h12M4 11h12M4 16h7" />
+    <path d="M15.5 14.5v5l4-2.5z" fill="currentColor" />
+  </svg>
+)
+export const IconMore = (p: P) => (
+  <svg {...base(p)} fill="currentColor" stroke="none">
+    <circle cx="6" cy="12" r="1.7" />
+    <circle cx="12" cy="12" r="1.7" />
+    <circle cx="18" cy="12" r="1.7" />
+  </svg>
+)

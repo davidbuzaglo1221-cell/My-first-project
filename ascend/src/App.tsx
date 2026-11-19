@@ -22,14 +22,16 @@ import { Quiz } from './screens/Quiz'
 import { Ask } from './screens/Ask'
 import { dueNow, chime } from './lib/remind'
 import { MiniPlayer, TabBar } from './ui/Chrome'
-import { bookHue, bookMotif } from './ui/Cover'
+import { bookHue, bookMotif, coverUrl, hasRealCover } from './ui/Cover'
 import { coverPng } from './ui/coverArt'
 import { Toast } from './ui/Kit'
 import { showComplete, toast, useUI } from './ui/uiState'
 
 registerArtwork((t) => {
   const b = t.bookId ? bookById[t.bookId] : undefined
-  return b ? coverPng(b.id, bookMotif(b), bookHue(b)) : undefined
+  if (!b) return undefined
+  // Lock screen and car: the real cover when we have it, else the designed jacket.
+  return hasRealCover(b.id) ? Promise.resolve(new URL(coverUrl(b.id), location.href).href) : coverPng(b.id, bookMotif(b), bookHue(b))
 })
 
 export function App() {

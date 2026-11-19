@@ -13,16 +13,19 @@ export type TrackKind = 'lesson' | 'quick' | 'file' | 'calm'
 /** f/o: the chapter lives inside one file per book (f), starting at o seconds. */
 type Narration = Record<string, { d: number; s: number[]; f?: string; o?: number }>
 const byVoice = audioManifest as Record<string, Narration>
-export const DEFAULT_VOICE = 'michael'
+export const DEFAULT_VOICE = 'avri'
 /** The narrator the listener chose on the voice screen, if that voice is rendered. */
 export const currentVoice = () => {
   const v = store.get().narrator
-  return v && byVoice[v] ? v : byVoice[DEFAULT_VOICE] ? DEFAULT_VOICE : Object.keys(byVoice)[0]
+  return v && byVoice[v] ? v : byVoice[DEFAULT_VOICE] ? DEFAULT_VOICE : Object.keys(byVoice).find((k) => k !== 'calm')
 }
 /** The chosen voice, or the main narrator when the chosen voice has no recording of this track. */
 const voiceFor = (id: string) => {
   const v = currentVoice()
-  return v && byVoice[v]?.[id] ? v : byVoice[DEFAULT_VOICE]?.[id] ? DEFAULT_VOICE : undefined
+  if (v && byVoice[v]?.[id]) return v
+  if (byVoice[DEFAULT_VOICE]?.[id]) return DEFAULT_VOICE
+  // Any narrator that recorded this track beats silent captions.
+  return Object.keys(byVoice).find((k) => k !== 'calm' && byVoice[k][id])
 }
 const narrationFor = (id: string) => {
   if (id.startsWith('calm:')) return byVoice.calm?.[id.slice(5)]
@@ -486,7 +489,7 @@ function setMediaSession(t: Track, art?: string) {
       title: t.title,
       artist: `${t.subtitle} · ${t.author}`,
       album: 'הספריה',
-      artwork: art ? [{ src: art, sizes: '512x512', type: 'image/png' }] : [],
+      artwork: art ? [{ src: art, sizes: '512x512', type: art.endsWith('.jpg') ? 'image/jpeg' : 'image/png' }] : [],
     })
     const skipBy = store.get().settings.skip
     const set = (a: MediaSessionAction, h: MediaSessionActionHandler | null) => {
@@ -501,8 +504,8 @@ function setMediaSession(t: Track, art?: string) {
     set('seekbackward', (d) => skip(-(d.seekOffset ?? skipBy)))
     set('seekforward', (d) => skip(d.seekOffset ?? skipBy))
     set('seekto', (d) => d.seekTime != null && seek(d.seekTime))
-    set('previoustrack', () => skip(-skipBy))
-    set('nexttrack', () => skip(skipBy))
+    set('previoustrack', () => previousChapter())
+    set('nexttrack', () => nextChapter())
   } catch {
     /* ignore */
   }
@@ -539,4 +542,26 @@ export function paragraphStart(id: string, para: number) {
   const paras = ref.lesson.script.split(/\n+/)
   const seg = paras.slice(0, para).reduce((a, p) => a + toSegments(p).length, 0)
   return n.s[seg] ?? 0
+}
+
+/** The chapters around the current one, for next/previous and "up next". */
+export function neighbours(id?: string) {
+  const ref = id ? lessonIndex[id] : undefined
+  if (!ref) return { prev: undefined, next: undefined, upNext: [] as string[] }
+  const ls = ref.book.lessons
+  return { prev: ls[ref.index - 1]?.id, next: ls[ref.index + 1]?.id, upNext: ls.slice(ref.index + 1).map((l) => l.id) }
+}
+/** Apple-style previous: restart the chapter, or go to the previous one when already near its start. */
+export function previousChapter() {
+  const t = snap.track
+  if (!t) return
+  const { prev } = neighbours(t.id)
+  if (snap.position > 4 || !prev) return seek(0, snap.status === 'playing')
+  load(prev, { autoplay: true, from: 0 })
+}
+export function nextChapter() {
+  const t = snap.track
+  if (!t) return
+  const { next: n } = neighbours(t.id)
+  if (n) load(n, { autoplay: true, from: 0 })
 }

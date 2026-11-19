@@ -38,7 +38,7 @@ export function Onboarding() {
             <span>פרקים</span>
           </li>
           <li>
-            <strong>4</strong>
+            <strong>3</strong>
             <span>קריינים</span>
           </li>
         </ul>

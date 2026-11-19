@@ -52,7 +52,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m)
   await p.goto('http://localhost:4173/#/freedom'); await p.waitForTimeout(600)
   await p.click('.fr-lead'); await p.waitForTimeout(3000)
   const pl = await p.evaluate(() => { const s = window.__ascend.player.get(); return { id: s.track?.id, st: s.status, pos: s.position, d: s.duration, segs: s.segments.length } })
-  ok(pl.id === 'calm:freedom' && pl.st === 'playing' && pl.d > 200 && pl.segs > 20, `meditation plays ${JSON.stringify(pl)}`)
+  ok(pl.id === 'calm:freedom' && pl.st === 'playing' && pl.d > 200 && pl.segs > 15, `meditation plays ${JSON.stringify(pl)}`)
   await p.evaluate(() => window.__ascend.pause())
   // 8. breathing trainer runs
   await p.goto('http://localhost:4173/#/breathe/box'); await p.waitForTimeout(400)

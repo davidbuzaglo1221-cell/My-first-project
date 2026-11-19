@@ -1,8 +1,8 @@
 import { bookById } from '../content'
-import { usePlayer, toggle } from '../engine/player'
+import { neighbours, nextChapter, usePlayer, toggle } from '../engine/player'
 import { navigate, type Route, tabOf } from '../lib/router'
 import { Cover } from './Cover'
-import { IconChart, IconHeadphones, IconHome, IconLibrary, IconLotus, IconPen } from './Icons'
+import { IconChart, IconHeadphones, IconHome, IconLibrary, IconLotus, IconNextTrack, IconPen } from './Icons'
 import { PlayGlyph } from './Kit'
 import { openPlayer } from './uiState'
 
@@ -33,19 +33,25 @@ export function MiniPlayer() {
   if (!p.track) return null
   const book = p.track.bookId ? bookById[p.track.bookId] : undefined
   const ratio = p.duration ? p.position / p.duration : 0
+  const playing = p.status === 'playing'
   return (
-    <div className="mini" role="region" aria-label="נגן">
-      <button className="mini__open" onClick={openPlayer} aria-label={`פתח נגן: ${p.track.title}`}>
-        {book ? <Cover book={book} size="xs" /> : <span className="mini__file">{p.track.kind === 'calm' ? <IconLotus size={18} /> : <IconHeadphones size={18} />}</span>}
-        <span className="mini__text">
-          <span className="mini__title">{p.track.title}</span>
-          <span className="mini__sub">{p.track.subtitle}</span>
+    <div className="mini2" role="region" aria-label="נגן">
+      <button className="mini2__open" onClick={openPlayer} aria-label={`פתח נגן: ${p.track.title}`}>
+        {book ? <Cover book={book} size="xs" /> : <span className="mini2__file">{p.track.kind === 'calm' ? <IconLotus size={16} /> : <IconHeadphones size={16} />}</span>}
+        <span className="mini2__text">
+          <span className="mini2__title">{p.track.title}</span>
+          <span className="mini2__sub">{p.track.subtitle}</span>
         </span>
       </button>
-      <button className="mini__play" onClick={toggle} aria-label={p.status === 'playing' ? 'השהה' : 'נגן'}>
-        <PlayGlyph playing={p.status === 'playing'} size={20} />
+      <button className="mini2__btn" onClick={toggle} aria-label={playing ? 'השהה' : 'נגן'}>
+        <PlayGlyph playing={playing} size={22} />
       </button>
-      <div className="mini__progress" style={{ transform: `scaleX(${ratio})` }} aria-hidden="true" />
+      <button className="mini2__btn" onClick={nextChapter} aria-label="פרק הבא" disabled={!neighbours(p.track.id).next}>
+        <IconNextTrack size={22} />
+      </button>
+      <span className="mini2__bar" aria-hidden="true">
+        <i style={{ transform: `scaleX(${ratio})` }} />
+      </span>
     </div>
   )
 }
