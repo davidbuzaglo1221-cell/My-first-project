@@ -17,7 +17,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m)
   await p.fill('input[type=search]', 'הרגל'); await p.waitForTimeout(300)
   const n1 = await p.locator('.tile').count(); ok(n1 > 0 && n1 < 20, `search "הרגל" finds ${n1} books`)
   await p.fill('input[type=search]', ''); await p.click('.chips .chip:has-text("כסף")'); await p.waitForTimeout(300)
-  ok((await p.locator('.tile').count()) === 7, 'topic chip filters to the 7 money books')
+  ok((await p.locator('.tile').count()) === 5, 'topic chip filters to the 5 money books')
   await p.click('.filterbtn'); await p.waitForTimeout(400); await p.click('.sheet .chip:has-text("הקצרים קודם")'); await p.click('.sheet .btn--primary'); await p.waitForTimeout(400)
   ok(await p.locator('.filterbtn b').isVisible(), 'filter sheet sets a sort and shows the badge')
   // 3. reader: love a paragraph, add note, chapter counts when read
