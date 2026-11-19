@@ -485,7 +485,7 @@ function setMediaSession(t: Track, art?: string) {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: t.title,
       artist: `${t.subtitle} · ${t.author}`,
-      album: 'ALEXANDRIA',
+      album: 'הספריה',
       artwork: art ? [{ src: art, sizes: '512x512', type: 'image/png' }] : [],
     })
     const skipBy = store.get().settings.skip

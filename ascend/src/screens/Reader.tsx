@@ -25,7 +25,7 @@ export interface Chapter {
   lessonId?: string
 }
 
-/** The readable text of a book: the full public-domain translation, or the ALEXANDRIA edition built from its lessons. */
+/** The readable text of a book: the full public-domain translation, or the הספריה edition built from its lessons. */
 export function bookChapters(b: Book): { chapters: Chapter[]; full: boolean; note: string } {
   const full = fullTexts[b.id]
   if (full) {
@@ -38,13 +38,13 @@ export function bookChapters(b: Book): { chapters: Chapter[]; full: boolean; not
     return {
       chapters: b.lessons.map((l) => ({ title: l.title, paragraphs: l.script.split(/\n+/), lessonId: l.id })),
       full: true,
-      note: 'כל הספר, רק העיקר: כל הפרקים והרעיונות של הספר, בניסוח מקורי ומתומצת של ALEXANDRIA, בלי מילוי. זה לא תרגום מילולי של הספר.',
+      note: 'כל הספר, רק העיקר: כל הפרקים והרעיונות של הספר, בניסוח מקורי ומתומצת של הספריה, בלי מילוי. זה לא תרגום מילולי של הספר.',
     }
   const intro: Chapter = { title: 'למה הספר הזה', paragraphs: [b.tagline, b.why, ...b.ideas.map((i) => `${i.title}. ${i.body}`)] }
   return {
     chapters: [intro, ...b.lessons.map((l) => ({ title: l.title, paragraphs: l.script.split(/\n+/), lessonId: l.id }))],
     full: false,
-    note: 'מהדורת ALEXANDRIA: הסבר מקורי של רעיונות הספר, לא הטקסט של הספר עצמו. את הספר המלא אפשר לרכוש מההוצאה.',
+    note: 'מהדורת הספריה: הסבר מקורי של רעיונות הספר, לא הטקסט של הספר עצמו. את הספר המלא אפשר לרכוש מההוצאה.',
   }
 }
 
@@ -133,7 +133,7 @@ export function Reader({ id }: { id: string }) {
             <Cover book={b} size="lg" />
             <h1>{b.title}</h1>
             <p className="reader__author">{b.author}</p>
-            {data.full ? <p className="reader__badge">{b.complete ? 'כל הספר, רק העיקר' : 'הספר המלא'}</p> : <p className="reader__badge reader__badge--quiet">מהדורת ALEXANDRIA</p>}
+            {data.full ? <p className="reader__badge">{b.complete ? 'כל הספר, רק העיקר' : 'הספר המלא'}</p> : <p className="reader__badge reader__badge--quiet">מהדורת הספריה</p>}
           </div>
         )}
         <p className="reader__chnum">פרק {ch + 1}</p>

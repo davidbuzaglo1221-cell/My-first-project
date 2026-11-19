@@ -4977,3 +4977,6 @@ html:has(.reader--ivory) {
 .np__calm i:nth-child(3) { animation-delay: -6.6s; }
 .np__calm.is-on span, .np__calm.is-on i { animation-play-state: running; }
 @keyframes npBreath { 0%, 100% { transform: scale(0.82); } 40% { transform: scale(1.12); } 55% { transform: scale(1.12); } }
+/* the Hebrew wordmark */
+.wordmark--he { font-family: var(--serif); font-size: 21px; font-weight: 800; letter-spacing: 0.02em; text-transform: none; background: linear-gradient(180deg, var(--gold-2), var(--gold)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.wlc__brand { font-family: var(--serif); font-size: 22px; letter-spacing: 0.04em; }

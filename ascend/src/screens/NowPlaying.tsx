@@ -159,7 +159,7 @@ export function NowPlaying() {
 
             <div className="np__foot">
               <span className="np__voice">
-                {p.mode === 'file' ? (t.kind === 'file' ? 'קובץ אודיו' : 'קריינות ALEXANDRIA') : p.mode === 'voice' ? `קריינות: ${voice ? voiceLabel(voice) : 'קול המכשיר'}` : 'כתוביות מתוזמנות'}
+                {p.mode === 'file' ? (t.kind === 'file' ? 'קובץ אודיו' : 'קריינות הספריה') : p.mode === 'voice' ? `קריינות: ${voice ? voiceLabel(voice) : 'קול המכשיר'}` : 'כתוביות מתוזמנות'}
               </span>
               {ref && (
                 <button className="link" onClick={() => showComplete(t.id)}>
@@ -188,7 +188,7 @@ export function NowPlaying() {
                     ))}
                   </ol>
                 )}
-                <p className="np__legal">הסבר מקורי של ALEXANDRIA על רעיונות הספר. אינו קריינות של הספר ואינו מחליף אותו.</p>
+                <p className="np__legal">הסבר מקורי של הספריה על רעיונות הספר. אינו קריינות של הספר ואינו מחליף אותו.</p>
               </section>
             )}
           </div>

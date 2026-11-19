@@ -1,6 +1,6 @@
 {
-  "appId": "app.alexandria.library",
-  "appName": "ALEXANDRIA",
+  "appId": "app.hasifria.library",
+  "appName": "הספריה",
   "webDir": "dist",
   "backgroundColor": "#010302",
   "ios": { "contentInset": "never", "backgroundColor": "#010302", "limitsNavigationsToAppBoundDomains": true },

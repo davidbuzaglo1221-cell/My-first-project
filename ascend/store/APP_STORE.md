@@ -1,11 +1,11 @@
-# ALEXANDRIA — חבילת הגשה ל-App Store
+# הספריה — חבילת הגשה ל-App Store
 
 ## פרטי האפליקציה
-- **שם:** ALEXANDRIA
+- **שם:** הספריה
 - **כותרת משנה (30 תווים):** הספרייה של הצמיחה האישית
 - **קטגוריה ראשית:** חינוך · **משנית:** בריאות וכושר
 - **דירוג גיל:** 4+
-- **מזהה חבילה:** app.alexandria.library
+- **מזהה חבילה:** app.hasifria.library
 - **מדיניות פרטיות:** privacy.html (כלולה באפליקציה)
 
 ## תיאור (עברית)
@@ -19,7 +19,7 @@
 - מהישרדות לחופש: מדיטציות מודרכות, תרגילי נשימה ויציבה
 
 ## Description (English)
-ALEXANDRIA is a complete library of the world's best personal-growth books, retold chapter by chapter in Hebrew: read or listen, take quizzes built from each book, ask the book anything, keep notes and voice memos, review with spaced-repetition cards, and practise guided meditation and breathing.
+HaSifria (The Library) is a complete library of the world's best personal-growth books, retold chapter by chapter in Hebrew: read or listen, take quizzes built from each book, ask the book anything, keep notes and voice memos, review with spaced-repetition cards, and practise guided meditation and breathing.
 
 **Keywords:** ספרים,ספרי אודיו,התפתחות אישית,הרגלים,כסף,מדיטציה,נשימה,למידה,מבחנים,books,audiobooks,self help
 

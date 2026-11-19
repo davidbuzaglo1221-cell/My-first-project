@@ -21,8 +21,8 @@ export function Onboarding() {
         ))}
       </div>
       <div className="wlc__body">
-        <p className="wlc__brand" lang="en">
-          ALEXANDRIA
+        <p className="wlc__brand">
+          הספריה
         </p>
         <h1 className="wlc__title">הספרייה הגדולה של הצמיחה האישית.</h1>
         <p className="wlc__lead">

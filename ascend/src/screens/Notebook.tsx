@@ -312,7 +312,7 @@ export function Reminders() {
     const d = await getDownloads()
     if (d) {
       try {
-        await d.save({ filename: `alexandria-${r.kind}.ics`, data: new Blob([ics], { type: 'text/calendar' }) })
+        await d.save({ filename: `hasifria-${r.kind}.ics`, data: new Blob([ics], { type: 'text/calendar' }) })
         toast('פתח את הקובץ כדי להוסיף את התזכורת ללוח השנה')
       } catch {
         /* viewer declined */
@@ -321,7 +321,7 @@ export function Reminders() {
     }
     const a = document.createElement('a')
     a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }))
-    a.download = `alexandria-${r.kind}.ics`
+    a.download = `hasifria-${r.kind}.ics`
     a.click()
   }
   return (

@@ -115,8 +115,8 @@ export function Home() {
         <button className="avatar" onClick={() => navigate('/settings')} aria-label="פרופיל והגדרות">
           {initial}
         </button>
-        <span className="wordmark" lang="en">
-          ALEXANDRIA
+        <span className="wordmark wordmark--he">
+          הספריה
         </span>
         <button className="icon-btn icon-btn--glass" onClick={() => navigate('/explore')} aria-label="חיפוש בספרייה">
           <IconSearch size={19} />
