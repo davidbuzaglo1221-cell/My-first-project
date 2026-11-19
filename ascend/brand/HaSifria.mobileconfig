@@ -3718,13 +3718,13 @@
 			<key>PayloadType</key>
 			<string>com.apple.webClip.managed</string>
 			<key>PayloadUUID</key>
-			<string>2825BFF0-01D5-441B-A8FC-3E53248C53B5</string>
+			<string>23AD85DB-B7EC-4487-8611-FE6E152E18C4</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 			<key>Precomposed</key>
 			<true/>
 			<key>URL</key>
-			<string>https://claude.ai/artifact/NLckGBkfJbPw2zVBQy1ZDj</string>
+			<string>https://davidbuzaglo1221-cell.github.io/My-first-project/</string>
 		</dict>
 	</array>
 	<key>PayloadDescription</key>
@@ -3740,7 +3740,7 @@
 	<key>PayloadType</key>
 	<string>Configuration</string>
 	<key>PayloadUUID</key>
-	<string>C17D85D6-BDED-4899-9FC5-7296BA43FCE2</string>
+	<string>BB10CB5A-8E36-43B7-A22D-BA7AC6AB0919</string>
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>
