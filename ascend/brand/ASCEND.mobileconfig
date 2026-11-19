@@ -6,7 +6,7 @@
 	<array>
 		<dict>
 			<key>FullScreen</key>
-			<false/>
+			<true/>
 			<key>Icon</key>
 			<data>
 			iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAIAAAAP3aGbAAEAAElE
@@ -3703,6 +3703,8 @@
 			1xjItZqfFru2odKqyxDVJ8tcX8uOmFYxZXztxjTrpCmuV3o39xUS
 			SeiIQIKmCbPz/wHd2R6IVq1gLwAAAABJRU5ErkJggg==
 			</data>
+			<key>IgnoreManifestScope</key>
+			<true/>
 			<key>IsRemovable</key>
 			<true/>
 			<key>Label</key>
@@ -3716,7 +3718,7 @@
 			<key>PayloadType</key>
 			<string>com.apple.webClip.managed</string>
 			<key>PayloadUUID</key>
-			<string>E8DF011B-5BFA-4F12-89C7-D7B937C86469</string>
+			<string>9EAA94AA-5BDB-4D1C-919F-002C6196D757</string>
 			<key>PayloadVersion</key>
 			<integer>1</integer>
 			<key>Precomposed</key>
@@ -3726,7 +3728,7 @@
 		</dict>
 	</array>
 	<key>PayloadDescription</key>
-	<string>מוסיף את ASCEND למסך הבית עם האייקון של האפליקציה.</string>
+	<string>מוסיף את ASCEND למסך הבית, במסך מלא כמו אפליקציה.</string>
 	<key>PayloadDisplayName</key>
 	<string>ASCEND</string>
 	<key>PayloadIdentifier</key>
@@ -3738,7 +3740,7 @@
 	<key>PayloadType</key>
 	<string>Configuration</string>
 	<key>PayloadUUID</key>
-	<string>E0E9E6D1-8DCD-4D27-BD63-CE5C437F3610</string>
+	<string>05759A8E-BB68-43B8-8FEA-6FA55A9F37BA</string>
 	<key>PayloadVersion</key>
 	<integer>1</integer>
 </dict>
