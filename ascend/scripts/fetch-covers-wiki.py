@@ -13,6 +13,7 @@ ARTICLES = {
   'power-of-now': 'The Power of Now', 'awaken-the-giant': 'Awaken the Giant Within', 'influence': 'Influence: Science and Practice', 'laws-of-human-nature': 'The Laws of Human Nature',
   'nonviolent-communication': 'Nonviolent Communication', 'courage-to-be-disliked': 'The Courage to Be Disliked', 'e-myth-revisited': 'The E-Myth Revisited',
   'extreme-ownership': 'Extreme Ownership', 'mindset': 'Mindset (book)', 'mans-search-for-meaning': "Man's Search for Meaning", 'meditations': 'Meditations',
+  'models': 'Models: Attract Women Through Honesty', 'art-of-seduction': 'The Art of Seduction', 'attached': 'Attached (book)', 'like-switch': 'The Like Switch',
 }  # verify every fetched image visually before keeping it
 UA = 'ASCEND-app-cover-fetch/1.0'
 def curl(url, out=None):
