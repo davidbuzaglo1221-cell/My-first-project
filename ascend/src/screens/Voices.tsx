@@ -15,6 +15,9 @@ export const NARRATORS = [
   { id: 'maya', name: 'מאיה', desc: 'קול נשי חם, צלול ומלא חיים. מספרת לך על הספר כמו חברה טובה בשיחה.' },
   { id: 'yoav', name: 'יואב', desc: 'קול גברי רגוע וקרוב, דיבור זורם ונינוח. כמו חבר שיושב איתך על קפה.' },
   { id: 'duo', name: 'מאיה ויואב', desc: 'שניהם לסירוגין, פסקה אחרי פסקה, כמו שיחה בין שני חברים. הכי ערני וחי.' },
+  // Earlier narrators: shown only while their recordings are the ones on the site.
+  { id: 'avri', name: 'אבי', desc: 'קול גברי חם. מדבר אליך כמו חבר שמספר לך על ספר טוב.' },
+  { id: 'hila', name: 'הילה', desc: 'קול נשי רך וברור, נעים להאזנה ארוכה.' },
 ]
 const SAMPLE = 'psychology-of-money-quick'
 const available = audioManifest as Record<string, Record<string, { f?: string; o?: number; d: number }>>
@@ -28,7 +31,10 @@ export function Voices() {
   const start = useRef(0)
   const end = useRef(0)
   useEffect(() => () => audio.current?.pause(), [])
-  const list = NARRATORS.filter((n) => available[n.id]?.[SAMPLE])
+  const fresh = !!available.maya
+  const list = NARRATORS.filter((n) => available[n.id]?.[SAMPLE] && (fresh ? !['avri', 'hila'].includes(n.id) : n.id !== 'maya' && n.id !== 'yoav')).map((n) =>
+    n.id === 'duo' && !fresh ? { ...n, name: 'אבי והילה' } : n,
+  )
 
   function toggle(id: string) {
     const a = audio.current!

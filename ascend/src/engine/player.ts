@@ -19,7 +19,7 @@ const RENAMED: Record<string, string> = { avri: 'yoav', hila: 'maya' }
 /** The narrator the listener chose on the voice screen, if that voice is rendered. */
 export const currentVoice = () => {
   const raw = store.get().narrator
-  const v = raw && RENAMED[raw] ? RENAMED[raw] : raw
+  const v = raw && RENAMED[raw] && byVoice[RENAMED[raw]] ? RENAMED[raw] : raw
   return v && byVoice[v] ? v : byVoice[DEFAULT_VOICE] ? DEFAULT_VOICE : Object.keys(byVoice).find((k) => k !== 'calm')
 }
 /** The chosen voice, or the main narrator when the chosen voice has no recording of this track. */
