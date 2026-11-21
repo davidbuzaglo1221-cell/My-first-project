@@ -35,6 +35,7 @@ Build the first version as if a senior Apple team worked on it for months. The u
 ## 5. Content
 - Whole book, only what matters: chapter headings that each carry a real part of the book.
 - Every chapter: **title → in brief (one sentence) → the essential text → in practice (2–3 concrete steps) → exercise**. Narration ends each chapter with "השורה התחתונה" and "ובפועל".
+- Depth, not a summary: every chapter also gets **three key ideas in depth** (a heading + ~90–120 words each: the book's real models, stories, studies and examples). A book should be ~2,000+ words (~15–25 min of listening), never a 7-minute skim. Show the value: idea counts, a book map with every chapter's ideas, and the library's size (books · chapters · ideas · hours).
 - Numbers and abbreviations spelled out for narration. No Latin letters or digits inside spoken text (tests enforce it).
 - No steering or questionnaires: show the whole catalogue, let the user choose, show learning in percent.
 
