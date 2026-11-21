@@ -1,9 +1,9 @@
-"""Guided practices in Hila's voice, slowed down, with the written silences, a soft bed and a bell at both ends."""
+"""Guided practices in Maya's voice, slowed down, with the written silences, a soft bed and a bell at both ends."""
 import asyncio, json, os, subprocess, sys, numpy as np
 sys.path.insert(0, '/home/user/tts')
 import render_edge as R
 OUT = '/home/user/My-first-project/ascend/public/audio/calm'; os.makedirs(OUT, exist_ok=True)
-SR = R.SR; RATE = '-12%'; VOICE = 'hila'
+SR = R.SR; RATE = '-12%'; VOICE = 'maya'
 items = json.load(open('/home/user/tts/calm.json'))
 lines = [l for it in items for l in it['lines'] if not l.startswith('~')]
 asyncio.run(R.synth_all({VOICE: [(l, RATE) for l in lines]}))

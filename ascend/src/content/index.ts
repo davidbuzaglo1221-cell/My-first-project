@@ -66,7 +66,7 @@ export const BASE_CPS = 12.5
 
 export const scriptChars = (l: Lesson) => l.script.replace(/\s+/g, ' ').length
 import audioManifest from './audioManifest.json'
-const recorded = (audioManifest as Record<string, Record<string, { d: number }>>).avri ?? {}
+const recorded = (audioManifest as Record<string, Record<string, { d: number }>>).maya ?? {}
 /** Real narration length when recorded, otherwise an estimate from the text. */
 export const estimateSeconds = (l: Lesson, cps = BASE_CPS) => Math.round(recorded[l.id]?.d ?? scriptChars(l) / cps + 1.5)
 export const bookSeconds = (b: Book) => b.lessons.reduce((s, l) => s + estimateSeconds(l), 0)

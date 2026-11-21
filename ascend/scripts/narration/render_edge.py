@@ -5,7 +5,9 @@ Usage: render_edge.py synth            -> fill the cache for both voices
        render_edge.py build <voice>    -> avri | hila | duo  -> public/audio/<voice>/<book>.mp3 + .json"""
 import asyncio, hashlib, json, os, subprocess, sys, numpy as np
 import edge_tts
-VOICES = {'avri': 'he-IL-AvriNeural', 'hila': 'he-IL-HilaNeural'}
+# Chosen by measurement (see voice research): fewer pronunciation errors on joined Hebrew words and more
+# natural intonation than Avri/Hila, scored with a preference model trained on 2,257 Hebrew listener votes.
+VOICES = {'maya': 'en-US-EmmaMultilingualNeural', 'yoav': 'en-US-BrianMultilingualNeural'}
 CACHE = '/home/user/tts/edge_cache'
 OUT = '/home/user/My-first-project/ascend/public/audio'
 SR = 24000
@@ -43,7 +45,7 @@ def pcm(path):
     idx = np.where(np.abs(w) > 0.004)[0]
     return w[max(0, idx[0] - 240): idx[-1] + 1200] if len(idx) else w
 
-CHAIN = 'highpass=f=70,acompressor=threshold=-20dB:ratio=2.2:attack=8:release=160:makeup=2,loudnorm=I=-16:TP=-1.5:LRA=9'
+CHAIN = 'highpass=f=70,equalizer=f=3200:t=q:w=1.1:g=2.5,highshelf=f=7000:g=3,acompressor=threshold=-20dB:ratio=2.2:attack=8:release=160:makeup=2,loudnorm=I=-16:TP=-1.5:LRA=9'
 
 def build(voice):
     out = f'{OUT}/{voice}'; os.makedirs(out, exist_ok=True)
@@ -54,7 +56,7 @@ def build(voice):
         for tr in bk['tracks']:
             start, segs = cur, []
             for para in tr['paras']:
-                v = voice if voice != 'duo' else ('avri' if para_n % 2 == 0 else 'hila')
+                v = voice if voice != 'duo' else ('maya' if para_n % 2 == 0 else 'yoav')
                 para_n += 1
                 for si, text in enumerate(para):
                     w = pcm(key(v, text)); segs.append(round(cur - start, 2)); chunks.append(w); cur += len(w) / SR

@@ -35,7 +35,10 @@ export function Progress() {
 
       <ProgressBooks />
 
-      <nav className="morelinks">
+      <section className="block">
+        <SectionHead title="עוד בשבילך" />
+      </section>
+      <nav className="morelinks" aria-label="עוד בשבילך">
         <button onClick={() => navigate('/growth')}>הצמיחה וההרגלים שלי</button>
         <button onClick={() => navigate('/library')}>ההאזנות והקבצים שלי</button>
         <button onClick={() => navigate('/voices')}>בחירת קריין</button>

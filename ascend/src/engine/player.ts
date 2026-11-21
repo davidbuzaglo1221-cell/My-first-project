@@ -13,10 +13,13 @@ export type TrackKind = 'lesson' | 'quick' | 'file' | 'calm'
 /** f/o: the chapter lives inside one file per book (f), starting at o seconds. */
 type Narration = Record<string, { d: number; s: number[]; f?: string; o?: number }>
 const byVoice = audioManifest as Record<string, Narration>
-export const DEFAULT_VOICE = 'avri'
+export const DEFAULT_VOICE = 'maya'
+/** Earlier narrators map to the voice that replaced them (same gender, same role). */
+const RENAMED: Record<string, string> = { avri: 'yoav', hila: 'maya' }
 /** The narrator the listener chose on the voice screen, if that voice is rendered. */
 export const currentVoice = () => {
-  const v = store.get().narrator
+  const raw = store.get().narrator
+  const v = raw && RENAMED[raw] ? RENAMED[raw] : raw
   return v && byVoice[v] ? v : byVoice[DEFAULT_VOICE] ? DEFAULT_VOICE : Object.keys(byVoice).find((k) => k !== 'calm')
 }
 /** The chosen voice, or the main narrator when the chosen voice has no recording of this track. */
