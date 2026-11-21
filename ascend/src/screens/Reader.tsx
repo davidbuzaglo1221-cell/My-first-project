@@ -26,6 +26,7 @@ export interface Chapter {
   takeaway?: string
   steps?: string[]
   task?: string
+  ideas?: { h: string; t: string }[]
 }
 
 /** The readable text of a book: the full public-domain translation, or the הספריה edition built from its lessons. */
@@ -43,7 +44,7 @@ export function bookChapters(b: Book): { chapters: Chapter[]; full: boolean; not
   }
   if (b.complete)
     return {
-      chapters: b.lessons.map((l) => ({ title: l.title, paragraphs: l.script.split(/\n+/), lessonId: l.id, takeaway: l.takeaway, steps: l.steps, task: l.exercise.task })),
+      chapters: b.lessons.map((l) => ({ title: l.title, paragraphs: l.script.split(/\n+/), lessonId: l.id, takeaway: l.takeaway, steps: l.steps, task: l.exercise.task, ideas: l.ideas })),
       full: true,
       note: 'כל הספר, רק העיקר: כל הפרקים והרעיונות של הספר, בניסוח מקורי ומתומצת של הספריה, בלי מילוי. זה לא תרגום מילולי של הספר.',
     }
@@ -118,6 +119,28 @@ export function Reader({ id }: { id: string }) {
     store.set((s) => ({ reading: { ...s.reading, [id]: { ch: n, y: 0, last: Date.now() } } }), { immediate: true })
   }
 
+  const para = (p: string, i: number) => {
+    const isLoved = !!chapter.lessonId && loved.some((n) => n.lessonId === chapter.lessonId && n.para === i)
+    return (
+      <div key={i} className={`rpara ${sel === i ? 'is-sel' : ''} ${isLoved ? 'is-loved' : ''}`}>
+        <p onClick={() => setSel(sel === i ? null : i)}>{p}</p>
+        {sel === i && chapter.lessonId && (
+          <div className="rpara__bar">
+            <button onClick={() => (toast(toggleLove(id, chapter.lessonId!, i, p) ? 'נשמר באהבתי' : 'הוסר מאהבתי'), setSel(null))}>
+              <IconHeart size={16} filled={isLoved} /> אהבתי
+            </button>
+            <button onClick={() => (setNoteFor(i), setSel(null))}>
+              <IconPen size={16} /> פתק
+            </button>
+            <button onClick={() => (load(chapter.lessonId!, { autoplay: true, from: paragraphStart(chapter.lessonId!, i) }), openPlayer(), setSel(null))}>
+              <IconHeadphones size={16} /> השמע מכאן
+            </button>
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className={`reader reader--${prefs.paper}`} style={{ ['--rsize' as string]: `${size}px` }}>
       <div className="reader__progress" style={{ transform: `scaleX(${(ch + ratio) / data.chapters.length})` }} aria-hidden="true" />
@@ -156,29 +179,25 @@ export function Reader({ id }: { id: string }) {
             {chapter.takeaway}
           </p>
         )}
-        <div className="reader__text">
-          {chapter.paragraphs.map((p, i) => {
-            const isLoved = !!chapter.lessonId && loved.some((n) => n.lessonId === chapter.lessonId && n.para === i)
-            return (
-              <div key={i} className={`rpara ${sel === i ? 'is-sel' : ''} ${isLoved ? 'is-loved' : ''}`}>
-                <p onClick={() => setSel(sel === i ? null : i)}>{p}</p>
-                {sel === i && chapter.lessonId && (
-                  <div className="rpara__bar">
-                    <button onClick={() => (toast(toggleLove(id, chapter.lessonId!, i, p) ? 'נשמר באהבתי' : 'הוסר מאהבתי'), setSel(null))}>
-                      <IconHeart size={16} filled={isLoved} /> {isLoved ? 'אהבתי' : 'אהבתי'}
-                    </button>
-                    <button onClick={() => (setNoteFor(i), setSel(null))}>
-                      <IconPen size={16} /> פתק
-                    </button>
-                    <button onClick={() => (load(chapter.lessonId!, { autoplay: true, from: paragraphStart(chapter.lessonId!, i) }), openPlayer(), setSel(null))}>
-                      <IconHeadphones size={16} /> השמע מכאן
-                    </button>
-                  </div>
-                )}
+        <div className="reader__text">{chapter.paragraphs.map((p, i) => para(p, i))}</div>
+
+        {chapter.ideas?.length ? (
+          <section className="reader__ideas" aria-label="הרעיונות המרכזיים">
+            <header className="reader__ideashead">
+              <span>לעומק</span>
+              <h3>{chapter.ideas.length === 1 ? 'הרעיון המרכזי' : `${chapter.ideas.length === 3 ? 'שלושה' : chapter.ideas.length === 4 ? 'ארבעה' : chapter.ideas.length === 2 ? 'שני' : chapter.ideas.length} רעיונות מרכזיים`}</h3>
+            </header>
+            {chapter.ideas.map((idea, k) => (
+              <div key={k} className="ridea">
+                <h4>
+                  <span className="ridea__n">{k + 1}</span>
+                  {idea.h}
+                </h4>
+                {para(idea.t, chapter.paragraphs.length + k)}
               </div>
-            )
-          })}
-        </div>
+            ))}
+          </section>
+        ) : null}
 
         {(chapter.steps?.length || chapter.task) && (
           <section className="reader__practice" aria-label="בפועל">

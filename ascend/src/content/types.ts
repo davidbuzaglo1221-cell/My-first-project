@@ -39,6 +39,8 @@ export interface Lesson {
   exercise: Exercise
   /** In practice: two or three concrete steps for real life. */
   steps?: string[]
+  /** The key ideas of the chapter in depth: a heading and an explanation each (models, examples, stories). */
+  ideas?: { h: string; t: string }[]
   /** Optional licensed or pre-rendered audio file. Preferred over device narration. */
   audioUrl?: string
 }

@@ -24,11 +24,11 @@ describe('library', () => {
   it('scripts are speakable Hebrew: no digits or Latin letters', () => {
     for (const b of books) for (const l of b.lessons) expect(l.script, l.id).not.toMatch(/[0-9A-Za-z]/)
   })
-  it('chapters are short audio, under four minutes', () => {
+  it('chapters are focused audio, under ten minutes', () => {
     for (const b of books) for (const l of b.lessons) {
       const s = estimateSeconds(l)
       expect(s, l.id).toBeGreaterThanOrEqual(15)
-      if (b.id !== 'as-a-man-thinketh') expect(s, l.id).toBeLessThan(240)
+      if (b.id !== 'as-a-man-thinketh') expect(s, l.id).toBeLessThan(600)
       expect(l.exercise.task.length).toBeGreaterThan(10)
     }
   })
@@ -47,6 +47,14 @@ describe('learning quality', () => {
       expect(l.takeaway.length, l.id).toBeGreaterThan(8)
       expect(l.steps?.length ?? 0, `${l.id} steps`).toBeGreaterThanOrEqual(2)
       for (const s of l.steps ?? []) expect(s, l.id).not.toMatch(/[0-9A-Za-z]/)
+    }
+  })
+  it('key ideas are deep and speakable: a heading and a real explanation each', () => {
+    for (const b of books) for (const l of b.lessons) for (const i of l.ideas ?? []) {
+      expect(i.h.length, l.id).toBeGreaterThan(3)
+      expect(i.t.split(' ').length, `${l.id} ${i.h}`).toBeGreaterThan(45)
+      expect(i.h + i.t, l.id).not.toMatch(/[0-9A-Za-z]/)
+      for (const s of toSegments(i.t)) expect(s.length, l.id).toBeLessThanOrEqual(190)
     }
   })
 })

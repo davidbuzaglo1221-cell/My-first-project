@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react'
-import { BASE_CPS, bookById, lessonIndex, spokenScript } from '../content'
+import { BASE_CPS, bookById, lessonIndex, spokenIdeas, spokenScript } from '../content'
 import audioManifest from '../content/audioManifest.json'
 import { getFile } from '../lib/idb'
 import { calmLines, meditationById } from '../content/calm'
@@ -539,8 +539,11 @@ export function paragraphStart(id: string, para: number) {
   const ref = lessonIndex[id]
   const n = narrationFor(id)
   if (!ref || !n) return 0
-  const paras = ref.lesson.script.split(/\n+/)
-  const seg = paras.slice(0, para).reduce((a, p) => a + toSegments(p).length, 0)
+  // Reader paragraphs: the text, then one per key idea. Narration reads each idea as heading + explanation.
+  const text = ref.lesson.script.split(/\n+/)
+  const spoken = [...text, ...spokenIdeas(ref.lesson)]
+  const at = para < text.length ? para : text.length + 2 * (para - text.length)
+  const seg = spoken.slice(0, at).reduce((a, p) => a + toSegments(p).length, 0)
   return n.s[seg] ?? 0
 }
 

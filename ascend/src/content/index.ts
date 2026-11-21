@@ -15,6 +15,7 @@ import { completeBooks } from './full'
 import { parseBook } from './fullbook'
 import { practice } from './practice'
 import { deeper } from './deeper'
+import { chapterIdeas } from './ideas'
 
 export { categories, categoryById }
 const order = categories.map((c) => c.id)
@@ -41,7 +42,7 @@ const REMOVED = new Set(['difficult-conversations', 'getting-to-yes', 'power-of-
 export const books: Book[] = raw
   .filter((b) => !REMOVED.has(b.id))
   .map((b) => (completeBooks[b.id] ? { ...b, lessons: parseBook(b.id, completeBooks[b.id]), complete: true } : b))
-  .map((b) => ({ ...b, lessons: b.lessons.map((l) => ({ ...l, script: deeper[l.id] ? `${l.script}\n${deeper[l.id]}` : l.script, steps: practice[l.id] ?? l.steps })) }))
+  .map((b) => ({ ...b, lessons: b.lessons.map((l) => ({ ...l, script: deeper[l.id] ? `${l.script}\n${deeper[l.id]}` : l.script, steps: practice[l.id] ?? l.steps, ideas: chapterIdeas[l.id] })) }))
   .filter((b) => b.lessons.length > 0)
   .sort((a, b) => order.indexOf(a.category) - order.indexOf(b.category))
 
@@ -154,5 +155,10 @@ export function formatClock(seconds: number) {
 export function spokenScript(l: Lesson) {
   const extra = [`השורה התחתונה: ${l.takeaway}`]
   if (l.steps?.length) extra.push(`ובפועל, ${l.steps.join(' ')}`)
-  return [l.script, ...extra].join('\n')
+  return [l.script, ...spokenIdeas(l), ...extra].join('\n')
+}
+
+/** The key ideas as narrated paragraphs: each heading, then its explanation. */
+export function spokenIdeas(l: Lesson) {
+  return (l.ideas ?? []).flatMap((i) => [`${i.h}.`, i.t])
 }

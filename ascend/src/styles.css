@@ -5214,3 +5214,14 @@ html:has(.reader--ivory) {
 .reader--ivory .reader__brief { background: rgba(18, 119, 90, 0.1); color: #1b1a17; }
 .reader--ivory .reader__practice { background: rgba(0, 0, 0, 0.04); }
 .reader--ivory .reader__practice li { color: #1b1a17; }
+
+/* Key ideas: the chapter in depth, as numbered sections with a gold-edged heading */
+.reader__ideas { margin: 30px 0 6px; }
+.reader__ideashead { display: flex; flex-direction: column; gap: 2px; margin-bottom: 14px; padding-bottom: 12px; border-bottom: 0.5px solid var(--sep); }
+.reader__ideashead span { font-family: var(--sans); font-size: 12px; font-weight: 800; letter-spacing: 0.06em; color: var(--gold, #d9b76a); }
+.reader__ideashead h3 { font-family: var(--sans); font-size: 22px; font-weight: 800; letter-spacing: -0.01em; color: var(--text-1); }
+.ridea { margin: 0 0 18px; }
+.ridea h4 { display: flex; align-items: flex-start; gap: 10px; margin: 18px 0 8px; font-family: var(--sans); font-size: calc(var(--rsize, 19px) * 0.98); font-weight: 800; line-height: 1.35; color: var(--text-1); }
+.ridea__n { flex: none; width: 26px; height: 26px; margin-top: 1px; border-radius: 8px; display: grid; place-items: center; font-size: 13px; font-weight: 800; color: #1a1408; background: linear-gradient(160deg, var(--gold-2, #f1dca2), var(--gold, #d9b76a)); box-shadow: 0 2px 10px rgba(217, 183, 106, 0.25); }
+.reader--ivory .reader__ideashead span { color: #8a6a1f; }
+.reader--ivory .ridea h4 { color: #1b1a17; }
