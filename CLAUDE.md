@@ -18,3 +18,12 @@ Use the `premium-app` skill (`.claude/skills/premium-app/SKILL.md`) for every ne
 6. **Content that teaches**: every chapter = heading, the core idea in one sentence, the essential text (no filler), and "in practice" — two or three concrete steps for real life, plus an exercise. Narration reads the same structure.
 7. **No steering, no questionnaires**: the user sees the full catalogue and chooses. Show learning progress in percent.
 8. **Ship-quality engineering**: unit tests + Playwright end-to-end checks of every feature, a real check of the live URL, an instant-launch service worker, lock-screen media controls with real artwork.
+
+## Websites and landing pages: Scrollcraft
+The original Scrollcraft skill is installed from the official marketplace (`nateherk-design@nateherk`, declared in `.claude/settings.json`; skill name `scroll-craft`).
+- When David asks for a website, a landing page or a marketing web experience, invoke `scroll-craft` **before** any design work, and follow its own steps (brief, grammar, fingerprint gate, feeling curve, build, verify with `shoot.mjs` on desktop, a 390×844 phone and reduced motion).
+- David delegates creative direction by default: write the brief as `Self-authored under explicit creative delegation` rather than interviewing him; ask only about what only he can know (the business and the assets he has).
+- Use cinematic scroll only where it earns its place. For apps (players, readers, tools, the premium-app PWAs) usability comes first: no forced scroll animation. They keep the `premium-app` standard.
+- Always: iPhone and small screens composed separately, `prefers-reduced-motion` respected, fast load, accessibility (real HTML, contrast, focus order).
+- Never edit the Scrollcraft engine (`engine/scrollcraft.js|css`): copy it into the build and theme it with tokens; bespoke behaviour lives in the page.
+- Workspace: `scrollcraft/` (registry `scrollcraft/FINGERPRINTS.md`; append each build's row). In each build folder run `npm i playwright-core` before verifying. Generating images and video through kie.ai needs `KIE_AI_API_KEY` (paid); without it, build from real or self-made assets.

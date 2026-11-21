@@ -1,1 +1,6 @@
 ascend/tsconfig.tsbuildinfo
+# Scrollcraft heavy build output
+scrollcraft/lab/
+scrollcraft/builds/*/node_modules/
+scrollcraft/builds/*/lab/
+.env
