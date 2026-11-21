@@ -3,14 +3,16 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m)
 ;(async () => {
   const b = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] })
   const p = await b.newPage({ viewport: { width: 390, height: 844 } })
+  await p.addInitScript(() => { try { sessionStorage.setItem("hasifria:opened", "1") } catch {} }) // the opening is tested on its own
   const errs = []; p.on('pageerror', (e) => errs.push(e.message))
   const S = () => p.evaluate(() => window.__ascend.store.get())
   await p.goto('http://localhost:4173/#/')
   await p.waitForTimeout(800)
   // 1. welcome: no questions, one button
-  ok(await p.locator('text=כניסה לספרייה').isVisible(), 'welcome screen has a single entry button')
-  ok((await p.locator('.wlc input, .wlc [role=radio]').count()) === 0, 'welcome asks nothing')
-  await p.click('text=כניסה לספרייה'); await p.waitForTimeout(600)
+  ok(await p.locator('text=כניסה אל הספרייה שלי').isVisible(), 'opening: a single entry button')
+  ok((await p.locator('.opening .fly').count()) === 3 && (await p.locator('.opening .ob__leaf').count()) === 12, 'opening: three flying books with turning pages')
+  ok((await p.locator('.opening input, .opening [role=radio]').count()) === 0, 'opening asks nothing')
+  await p.click('text=כניסה אל הספרייה שלי'); await p.waitForTimeout(900)
   ok(await p.locator('h1:has-text("הספרייה שלך")').isVisible(), 'enters the home library')
   // 2. library: search + filters
   await p.goto('http://localhost:4173/#/explore'); await p.waitForTimeout(600)

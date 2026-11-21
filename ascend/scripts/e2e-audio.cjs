@@ -2,6 +2,7 @@ const { chromium } = require('playwright')
 ;(async () => {
   const b = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] })
   const p = await b.newPage({ viewport: { width: 390, height: 844 } })
+  await p.addInitScript(() => { try { sessionStorage.setItem("hasifria:opened", "1") } catch {} }) // the opening is tested on its own
   const errs = []; p.on('pageerror', (e) => errs.push(e.message))
   await p.addInitScript(() => localStorage.setItem('ascend:v1', JSON.stringify({ onboarded: true, goals: [], dailyGoalMin: 10, name: '', settings: { rate: 1, autoContinue: true, skip: 15 } })))
   await p.goto('http://localhost:4173/#/book/psychology-of-money')

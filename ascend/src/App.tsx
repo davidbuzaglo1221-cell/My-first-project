@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { bookById } from './content'
 import { load, player, registerArtwork, usePlayer } from './engine/player'
 import { evaluateAchievements } from './lib/insights'
@@ -11,7 +11,7 @@ import { Home } from './screens/Home'
 import { LessonComplete } from './screens/LessonComplete'
 import { Library } from './screens/Library'
 import { NowPlaying } from './screens/NowPlaying'
-import { Onboarding } from './screens/Onboarding'
+import { Opening } from './screens/Opening'
 import { Progress } from './screens/Progress'
 import { Settings } from './screens/Settings'
 import { Voices } from './screens/Voices'
@@ -38,6 +38,22 @@ export function App() {
   const hash = useHash()
   const route = useMemo(() => parse(hash), [hash])
   const onboarded = useStore((s) => s.onboarded)
+  // The opening plays once per launch (and always before the very first visit).
+  const [opened, setOpened] = useState(() => {
+    try {
+      return sessionStorage.getItem('hasifria:opened') === '1'
+    } catch {
+      return false
+    }
+  })
+  const enter = () => {
+    try {
+      sessionStorage.setItem('hasifria:opened', '1')
+    } catch {
+      /* private mode: the opening simply shows again next time */
+    }
+    setOpened(true)
+  }
   const ui = useUI()
   const p = usePlayer()
   const main = useRef<HTMLElement>(null)
@@ -86,7 +102,6 @@ export function App() {
     return () => clearInterval(t)
   }, [])
 
-  if (!onboarded) return <Onboarding />
 
   let screen
   switch (route.name) {
@@ -152,6 +167,7 @@ export function App() {
       <NowPlaying />
       <LessonComplete />
       {ui.toast && <Toast text={ui.toast} onDone={() => toast(undefined)} />}
+      {(!opened || !onboarded) && <Opening onEnter={enter} />}
     </div>
   )
 }
