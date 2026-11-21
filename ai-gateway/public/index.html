@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="robots" content="noindex">
+<title>מרכז הבינה</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23f4d58d'/%3E%3Cstop offset='1' stop-color='%23b8862b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%230b3d2e'/%3E%3Cpath d='M32 12l5 15h15l-12 9 5 15-13-9-13 9 5-15-12-9h15z' fill='url(%23g)'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f2f2f7; --card:#fff; --text:#0b0b0f; --sub:#6e6e73; --hair:rgba(60,60,67,.18);
+  --gold:#b8862b; --emerald:#0f6b4f; --ok:#1f9d55; --warn:#c77700; --bad:#d23b3b; --off:#a1a1a6;
+  --chip:#eef0ee; --tint:rgba(15,107,79,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#000; --card:#1c1c1e; --text:#f5f5f7; --sub:#98989d; --hair:rgba(84,84,88,.6);
+    --gold:#e2b860; --emerald:#3fbf8f; --chip:#2c2c2e; --tint:rgba(63,191,143,.12); }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);
+  font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Assistant","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 20px) 16px calc(env(safe-area-inset-bottom) + 40px)}
+h1{font-size:34px;font-weight:800;letter-spacing:-.02em;margin:8px 0 4px}
+.lead{color:var(--sub);margin:0 0 20px}
+h2{font-size:22px;font-weight:700;margin:28px 4px 10px}
+.group{background:var(--card);border-radius:14px;overflow:hidden}
+.row{display:flex;gap:12px;align-items:flex-start;padding:13px 16px;position:relative}
+.row+.row::before{content:"";position:absolute;top:0;inset-inline-start:16px;inset-inline-end:0;border-top:.5px solid var(--hair)}
+.dot{width:10px;height:10px;border-radius:50%;margin-top:7px;flex:none}
+.dot.ok{background:var(--ok)} .dot.error{background:var(--bad)} .dot.not_configured{background:transparent;border:1.5px solid var(--off)} .dot.off{background:var(--off)}
+.grow{flex:1;min-width:0}
+.title{font-weight:600}
+.meta{color:var(--sub);font-size:14px;margin-top:2px}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--chip);color:var(--sub);margin-inline-start:6px;vertical-align:1px}
+.pill.paid{background:rgba(184,134,43,.15);color:var(--gold)} .pill.free{background:var(--tint);color:var(--emerald)} .pill.train{background:rgba(199,119,0,.14);color:var(--warn)}
+.state{font-size:14px;font-weight:600;white-space:nowrap}
+.state.ok{color:var(--ok)} .state.error{color:var(--bad)} .state.not_configured,.state.off{color:var(--sub)}
+a{color:var(--emerald)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--card);border-radius:14px;padding:14px}
+.stat b{display:block;font-size:26px;font-weight:800;letter-spacing:-.02em}
+.stat span{color:var(--sub);font-size:13px}
+.chain{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{font-size:12.5px;padding:4px 9px;border-radius:8px;background:var(--chip);color:var(--sub);direction:ltr}
+.chip.live{background:var(--tint);color:var(--emerald);font-weight:600}
+.chip.first{outline:1.5px solid var(--gold)}
+button{font:inherit;font-weight:600;border:0;border-radius:10px;padding:9px 14px;background:var(--emerald);color:#fff;cursor:pointer}
+button.ghost{background:var(--chip);color:var(--text)}
+button:disabled{opacity:.5}
+input{font:inherit;width:100%;padding:12px 14px;border-radius:12px;border:.5px solid var(--hair);background:var(--card);color:var(--text)}
+.login{display:grid;gap:12px;margin-top:24px}
+.result{margin-top:10px;font-size:14px;background:var(--bg);border-radius:10px;padding:10px 12px;white-space:pre-wrap}
+.seg{display:flex;background:var(--chip);border-radius:10px;padding:2px;margin:18px 0 0}
+.seg button{flex:1;background:transparent;color:var(--text);padding:7px;border-radius:8px;font-size:14px}
+.seg button.on{background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.hidden{display:none}
+.err{color:var(--bad)}
+small.note{display:block;color:var(--sub);font-size:13px;margin:8px 4px 0}
+.mono{direction:ltr;unicode-bidi:isolate;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>מרכז הבינה</h1>
+  <p class="lead">כל מודלי ה-AI במקום אחד: מי מחובר, מה עולה כסף, כמה מכסה נשארה ומה נכשל.</p>
+
+  <section id="login" class="hidden">
+    <div class="login">
+      <input id="code" type="password" autocomplete="current-password" placeholder="קוד גישה" aria-label="קוד גישה">
+      <button id="enter">כניסה</button>
+      <div id="loginErr" class="err"></div>
+    </div>
+  </section>
+
+  <section id="app" class="hidden">
+    <div class="stats">
+      <div class="stat"><b id="sConnected">–</b><span>ספקים מחוברים</span></div>
+      <div class="stat"><b id="sRequests">–</b><span>בקשות</span></div>
+      <div class="stat"><b id="sCost">–</b><span>עלות</span></div>
+    </div>
+    <div class="seg" role="tablist">
+      <button class="on" data-tab="providers">ספקים</button>
+      <button data-tab="tasks">משימות</button>
+      <button data-tab="usage">שימוש ושגיאות</button>
+    </div>
+
+    <div data-pane="providers">
+      <h2>ספקים</h2>
+      <div class="group" id="providers"></div>
+      <small class="note">מפתחות נשמרים רק בשרת (Vercel → Settings → Environment Variables). הם לא מגיעים לדפדפן ולא ל-GitHub.</small>
+    </div>
+
+    <div data-pane="tasks" class="hidden">
+      <h2>בחירת מודל לפי משימה</h2>
+      <div class="group" id="tasks"></div>
+      <small class="note">הסדר הוא סדר הניסיון. ירוק = מחובר עכשיו. מסגרת זהב = המודל הראשי. אם מודל לא זמין, עוברים לבא אחריו.</small>
+    </div>
+
+    <div data-pane="usage" class="hidden">
+      <h2>שימוש לפי ספק</h2>
+      <div class="group" id="usage"></div>
+      <h2>שגיאות אחרונות</h2>
+      <div class="group" id="errors"></div>
+      <small class="note" id="since"></small>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:22px">
+      <button class="ghost" id="refresh">רענון</button>
+      <button class="ghost" id="logout">יציאה</button>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const KEY = "ai-gateway-code";
+  const store = { get(){ try { return localStorage.getItem(KEY) || ""; } catch { return ""; } },
+                  set(v){ try { v ? localStorage.setItem(KEY, v) : localStorage.removeItem(KEY); } catch {} } };
+  let code = store.get();
+  let last = null;
+  const results = {};
+
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  const money = (n) => n < 0.01 && n > 0 ? "<$0.01" : "$" + n.toFixed(2);
+  const STATE = { ok: "עובד", error: "שגיאה", not_configured: "לא מחובר", off: "כבוי" };
+  const REASON = { no_key: "חסר מפתח", no_url: "חסרה כתובת שרת", keyless_off: "כבוי (שומר שיחות לאימון)" };
+  const OUTCOME = { ok:"הצליח", bad_key:"מפתח לא תקף", rate_limited:"נגמרה המכסה", model_unavailable:"המודל לא זמין", bad_request:"בקשה נדחתה",
+    upstream:"תקלה אצל הספק", timeout:"לא ענה בזמן", network:"בעיית רשת", empty:"תשובה ריקה", invalid_json:"JSON לא תקין", refused:"סירב",
+    no_key:"חסר מפתח", no_url:"חסרה כתובת", keyless_off:"כבוי", no_vision:"לא רואה תמונות", private:"דולג (פרטיות)", deadline:"נגמר הזמן" };
+
+  async function api(path, init = {}) {
+    const res = await fetch(path, { ...init, headers: { "content-type": "application/json", "x-app-token": code, ...(init.headers || {}) } });
+    const body = await res.json().catch(() => ({}));
+    return { status: res.status, body };
+  }
+
+  function limitsText(l) {
+    if (!l) return "";
+    const pick = (k) => l[k];
+    const rr = pick("x-ratelimit-remaining-requests") ?? pick("anthropic-ratelimit-requests-remaining");
+    const rl = pick("x-ratelimit-limit-requests") ?? pick("anthropic-ratelimit-requests-limit");
+    const tr = pick("x-ratelimit-remaining-tokens") ?? pick("anthropic-ratelimit-tokens-remaining");
+    const parts = [];
+    if (rr) parts.push(`נשארו ${rr}${rl ? "/" + rl : ""} בקשות`);
+    if (tr) parts.push(`${Number(tr).toLocaleString("he-IL")} טוקנים`);
+    return parts.join(" · ");
+  }
+
+  function renderProviders(s) {
+    $("#providers").innerHTML = s.providers.map((p) => {
+      const pills = [p.paid ? '<span class="pill paid">בתשלום</span>' : '<span class="pill free">חינם</span>',
+        p.trainsOnData ? '<span class="pill train">עלול לשמור שיחות</span>' : ""].join("");
+      const live = s.usage.totals[p.id]?.lastLimits;
+      const lines = [esc(p.freeTier)];
+      const lt = limitsText(p.limits || live);
+      if (lt) lines.push("מכסה: " + esc(lt));
+      if (p.account && p.id === "freellmapi") lines.push(`החודש: ${p.account.requests ?? 0} בקשות, ${Number(p.account.tokens ?? 0).toLocaleString("he-IL")} טוקנים`);
+      if (p.account && p.id === "openrouter") lines.push(`שימוש: ${esc(p.account.usage)} מתוך ${esc(p.account.limit ?? "ללא הגבלה")}`);
+      if (p.state === "error") lines.push(`<span class="err">${esc(OUTCOME[p.outcome] || p.outcome)}${p.status ? " (" + p.status + ")" : ""}</span>`);
+      if (p.state === "not_configured" && p.keyEnv) lines.push(`להוספה: <span class="mono">${esc(p.keyEnv)}</span>${p.signupUrl ? ` · <a href="${esc(p.signupUrl)}" target="_blank" rel="noopener">קבלת מפתח</a>` : ""}`);
+      if (p.note) lines.push(esc(p.note));
+      return `<div class="row" data-provider="${esc(p.id)}"><span class="dot ${p.state}"></span><div class="grow"><div class="title">${esc(p.label)}${pills}</div>${lines.map((l) => `<div class="meta">${l}</div>`).join("")}</div>
+        <span class="state ${p.state}">${p.state === "not_configured" || p.state === "off" ? esc(REASON[p.reason] || STATE[p.state]) : STATE[p.state]}${p.ms && p.state === "ok" ? `<div class="meta">${p.ms}ms</div>` : ""}</span></div>`;
+    }).join("");
+  }
+
+  function renderTasks(s) {
+    const okSet = new Set(s.providers.filter((p) => p.state === "ok").map((p) => p.id));
+    $("#tasks").innerHTML = s.tasks.map((t) => `<div class="row" data-task="${esc(t.id)}"><div class="grow">
+      <div class="title">${esc(t.label)}</div><div class="meta">${esc(t.description)}</div>
+      <div class="chain">${t.chain.map((c, i) => `<span class="chip ${okSet.has(c.provider) ? "live" : ""} ${i === 0 ? "first" : ""}">${esc(c.provider)} · ${esc(c.model)}</span>`).join("")}</div>
+      <div class="result${results[t.id] ? "" : " hidden"}">${esc(results[t.id] || "")}</div></div><button class="ghost test" data-task="${esc(t.id)}">בדיקה</button></div>`).join("");
+  }
+
+  function renderUsage(s) {
+    const rows = Object.entries(s.usage.totals);
+    $("#usage").innerHTML = rows.length ? rows.map(([id, u]) => `<div class="row"><div class="grow"><div class="title">${esc(id)}</div>
+      <div class="meta">${u.requests} בקשות · ${u.ok} הצליחו · ${u.failed} נכשלו · ${Math.round(u.avgMs)}ms בממוצע</div>
+      <div class="meta">${(u.inputTokens + u.outputTokens).toLocaleString("he-IL")} טוקנים · ${money(u.costUsd)}</div></div></div>`).join("")
+      : '<div class="row"><div class="meta">עוד לא היו בקשות מאז שהשרת עלה.</div></div>';
+    const errs = s.usage.recentErrors;
+    $("#errors").innerHTML = errs.length ? errs.map((e) => `<div class="row"><span class="dot error"></span><div class="grow">
+      <div class="title">${esc(e.provider)} <span class="meta mono">${esc(e.model)}</span></div>
+      <div class="meta">${esc(OUTCOME[e.outcome] || e.outcome)}${e.status ? " · " + e.status : ""} · ${new Date(e.at).toLocaleTimeString("he-IL")}</div></div></div>`).join("")
+      : '<div class="row"><div class="meta">אין שגיאות.</div></div>';
+    $("#since").textContent = "המספרים כאן נספרים מאז " + new Date(s.usage.since).toLocaleString("he-IL") + " (השרת מתאפס מדי פעם). השימוש המלא בספקים החינמיים מופיע בלוח של FreeLLMAPI.";
+  }
+
+  function render(s) {
+    last = s;
+    const connected = s.providers.filter((p) => p.state === "ok").length;
+    const tot = Object.values(s.usage.totals);
+    $("#sConnected").textContent = `${connected}/${s.providers.length}`;
+    $("#sRequests").textContent = tot.reduce((a, u) => a + u.requests, 0);
+    $("#sCost").textContent = money(tot.reduce((a, u) => a + u.costUsd, 0));
+    renderProviders(s); renderTasks(s); renderUsage(s);
+  }
+
+  async function load() {
+    const r = await api("/api/status");
+    if (r.status === 401 || r.status === 503) { show(false, r.status === 503 ? "השרת עדיין לא הוגדר: חסר APP_ACCESS_TOKEN." : "קוד שגוי."); return; }
+    show(true); render(r.body);
+  }
+
+  function show(inApp, err = "") {
+    $("#login").classList.toggle("hidden", inApp);
+    $("#app").classList.toggle("hidden", !inApp);
+    $("#loginErr").textContent = err;
+  }
+
+  $("#enter").onclick = () => { code = $("#code").value.trim(); store.set(code); load(); };
+  $("#code").addEventListener("keydown", (e) => { if (e.key === "Enter") $("#enter").click(); });
+  $("#logout").onclick = () => { code = ""; store.set(""); show(false); };
+  $("#refresh").onclick = load;
+  document.querySelectorAll(".seg button").forEach((b) => b.onclick = () => {
+    document.querySelectorAll(".seg button").forEach((x) => x.classList.toggle("on", x === b));
+    document.querySelectorAll("[data-pane]").forEach((p) => p.classList.toggle("hidden", p.dataset.pane !== b.dataset.tab));
+  });
+  document.addEventListener("click", async (e) => {
+    const b = e.target.closest("button.test");
+    if (!b) return;
+    const out = b.parentElement.querySelector(".result");
+    out.classList.remove("hidden"); out.textContent = "שולח…"; b.disabled = true;
+    const task = b.dataset.task;
+    const prompt = task === "json" ? 'החזר JSON עם השדה "capital" לבירת צרפת.' : task === "code" ? "כתוב פונקציית JavaScript קצרה שמחברת שני מספרים." : "ענה במשפט אחד בעברית: מה בירת צרפת?";
+    const body = { task, messages: [{ role: "user", content: task === "vision" ? [{ type: "image", mediaType: "image/png", data: SAMPLE_PNG }, { type: "text", text: "איזה צבע יש בתמונה? מילה אחת בעברית." }] : prompt }], json: task === "json", maxTokens: 400 };
+    const r = await api("/api/chat", { method: "POST", body: JSON.stringify(body) });
+    b.disabled = false;
+    const tried = (r.body.attempts || []).filter((a) => a.ms !== undefined).map((a) => `${a.provider}: ${OUTCOME[a.outcome] || a.outcome}`).join(" → ");
+    results[task] = r.body.ok
+      ? `ענה: ${r.body.servedBy.label} (${r.body.servedBy.model})${r.body.fellBack ? " · אחרי מעבר לגיבוי" : ""} · ${money(r.body.costUsd)}\n${r.body.text}\n\nניסיונות: ${tried}`
+      : `לא התקבלה תשובה (${r.body.error || r.status}).${tried ? "\nניסיונות: " + tried : ""}`;
+    out.textContent = results[task];
+    load();
+  });
+  // A 16×16 solid red PNG, for the vision test.
+  const SAMPLE_PNG = "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAFklEQVR4nGO4JCdHEmIY1TCqYfhqAAA/Ug4Qun1C8wAAAABJRU5ErkJggg==";
+
+  if (code) load(); else show(false);
+})();
+</script>
+</body>
+</html>

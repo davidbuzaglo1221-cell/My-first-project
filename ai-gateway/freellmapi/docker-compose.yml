@@ -1,0 +1,33 @@
+# FreeLLMAPI on a small always-on server, reachable only over HTTPS through Caddy.
+# The router itself is never published directly: it listens inside the Docker network only.
+#   1. Copy .env.example to .env and fill it in (the install step generates ENCRYPTION_KEY).
+#   2. Point a DNS name (LLM_DOMAIN) at the server, then: docker compose up -d
+#   3. Open https://LLM_DOMAIN, add provider keys, copy the unified key into the gateway's
+#      FREELLMAPI_KEY and set FREELLMAPI_URL=https://LLM_DOMAIN on Vercel.
+services:
+  freellmapi:
+    image: ghcr.io/tashfeenahmed/freellmapi:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      # Refuse requests whose Host header is anything but our domain (DNS-rebinding guard).
+      ALLOWED_HOSTS: ${LLM_DOMAIN}
+    volumes:
+      - freellmapi-data:/app/server/data
+    expose:
+      - "3001"
+  caddy:
+    image: caddy:2.10
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    command: caddy reverse-proxy --from ${LLM_DOMAIN} --to freellmapi:3001
+    volumes:
+      - caddy-data:/data
+    depends_on:
+      - freellmapi
+volumes:
+  freellmapi-data:
+  caddy-data:

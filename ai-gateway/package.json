@@ -1,0 +1,22 @@
+{
+  "name": "ai-gateway",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx scripts/dev-server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "e2e": "node scripts/e2e.cjs",
+    "live": "tsx scripts/live-check.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.2.7"
+  }
+}
