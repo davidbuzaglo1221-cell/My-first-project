@@ -96,6 +96,12 @@ export function LessonRow({ id, reason, showBook = true, index }: { id: string; 
         <span className="lrow__meta">
           {reason ?? (showBook ? ref.book.title : null)}
           {(reason || showBook) && <span className="sep" aria-hidden="true" />}
+          {!reason && !showBook && ref.lesson.ideas?.length ? (
+            <>
+              {ref.lesson.ideas.length} רעיונות
+              <span className="sep" aria-hidden="true" />
+            </>
+          ) : null}
           {prog?.done ? 'הושלם' : ratio > 0.02 ? `נותרו ${formatMinutes(dur * (1 - ratio))}` : formatMinutes(dur)}
         </span>
         {ratio > 0.02 && !prog?.done && <Bar value={ratio} className="lrow__bar" />}

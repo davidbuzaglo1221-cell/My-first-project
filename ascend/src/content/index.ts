@@ -141,6 +141,17 @@ export const curatedPaths: LearningPath[] = [
 
 export const pathById: Record<string, LearningPath> = Object.fromEntries(curatedPaths.map((p) => [p.id, p]))
 
+/** How many key ideas a book teaches (the in-depth sections of all its chapters). */
+export function bookIdeas(b: Book) {
+  return b.lessons.reduce((a, l) => a + (l.ideas?.length ?? 0), 0)
+}
+
+/** Listening time as a short Hebrew label: minutes under an hour, then hours. */
+export function formatHours(seconds: number) {
+  const h = seconds / 3600
+  return h < 1 ? formatMinutes(seconds) : `${Math.round(h)} שעות`
+}
+
 export function formatMinutes(seconds: number) {
   const m = Math.max(1, Math.round(seconds / 60))
   return m === 1 ? 'דקה' : `${m} דק׳`

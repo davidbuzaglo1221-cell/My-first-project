@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { bookById, bookSeconds, books, categories, categoryById, formatMinutes, lessonIndex } from '../content'
+import { bookById, bookIdeas, bookSeconds, books, categories, categoryById, formatHours, formatMinutes, lessonIndex } from '../content'
 import { usePlayer } from '../engine/player'
 import { greeting } from '../lib/dates'
 import { currentStreak, todaySeconds } from '../lib/insights'
@@ -87,6 +87,13 @@ function Showcase({ ids }: { ids: string[] }) {
   )
 }
 
+/** The size of the library, shown on the home screen. */
+const LIB = {
+  chapters: books.reduce((a, b) => a + b.lessons.length, 0),
+  ideas: books.reduce((a, b) => a + bookIdeas(b), 0),
+  seconds: books.reduce((a, b) => a + bookSeconds(b), 0),
+}
+
 export function Home() {
   const s = useStore((x) => x)
   const p = usePlayer()
@@ -127,6 +134,25 @@ export function Home() {
         <p className="h4intro__greet">{greeting()}{s.name ? `, ${s.name}` : ""}</p>
         <h1 className="h4intro__title">הספרייה שלך</h1>
       </div>
+
+      <ul className="valuestrip" aria-label="מה יש בספרייה">
+        <li>
+          <strong>{books.length}</strong>
+          <span>ספרים</span>
+        </li>
+        <li>
+          <strong>{LIB.chapters}</strong>
+          <span>פרקים</span>
+        </li>
+        <li>
+          <strong>{LIB.ideas}</strong>
+          <span>רעיונות</span>
+        </li>
+        <li>
+          <strong>{formatHours(LIB.seconds).replace(' שעות', '')}</strong>
+          <span>שעות האזנה</span>
+        </li>
+      </ul>
 
       <button className="learnhero" onClick={() => navigate('/progress')}>
         <Ring value={stats.percent / 100} size={104} stroke={5} className="learnhero__ring">

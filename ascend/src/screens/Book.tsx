@@ -1,7 +1,7 @@
-import { bookById, bookSeconds, booksByCategory, categoryById, formatMinutes } from '../content'
+import { bookById, bookIdeas, bookSeconds, booksByCategory, categoryById, formatMinutes } from '../content'
 import { load, usePlayer } from '../engine/player'
 import { navigate } from '../lib/router'
-import { toggleSaved, useStore } from '../lib/store'
+import { store, toggleSaved, useStore } from '../lib/store'
 import { Backdrop, Cover, bookHue } from '../ui/Cover'
 import { IconBook, IconBookmark, IconSpark } from '../ui/Icons'
 import { fullTexts } from '../content/fulltext'
@@ -36,6 +36,9 @@ export function BookScreen({ id }: { id: string }) {
   const pct = bookPercent(s, b)
   const best = s.quiz?.[`book:${b.id}`]?.best
   const notes = (s.notes ?? []).filter((n) => n.bookId === b.id).length
+  const ideas = bookIdeas(b)
+  // Open the reader at a chapter (book map): the reader resumes from the saved chapter.
+  const readAt = (ch: number) => (store.set((x) => ({ reading: { ...x.reading, [b.id]: { ch, y: 0, last: Date.now() } } }), { immediate: true }), navigate(`/read/${b.id}`))
 
   return (
     <div className="screen book" style={{ ['--hue' as string]: hue }}>
@@ -73,6 +76,12 @@ export function BookScreen({ id }: { id: string }) {
             <strong>{b.lessons.length}</strong>
             <span>{full ? 'פרקים' : 'שיעורים'}</span>
           </li>
+          {ideas > 0 && (
+            <li>
+              <strong>{ideas}</strong>
+              <span>רעיונות</span>
+            </li>
+          )}
           <li>
             <strong>{formatMinutes(bookSeconds(b))}</strong>
             <span>האזנה</span>
@@ -130,8 +139,34 @@ export function BookScreen({ id }: { id: string }) {
         </div>
       </section>
 
+      {ideas > 0 && (
+        <section className="block">
+          <SectionHead title="מפת הספר" sub={`${b.lessons.length} פרקים · ${ideas} רעיונות מרכזיים. לחיצה פותחת את הפרק לקריאה`} />
+          <ol className="bmap">
+            {b.lessons.map((l, i) => (
+              <li key={l.id}>
+                <button className="bmap__ch" onClick={() => readAt(i)}>
+                  <span className="bmap__n">{i + 1}</span>
+                  <span className="bmap__body">
+                    <strong>{l.title}</strong>
+                    <span className="bmap__brief">{l.takeaway}</span>
+                    {l.ideas?.length ? (
+                      <span className="bmap__ideas">
+                        {l.ideas.map((x) => (
+                          <span key={x.h}>{x.h}</span>
+                        ))}
+                      </span>
+                    ) : null}
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
       <section className="block">
-        <SectionHead title="הרעיונות המרכזיים" />
+        <SectionHead title="הספר בשלוש שורות" />
         <dl className="ideas">
           {b.ideas.map((i) => (
             <div key={i.title} className="idea">

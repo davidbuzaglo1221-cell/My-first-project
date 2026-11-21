@@ -31,7 +31,7 @@ export function Library() {
   return (
     <div className="screen library">
       <header className="page-head">
-        <h1 className="page-title">הספרייה</h1>
+        <h1 className="page-title">ההאזנות שלי</h1>
         <p className="page-sub">
           {allLessons.length} פרקים מ־{Object.keys(bookById).length} ספרים
         </p>
