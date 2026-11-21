@@ -524,7 +524,7 @@ function updatePositionState() {
 }
 
 /** Test and automation hook. */
-if (typeof window !== 'undefined') (window as unknown as { __ascend: unknown }).__ascend = { player, load, play, pause, seek, skip, setRate, store }
+if (typeof window !== 'undefined') (window as unknown as { __ascend: unknown }).__ascend = { player, load, play, pause, seek, skip, setRate, store, books: Object.values(bookById) }
 
 /** Switch narrator: the current lesson continues from the same point in the new voice. */
 export function setNarrator(voice: string) {
