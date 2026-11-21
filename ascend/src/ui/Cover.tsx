@@ -13,13 +13,13 @@ export const bookMotif = (b: Book): Motif => categoryById[b.category].motif
 
 type Size = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
-export const Cover = memo(function Cover({ book, size = 'md', className = '' }: { book: Book; size?: Size; className?: string }) {
+export const Cover = memo(function Cover({ book, size = 'md', className = '', eager }: { book: Book; size?: Size; className?: string; eager?: boolean }) {
   const showText = size !== 'xs'
   const style = coverStyle(book.id)
   if (real[book.id])
     return (
       <div className={`cover cover--${size} cover--photo ${className}`} style={{ ['--hue' as string]: bookHue(book) }}>
-        <img className="cover__img" src={coverUrl(book.id)} alt={`${book.title}, ${book.author}`} loading="lazy" decoding="async" />
+        <img className="cover__img" src={coverUrl(book.id)} alt={`${book.title}, ${book.author}`} loading={eager ? "eager" : "lazy"} decoding="async" />
         <div className="cover__sheen" />
       </div>
     )

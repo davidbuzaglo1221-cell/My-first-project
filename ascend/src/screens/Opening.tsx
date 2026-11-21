@@ -1,40 +1,19 @@
 import { useEffect, useState } from 'react'
 import { books } from '../content'
 import { store } from '../lib/store'
-import { coverUrl } from '../ui/Cover'
+import { Cover } from '../ui/Cover'
 
-/** The three books that fly in the opening: one per shelf the library is known for. */
-const TRIO = ['psychology-of-money', 'atomic-habits', 'how-to-win-friends']
-
-/** An open book in mid-air. Its leaves turn on their own, right to left like a Hebrew book in the wind. */
-function FlyingBook({ id, n }: { id: string; n: number }) {
-  return (
-    <div className={`fly fly--${n}`} aria-hidden="true">
-      <div className="ob">
-        <div className="ob__cover" style={{ backgroundImage: `url(${coverUrl(id)})` }} />
-        <div className="ob__page ob__page--r" />
-        <div className="ob__page ob__page--l" />
-        {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="ob__leaf" style={{ animationDelay: `${n * 0.35 + i * 0.55}s` }}>
-            <span className="ob__face" />
-            <span className="ob__face ob__face--back" />
-          </div>
-        ))}
-        <span className="ob__ribbon" />
-      </div>
-    </div>
-  )
-}
+const ROWS = 5
 
 /**
- * The opening: three books float and riffle in the wind, loose pages drift past, then the way in.
- * Shown once per launch; the first visit also marks the library as opened.
+ * The opening: the whole library as a diagonal wall of covers drifting past, row against row,
+ * then the name and the way in. Shown once per launch; the first visit also marks the library as opened.
  */
 export function Opening({ onEnter }: { onEnter: () => void }) {
   const [leaving, setLeaving] = useState(false)
   const [ready, setReady] = useState(false)
   useEffect(() => {
-    const t = setTimeout(() => setReady(true), 900)
+    const t = setTimeout(() => setReady(true), 700)
     return () => clearTimeout(t)
   }, [])
   const enter = () => {
@@ -43,23 +22,21 @@ export function Opening({ onEnter }: { onEnter: () => void }) {
     store.set({ onboarded: true }, { immediate: true })
     setTimeout(onEnter, 650)
   }
+  // Every book in the library, dealt across the rows; each row is doubled so it loops without a seam.
+  const rows = Array.from({ length: ROWS }, (_, r) => books.filter((_, i) => i % ROWS === r))
   const chapters = books.reduce((a, b) => a + b.lessons.length, 0)
   return (
     <div className={`opening ${leaving ? 'is-leaving' : ''} ${ready ? 'is-ready' : ''}`}>
-      <div className="opening__glow" aria-hidden="true" />
-      <div className="opening__dust" aria-hidden="true">
-        {Array.from({ length: 18 }, (_, i) => (
-          <i key={i} style={{ left: `${(i * 37) % 100}%`, top: `${(i * 53) % 72}%`, animationDelay: `${-i * 0.7}s`, animationDuration: `${7 + (i % 5)}s` }} />
+      <div className="opening__wall" aria-hidden="true">
+        {rows.map((row, r) => (
+          <div key={r} className={`owall__row owall__row--${r}`}>
+            {[...row, ...row].map((b, i) => (
+              <Cover key={i} book={b} size="md" eager />
+            ))}
+          </div>
         ))}
       </div>
-      <div className="opening__sky">
-        {TRIO.map((id, n) => (
-          <FlyingBook key={id} id={id} n={n} />
-        ))}
-        {[0, 1, 2].map((i) => (
-          <span key={i} className={`loose loose--${i}`} aria-hidden="true" />
-        ))}
-      </div>
+      <div className="opening__shade" aria-hidden="true" />
       <div className="opening__body">
         <h1 className="opening__brand">הספריה</h1>
         <p className="opening__lead">

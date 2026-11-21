@@ -10,7 +10,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m)
   await p.waitForTimeout(800)
   // 1. welcome: no questions, one button
   ok(await p.locator('text=כניסה אל הספרייה שלי').isVisible(), 'opening: a single entry button')
-  ok((await p.locator('.opening .fly').count()) === 3 && (await p.locator('.opening .ob__leaf').count()) === 12, 'opening: three flying books with turning pages')
+  ok((await p.locator('.opening .owall__row .cover').count()) === 102, 'opening: the whole library (51 covers) drifting in a diagonal wall')
   ok((await p.locator('.opening input, .opening [role=radio]').count()) === 0, 'opening asks nothing')
   await p.click('text=כניסה אל הספרייה שלי'); await p.waitForTimeout(900)
   ok(await p.locator('h1:has-text("הספרייה שלך")').isVisible(), 'enters the home library')
