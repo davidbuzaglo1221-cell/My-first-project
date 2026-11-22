@@ -43,3 +43,8 @@ A mix: David's own phone photos and videos are the base; Claude grades and edits
 3. Hands at work: clipper on the fade, scissors over comb, razor on the line. Close and slow, 5–10 s each.
 4. The chair: a wide shot of the station, one with David working, phone propped at chest height.
 5. Life: walking in the street, coffee, training, three frames a week.
+
+## Reference build: reels/reel-03 (7 s, editorial)
+- Photos: Canva `generate-image` (realistic editorial prompts, 9:16, "real photo, no text") → `create-design` with the media ids as references (Instagram Story, one full-bleed photo per page) → `export-design` PNG → download from export-download.canva.com (allowed in the environment). The image job previews are only 112 px; always export.
+- Edit: focus pull on the first frame, slow push-ins, lateral pan on the profile, handheld drift, one-frame exposure blip on cuts, house grade (sepia 0.32, saturate 0.55), grain, soft vignette, name only at the end in small spaced Heebo 400.
+- Sound: deep-house groove with a real Rhodes (GM program 4), soft kick and shaker, vinyl, shutter on each cut.
