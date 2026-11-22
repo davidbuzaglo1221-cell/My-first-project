@@ -1,0 +1,15 @@
+{
+  "name": "reel-01",
+  "private": true,
+  "scripts": {
+    "render": "remotion render src/index.ts Reel out/reel-01.mp4 --codec h264 --crf 16"
+  },
+  "dependencies": {
+    "@fontsource/heebo": "^5.1.1",
+    "@remotion/cli": "4.0.290",
+    "@remotion/google-fonts": "4.0.290",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "remotion": "4.0.290"
+  }
+}

@@ -28,3 +28,17 @@ Never slow. The viewer decides in the first second.
 - Build with Remotion (`remotion-best-practices` routes to the rest); one composition per format.
 - Before showing David: render, extract a contact sheet of frames every 0.5 s and look at it; check no shot exceeds 1.5 s, captions never overflow or overlap the safe zones, audio has no clipping (loudnorm −14 LUFS for social), and the hook works with sound off.
 - Deliver the MP4 file plus a cover frame, with a Hebrew one-line caption and hashtags ready to paste.
+
+## Genre playbook (think outside the box, look human, never try-hard)
+The rule for every genre: **attention-grabbing but effortless**. Real moments, confident rhythm, humour where it fits; no stock-photo look, no over-decorated templates.
+- **Barber / personal brand**: POV shots ("POV: you finally found your barber"), satisfying transformation (before → hard cut on the beat → after), ASMR close-ups of clippers and razor lines, guard numbers as kinetic text, a reveal with a mirror turn. Series mix: one for clients (offer + CTA), one for views (satisfying / trend audio), one for laughs (client situations, "types of clients in the chair"), one for trust (process, hygiene, tips).
+- **Fitness**: rep-synced cuts, counters and timers on screen, myth vs fact, 3-move mini workouts, before/after progress with dates.
+- **Kids**: bright saturated palette, round friendly shapes, bouncy springs (overshoot), slower cuts (1–2 s) with big clear words, sing-along rhythm, sound effects (boing, pop), characters that are original. Calm endings; no flashing or scary moments.
+- **Action / fight style**: speed ramps (slow → fast on impact), impact frames (1–2 frames of inverted or white flash), heavy camera shake on hits, motion-blur whips, bass drops on punches, comic-style hit words. Choreographed or animated only — never real violence against real people.
+- **Comedy / situations**: setup → pause (silence beat) → punchline cut; zoom-in on the reaction; caption-as-inner-voice; meme-timing.
+- **Human feel**: handheld micro-shake, natural grain, imperfect real footage from David's phone beats any perfect render. When realistic people are needed and no footage exists, use AI video generation through the connected tools (Canva / Picsart) only if the result is convincing; otherwise use stylised graphics rather than uncanny fake humans.
+
+## Reference build
+`reels/reel-01` — 15 s, 120 BPM, drop at 3 s, a hit every beat: original synthesized beat (`tools/music.py`), Heebo fonts bundled locally, Remotion composition with zoom/whip/drop entries, chroma split, beat pulse, shake on hits, grain and flash frames. Render with the local headless shell:
+`npx remotion render src/index.ts Reel out/reel.mp4 --browser-executable=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell --concurrency=2 --timeout=120000`
+Notes: edge-tts cannot connect from the cloud container (the proxy blocks WebSockets); ElevenLabs currently rejects the key. Until fixed, reels are music + kinetic text, or narration rendered elsewhere.

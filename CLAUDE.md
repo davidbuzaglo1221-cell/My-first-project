@@ -46,6 +46,7 @@ Use the `premium-app` skill (`.claude/skills/premium-app/SKILL.md`) for every ne
 8. **Ship-quality engineering**: unit tests + Playwright end-to-end checks of every feature, a real check of the live URL, an instant-launch service worker, lock-screen media controls with real artwork.
 
 ## Installed skills
+- **`director` runs first on every request** — it is the lead brain that routes to all the others.
 - House: `premium-app`, `fast-video`, `social-content`, `replica-*` (planning and building an original app in the style of an existing one).
 - From `anthropics/skills`: `canvas-design` (posters, static visuals), `algorithmic-art`, `theme-factory`, `web-artifacts-builder`, `webapp-testing`.
 - From `remotion-dev/skills`: `remotion-best-practices` (router), `remotion-create`, `remotion-captions`, `remotion-render`, `remotion-multimedia`. Remotion is free for individuals and companies of up to 3 people.
