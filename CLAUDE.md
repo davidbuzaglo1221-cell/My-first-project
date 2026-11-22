@@ -4,6 +4,9 @@ These rules apply to every request in this repository, from the first message. T
 
 ## Who David is
 - A men's barber, now also studying to become a fitness trainer. Content, apps and agents should serve that world when relevant (barbershop clients, bookings, Instagram, training and nutrition), unless he asks for something else.
+- He hasn't started at a barbershop yet: he will work at one (name to come) and is building his personal brand ahead of time. Until then, content is under his own name, without a shop name or address.
+- Videos are a varied series: each one has its own goal — getting clients, views, laughs, everyday barbershop situations. Plan a mix, not one formula.
+- Instagram: he is opening a new business account; when it exists, connect it and build the reply agent.
 - He brings the idea; you do everything else.
 
 ## Communication
