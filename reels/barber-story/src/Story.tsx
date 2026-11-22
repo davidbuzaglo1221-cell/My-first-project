@@ -92,6 +92,70 @@ const DayCard: React.FC<{text: string}> = ({text}) => {
   );
 };
 
+
+/* the story's words: one short line per beat, word by word, like a narrator who doesn't need to shout */
+type Line = {from: number; dur: number; text: string; big?: boolean; quote?: boolean};
+const LINES: Line[] = [
+  {from: 6, dur: 46, text: 'יום ראשון בכיסא.'},
+  {from: 92, dur: 54, text: 'יד רועדת.'},
+  {from: 152, dur: 56, text: 'לקוח שלא חוזר.'},
+  {from: 214, dur: 84, text: 'ולילה ארוך של שאלות.'},
+  {from: 304, dur: 54, text: 'ואז הוא נכנס.'},
+  {from: 364, dur: 54, text: 'אל תלחץ. תקשיב למכונה.', quote: true},
+  {from: 424, dur: 70, text: 'כל לילה. עוד ראש. עוד קו.'},
+  {from: 498, dur: 128, text: 'עד שהיד הפסיקה לרעוד.'},
+  {from: 638, dur: 62, text: 'שנה אחרי.', big: true},
+  {from: 704, dur: 74, text: 'אותה מראה. חיוך אחר.'},
+  {from: 786, dur: 44, text: 'הכיסא מלא.'},
+];
+
+const Caption: React.FC<{text: string; big?: boolean; quote?: boolean}> = ({text, big, quote}) => {
+  const f = useCurrentFrame();
+  const words = text.split(' ');
+  const per = 4; // frames between words
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        top: big ? 820 : 1330,
+        left: 90,
+        right: 90,
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        gap: big ? '0 28px' : '0 18px',
+        direction: 'rtl',
+      }}
+    >
+      {words.map((w, i) => {
+        const t = f - i * per;
+        const o = interpolate(t, [0, 5], [0, 1], clamp);
+        const y = interpolate(t, [0, 7], [22, 0], {...clamp, easing: Easing.out(Easing.cubic)});
+        return (
+          <span
+            key={i}
+            style={{
+              fontFamily: big ? 'Frank, serif' : 'Heebo, sans-serif',
+              fontWeight: big ? 900 : 800,
+              fontSize: big ? 150 : 68,
+              lineHeight: 1.25,
+              color: quote ? '#f6d9a8' : '#f6f1e7',
+              opacity: o,
+              transform: `translateY(${y}px)`,
+              textShadow: '0 4px 28px rgba(0,0,0,0.85), 0 1px 3px rgba(0,0,0,0.9)',
+              display: 'inline-block',
+            }}
+          >
+            {i === 0 && quote ? '״' : ''}
+            {w}
+            {i === words.length - 1 && quote ? '״' : ''}
+          </span>
+        );
+      })}
+    </div>
+  );
+};
+
 const Grain: React.FC = () => {
   const f = useCurrentFrame();
   return (
@@ -121,10 +185,13 @@ export const Story: React.FC = () => {
           <ShotView shot={s} />
         </Sequence>
       ))}
-      <Sequence from={6} durationInFrames={56} layout="none"><DayCard text="יום 1" /></Sequence>
-      <Sequence from={424} durationInFrames={56} layout="none"><DayCard text="יום 40" /></Sequence>
-      <Sequence from={640} durationInFrames={56} layout="none"><DayCard text="יום 365" /></Sequence>
+      {LINES.map((l, i) => (
+        <Sequence key={`l${i}`} from={l.from} durationInFrames={l.dur} layout="none">
+          <Caption text={l.text} big={l.big} quote={l.quote} />
+        </Sequence>
+      ))}
       <AbsoluteFill style={{background: 'radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.55) 100%)'}} />
+      <AbsoluteFill style={{background: 'linear-gradient(0deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 38%)'}} />
       <Grain />
       <AbsoluteFill style={{background: '#000', opacity: Math.max(fadeIn, fadeOut, dip)}} />
       <AbsoluteFill style={{background: '#fff', opacity: flash(630, 6) + flash(780, 4, 0.4)}} />
