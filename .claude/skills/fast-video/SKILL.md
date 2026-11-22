@@ -42,3 +42,12 @@ The rule for every genre: **attention-grabbing but effortless**. Real moments, c
 `reels/reel-01` — 15 s, 120 BPM, drop at 3 s, a hit every beat: original synthesized beat (`tools/music.py`), Heebo fonts bundled locally, Remotion composition with zoom/whip/drop entries, chroma split, beat pulse, shake on hits, grain and flash frames. Render with the local headless shell:
 `npx remotion render src/index.ts Reel out/reel.mp4 --browser-executable=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell --concurrency=2 --timeout=120000`
 Notes: edge-tts cannot connect from the cloud container (the proxy blocks WebSockets); ElevenLabs currently rejects the key. Until fixed, reels are music + kinetic text, or narration rendered elsewhere.
+
+## Looks human, not AI (David's rule — reel-02 is the reference)
+The "AI look" = gold-on-black luxury, centred giant word on every beat, chroma split, synthetic beeps. Avoid it. Human editors:
+- **Breathe**: not every beat is a cut. Mix fast cuts with one hold, one freeze, one silence.
+- **Editing moves people recognise**: tape stop into silence, typing an app-style caption (white box, black text), hand-drawn marker circles/arrows/strike-throughs, a word crossed out and rewritten by hand, inverted flash cards, a camcorder REC + timecode, gate weave, dust, film grain.
+- **Off-centre, editorial type**: a serif (Frank Ruhl Libre 900) for statements, a plain sans for captions, a marker hand (Amatic SC) for notes. Text right-aligned (RTL), allowed to sit at an edge.
+- **Monochrome + one accent** (marker red) instead of gold everything.
+- **Real sound**: recorded-sample instruments (FluidSynth + FluidR3_GM soundfont: `apt-get install fluidsynth fluid-soundfont-gm`), trending genre (phonk: pitched cowbell = GM Agogo program 112, 808 with glide, halftime drums, triplet hat rolls), vinyl crackle, foley (typing, shutter, marker). Never pure synthesized beeps.
+- **Words**: charismatic, short, certain. State, don't persuade. No sales lines, no exclamation marks, no emojis on screen. Example voice: "לא הולך אחרי העדר. יוצר אותו." / "לא מסביר. לא מתנצל. עושה."
