@@ -7,6 +7,8 @@ These rules apply to every request in this repository, from the first message. T
 - He hasn't started at a barbershop yet: he will work at one (name to come) and is building his personal brand ahead of time. Until then, content is under his own name, without a shop name or address.
 - Videos are a varied series: each one has its own goal — getting clients, views, laughs, everyday barbershop situations. Plan a mix, not one formula.
 - Instagram: he is opening a new business account; when it exists, connect it and build the reply agent.
+- **Learn from him, don't echo him**: his explanations are the brief, not the copy. Never put his own sentences back on screen; turn the attitude into the work. His reference examples are the standard to study and exceed, never to copy.
+- His brand bible is the `david-brand` skill (reference: @samrascals_ — real editorial photography, muted sepia / black & white, the person is the brand, effortless confidence, almost no text).
 - He brings the idea; you do everything else.
 
 ## Communication
@@ -47,6 +49,6 @@ Use the `premium-app` skill (`.claude/skills/premium-app/SKILL.md`) for every ne
 
 ## Installed skills
 - **`director` runs first on every request** — it is the lead brain that routes to all the others.
-- House: `premium-app`, `fast-video`, `social-content`, `replica-*` (planning and building an original app in the style of an existing one).
+- House: `david-brand`, `premium-app`, `fast-video`, `social-content`, `replica-*` (planning and building an original app in the style of an existing one).
 - From `anthropics/skills`: `canvas-design` (posters, static visuals), `algorithmic-art`, `theme-factory`, `web-artifacts-builder`, `webapp-testing`.
 - From `remotion-dev/skills`: `remotion-best-practices` (router), `remotion-create`, `remotion-captions`, `remotion-render`, `remotion-multimedia`. Remotion is free for individuals and companies of up to 3 people.
