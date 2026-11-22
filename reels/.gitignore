@@ -1,2 +1,3 @@
-node_modules/
-out/stills/
+**/node_modules/
+**/out/stills/
+**/music_raw.wav
