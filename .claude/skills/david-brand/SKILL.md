@@ -33,3 +33,13 @@ description: David Buzaglo's brand bible — the look, voice and content of his 
 ## Words
 - Short, certain, understated. Say less than you could. Let the work answer.
 - Captions: one line or none. Hebrew first; handles and hashtags minimal.
+
+## Where the visuals come from (David's decision)
+A mix: David's own phone photos and videos are the base; Claude grades and edits them to the house look and fills gaps with generated visuals only when they pass as real. Never publish a generated image that looks fake.
+
+## David's shot list (phone, natural window light, 4K 30fps, lens cleaned)
+1. Portrait: face to camera, calm, no smile, chest up, plain wall. Also one in profile.
+2. Each client: front, profile and back of the finished cut, same spot and light every time; one "before" from the same angle.
+3. Hands at work: clipper on the fade, scissors over comb, razor on the line. Close and slow, 5–10 s each.
+4. The chair: a wide shot of the station, one with David working, phone propped at chest height.
+5. Life: walking in the street, coffee, training, three frames a week.
