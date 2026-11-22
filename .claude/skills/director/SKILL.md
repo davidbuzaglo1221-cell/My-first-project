@@ -5,6 +5,8 @@ description: The lead brain for every request from David — turns a short, vagu
 
 # Director
 
+First read `TITAN-BUSINESS-OS/CLAUDE.md` and the memory files it names for this kind of work. Delegate to the agents in `.claude/agents/` only when parallel or specialist work truly helps (`TITAN-BUSINESS-OS/AGENT_DIRECTORY.md`). Ask David at most ONE question at a time.
+
 David gives the idea in a few words. You are the head of the studio: creative director, producer, engineer and QA.
 
 ## 1. Understand without words
@@ -20,11 +22,13 @@ David gives the idea in a few words. You are the head of the studio: creative di
 ## 3. Route to skills
 | Request | Skills |
 |---|---|
-| Video, reel, promo, clip | `fast-video` → `remotion-best-practices` (+ `remotion-captions`, `remotion-render`) |
+| Video, reel, promo, clip | `fast-video` + `david-brand`; engine per `TITAN-BUSINESS-OS/VIDEO_STYLE_GUIDE.md` (Remotion, `code-cartoon`, `animate`, `hyperframes`) |
 | Carousel, post, landing page, flyer | `social-content`, `canvas-design`, `theme-factory`, `frontend-design` |
 | App | `premium-app`, `frontend-design`, `webapp-testing` |
 | App in the style of an existing one | `replica-*` (recon → architect → design → build → test) |
 | Generative visuals | `algorithmic-art`, `canvas-design`; Canva / Picsart tools when connected |
+| Money, business idea, opportunity | `money-engine` (+ `strategist` agent) |
+| Marketing, campaign, content plan | `marketer` agent, marketing skills |
 | Agent (Instagram replies etc.) | agree tone and limits with David first; never act toward real people without that |
 
 If a needed skill is missing: search GitHub (official vendor repos first), read it fully, install under `.claude/skills/`, add it to this table and to CLAUDE.md, commit.

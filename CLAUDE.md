@@ -1,5 +1,7 @@
 # Working with David — the standing rules
 
+> **TITAN BUSINESS OS** is the control center: read `TITAN-BUSINESS-OS/CLAUDE.md` first on every request, and the memory files it points to. Agents: `.claude/agents/` (see `TITAN-BUSINESS-OS/AGENT_DIRECTORY.md`). Tools: `TITAN-BUSINESS-OS/SKILLS_DIRECTORY.md`. Money: the `money-engine` skill.
+
 These rules apply to every request in this repository, from the first message. They are the result of a "rules conversation": treat them as permanent.
 
 ## Who David is
@@ -48,7 +50,9 @@ Use the `premium-app` skill (`.claude/skills/premium-app/SKILL.md`) for every ne
 8. **Ship-quality engineering**: unit tests + Playwright end-to-end checks of every feature, a real check of the live URL, an instant-launch service worker, lock-screen media controls with real artwork.
 
 ## Installed skills
-- **`director` runs first on every request** — it is the lead brain that routes to all the others.
-- House: `david-brand`, `premium-app`, `fast-video`, `social-content`, `replica-*` (planning and building an original app in the style of an existing one).
-- From `anthropics/skills`: `canvas-design` (posters, static visuals), `algorithmic-art`, `theme-factory`, `web-artifacts-builder`, `webapp-testing`.
-- From `remotion-dev/skills`: `remotion-best-practices` (router), `remotion-create`, `remotion-captions`, `remotion-render`, `remotion-multimedia`. Remotion is free for individuals and companies of up to 3 people.
+- **`director` runs first on every request** — it is the lead brain that routes to all the others. Full, tested list with licenses: `TITAN-BUSINESS-OS/SKILLS_DIRECTORY.md`.
+- House: `director`, `david-brand`, `money-engine`, `premium-app`, `fast-video`, `social-content`, `replica-*`.
+- Video: `remotion-*`, `hyperframes`, `hyperframes-cli`, `hyperframes-registry`, `code-cartoon`, `animate`, `reverse-any-video`, `style-sampling`, `motion-doctrine`, `captions-overlay`.
+- Design: `impeccable`, `ui-ux-pro-max`, `apple-design`, `emil-design-eng`, `choreograph`, `improve-animations`, `review-animations`, `animation-vocabulary`, `learn-taste`, `canvas-design`, `theme-factory`, `algorithmic-art`, `web-artifacts-builder`.
+- Business and marketing: `copywriting`, `social`, `offers`, `pricing`, `launch`, `content-strategy`, `competitors`, `customer-research`, `marketing-ideas`, `ad-creative`, `video`, `lead-magnets`, `seo-audit`, `ai-seo`, `cold-email`, `emails`, `sales-enablement`, `marketing-psychology`, `cro`, `marketing-plan`.
+- Engineering: `brainstorming`, `writing-plans`, `executing-plans`, `systematic-debugging`, `test-driven-development`, `verification-before-completion`, `subagent-driven-development`, `dispatching-parallel-agents`, `find-skills`, `webapp-testing`, `agent-browser` (CLI installed globally per container: `npm i -g agent-browser`).
