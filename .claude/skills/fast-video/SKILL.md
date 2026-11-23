@@ -44,6 +44,13 @@ The rule for every genre: **attention-grabbing but effortless**. Real moments, c
 `npx remotion render src/index.ts Reel out/reel.mp4 --browser-executable=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell --concurrency=2 --timeout=120000`
 Notes: edge-tts cannot connect from the cloud container (the proxy blocks WebSockets); ElevenLabs currently rejects the key. Until fixed, reels are music + kinetic text, or narration rendered elsewhere.
 
+## Music for a young audience (David's rule, 23.11.2026)
+Every result targets young people (~18–28). The "next in line" reel's edit and design were right, but its deep-house Rhodes cue sounded "for adults". Test every cue: *would a 20-year-old put this on his own Reel?*
+- **Use** (pick per video): modern trap / melodic rap beat (punchy 808 with glide, crisp hats with rolls, sparse melody) · drill bounce (sliding 808s, syncopated snares) · amapiano / afro-house (log-drum bass, shakers, 112–115 BPM) · Jersey club (kick pattern 1-2-123, vocal chops, ~140) · UK garage / 2-step (shuffled hats, chopped vocals, ~132) · hard-cut phonk only when the video is aggressive.
+- **Avoid**: lounge, smooth jazz, Rhodes deep house, soft piano, orchestral "cinematic", general-MIDI instruments that sound dated.
+- Sound of the production matters as much as the genre: tight modern drums, a sub that hits, sidechain, vocal chops or textures, clean high end, loud but not crushed (−14 LUFS). A synthesized 808 is part of the genre and is fine; cheap beeps and stock GM leads are not.
+- Classic and clean, not childish: stay sharp and minimal — few elements, each one hitting.
+
 ## Looks human, not AI (David's rule — reel-02 is the reference)
 The "AI look" = gold-on-black luxury, centred giant word on every beat, chroma split, synthetic beeps. Avoid it. Human editors:
 - **Breathe**: not every beat is a cut. Mix fast cuts with one hold, one freeze, one silence.
