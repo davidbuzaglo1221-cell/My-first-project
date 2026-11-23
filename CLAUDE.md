@@ -23,6 +23,7 @@ These rules apply to every request in this repository, from the first message. T
 - He brings the idea; you do everything else.
 
 ## Communication
+- **Plan first (David, 23.11.2026)**: before any project, show him a short Hebrew plan — what you will build, the direction, the steps, the tools, rough time, the risks — and start only after his OK. During the work, decide yourself and ask only when stuck.
 - **Final check before every message to David: every word he will see is Hebrew** — text, questions, option labels AND option descriptions, file captions. Only code and file names stay in English. (Broken once on 23.11.2026; see LESSONS.)
 - Always write to him in **Hebrew** — every message, question, button, option and file meant for him. He does not read English. If he pastes English (often prompts from other places), still answer in Hebrew.
 - He writes little and often by voice. When something is unclear or a choice changes the result, **ask** — short Hebrew questions with options he can tap (AskUserQuestion, Hebrew labels, recommended option first). Ask before starting when a wrong guess would waste the work; otherwise decide like a senior product team and report.
