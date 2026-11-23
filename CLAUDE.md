@@ -2,10 +2,19 @@
 
 > **TITAN BUSINESS OS** is the control center: read `TITAN-BUSINESS-OS/CLAUDE.md` first on every request, and the memory files it points to. Agents: `.claude/agents/` (see `TITAN-BUSINESS-OS/AGENT_DIRECTORY.md`). Tools: `TITAN-BUSINESS-OS/SKILLS_DIRECTORY.md`. Money: the `money-engine` skill.
 
+## Core memory (loaded automatically every session)
+@TITAN-BUSINESS-OS/MY_CREATIVE_DNA.md
+@TITAN-BUSINESS-OS/DECISIONS.md
+@TITAN-BUSINESS-OS/LESSONS.md
+
+Domain memory is read on demand from the table in `TITAN-BUSINESS-OS/CLAUDE.md`. Every correction from David becomes a row in `LESSONS.md` (what, root cause, rule, where it now lives) and is committed — that file is how this system learns; nothing learns automatically.
+
 These rules apply to every request in this repository, from the first message. They are the result of a "rules conversation": treat them as permanent.
 
 ## Who David is
-- A men's barber, now also studying to become a fitness trainer. Content, apps and agents should serve that world when relevant (barbershop clients, bookings, Instagram, training and nutrition), unless he asks for something else.
+- Two sides: a men's barber building his personal brand, **and** a creative studio that makes websites and design, apps, photography and ads, CGI and 3D, video and branding at commercial level. He is also studying to become a fitness trainer.
+- No single house style: every visual project gets its own art direction (`art-direction` skill; his taste board is in its `reference/`). Always premium, cinematic, precise and restrained; learn principles from brands, never copy them.
+- For the barber side: content, apps and agents should serve that world when relevant (barbershop clients, bookings, Instagram, training and nutrition), unless he asks for something else.
 - He hasn't started at a barbershop yet: he will work at one (name to come) and is building his personal brand ahead of time. Until then, content is under his own name, without a shop name or address.
 - Videos are a varied series: each one has its own goal — getting clients, views, laughs, everyday barbershop situations. Plan a mix, not one formula.
 - Instagram: he is opening a new business account; when it exists, connect it and build the reply agent.
@@ -51,7 +60,7 @@ Use the `premium-app` skill (`.claude/skills/premium-app/SKILL.md`) for every ne
 
 ## Installed skills
 - **`director` runs first on every request** — it is the lead brain that routes to all the others. Full, tested list with licenses: `TITAN-BUSINESS-OS/SKILLS_DIRECTORY.md`.
-- House: `director`, `david-brand`, `money-engine`, `premium-app`, `fast-video`, `social-content`, `replica-*`.
+- House: `director`, `art-direction`, `david-brand`, `money-engine`, `premium-app`, `fast-video`, `social-content`, `replica-*`.
 - Video: `remotion-*`, `hyperframes`, `hyperframes-cli`, `hyperframes-registry`, `code-cartoon`, `animate`, `reverse-any-video`, `style-sampling`, `motion-doctrine`, `captions-overlay`.
 - Design: `impeccable`, `ui-ux-pro-max`, `apple-design`, `emil-design-eng`, `choreograph`, `improve-animations`, `review-animations`, `animation-vocabulary`, `learn-taste`, `canvas-design`, `theme-factory`, `algorithmic-art`, `web-artifacts-builder`.
 - Business and marketing: `copywriting`, `social`, `offers`, `pricing`, `launch`, `content-strategy`, `competitors`, `customer-research`, `marketing-ideas`, `ad-creative`, `video`, `lead-magnets`, `seo-audit`, `ai-seo`, `cold-email`, `emails`, `sales-enablement`, `marketing-psychology`, `cro`, `marketing-plan`.
