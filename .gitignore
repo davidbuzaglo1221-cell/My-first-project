@@ -1,1 +1,15 @@
 ascend/tsconfig.tsbuildinfo
+
+# Ruflo local secrets and runtime data
+.env
+.env.local
+.env.*.local
+.claude-flow/data/
+.claude-flow/logs/
+.claude-flow/sessions/
+.swarm/
+.claude-flow/metrics/
+.claude-flow/*.pid
+.claude-flow/swarm/
+.claude-flow/policy/state.json
+.claude-flow/security/

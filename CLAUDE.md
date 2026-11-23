@@ -1,6 +1,6 @@
 # Working with David — the standing rules
 
-> **TITAN BUSINESS OS** is the control center: read `TITAN-BUSINESS-OS/CLAUDE.md` first on every request, and the memory files it points to. Agents: `.claude/agents/` (see `TITAN-BUSINESS-OS/AGENT_DIRECTORY.md`). Tools: `TITAN-BUSINESS-OS/SKILLS_DIRECTORY.md`. Money: the `money-engine` skill.
+> **TITAN BUSINESS OS** is the control center: read `TITAN-BUSINESS-OS/CLAUDE.md` first on every request, and the memory files it points to. Agents: `.claude/agents/` (see `TITAN-BUSINESS-OS/AGENT_DIRECTORY.md`). Tools: `TITAN-BUSINESS-OS/SKILLS_DIRECTORY.md`. Money: the `money-engine` skill. Multi-agent coordination: Ruflo — rules and routing in `TITAN-BUSINESS-OS/RUFLO.md` (max 6 agents, never a swarm by default).
 
 These rules apply to every request in this repository, from the first message. They are the result of a "rules conversation": treat them as permanent.
 
