@@ -25,6 +25,7 @@ Never slow. The viewer decides in the first second.
 - Word timestamps drive the captions (`remotion-captions`).
 
 ## Build and check
+- **Anatomy gate (David, 23.11.2026)**: every generated still is inspected at full size before it enters the edit — count hands and fingers, check limbs, faces, eyes, teeth and any text. One error = reject and regenerate. Prefer compositions where hands are simple, hidden or out of frame. Re-check the final render frame by frame.
 - Build with Remotion (`remotion-best-practices` routes to the rest); one composition per format.
 - Before showing David: render, extract a contact sheet of frames every 0.5 s and look at it; check no shot exceeds 1.5 s, captions never overflow or overlap the safe zones, audio has no clipping (loudnorm −14 LUFS for social), and the hook works with sound off.
 - Deliver the MP4 file plus a cover frame, with a Hebrew one-line caption and hashtags ready to paste.
