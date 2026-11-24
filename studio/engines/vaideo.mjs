@@ -22,6 +22,7 @@ export default {
   maxSec: 300,
   textOnly: true,
   hebrew: true,
+  capabilities: { t2v: true, i2v: false, image: 'AI images per scene (+1 credit)', lipsync: false, voice: 'narration in 29 languages incl. Hebrew', consistency: false, resolution: '1080p', length: '6–300 s' },
 
   estimate(p) {
     const s = p.brief.lengthSec;
@@ -35,11 +36,11 @@ export default {
     try {
       const a = await api(BASE, k.value, 'GET', '/account');
       const credits = a.credits ?? a.balance ?? a.credit_balance ?? a.data?.credits;
-      return { connected: true, credits, plan: a.plan || 'קרדיטים', raw: a };
+      return { connected: true, verified: credits != null, credits, plan: a.plan || 'קרדיטים', raw: a };
     } catch (e) { return { connected: false, note: e.code === 'auth' ? 'חסר מפתח API' : e.message }; }
   },
 
-  async generate(p, { aspect, work, onProgress = () => {}, signal }) {
+  async generate(p, { aspect, work, onProgress = () => {}, signal, saved = {}, remember = () => {} }) {
     const k = getKey('vaideo').value;
     const body = {
       prompt: p.enginePrompt.slice(0, 4000),
@@ -51,7 +52,9 @@ export default {
       subtitles: true,
       metadata: { source: 'titan-video-studio' },
     };
-    const v0 = await api(BASE, k, 'POST', '/videos', body, { headers: { 'Idempotency-Key': p.jobId + '-vaideo' } });
+    // Idempotency key + saved id: a resumed job never creates (or pays for) a second video.
+    const v0 = saved.id ? { id: saved.id } : await api(BASE, k, 'POST', '/videos', body, { headers: { 'Idempotency-Key': p.jobId + '-vaideo' } });
+    remember({ id: v0.id });
     onProgress(15, 'נשלח ל-Vaideo');
     const v = await poll(() => api(BASE, k, 'GET', `/videos/${v0.id}`), r => ['completed', 'failed'].includes(r.status),
       { everyMs: 15000, signal, onTick: r => onProgress(15 + Math.round((r.progress || 0) * 0.75), 'Vaideo מייצר') });

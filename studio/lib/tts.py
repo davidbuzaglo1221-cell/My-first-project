@@ -14,11 +14,11 @@ def dur(path):
         return 0.0
 
 
-async def one(sem, voice, rate, text, out):
+async def one(sem, voice, rate, text, out, pitch='+0Hz'):
     async with sem:
         for attempt in range(4):
             try:
-                c = edge_tts.Communicate(text, voice, rate=rate, proxy=PROXY)
+                c = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch, proxy=PROXY)
                 await c.save(out + '.tmp.mp3')
                 d = dur(out + '.tmp.mp3')
                 # ~14 Hebrew chars/s at +10%: a file far shorter than that is a cut-off stream.
@@ -34,7 +34,7 @@ async def one(sem, voice, rate, text, out):
 async def main():
     job = json.load(open(sys.argv[1]))
     sem = asyncio.Semaphore(6)
-    ds = await asyncio.gather(*[one(sem, job['voice'], job.get('rate', '+10%'), it['text'], it['out']) for it in job['items']])
+    ds = await asyncio.gather(*[one(sem, it.get('voice', job.get('voice')), it.get('rate', job.get('rate', '+10%')), it['text'], it['out'], it.get('pitch', '+0Hz')) for it in job['items']])
     print(json.dumps({'ok': all(d > 0 for d in ds), 'durations': ds}))
 
 asyncio.run(main())

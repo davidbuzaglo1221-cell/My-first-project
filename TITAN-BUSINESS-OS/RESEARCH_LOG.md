@@ -31,3 +31,8 @@
 - AITuber: REST + MCP רשמיים, 100 קרדיטים חינם, ~35 לסרטון 30 שנ׳ — https://aituber.app/mcp/ , https://aituber.app/api/
 - Vaideo: REST + MCP רשמיים, 5 קרדיטים חינם ב-API, קרדיט = סרטון עד דקה, עברית נתמכת — https://app2.vaideo.org/developers
 - Dreamina: לאתר אין API; Seedance רשמי דרך BytePlus ModelArk, $0.07–0.23 לשנייה — https://docs.byteplus.com/en/docs/modelark/model-pricing , https://github.com/useapi/dreamina-api
+
+## 24.11.2026 — יכולות דמויות במנועי וידאו
+- AITuber: Elements עם תמונת רפרנס (@handle) לעקביות, אווטאר מדבר (סנכרון שפתיים), קליפים מתמונה — app.aituber.app/api/v1/openapi.json
+- Seedance 2.0: עד 9 תמונות רפרנס (role reference_image), תמונה לווידאו, 4–15 שנ׳, 480p–4K — https://docs.byteplus.com/en/docs/modelark/seedance-2-0
+- Canva (מחבר): create-video עם Seedance/h3max ורפרנסים, 5–30 שנ׳; צורך את מגבלת ה-AI של החשבון

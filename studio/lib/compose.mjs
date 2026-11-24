@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { run, probe } from './media.mjs';
-import { ASPECTS } from './planner.mjs';
+import { ASPECTS, STYLES } from './planner.mjs';
+import { VOICES, NARRATOR_VOICE, imagePath } from './characters.mjs';
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 export const FONTS_DIR = path.join(ROOT, 'assets', 'fonts');
@@ -16,12 +17,9 @@ const AENC = ['-c:a', 'aac', '-b:a', '192k', '-ar', '48000'];
 
 // Per-style palettes for the local engine: dark base, one warm or cool accent.
 const PALETTES = {
-  cinematic: [['0x0a0908', '0x3a2614', '0x0a0908'], ['0x070809', '0x1d2a33', '0x070809'], ['0x0b0908', '0x4a2f17', '0x050505']],
-  editorial: [['0x15120f', '0x5a4a38', '0x0e0c0a'], ['0x101010', '0x4a4a4a', '0x080808'], ['0x17130f', '0x6b5640', '0x0d0b09']],
-  animation: [['0x0d0a1a', '0x3b2a6b', '0x0a0812'], ['0x08131a', '0x14506b', '0x060b0e'], ['0x1a0d0a', '0x6b3014', '0x0e0705']],
-  anime: [['0x0a0d1a', '0x2a3b8b', '0x07081a'], ['0x1a0a14', '0x7b2a5b', '0x0e0509'], ['0x0a1a14', '0x1a6b4b', '0x050e0a']],
-  documentary: [['0x0c0d0b', '0x33372a', '0x090a08'], ['0x0d0c0a', '0x3d3426', '0x080706'], ['0x0a0c0d', '0x26343d', '0x060809']],
-  minimal: [['0x0b0b0b', '0x262626', '0x0b0b0b'], ['0x0c0b0a', '0x3a3026', '0x0c0b0a'], ['0x0a0b0c', '0x262c33', '0x0a0b0c']],
+  graphite: [['0x0a0a0c', '0x2a2a33', '0x070708'], ['0x0b0a0e', '0x34303f', '0x070709'], ['0x09090b', '0x22262e', '0x060607']],
+  violet: [['0x0c0814', '0x3b1f6b', '0x07050c'], ['0x0a0812', '0x2b1a5a', '0x060409'], ['0x0e0916', '0x52267a', '0x08050c']],
+  magenta: [['0x12081a', '0x6b1f6b', '0x09050c'], ['0x0c0814', '0x4a1f7b', '0x07050c'], ['0x140a12', '0x7a2a5a', '0x0a0509']],
 };
 
 const esc = s => String(s).replace(/\\/g, '\\\\').replace(/[{}]/g, '').replace(/\n/g, '\\N');
@@ -40,7 +38,11 @@ export function captionsAss(scenes, aspect, { font = 'Heebo Black', serif = 'Fra
     const style = s.role === 'hook' ? 'Hook' : 'Beat';
     // Pop in (scale 82 -> 100 in 140 ms), quick fade out: reads like a hand edit, not a slideshow.
     const fx = `{\\fad(60,90)\\fscx82\\fscy82\\t(0,140,\\fscx100\\fscy100)}`;
-    ev.push(`Dialogue: 0,${ts(st)},${ts(en)},${style},,0,0,0,,${fx}${esc(s.caption)}`);
+    // In a dialogue, a small violet name above the line says who speaks.
+    const name = s.speaker && s.speaker !== 'narrator' && s.role !== 'hook' ? `{\\fs${Math.round(base * 0.62)}\\c&HFDB5C4&}${esc(s.speakerName)}\\N{\\r}` : '';
+    // Over a character, the hook moves to the top third so it never covers the face.
+    const pos = s.role === 'hook' && s.onImage ? `{\\an8\\pos(${Math.round(W / 2)},${Math.round(H * 0.13)})}` : '';
+    ev.push(`Dialogue: 0,${ts(st)},${ts(en)},${style},,0,0,0,,${pos}${fx}${name}${esc(s.caption)}`);
   }
   return head + ev.join('\n') + '\n';
 }
@@ -48,7 +50,8 @@ export function captionsAss(scenes, aspect, { font = 'Heebo Black', serif = 'Fra
 /** Narration per scene. Returns { files[], durations[] } or null when TTS is unreachable. */
 export async function narrate(scenes, dir, { voice = 'en-US-BrianMultilingualNeural', rate = '+12%' } = {}) {
   fs.mkdirSync(dir, { recursive: true });
-  const items = scenes.map((s, i) => ({ text: s.narration, out: path.join(dir, `vo_${String(i).padStart(2, '0')}.mp3`) })).filter(x => x.text);
+  // Every character speaks with its own voice; the narrator keeps the house voice.
+  const items = scenes.map((s, i) => { const v = VOICES[s.voice] || VOICES[NARRATOR_VOICE]; return { text: s.narration, voice: v.voice, rate: v.rate, pitch: v.pitch, out: path.join(dir, `vo_${String(i).padStart(2, '0')}.mp3`) }; }).filter(x => x.text);
   const jobFile = path.join(dir, 'tts.json');
   fs.writeFileSync(jobFile, JSON.stringify({ voice, rate, items }));
   try {
@@ -118,16 +121,25 @@ export async function renderLocal(planObj, { aspect, work, out, withVoice = true
   onProgress(10, 'קריינות');
   const t = trimToTarget(planObj.scenes, withVoice ? await narrate(planObj.scenes, path.join(work, 'vo')) : null, planObj.brief.lengthSec);
   const vo = t.vo;
-  const scenes = fitDurations(t.scenes, vo?.durations, planObj.brief.lengthSec);
-  const pal = PALETTES[planObj.brief.style] || PALETTES.cinematic;
+  const pal = PALETTES[STYLES[planObj.brief.style]?.palette] || PALETTES.violet;
+  const castImg = Object.fromEntries((planObj.cast || []).map(c => [c.id, imagePath(c)]).filter(([, p]) => p && fs.existsSync(p)));
+  const scenes = fitDurations(t.scenes, vo?.durations, planObj.brief.lengthSec).map(s => ({ ...s, onImage: !!castImg[s.speaker] }));
   onProgress(30, 'רקעים');
   const segs = [];
   await Promise.all(scenes.map(async (s, i) => {
     const [c0, c1, c2] = pal[i % pal.length];
     const seg = path.join(work, `seg_${String(i).padStart(2, '0')}.mp4`);
     const zoom = i % 2 ? 'scale=iw*1.08:-1,crop=' + W + ':' + H : 'scale=iw*1.04:-1,crop=' + W + ':' + H;
-    await run('ffmpeg', [...FF, '-f', 'lavfi', '-i', `gradients=s=${W}x${H}:c0=${c0}:c1=${c1}:c2=${c2}:nb_colors=3:speed=${0.012 + (i % 3) * 0.008}:duration=${s.durationSec}:rate=30:type=linear:seed=${i + 7}`,
-      '-vf', `${zoom},noise=alls=4:allf=t,vignette=PI/4.5,format=yuv420p`, ...ENC_FAST, '-t', String(s.durationSec), seg], { timeout: 300000 });
+    const img = castImg[s.speaker];
+    const frames = Math.max(1, Math.round(s.durationSec * 30));
+    if (img) {
+      // The speaker's reference image, with a slow push and a small talking bounce. Programmed motion, not lip sync.
+      await run('ffmpeg', [...FF, '-loop', '1', '-i', img, '-vf', `scale=${W * 2}:${H * 2}:force_original_aspect_ratio=increase,crop=${W * 2}:${H * 2},zoompan=z='1.03+0.0009*on+0.012*abs(sin(on*0.55))':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=${frames}:s=${W}x${H}:fps=30,eq=brightness=-0.04,vignette=PI/5,format=yuv420p`,
+        ...ENC_FAST, '-frames:v', String(frames), seg], { timeout: 300000 });
+    } else {
+      await run('ffmpeg', [...FF, '-f', 'lavfi', '-i', `gradients=s=${W}x${H}:c0=${c0}:c1=${c1}:c2=${c2}:nb_colors=3:speed=${0.012 + (i % 3) * 0.008}:duration=${s.durationSec}:rate=30:type=linear:seed=${i + 7}`,
+        '-vf', `${zoom},noise=alls=4:allf=t,vignette=PI/4.5,format=yuv420p`, ...ENC_FAST, '-t', String(s.durationSec), seg], { timeout: 300000 });
+    }
     segs[i] = seg;
   }));
   const list = path.join(work, 'segs.txt');
@@ -139,7 +151,7 @@ export async function renderLocal(planObj, { aspect, work, out, withVoice = true
 }
 
 /** Stitch raw generated clips (Seedance, Korpi) into one edit with captions, narration and music. */
-export async function assembleClips(clipFiles, planObj, { aspect, work, out, withVoice = true, onProgress = () => {} }) {
+export async function assembleClips(clipFiles, planObj, { aspect, work, out, withVoice = true, keepClipAudio = false, onProgress = () => {} }) {
   fs.mkdirSync(work, { recursive: true });
   const norm = [];
   for (const [i, c] of clipFiles.entries()) { const o = path.join(work, `n_${i}.mp4`); await toAspect(c, o, aspect); norm.push(o); }
@@ -150,7 +162,9 @@ export async function assembleClips(clipFiles, planObj, { aspect, work, out, wit
   const segs = [];
   for (const [i, s] of scenes.entries()) {
     const src = norm[i % norm.length]; const seg = path.join(work, `cs_${i}.mp4`);
-    await run('ffmpeg', [...FF, '-stream_loop', '-1', '-i', src, '-t', String(s.durationSec), '-an', ...ENC_FAST, seg]);
+    // Lip-synced clips keep their own speech; others are silent and get our voices.
+    const aud = keepClipAudio && (await probe(src)).hasAudio ? ['-map', '0:v', '-map', '0:a', ...AENC] : ['-an'];
+    await run('ffmpeg', [...FF, '-stream_loop', '-1', '-i', src, '-t', String(s.durationSec), ...aud, ...ENC_FAST, seg]);
     segs.push(seg);
   }
   const list = path.join(work, 'segs.txt');
@@ -158,7 +172,7 @@ export async function assembleClips(clipFiles, planObj, { aspect, work, out, wit
   const silent = path.join(work, 'video.mp4');
   await run('ffmpeg', [...FF, '-f', 'concat', '-safe', '0', '-i', list, '-c', 'copy', silent]);
   onProgress(80, 'כתוביות ומוזיקה');
-  return finishWith({ video: silent, scenes, vo, planObj, aspect, work, out, burnCaptions: true });
+  return finishWith({ video: silent, scenes, vo, planObj, aspect, work, out, burnCaptions: true, clipAudio: keepClipAudio });
 }
 
 /** Final pass for a finished engine video: right aspect, keep its own voice/music, loudness, faststart. */
@@ -172,10 +186,16 @@ export async function finishEngineVideo(input, { aspect, out, work }) {
   return out;
 }
 
-async function finishWith({ video, scenes, vo, planObj, aspect, work, out, burnCaptions }) {
+async function finishWith({ video, scenes, vo, planObj, aspect, work, out, burnCaptions, clipAudio = false }) {
   const total = +scenes.reduce((a, s) => a + s.durationSec, 0).toFixed(2);
   const music = path.join(MUSIC_DIR, `${planObj.music || 'cinematic'}.m4a`);
-  const audio = await mixAudio({ scenes, vo, music, totalSec: total, out: path.join(work, 'mix.m4a') });
+  let audio = await mixAudio({ scenes, vo, music, totalSec: total, out: path.join(work, 'mix.m4a') });
+  if (clipAudio && audio) {
+    // Speech from the clips on top, music ducked under it.
+    const both = path.join(work, 'mix2.m4a');
+    await run('ffmpeg', [...FF, '-i', video, '-i', audio, '-filter_complex', '[0:a]asplit[s1][s2];[1:a][s1]sidechaincompress=threshold=0.03:ratio=8[d];[d][s2]amix=inputs=2:normalize=0,loudnorm=I=-14:TP=-1.5[a]', '-map', '[a]', ...AENC, both]);
+    audio = both;
+  }
   const assFile = path.join(work, 'captions.ass');
   fs.writeFileSync(assFile, captionsAss(scenes, aspect));
   const vf = burnCaptions ? `ass=${assFile}:fontsdir=${FONTS_DIR}` : 'null';

@@ -29,18 +29,18 @@ export function approvalCovers(approval, engineId, decision) {
 
 const FIT = {
   // How well each engine fits a request. Higher is better. Free/paid is handled separately.
-  vaideo: b => 60 + (b.language === 'he' ? 25 : 0) + (b.lengthSec >= 20 ? 5 : 0),
-  aituber: b => 58 + (b.style === 'animation' || b.style === 'anime' ? 10 : 0) + (b.aspect === '1:1' ? 5 : 0),
-  seedance: b => 70 + (['cinematic', 'documentary', 'editorial'].includes(b.style) ? 15 : 0),
-  korpi: b => 55 + (b.lengthSec <= 15 ? 10 : 0),
+  aituber: (b, p) => 62 + (b.cast?.length ? 20 : 0) + (p?.lipsync ? 25 : 0) + (b.aspect === '1:1' ? 3 : 0),
+  vaideo: (b, p) => 60 + (b.language === 'he' ? 25 : 0) - (b.cast?.length ? 20 : 0) - (p?.lipsync ? 40 : 0),
+  seedance: (b, p) => 70 + (['realistic', 'hyperreal'].includes(b.style) ? 15 : 0) + (b.cast?.length ? 10 : 0),
+  korpi: (b, p) => 55 + (b.lengthSec <= 15 ? 10 : 0),
   local: b => 30 + (b.language === 'he' ? 10 : 0),
 };
-export const fitScore = (id, brief) => (FIT[id] || (() => 0))(brief);
+export const fitScore = (id, brief, plan) => (FIT[id] || (() => 0))(brief, plan);
 
 /** Auto mode: the best free external engines (max 2); the local engine when no external one is free. */
-export function autoPick(rows, brief) {
+export function autoPick(rows, brief, plan) {
   const free = rows.filter(r => r.engine.id !== 'local' && r.decision.kind === 'free')
-    .sort((a, b) => fitScore(b.engine.id, brief) - fitScore(a.engine.id, brief));
+    .sort((a, b) => fitScore(b.engine.id, brief, plan) - fitScore(a.engine.id, brief, plan));
   const picked = free.slice(0, 2).map(r => r.engine.id);
   return picked.length ? picked : ['local'];
 }

@@ -1,7 +1,7 @@
 // Command line for Claude (chat) and for scripts.
 //   node cli.mjs check                         -> test every connection and print the savings table
 //   node cli.mjs quote "רעיון" [--len 30 --style cinematic --aspect 9:16]
-//   node cli.mjs make  "רעיון" [--engines auto|vaideo,local] [--plan plan.json] [--approve vaideo=0.3]
+//   node cli.mjs make  "רעיון" [--engines auto|vaideo,local] [--cast id1,id2] [--lipsync] [--plan plan.json] [--approve vaideo=0.3]
 // Paid generation is refused unless --approve <engine>=<max amount> is given — and that is only ever passed after David said yes.
 import { overview, quote, startJob, getJob } from './lib/studio.mjs';
 import fs from 'node:fs';
@@ -9,7 +9,7 @@ import fs from 'node:fs';
 const [, , cmd, ...rest] = process.argv;
 const args = {}; const pos = [];
 for (let i = 0; i < rest.length; i++) { if (rest[i].startsWith('--')) args[rest[i].slice(2)] = rest[i + 1]?.startsWith('--') || rest[i + 1] === undefined ? true : rest[++i]; else pos.push(rest[i]); }
-const opts = { lengthSec: +(args.len || 30), style: args.style || 'cinematic', aspect: args.aspect || '9:16' };
+const opts = { lengthSec: +(args.len || 30), style: args.style || 'auto', aspect: args.aspect || '9:16', cast: args.cast ? String(args.cast).split(',') : [], lipsync: !!args.lipsync };
 
 if (cmd === 'check') {
   const rows = await overview({ fresh: true });

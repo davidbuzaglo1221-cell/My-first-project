@@ -23,6 +23,7 @@ export default {
   maxSec: 15,
   textOnly: true,
   hebrew: null,
+  capabilities: { t2v: true, i2v: 'animate_image', image: 'generate_image (free models with fair-use cap)', lipsync: 'replace_anything / dub_video', voice: 'ElevenLabs voiceover, dubbing', consistency: 'AI influencer character sheets', resolution: 'up to 1080p', length: 'clips by model (Veo / Kling / Seedance)' },
 
   estimate(p) { return { credits: null, money: null, note: 'המחיר מוצג על ידי Korpi לפני ההפקה (list_video_models)' }; },
 
@@ -31,7 +32,8 @@ export default {
     try {
       const c = client(); await c.connect();
       const a = await c.call('account_status', {});
-      return { connected: true, credits: a.credits ?? a.ai_credits ?? a.balance, plan: a.subscription || a.plan, raw: a };
+      const credits = a.credits ?? a.ai_credits ?? a.balance;
+      return { connected: true, verified: credits != null, credits, plan: a.subscription || a.plan, raw: a };
     } catch (e) { return { connected: false, note: e.code === 'auth' ? 'חסר טוקן MCP' : e.message }; }
   },
 
@@ -47,10 +49,10 @@ export default {
 
   async listModels() { const c = client(); await c.connect(); return c.call('list_video_models', {}); },
 
-  async generate(p, { aspect, work, onProgress = () => {}, signal, model }) {
+  async generate(p, { aspect, work, onProgress = () => {}, signal, model, saved = {}, remember = () => {} }) {
     const c = client(); await c.connect();
-    const job = await c.call('generate_video', { prompt: p.scenes[0].visual, model, duration: 5, aspect_ratio: aspect, resolution: '1080p', sound: false });
-    const id = job.id || job.job_id || job.generation_id;
+    let id = saved.id;
+    if (!id) { const job = await c.call('generate_video', { prompt: p.scenes[0].visual, model, duration: 5, aspect_ratio: aspect, resolution: '1080p', sound: false }); id = job.id || job.job_id || job.generation_id; remember({ id }); }
     onProgress(15, 'נשלח ל-Korpi');
     const r = await poll(() => c.call('get_video_generation', { id }), x => !!(x.video_url || x.url) || /fail|error/i.test(x.status || ''),
       { everyMs: 10000, signal, onTick: () => onProgress(40, 'Korpi מייצר') });

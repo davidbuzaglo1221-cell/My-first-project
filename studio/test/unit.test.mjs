@@ -94,7 +94,8 @@ test("planner: David's own words never go on screen", () => {
 test('planner: rejects empty ideas, clamps length', () => {
   assert.throws(() => analyze('  '));
   assert.equal(analyze('רעיון', { lengthSec: 999 }).lengthSec, 180);
-  assert.equal(captionFrom('אחת שתיים שלוש ארבע חמש שש.'), 'אחת שתיים שלוש ארבע');
+  assert.equal(captionFrom('רגע. אף אחד לא אמר לי שזה היום.'), 'רגע. אף אחד לא אמר לי שזה היום');
+  assert.equal(captionFrom('אחת שתיים שלוש ארבע חמש, שש שבע שמונה תשע.'), 'אחת שתיים שלוש ארבע חמש');
 });
 
 test('mcp: parses JSON and SSE bodies', () => {
