@@ -250,8 +250,8 @@ gl.visible_diffuse = False
 glc = bpy.data.collections.new("glint_receivers")
 glc.objects.link(blade)
 gl.light_linking.receiver_collection = glc
-ease(gl.data, "energy", None, [(1, 0.0), (C2 + 4, 0.0), (C2 + 10, 14.0), (C2 + 44, 14.0), (END, 3.0)])
-ease(gl, "location", 1, [(C2, -0.22), (C2 + 42, 0.2)])
+ease(gl.data, "energy", None, [(1, 0.0), (C2 + 4, 0.0), (C2 + 10, 30.0), (C2 + 44, 30.0), (END, 8.0)])
+ease(gl, "location", 1, [(C2, 0.12), (C2 + 44, 0.78)])
 ease(gl, "rotation_euler", 2, [(1, math.radians(28))])
 
 # strip softbox seen only in reflections: gives the steel something to mirror
@@ -377,10 +377,10 @@ f1 = link_obj(bpy.data.objects.new("f1", None)); f1.location = (-0.048, -0.042, 
 f2 = link_obj(bpy.data.objects.new("f2", None)); f2.location = (0.02, -0.005, 0.006)
 f3 = link_obj(bpy.data.objects.new("f3", None))
 f3.parent = root
-f3.location = (0.06, -0.012, 0.0)
+f3.location = (0.05, -0.004, 0.0)
 ca = cam("cam1", 40, 2.4, [(1, (-0.03, -0.37, 0.46)), (C1, (-0.035, -0.31, 0.39))], f1)
 cb = cam("cam2", 60, 2.4, [(C1, (0.3, -0.32, 0.12)), (C2, (0.29, -0.31, 0.115))], f2)
-cc = cam("cam3", 100, 2.8, [(C2, (0.17, -0.09, 0.075)), (END, (0.15, -0.075, 0.066))], f3)
+cc = cam("cam3", 85, 5.6, [(C2, (0.1, -0.3, 0.24)), (END, (0.09, -0.255, 0.205))], f3)
 for fr, c in ((1, ca), (C1, cb), (C2, cc)):
     m = sc.timeline_markers.new(c.name, frame=fr)
     m.camera = c
