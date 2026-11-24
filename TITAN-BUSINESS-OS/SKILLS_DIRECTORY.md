@@ -18,6 +18,7 @@
 | Marketing Skills | coreyhaines31/marketingskills | MIT | 20 מתוך 53: copywriting, social, offers, pricing, launch, content-strategy, competitors, customer-research, marketing-ideas, ad-creative, video, lead-magnets, seo-audit, ai-seo, cold-email, emails, sales-enablement, marketing-psychology, cro, marketing-plan | נטען ✓ |
 | agent-browser | vercel-labs/agent-browser | Apache-2.0 | CLI גלובלי 0.43 + סקיל | **פתח דף ב-GitHub וקרא כותרת ✓** |
 | Playwright | microsoft/playwright | Apache-2.0 | מותקן מראש בסביבה | ✓ |
+| MuAPI (של Open Generative AI) | SamurAIGPT/muapi-skills, muapi-cli | MIT | 61 סקילים `muapi-*` (וידאו, תמונה, אודיו, Lip Sync, Workflows); שרת MCP ב-`.mcp.json`; `.claude/schema_data.json`. לא הותקן: `muapi-selfie-with-celebrities` (תמונות מזויפות של אנשים אמיתיים) | MCP עלה עם 25 כלים ✓ (24.11.2026). דורש מפתח MuAPI בתשלום. ראו `OPEN_GENERATIVE_AI.md` |
 
 **הערות התקנה:** agent-browser ו-HyperFrames צריכים `AGENT_BROWSER_EXECUTABLE_PATH=/opt/pw-browsers/chromium-1243/chrome-linux64/chrome`. ל-animate: Playwright באותה גרסה כמו הסביבה (1.63.0). אתרים חדשים צריכים אישור ברשימת הרשת של הסביבה.
 

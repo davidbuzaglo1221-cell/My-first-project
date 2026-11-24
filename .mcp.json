@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "muapi": {
+      "command": "muapi",
+      "args": ["mcp", "serve"],
+      "env": {
+        "MUAPI_API_KEY": "${MUAPI_API_KEY:-injected-by-cloud-proxy}"
+      }
+    }
+  }
+}
