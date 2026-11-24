@@ -1,0 +1,5 @@
+# Secrets never leave this machine
+.secrets.json
+.env
+# Rendered videos and work files
+out/

@@ -25,3 +25,9 @@
 
 **כרטיס גוגל לעסק**
 - חינמי מגוגל; סוכנויות מוכרות הקמה וניהול — https://business.google.com/il/business-profile/ , https://www.ebrand.co.il/
+
+## 24.11.2026 — מנועי וידאו AI (Korpi, AITuber, Vaideo, Dreamina)
+- Korpi: MCP רשמי, 37 כלים; תכנון חינם, הפקה בקרדיטים — https://korpi.ai/mcp/manifest.md
+- AITuber: REST + MCP רשמיים, 100 קרדיטים חינם, ~35 לסרטון 30 שנ׳ — https://aituber.app/mcp/ , https://aituber.app/api/
+- Vaideo: REST + MCP רשמיים, 5 קרדיטים חינם ב-API, קרדיט = סרטון עד דקה, עברית נתמכת — https://app2.vaideo.org/developers
+- Dreamina: לאתר אין API; Seedance רשמי דרך BytePlus ModelArk, $0.07–0.23 לשנייה — https://docs.byteplus.com/en/docs/modelark/model-pricing , https://github.com/useapi/dreamina-api

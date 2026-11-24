@@ -1,0 +1,47 @@
+{
+  "engines": {
+    "local": {
+      "connected": true,
+      "credits": null,
+      "plan": "חינם",
+      "note": null,
+      "freeGrant": "ללא הגבלה",
+      "updatedAt": "2026-11-24T09:32:29.047Z"
+    },
+    "korpi": {
+      "connected": false,
+      "credits": null,
+      "plan": null,
+      "note": "חסר טוקן MCP",
+      "freeGrant": 0,
+      "updatedAt": "2026-11-24T09:32:29.504Z"
+    },
+    "vaideo": {
+      "connected": false,
+      "credits": null,
+      "plan": null,
+      "note": "חסר מפתח API",
+      "freeGrant": 5,
+      "updatedAt": "2026-11-24T09:32:29.657Z"
+    },
+    "aituber": {
+      "connected": false,
+      "credits": null,
+      "plan": null,
+      "note": "חסר מפתח API",
+      "freeGrant": 100,
+      "updatedAt": "2026-11-24T09:32:29.780Z"
+    },
+    "seedance": {
+      "connected": false,
+      "credits": null,
+      "plan": null,
+      "note": "חסר מפתח ARK",
+      "freeGrant": 0,
+      "updatedAt": "2026-11-24T09:32:30.108Z"
+    }
+  },
+  "settings": {
+    "allowPaid": false
+  }
+}

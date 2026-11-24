@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "vaideo": {
+      "type": "http",
+      "url": "https://app2.vaideo.org/mcp",
+      "headers": { "Authorization": "Bearer ${VAIDEO_API_KEY:-proxy-injected}" }
+    },
+    "aituber": {
+      "type": "http",
+      "url": "https://mcp.aituber.app",
+      "headers": { "Authorization": "Bearer ${AITUBER_API_KEY:-proxy-injected}" }
+    },
+    "korpi": {
+      "type": "http",
+      "url": "https://backend.korpi.ai/mcp",
+      "headers": { "Authorization": "Bearer ${KORPI_MCP_TOKEN:-proxy-injected}" }
+    }
+  }
+}

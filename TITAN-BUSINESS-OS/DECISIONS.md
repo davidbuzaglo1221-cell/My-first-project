@@ -13,3 +13,6 @@
 | 22.11.2026 | ComfyUI/Wan 2.2/n8n לא הותקנו | אין GPU; n8n צריך שרת קבוע ורישיונו מגביל מכירה |
 | 22.11.2026 | רשת: נוספו export-download.canva.com, cdn.jsdelivr.net, fonts.googleapis.com, fonts.gstatic.com | הורדת תמונות מ-Canva ורינדור HyperFrames |
 | 23.11.2026 | מערכת הפעלה אישית: ליבת זיכרון נטענת אוטומטית, יומן לקחים, כיוון אמנותי לכל פרויקט, חסימת פעולות הרסניות | דוד: סטודיו יצירתי בלי סגנון יחיד; למידה אמיתית דרך קבצים |
+| 24.11.2026 | סטודיו וידאו רב-מנועי `studio/`: רק API/MCP רשמיים; Dreamina דרך BytePlus ModelArk (לאתר אין API); לא useapi.net | בקשת דוד; עקיפת תנאי שימוש אסורה |
+| 24.11.2026 | יצירה בתשלום נחסמת בקוד (402) עד אישור לסכום מדויק; אוטומטי בוחר רק חינם | דוד: לא לבזבז כסף בלי אישור |
+| 24.11.2026 | רשת: נוספו app.aituber.app, mcp.aituber.app, aituber.app, app2.vaideo.org, ark.ap-southeast.bytepluses.com, speech.platform.bing.com | חיבור המנועים וקריינות עברית |

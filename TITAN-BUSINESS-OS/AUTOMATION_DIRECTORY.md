@@ -13,3 +13,4 @@
 ## זמין עכשיו
 - `agent-browser` ו-Playwright: פעולות בדפדפן (באתרים שמותרים ברשת הסביבה).
 - משימות מתוזמנות של Claude Code (בענן).
+- סטודיו הווידאו `studio/` (סקיל `ai-video-studio`): רעיון → סרטון ב-Vaideo / AITuber / Korpi / Dreamina Seedance או מקומי, עם טבלת חיסכון וחסימת תשלום.

@@ -1,0 +1,14 @@
+{
+  "name": "titan-video-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "One idea in, finished MP4 out: plans, routes to Vaideo / AITuber / Korpi / Dreamina Seedance (official APIs only) or the free local engine, composes captions, music and narration, and guards every paid call.",
+  "type": "module",
+  "scripts": {
+    "start": "NODE_USE_ENV_PROXY=1 node server.mjs",
+    "test": "node --test test/*.test.mjs",
+    "e2e": "node test/e2e.mjs",
+    "check": "NODE_USE_ENV_PROXY=1 node cli.mjs check"
+  },
+  "engines": { "node": ">=20" }
+}
