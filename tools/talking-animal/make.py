@@ -35,7 +35,16 @@ def s2v(image, audio, res, tries=3):
     for i in range(tries):
         try:
             c = Client(SPACE, verbose=False)
-            r = c.predict(ref_img=handle_file(image), audio=handle_file(audio), resolution=res, api_name="/predict")
+            j = c.submit(ref_img=handle_file(image), audio=handle_file(audio), resolution=res, api_name="/predict")
+            t, last = time.time(), None
+            while not j.done():  # free public queue: often 30-90 min, so log the place in line
+                s = j.status()
+                k = (str(s.code).split(".")[-1], s.rank)
+                if k != last:
+                    print(f"[s2v] {int(time.time() - t)}s {k[0]} place={k[1]}", flush=True)
+                    last = k
+                time.sleep(10)
+            r = j.result()
             return r["video"] if isinstance(r, dict) else r
         except Exception as e:  # queue full / quota / transient
             last = e

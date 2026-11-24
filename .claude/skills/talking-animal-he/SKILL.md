@@ -27,6 +27,8 @@ Every step is free. Never switch to a paid API (MuAPI etc.) without David's expl
 ## 4. Lip sync + motion (free)
 `/home/user/.media-venv/bin/python tools/talking-animal/make.py --image char.png --audio voice.mp3 --out talk.mp4`
 - Uses the official `Wan-AI/Wan2.2-S2V` Hugging Face Space (free public queue, 480P). The queue can be long (20+ jobs): run it in the background and keep working.
+- Measured 24.11.2026: the queue moves ~1 place per 4 min (22–24 waiting → ~1.5 h per job). Submit early, in the background (Bash `run_in_background`, timeout 2 h), batch several clips per session.
+- Checked and rejected as the default: `meituan-longcat/LongCat-Video-Avatar-1.5-Demo` (better model, ZeroGPU) — one 5 s clip requests 480 s of GPU; anonymous quota refuses, a free HF account likely too (PRO is paid). LivePortrait Spaces need a driving video, not audio. Wan2.2-S2V's own GitHub repo needs a big GPU.
 - If the Space is down or refuses: `tools/talking-animal/puppet.py` (offline, CPU) — Claude looks at the image and passes the mouth box `--mouth x1,y1,x2,y2`. It is a weak fallback (jaw-flap look); tell David honestly, don't present it as the real thing.
 
 ## 5. Finish (fast-video standard)
