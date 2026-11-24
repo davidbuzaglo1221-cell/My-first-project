@@ -25,6 +25,16 @@ Every step is free. Never switch to a paid API (MuAPI etc.) without David's expl
 - Listen-check: duration sane, no truncation (`ffprobe`), Hebrew ASR if available.
 
 ## 4. Lip sync + motion (free)
+**Default that works (24.11.2026, proven on `output/talking-dog-en/talking-dog-en.mp4`): cartoon/3D character + `jaw.py`.**
+- Make the character in 3D-animated-film style with visible lips, mouth closed or slightly open (local `image.sh`).
+- Zoom on the mouth, read off centre x, upper-lip y and half width, then:
+  `python tools/talking-animal/jaw.py --image char.png --audio voice.wav --out jaw.mp4 --mouth CX,Y0,HALFW --drop ~1.1×HALFW --chin ~1.8×HALFW`
+  Check tiled mouth crops: oval opening, no line artifacts, nothing moving outside the muzzle.
+- Captions in any language timed from the audio: `captions_asr.py --audio voice.wav --script "..." --out cap.ass --accent "word1,word2"` (prints accent times → punch-in for `finish.sh`).
+- Character voice: edge-tts (en: `en-US-AndrewNeural`/`BrianNeural`; he: Avri/Hila) + `rubberband=pitch=1.2–1.3:formant=shifted` for a cartoon timbre; verify with faster-whisper that every word is still understood and measure median F0.
+- **Never use MoDA on an animal**: it pasted a human face onto the dog's muzzle (24.11.2026). MoDA is for human faces only.
+
+Older / unreliable routes:
 `/home/user/.media-venv/bin/python tools/talking-animal/make.py --image char.png --audio voice.mp3 --out talk.mp4`
 - Uses the official `Wan-AI/Wan2.2-S2V` Hugging Face Space (free public queue, 480P). The queue can be long (20+ jobs): run it in the background and keep working.
 - **Measured 24.11.2026: unreliable.** Two full runs reached the front of the queue and then failed with an empty error (the Space forwards to a paid Alibaba backend that seems to refuse). Treat it as "may work", never promise a delivery time from it. The queue moves ~1 place per 4 min (22–24 waiting → ~1.5 h per job). Submit early, in the background (Bash `run_in_background`, timeout 2 h), batch several clips per session.
