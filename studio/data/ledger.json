@@ -6,7 +6,13 @@
       "plan": "חינם",
       "note": null,
       "freeGrant": "ללא הגבלה",
-      "updatedAt": "2026-11-24T09:32:29.047Z"
+      "updatedAt": "2026-11-24T09:37:28.910Z",
+      "generations": 1,
+      "spentCredits": 0,
+      "spentMoney": 0,
+      "lastQuality": 93,
+      "lastDurationSec": 15.33,
+      "lastResolution": "1080x1920"
     },
     "korpi": {
       "connected": false,
@@ -14,7 +20,7 @@
       "plan": null,
       "note": "חסר טוקן MCP",
       "freeGrant": 0,
-      "updatedAt": "2026-11-24T09:32:29.504Z"
+      "updatedAt": "2026-11-24T09:37:29.345Z"
     },
     "vaideo": {
       "connected": false,
@@ -22,7 +28,7 @@
       "plan": null,
       "note": "חסר מפתח API",
       "freeGrant": 5,
-      "updatedAt": "2026-11-24T09:32:29.657Z"
+      "updatedAt": "2026-11-24T09:37:29.675Z"
     },
     "aituber": {
       "connected": false,
@@ -30,7 +36,7 @@
       "plan": null,
       "note": "חסר מפתח API",
       "freeGrant": 100,
-      "updatedAt": "2026-11-24T09:32:29.780Z"
+      "updatedAt": "2026-11-24T09:37:29.694Z"
     },
     "seedance": {
       "connected": false,
@@ -38,7 +44,7 @@
       "plan": null,
       "note": "חסר מפתח ARK",
       "freeGrant": 0,
-      "updatedAt": "2026-11-24T09:32:30.108Z"
+      "updatedAt": "2026-11-24T09:37:29.949Z"
     }
   },
   "settings": {
