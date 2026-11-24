@@ -1,1 +1,4 @@
 ascend/tsconfig.tsbuildinfo
+
+# rendered videos are delivered as files, not versioned
+studio-out/**/*.mp4
