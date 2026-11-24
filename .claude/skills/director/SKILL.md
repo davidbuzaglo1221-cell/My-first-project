@@ -26,6 +26,8 @@ Run `art-direction`: 5-line brief, one written direction ("Direction: X, because
 ## 3. Route to skills
 | Request | Skills |
 |---|---|
+| Talking animal / talking character / mascot that speaks (Hebrew) | `talking-animal-he` (free: local image + Hebrew neural voice + Wan2.2-S2V Space) + `fast-video` for the edit |
+| Free image generation | `tools/local-ai/image.sh` (Z-Image Turbo on CPU, free, ~9 min) |
 | Video, reel, promo, clip | `fast-video` + `david-brand`; engine per `TITAN-BUSINESS-OS/VIDEO_STYLE_GUIDE.md` (Remotion, `code-cartoon`, `animate`, `hyperframes`) |
 | Website, brand identity, product photo, ad, CGI/3D | `art-direction` first, then `impeccable`, `canvas-design`, `frontend-design`; Three.js via `code-cartoon` for 3D; image tools only with David's OK on credits |
 | Carousel, post, landing page, flyer | `social-content`, `canvas-design`, `theme-factory`, `frontend-design` |
@@ -35,6 +37,10 @@ Run `art-direction`: 5-line brief, one written direction ("Direction: X, because
 | Money, business idea, opportunity | `money-engine` (+ `strategist` agent) |
 | Marketing, campaign, content plan | `marketer` agent, marketing skills |
 | Agent (Instagram replies etc.) | agree tone and limits with David first; never act toward real people without that |
+
+**Free first (DECISIONS 24.11.2026):** only free tools unless David explicitly approves a paid one. Installed-but-paid: MuAPI (MCP/CLI/`muapi-*` skills) — read its recipes for ideas, never run them without OK.
+
+**Capability, not a one-off:** David asks for general abilities ("replace every AI video tool"). When a request reveals a missing ability, build it as a reusable skill + script in `tools/`, prove it with a real output, and add it here — so the next request of that kind is one command.
 
 If a needed skill is missing: search GitHub (official vendor repos first), read it fully, install under `.claude/skills/`, add it to this table and to CLAUDE.md, commit.
 
