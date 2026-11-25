@@ -168,7 +168,7 @@ def search(q: str = "", limit: int = 20, **filters) -> list[dict]:
         if p["terms"] and not matched:
             continue
         if p["terms"]:
-            s *= 0.6 + 0.4 * matched / len(p["terms"])  # reward matching more of the query
+            s *= 0.35 + 0.65 * matched / len(p["terms"])  # reward matching more of the query
         for c in p["cats"]:
             if c in r.get("categories", []):
                 s += 1.5

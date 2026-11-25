@@ -197,7 +197,7 @@ function run() {
       s += w * idf * tf * (k1 + 1) / (tf + k1 * (1 - b + b * dl / AVG));
     }
     if (keys.length && !matched) continue;
-    if (keys.length) s *= .6 + .4 * matched / keys.length;
+    if (keys.length) s *= .35 + .65 * matched / keys.length;
     for (const c of p.cats) if (r.c.includes(c)) s += 1.5;
     if (m.tone && r.T === m.tone[0]) s += 1.2;
     if (m.low) s += 3 * (r.lo || 0);

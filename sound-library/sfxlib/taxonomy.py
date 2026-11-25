@@ -188,7 +188,8 @@ def classify(rec: dict) -> list[str]:
     if not scores:
         return ["misc"]
     best = max(scores.values())
-    return [c for c, s in sorted(scores.items(), key=lambda x: -x[1]) if s >= max(2, best * 0.5)][:4]
+    ranked = sorted(scores.items(), key=lambda x: -x[1])
+    return [c for c, s in ranked if s >= max(2, best * 0.5)][:4] or [ranked[0][0]]
 
 
 def styles(rec: dict) -> list[str]:

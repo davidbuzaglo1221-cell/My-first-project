@@ -173,9 +173,9 @@ def plan(video: str, preset: str = "cinematic", music: str | None = None, densit
 
     D = a["duration"]
     # hook: hit (+ sub) on frame 0
-    cue(0.0, pk.pick(P["hook"], max_dur=3), "hit", -1, align="start", why="hook")
+    cue(0.0, pk.pick(P["hook"], max_dur=3), "hit", -5, align="start", why="hook")
     if P["sub"]:
-        cue(0.0, pk.pick(P["sub"], max_dur=4), "sub", -3, align="start", why="hook sub")
+        cue(0.0, pk.pick(P["sub"], max_dur=4), "sub", -6, align="start", why="hook sub")
     cuts = [c for c in a["cuts"] if 0.3 < c < D - 0.3]
     gaps = np.diff([0.0] + cuts + [D]) if cuts else [D]
     for i, c in enumerate(cuts):
@@ -200,7 +200,7 @@ def plan(video: str, preset: str = "cinematic", music: str | None = None, densit
             cues.append({"t": round(climax, 3), "sound": r["id"], "layer": "fx", "gain_db": -4,
                          "align": "end", "why": "riser into climax"})
     if D > 3:
-        cue(max(0.0, D - 0.6), pk.pick(P["end"], max_dur=4), "hit", -2, align="start", why="end")
+        cue(max(0.0, D - 0.6), pk.pick(P["end"], max_dur=4), "hit", 0, align="start", why="end")
     if P.get("ambience"):
         cue(0.0, pk.pick(P["ambience"], min_dur=4), "ambience", 0, align="start", fade_in=0.5, fade_out=1.0,
             trim=[0, D], why="bed")

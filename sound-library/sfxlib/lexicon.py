@@ -69,7 +69,7 @@ HE = {
     "נהר": "river stream", "אש": "fire", "להבה": "flame fire", "בוער": "burning fire", "מדורה": "campfire fire crackle", "שלג": "snow",
     "עלים": "leaves", "לילה": "night", "צרצרים": "crickets",
     # animals
-    "חיה": "animal", "חיות": "animals animal", "כלב": "dog bark", "נביחה": "bark dog", "חתול": "cat meow", "מיאו": "meow cat",
+    "חיה": "animal dog cat bird parrot monkey cow horse goat", "חיות": "animals animal dog cat bird", "כלב": "dog bark", "נביחה": "bark dog", "חתול": "cat meow", "מיאו": "meow cat",
     "ציפור": "bird chirp", "ציפורים": "birds bird", "ציוץ": "chirp tweet bird", "אריה": "lion roar", "שאגה": "roar", "זאב": "wolf howl",
     "יללה": "howl", "פרה": "cow moo", "סוס": "horse neigh", "תרנגול": "rooster", "תרנגולת": "chicken", "חזיר": "pig oink",
     "כבשה": "sheep", "עז": "goat", "ברווז": "duck quack", "צפרדע": "frog", "קוף": "monkey", "פיל": "elephant", "ינשוף": "owl",

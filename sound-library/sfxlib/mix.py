@@ -155,28 +155,42 @@ def render(sheet: dict, out: str | Path, recs: dict | None = None) -> dict:
         chains.append(f"{final}[vo]amix=inputs=2:normalize=0[pre]")
         final = "[pre]"
     target = sheet.get("target_lufs", -14)
-    chains.append(f"{final}loudnorm=I={target}:TP=-1.0:LRA=11,aresample=48000[out]")
+    chains.append(f"{final}anull[out]")
 
     out = Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    cmd = ["ffmpeg", "-y", "-v", "error", *inputs]
     video = sheet.get("video")
     if video:
-        cmd += ["-i", str(video)]
-    cmd += ["-filter_complex", ";".join(chains), "-map", "[out]"]
+        dur = probe_dur(Path(video))
+    # pass 1: the raw mix
+    pre = out.with_name(out.stem + ".premix.wav")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", *inputs, "-filter_complex", ";".join(chains), "-map", "[out]",
+                    "-t", f"{dur + (0 if video else 0.5):.3f}", "-c:a", "pcm_f32le", str(pre)], check=True)
+    # pass 2: measured loudness -> exact gain, then a true-peak limiter at -1 dBTP
+    meas = loudness(pre)
+    gain = target - meas if meas > -70 else 0.0
+    af = f"volume={gain:.2f}dB,alimiter=limit=0.89:attack=2:release=60:level=disabled"
+    cmd = ["ffmpeg", "-y", "-v", "error", "-i", str(pre)]
     if video:
-        cmd += ["-map", f"{len(inputs) // 2}:v:0", "-c:v", "copy", "-shortest"]
+        cmd += ["-i", str(video), "-map", "0:a", "-map", "1:v:0", "-c:v", "copy", "-shortest"]
+    cmd += ["-af", af]
+    if video or out.suffix in (".m4a", ".aac", ".mp4"):
         cmd += ["-c:a", "aac", "-b:a", "256k"]
-    elif out.suffix in (".m4a", ".aac", ".mp4"):
-        cmd += ["-c:a", "aac", "-b:a", "256k"]
-    if dur and not video:
-        cmd += ["-t", f"{dur + 0.5:.3f}"]
     cmd.append(str(out))
     subprocess.run(cmd, check=True)
+    pre.unlink(missing_ok=True)
     credits = sorted({r["credit"] for r in report if r.get("credit")})
     if credits:
         out.with_suffix(".CREDITS.txt").write_text("Sound credits (CC-BY):\n" + "\n".join(credits) + "\n")
-    return {"out": str(out), "cues": report, "credits": credits}
+    return {"out": str(out), "cues": report, "credits": credits, "lufs": round(loudness(out), 1)}
+
+
+def loudness(path: Path) -> float:
+    """Integrated loudness (EBU R128, LUFS) of a file."""
+    r = subprocess.run(["ffmpeg", "-v", "info", "-i", str(path), "-af", "ebur128", "-f", "null", "-"],
+                       capture_output=True, text=True)
+    vals = [ln for ln in r.stderr.splitlines() if ln.strip().startswith("I:")]
+    return float(vals[-1].split()[1]) if vals else -70.0
 
 
 def probe_dur(path: Path) -> float:

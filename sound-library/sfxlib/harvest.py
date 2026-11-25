@@ -223,6 +223,16 @@ def freesound(queries: list[str], pages: int = 2, min_rating: float = 3.0, min_d
 OGA = "https://opengameart.org"
 
 
+def oga_meta(h: str) -> tuple[str, str, list[str], str]:
+    t = re.search(r'og:title" content="([^"]+)"', h) or re.search(r"<title>([^|<]+)", h)
+    title = html.unescape(t.group(1)).strip() if t else "OpenGameArt sound"
+    a = re.search(r'field-name-author-submitter.*?<a href="/users/[^"]+">([^<]+)</a>', h, re.S)
+    author = html.unescape(a.group(1)).strip() if a else "unknown"
+    tags = [html.unescape(x).lower() for x in re.findall(r'field_art_tags_tid=[^"]*"[^>]*>([^<]+)</a>', h)]
+    d = re.search(r'name="description" content="([^"]*)"', h)
+    return title, author, tags, html.unescape(d.group(1))[:300] if d else ""
+
+
 def opengameart(pages: int = 12) -> list[dict]:
     """Collections of CC0 sound effects. Each entry can hold zips with many files."""
     entries = []
@@ -248,13 +258,11 @@ def opengameart(pages: int = 12) -> list[dict]:
         lic_txt = " ".join(lic)
         if "CC0" not in lic_txt or any(x in lic_txt for x in ("GPL", "BY-SA", "OGA-BY")) and "CC0" not in lic_txt:
             return []
-        title = html.unescape((re.search(r'<h2>([^<]+)</h2>', h) or re.search(r'<title>([^|<]+)', h)).group(1)).strip()
-        author = (re.search(r'field-name-author-submitter.*?<a href="/users/[^"]+">([^<]+)</a>', h, re.S) or [None, "unknown"])[1]
-        tags = [t.lower() for t in re.findall(r'href="/art-search\?keys=([^"&]+)"', h)]
+        title, author, tags, desc = oga_meta(h)
         files = re.findall(r'href="(https://opengameart\.org/sites/default/files/[^"]+\.(?:zip|ogg|wav|mp3|flac))"', h)
         rows = []
         for f in dict.fromkeys(files):
-            rows.append({"entry": path, "title": title, "author": html.unescape(author), "tags": tags, "file": f})
+            rows.append({"entry": path, "title": title, "author": author, "tags": tags, "file": f, "desc": desc})
         return rows
 
     with ThreadPoolExecutor(6) as ex:
@@ -265,7 +273,7 @@ def opengameart(pages: int = 12) -> list[dict]:
                     "id": f"oga:{r['entry'].rsplit('/', 1)[1]}/{fname}", "source": "opengameart",
                     "source_id": f"{r['entry']}/{fname}", "title": f"{r['title']} - {Path(fname).stem}",
                     "tags": sorted(set(urllib.parse.unquote_plus(t) for t in r["tags"])), "author": r["author"],
-                    "page_url": OGA + r["entry"], "download_url": r["file"], "preview_url": None,
+                    "page_url": OGA + r["entry"], "download_url": r["file"], "preview_url": None, "description": r["desc"],
                     "archive": fname.lower().endswith(".zip"), **license_fields("CC0"),
                 })
     return out
