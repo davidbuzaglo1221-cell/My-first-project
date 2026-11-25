@@ -1,0 +1,141 @@
+#!/usr/bin/env python3
+"""sfx — the sound library CLI.
+
+  sfx stats                                   counts per source / category / licence
+  sfx harvest [sfxkit mixkit kenney freesound opengameart]   discover sounds (metadata into manifest)
+  sfx sync [--source S] [--limit N]           download + analyse + dedupe (also restores a fresh container)
+  sfx search "מעבר קולנועי עמוק" [--max-dur 2] [--loudness loud|medium|soft] [--style cinematic]
+             [--quality 3.5] [--category whoosh] [--source mixkit] [--no-attribution] [-n 15] [--json]
+  sfx info <id>                               everything about one sound
+  sfx export <dir> <id>... [--format wav]     copy sounds into a project + CREDITS/LICENSES file
+  sfx mix <cues.json> <out.wav|.mp4>          render a cue sheet (layers, EQ, fades, ducking, loudness)
+  sfx auto <video.mp4> <out.mp4> [--preset cinematic|viral|comedy|clean|horror] [--music m.mp3] [--voice vo.wav]
+                                              detect cuts/motion/flashes/beats, place sounds, mix onto the video
+  sfx remotion <cues.json> <remotion-project-dir>  copy the cue sheet's sounds to public/sfx + write sfx-cues.json
+  sfx preview                                 rebuild the preview page data (preview/)
+"""
+import argparse
+import json
+import shutil
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from sfxlib import common, library  # noqa: E402
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sp = ap.add_subparsers(dest="cmd", required=True)
+    sp.add_parser("stats")
+    h = sp.add_parser("harvest"); h.add_argument("sources", nargs="*", default=["sfxkit", "mixkit", "kenney", "freesound", "opengameart"])
+    s = sp.add_parser("sync"); s.add_argument("--source", action="append"); s.add_argument("--limit", type=int); s.add_argument("--workers", type=int, default=12)
+    q = sp.add_parser("search"); q.add_argument("query", nargs="?", default="")
+    q.add_argument("--min-dur", type=float); q.add_argument("--max-dur", type=float)
+    q.add_argument("--loudness", choices=["soft", "medium", "loud"]); q.add_argument("--style"); q.add_argument("--quality", type=float)
+    q.add_argument("--category"); q.add_argument("--source"); q.add_argument("--tone", choices=["dark", "mid", "bright"])
+    q.add_argument("--no-attribution", action="store_true"); q.add_argument("-n", type=int, default=15); q.add_argument("--json", action="store_true")
+    i = sp.add_parser("info"); i.add_argument("id")
+    e = sp.add_parser("export"); e.add_argument("dir"); e.add_argument("ids", nargs="+"); e.add_argument("--format", choices=["wav", "orig"], default="orig")
+    m = sp.add_parser("mix"); m.add_argument("cues"); m.add_argument("out")
+    a = sp.add_parser("auto"); a.add_argument("video"); a.add_argument("out"); a.add_argument("--preset", default="cinematic")
+    a.add_argument("--music"); a.add_argument("--voice"); a.add_argument("--density", type=float, default=1.0)
+    r = sp.add_parser("remotion"); r.add_argument("cues"); r.add_argument("project")
+    sp.add_parser("preview")
+    args = ap.parse_args()
+
+    if args.cmd == "stats":
+        print(json.dumps(library.stats(), indent=1, ensure_ascii=False))
+    elif args.cmd == "harvest":
+        from sfxlib import harvest
+        harvest.run(args.sources)
+    elif args.cmd == "sync":
+        print(library.sync(limit=args.limit, workers=args.workers, sources=args.source))
+    elif args.cmd == "search":
+        from sfxlib.search import search
+        res = search(args.query, limit=args.n, min_dur=args.min_dur, max_dur=args.max_dur, loudness=args.loudness,
+                     style=args.style, min_quality=args.quality, category=args.category, source=args.source,
+                     no_attribution=args.no_attribution, tone=args.tone)
+        if args.json:
+            print(json.dumps(res, ensure_ascii=False, indent=1))
+            return
+        for x in res:
+            print(f"{x['score']:6.2f}  {x['id']:<44.44} {x['title'][:42]:<42} {x['duration']:6.2f}s  q{x['quality']:.1f}  "
+                  f"{x['loudness_class']:<6} {','.join(x['categories'][:2]):<20} {x['license']}")
+    elif args.cmd == "info":
+        rec = common.load_manifest().get(args.id)
+        if not rec:
+            sys.exit("not found")
+        rec.pop("fingerprint", None)
+        print(json.dumps(rec, indent=1, ensure_ascii=False))
+    elif args.cmd == "export":
+        export(args.dir, args.ids, args.format)
+    elif args.cmd == "mix":
+        from sfxlib import mix
+        print(json.dumps(mix.render_file(args.cues, args.out), indent=1, ensure_ascii=False))
+    elif args.cmd == "auto":
+        from sfxlib import autoscore
+        res = autoscore.run(args.video, args.out, args.preset, args.music, args.voice, args.density)
+        print(json.dumps(res, indent=1, ensure_ascii=False))
+    elif args.cmd == "remotion":
+        remotion(args.cues, args.project)
+    elif args.cmd == "preview":
+        library.build_index()
+        from sfxlib import lexicon
+        lexicon.build()
+        print("ok: data/index.json, data/lexicon.json")
+
+
+def export(dest, ids, fmt="orig"):
+    import subprocess
+    recs = common.load_manifest()
+    d = Path(dest)
+    d.mkdir(parents=True, exist_ok=True)
+    lines = []
+    for i in ids:
+        r = recs[i]
+        src = common.ROOT / r["file"]
+        name = f"{common.slug(r['title'], 40)}__{common.slug(i, 30)}"
+        if fmt == "wav" and src.suffix != ".wav":
+            out = d / f"{name}.wav"
+            subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(src), "-ar", "48000", str(out)], check=True)
+        else:
+            out = d / f"{name}{src.suffix}"
+            shutil.copy2(src, out)
+        lines.append(f"{out.name}\t{r['title']}\t{r['source']}\t{r['license']}\t{r['license_url']}\t{r.get('author', '')}\t"
+                     f"{r.get('page_url', '')}\t{r.get('credit') or ''}")
+        print(out)
+    with open(d / "SOUND_LICENSES.tsv", "a") as f:
+        for ln in lines:
+            f.write(ln + "\n")
+
+
+def remotion(cues_path, project):
+    """Copy every sound a cue sheet uses into <project>/public/sfx and write src/sfx-cues.json for <SfxTrack/>."""
+    sheet = json.loads(Path(cues_path).read_text())
+    recs = common.load_manifest()
+    proj = Path(project)
+    pub = proj / "public" / "sfx"
+    pub.mkdir(parents=True, exist_ok=True)
+    fps = sheet.get("fps", 30)
+    out = []
+    for c in sheet["cues"]:
+        r = recs[c["sound"]]
+        src = common.ROOT / r["file"]
+        dst = pub / f"{common.slug(c['sound'], 60)}{src.suffix}"
+        if not dst.exists():
+            shutil.copy2(src, dst)
+        sync = 0 if c.get("align") == "start" else (r.get("sync_at") or 0)
+        start = max(0.0, c["t"] - sync / c.get("rate", 1.0))
+        out.append({"src": f"sfx/{dst.name}", "from": round(start * fps), "durationInFrames": max(1, round(r["duration"] / c.get("rate", 1.0) * fps)),
+                    "volumeDb": c.get("gain_db", 0), "fadeIn": c.get("fade_in", 0), "fadeOut": c.get("fade_out", 0),
+                    "playbackRate": c.get("rate", 1.0), "layer": c.get("layer", "fx"), "id": c["sound"],
+                    "license": r["license"], "credit": r.get("credit")})
+    (proj / "src").mkdir(exist_ok=True)
+    (proj / "src" / "sfx-cues.json").write_text(json.dumps({"fps": fps, "cues": out}, indent=1, ensure_ascii=False))
+    print(f"{len(out)} cues -> {proj / 'src' / 'sfx-cues.json'}; files in {pub}")
+
+
+if __name__ == "__main__":
+    main()

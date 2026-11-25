@@ -1,0 +1,428 @@
+<title>חדר הסאונד</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700&family=Heebo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single mixing-desk column — search strip, category rail, then hairline rows like a track list. Dark by choice (studio). */
+:root{
+  --bg:#0f0e0d; --panel:#171615; --raise:#1f1d1b; --line:#2b2825; --fg:#ece7e1; --dim:#9b948b; --faint:#6a645d;
+  --amber:#e5a54b; --amber-dim:#6b4d24; --ok:#7fb48a; --warn:#d98b6a;
+  --display:"Frank Ruhl Libre", "Times New Roman", serif; --body:"Heebo", "Arial Hebrew", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--body);font-size:15px;line-height:1.45;direction:rtl;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 120px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:860px;margin:0 auto}
+header{padding-block:28px 6px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,7vw,52px);letter-spacing:-.01em;margin:0;line-height:1.05;text-wrap:balance}
+.meta{font-family:var(--mono);font-size:12px;color:var(--dim);margin-top:10px;display:flex;flex-wrap:wrap;gap:4px 14px;direction:rtl}
+.meta b{color:var(--fg);font-weight:500}
+.sticky{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 8px;border-bottom:1px solid var(--line)}
+.search{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:0 14px;height:50px}
+.search:focus-within{border-color:var(--amber-dim)}
+.search svg{flex:none;color:var(--dim)}
+#q{flex:1;min-width:0;background:none;border:0;color:var(--fg);font:500 17px var(--body);outline:none;direction:rtl}
+#q::placeholder{color:var(--faint)}
+.icon-btn{background:none;border:0;color:var(--dim);font:500 13px var(--body);cursor:pointer;padding:6px 8px;border-radius:8px}
+.icon-btn:focus-visible,.chip:focus-visible,.row:focus-visible,button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.examples{display:flex;gap:8px;overflow-x:auto;padding-block:10px 2px;scrollbar-width:none}
+.examples::-webkit-scrollbar,.rail::-webkit-scrollbar{display:none}
+.ex{flex:none;background:none;border:1px dashed var(--line);color:var(--dim);border-radius:999px;padding:5px 12px;font:13px var(--body);cursor:pointer}
+.ex:hover{color:var(--fg);border-color:var(--faint)}
+.rail{display:flex;gap:6px;overflow-x:auto;padding-block:10px 4px;scrollbar-width:none}
+.chip{flex:none;display:inline-flex;gap:6px;align-items:baseline;background:var(--panel);border:1px solid var(--line);color:var(--fg);
+  border-radius:999px;padding:6px 12px;font:500 13.5px var(--body);cursor:pointer;white-space:nowrap}
+.chip small{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.chip[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:#1a1208}
+.chip[aria-pressed="true"] small{color:#4a3413}
+.sticky:has(.filters:not([hidden])){position:static}
+.filters{display:grid;gap:12px;padding-block:12px 6px}
+.filters[hidden]{display:none}
+.frow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.frow>span{font-size:12px;color:var(--dim);width:56px;flex:none}
+.seg{display:flex;gap:4px;flex-wrap:wrap}
+.seg button{background:var(--panel);border:1px solid var(--line);color:var(--dim);border-radius:8px;padding:4px 10px;font:13px var(--body);cursor:pointer}
+.seg button[aria-pressed="true"]{color:var(--fg);border-color:var(--amber-dim);background:var(--raise)}
+.status{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--dim);padding-block:10px 2px}
+.list{list-style:none;margin:0;padding:0}
+.row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding-block:11px;border-bottom:1px solid var(--line);cursor:pointer}
+.row:hover .ttl{color:#fff}
+.play{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--fg);display:grid;place-items:center;cursor:pointer;padding:0}
+.row.playing .play{background:var(--amber);border-color:var(--amber);color:#1a1208}
+.play.ext{color:var(--dim);font-size:15px;text-decoration:none}
+.mid{min-width:0;display:grid;gap:4px}
+.ttl{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:auto;text-align:right}
+.sub{display:flex;gap:8px;align-items:center;font-size:12px;color:var(--faint);min-width:0;overflow:hidden;white-space:nowrap}
+.sub .cat{color:var(--dim)}
+canvas.wf{width:100%;height:22px;display:block}
+.right{display:grid;justify-items:end;gap:4px;font-family:var(--mono);font-size:12px;color:var(--dim)}
+.badge{font-family:var(--body);font-size:10.5px;border:1px solid var(--line);border-radius:5px;padding:0 5px;color:var(--faint)}
+.badge.by{color:var(--warn);border-color:#4a3127}
+.badge.cc0{color:var(--ok);border-color:#2c4331}
+.lvl{display:inline-flex;gap:2px;align-items:flex-end;height:10px}
+.lvl i{width:3px;background:var(--line);border-radius:1px}
+.lvl i.on{background:var(--amber)}
+.more{display:block;margin:18px auto;background:var(--panel);border:1px solid var(--line);color:var(--fg);border-radius:10px;padding:10px 22px;font:500 14px var(--body);cursor:pointer}
+.empty{padding:40px 0;color:var(--dim);text-align:center}
+/* sheet */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20}
+.sheet{position:fixed;inset:auto 0 0 0;z-index:21;background:var(--panel);border-top:1px solid var(--line);border-radius:18px 18px 0 0;
+  max-height:78vh;overflow:auto;padding:18px max(18px,env(safe-area-inset-left,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-right,0px))}
+.sheet .in{max-width:760px;margin:0 auto;display:grid;gap:14px}
+.sheet h2{font-family:var(--display);font-size:26px;margin:0;line-height:1.15;direction:auto;text-align:right;overflow-wrap:anywhere}
+.shead{display:flex;gap:12px;align-items:flex-start;justify-content:space-between}
+.shead h2{min-width:0}
+.close{flex:none;border:1px solid var(--line)}
+.sheet canvas{width:100%;height:64px}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px 18px}
+.kv div{display:grid;gap:2px}
+.kv span{font-size:11.5px;color:var(--faint)}
+.kv b{font-family:var(--mono);font-weight:500;font-size:13.5px;overflow-wrap:anywhere}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tags span{font-size:12px;color:var(--dim);background:var(--raise);border-radius:6px;padding:2px 8px;direction:ltr}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{background:var(--raise);border:1px solid var(--line);color:var(--fg);border-radius:10px;padding:9px 14px;font:500 14px var(--body);cursor:pointer;text-decoration:none}
+.btn.primary{background:var(--amber);border-color:var(--amber);color:#1a1208}
+.note{font-size:12.5px;color:var(--dim)}
+code.id{font-family:var(--mono);font-size:12px;color:var(--dim);direction:ltr;display:inline-block;overflow-wrap:anywhere}
+/* selection bar */
+.bar{position:fixed;inset:auto 0 0 0;z-index:15;background:var(--raise);border-top:1px solid var(--line);
+  padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.bar .in{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:10px;justify-content:space-between}
+.bar b{font-weight:500}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);
+  border-radius:10px;padding:8px 14px;font:500 13px var(--body);z-index:30}
+@media (prefers-reduced-motion:no-preference){.row{transition:background .15s}.sheet{animation:up .22s cubic-bezier(.2,.8,.2,1)}@keyframes up{from{transform:translateY(24px);opacity:.6}}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>חדר הסאונד</h1>
+    <div class="meta" id="meta"><span>טוען ספרייה…</span></div>
+  </header>
+
+  <div class="sticky">
+    <label class="search" for="q">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="q" type="search" autocomplete="off" placeholder="תארו את הצליל: מעבר קולנועי עמוק, פיצוץ, נפילת חפץ…">
+      <button class="icon-btn" id="ftoggle" type="button" aria-expanded="false">סינון</button>
+    </label>
+    <div class="examples" id="examples"></div>
+    <div class="filters" id="filters" hidden></div>
+    <div class="rail" id="rail" role="toolbar" aria-label="קטגוריות"></div>
+  </div>
+
+  <div class="status"><span id="count"></span><button class="icon-btn" id="reset" type="button" hidden>ניקוי</button></div>
+  <ul class="list" id="list"></ul>
+  <button class="more" id="more" type="button" hidden>עוד תוצאות</button>
+</div>
+
+<div class="bar" id="bar" hidden><div class="in"><span><b id="selN">0</b> צלילים נבחרו</span>
+  <span style="display:flex;gap:8px"><button class="btn" id="selClear" type="button">ניקוי</button><button class="btn primary" id="selCopy" type="button">העתקת הבחירה</button></span></div></div>
+
+<script>
+(() => {
+const HE_STYLE = {cinematic:"קולנועי",cartoon:"מצויר",realistic:"אמיתי",electronic:"אלקטרוני",retro:"רטרו",dark:"אפל",bright:"בהיר",soft:"רך",hard:"חזק"};
+const SRC = {sfxkit:"SFX Kit",mixkit:"Mixkit",kenney:"Kenney",freesound:"Freesound",opengameart:"OpenGameArt"};
+const LOUD = {s:"רך",m:"בינוני",l:"חזק"}, TONE = {d:"כהה",m:"אמצע",b:"בהיר"};
+const EXAMPLES = ["מעבר קולנועי עמוק","פיצוץ","חיה מדברת","נפילת חפץ","מכונת תספורת","whoosh מהיר","צחוק קהל","גליץ' דיגיטלי","בום בס חזק","מחיאות כפיים"];
+const $ = s => document.querySelector(s);
+const TOK = /[֐-׿']+|[a-z0-9]+(?:-[a-z0-9]+)?/g;
+let DATA = [], LEX = null, DOCS = [], DF = {}, AVG = 1, CAT = {};
+const state = {q:"", cat:null, len:null, loud:null, tone:null, style:null, q35:false, noattr:false, src:null, shown:60};
+let sel = new Set();
+try { sel = new Set(JSON.parse(localStorage.getItem("sfx-sel") || "[]")); } catch (e) {}
+
+// ---------------- search (same algorithm as sfxlib/search.py)
+function parse(q) {
+  const he = LEX.he, mods = LEX.mods, syn = LEX.en_syn, stop = new Set(LEX.stop), pre = LEX.prefixes;
+  const toks = (q.toLowerCase().match(TOK) || []);
+  const terms = {}, outMods = {}, cats = new Set();
+  const add = (w, wt) => w.split(/\s+/).filter(Boolean).forEach(t => { terms[t] = Math.max(terms[t] || 0, wt); });
+  for (let i = 0; i < toks.length; i++) {
+    const t = toks[i], two = i + 1 < toks.length ? t + " " + toks[i + 1] : null;
+    if (two && he[two]) { add(he[two], 1); i++; continue; }
+    if (stop.has(t)) continue;
+    const cand = [t].concat(pre.includes(t[0]) ? [t.slice(1), t.slice(2)] : []);
+    let hit = false;
+    for (const c of cand) {
+      if (!c) continue;
+      if (mods[c]) { Object.assign(outMods, mods[c]); hit = true; break; }
+      if (he[c]) { const ws = he[c].split(" "); add(ws[0], 1); add(ws.slice(1).join(" "), .7); hit = true; break; }
+    }
+    if (!hit && /[a-z0-9]/.test(t)) {
+      add(t, 1); if (t.endsWith("s") && t.length > 3) add(t.slice(0, -1), .9);
+      const base = t.endsWith("s") && t.length > 3 && syn[t.slice(0, -1)] ? t.slice(0, -1) : t; if (syn[base]) add(syn[base], .5);
+    } else if (!hit) add(t, .6);
+  }
+  for (const [cid, c] of Object.entries(LEX.categories)) {
+    const names = [cid, c.en.toLowerCase(), ...c.en.toLowerCase().split(/\s+/)];
+    if (names.some(n => n in terms) || q.includes(c.he)) cats.add(cid);
+  }
+  return {terms, mods: outMods, cats: [...cats]};
+}
+function docTokens(r) {
+  const f = {};
+  const put = (s, w) => ((s || "").toLowerCase().replace(/_/g, " ").match(TOK) || []).forEach(t => {
+    f[t] = (f[t] || 0) + w; if (t.endsWith("s") && t.length > 3) f[t.slice(0, -1)] = (f[t.slice(0, -1)] || 0) + w * .9; });
+  put(r.t, 3); put((r.g || []).join(" "), 2); put(r.c.join(" "), 1.5); put(r.ds, 1); put((r.uf || []).join(" "), 1);
+  return f;
+}
+const LENS = {micro:[0,.5], short:[.5,2], medium:[2,6], long:[6,20], bed:[20,1e9]};
+function passes(r) {
+  if (state.cat && !r.c.includes(state.cat)) return false;
+  if (state.len) { const [a, b] = LENS[state.len]; if (r.d < a || r.d >= b) return false; }
+  if (state.loud && r.L !== state.loud) return false;
+  if (state.tone && r.T !== state.tone) return false;
+  if (state.style && !(r.s || []).includes(state.style)) return false;
+  if (state.q35 && r.q < 3.5) return false;
+  if (state.noattr && r.cr) return false;
+  if (state.src && r.src !== state.src) return false;
+  return true;
+}
+function run() {
+  const p = state.q.trim() ? parse(state.q) : {terms:{}, mods:{}, cats:[]};
+  const keys = Object.entries(p.terms), N = DATA.length, k1 = 1.2, b = .6, m = p.mods;
+  const out = [];
+  for (let i = 0; i < N; i++) {
+    const r = DATA[i]; if (!passes(r)) continue;
+    const d = DOCS[i]; let s = 0, matched = 0, dl = d.__len;
+    for (const [t, w] of keys) {
+      const tf = d[t]; if (!tf) continue; matched++;
+      const idf = Math.log(1 + (N - DF[t] + .5) / (DF[t] + .5));
+      s += w * idf * tf * (k1 + 1) / (tf + k1 * (1 - b + b * dl / AVG));
+    }
+    if (keys.length && !matched) continue;
+    if (keys.length) s *= .6 + .4 * matched / keys.length;
+    for (const c of p.cats) if (r.c.includes(c)) s += 1.5;
+    if (m.tone && r.T === m.tone[0]) s += 1.2;
+    if (m.low) s += 3 * (r.lo || 0);
+    if (m.length) { for (const L of m.length) { const [a, bb] = LENS[L]; if (r.d >= a && r.d < bb) { s += 1; break; } } }
+    if (m.loud && r.L === m.loud[0]) s += 1;
+    if (m.style && (r.s || []).includes(m.style)) s += 1;
+    if (m.quality && r.q >= m.quality) s += .8;
+    s += .35 * (r.q - 3) + (r.p ? .15 : 0);
+    out.push([s, r]);
+  }
+  out.sort((a, b) => b[0] - a[0]);
+  const seen = {}, res = [];
+  for (const [, r] of out) {  // variety: at most 2 takes of the same thing in a row of results
+    const stem = r.t.toLowerCase().replace(/[\d_\-\s().]+$/, "").slice(0, 24);
+    if ((seen[stem] || 0) >= 2 && out.length > 120) continue;
+    seen[stem] = (seen[stem] || 0) + 1; res.push(r);
+  }
+  return res;
+}
+
+// ---------------- audio
+let ctx = null; const sprites = new Map(); let cur = null;
+function sprite(n) {
+  if (!sprites.has(n)) sprites.set(n, fetch(`a/${n}.mp3`).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+    .then(b => new Promise((ok, no) => ctx.decodeAudioData(b, ok, no))));
+  return sprites.get(n);
+}
+async function play(r, li) {
+  if (!r.p) return;
+  if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+  if (ctx.state === "suspended") await ctx.resume();
+  if (cur && cur.r === r) { stop(); return; }
+  stop();
+  li && li.classList.add("playing");
+  const token = cur = {r, li};
+  let buf;
+  try { buf = await sprite(r.p[0]); } catch (e) { toast("הטעינה נכשלה, נסו שוב"); li && li.classList.remove("playing"); cur = null; return; }
+  if (cur !== token) return;
+  const src = ctx.createBufferSource(); src.buffer = buf; src.connect(ctx.destination);
+  const t0 = ctx.currentTime; src.start(0, r.p[1], r.p[2]);
+  token.src = src; token.t0 = t0;
+  src.onended = () => { if (cur === token) stop(); };
+  const tick = () => { if (cur !== token) return; const k = Math.min(1, (ctx.currentTime - t0) / r.p[2]);
+    document.querySelectorAll(`canvas[data-id="${CSS.escape(r.i)}"]`).forEach(c => drawWave(c, r.w, k)); requestAnimationFrame(tick); };
+  tick();
+}
+function stop() {
+  if (!cur) return; const {r, li, src} = cur; cur = null;
+  try { src && src.stop(); } catch (e) {}
+  li && li.classList.remove("playing");
+  document.querySelectorAll(`canvas[data-id="${CSS.escape(r.i)}"]`).forEach(c => drawWave(c, r.w, 0));
+}
+
+// ---------------- drawing
+const CS = getComputedStyle(document.documentElement);
+const COL = {line: CS.getPropertyValue("--faint").trim(), amber: CS.getPropertyValue("--amber").trim()};
+function drawWave(c, wf, k) {
+  const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+  if (!w) return;
+  if (c.width !== w * dpr) { c.width = w * dpr; c.height = h * dpr; }
+  const g = c.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
+  const n = (wf || "").length || 1, bw = w / n;
+  for (let i = 0; i < n; i++) {
+    const v = wf ? (wf.charCodeAt(i) - 48) / 74 : .1, bh = Math.max(1, v * (h - 2));
+    // RTL: time runs right-to-left like the reading direction
+    const x = w - (i + 1) * bw;
+    g.fillStyle = (i + 1) / n <= k ? COL.amber : COL.line; g.globalAlpha = (i + 1) / n <= k ? 1 : .55;
+    g.fillRect(x + bw * .18, (h - bh) / 2, Math.max(1, bw * .64), bh);
+  }
+  g.globalAlpha = 1;
+}
+const fmtDur = d => d < 10 ? d.toFixed(2) + "s" : d < 60 ? d.toFixed(1) + "s" : Math.floor(d / 60) + ":" + String(Math.round(d % 60)).padStart(2, "0");
+const catName = c => (CAT[c] || {}).he || "שונות";
+const lvl = L => `<span class="lvl" title="עוצמה: ${LOUD[L]}"><i class="on" style="height:4px"></i><i class="${L !== "s" ? "on" : ""}" style="height:7px"></i><i class="${L === "l" ? "on" : ""}" style="height:10px"></i></span>`;
+const lic = r => r.l === "CC0" ? `<span class="badge cc0">CC0</span>` : r.cr ? `<span class="badge by">קרדיט</span>` : `<span class="badge">${r.l === "Mixkit-SFX" ? "Mixkit" : r.l}</span>`;
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+let results = [];
+function render() {
+  results = run();
+  const list = $("#list"); list.innerHTML = "";
+  const frag = document.createDocumentFragment();
+  for (const r of results.slice(0, state.shown)) frag.appendChild(rowEl(r));
+  list.appendChild(frag);
+  list.querySelectorAll("canvas.wf").forEach(c => drawWave(c, c.dataset.w, 0));
+  $("#count").textContent = results.length ? `${results.length.toLocaleString("he-IL")} תוצאות` : "";
+  $("#more").hidden = results.length <= state.shown;
+  if (!results.length) list.innerHTML = `<li class="empty">לא נמצא צליל כזה. נסו מילה אחרת, או נקו את הסינון.</li>`;
+  const active = state.q || state.cat || state.len || state.loud || state.tone || state.style || state.q35 || state.noattr || state.src;
+  $("#reset").hidden = !active;
+}
+function rowEl(r) {
+  const li = document.createElement("li"); li.className = "row"; li.tabIndex = 0;
+  const playBtn = r.p ? `<button class="play" type="button" aria-label="השמעה"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l11-7z"/></svg></button>`
+    : `<a class="play ext" href="${esc(r.u)}" target="_blank" rel="noopener" aria-label="האזנה במקור" title="האזנה באתר המקור">↗</a>`;
+  li.innerHTML = `${playBtn}
+    <div class="mid"><div class="ttl" dir="auto">${esc(r.t)}</div>
+      <canvas class="wf" data-id="${esc(r.i)}" data-w="${esc(r.w)}"></canvas>
+      <div class="sub"><span class="cat">${esc(r.c.map(catName).slice(0, 2).join(" · "))}</span><span>${esc(SRC[r.src] || r.src)}</span></div></div>
+    <div class="right"><span>${fmtDur(r.d)}</span>${lvl(r.L)}${lic(r)}</div>`;
+  const p = li.querySelector("button.play");
+  p && p.addEventListener("click", e => { e.stopPropagation(); play(r, li); });
+  const ext = li.querySelector("a.play"); ext && ext.addEventListener("click", e => e.stopPropagation());
+  li.addEventListener("click", () => { if (r.p) play(r, li); openSheet(r); });
+  li.addEventListener("keydown", e => { if (e.key === "Enter") { r.p && play(r, li); openSheet(r); } });
+  return li;
+}
+
+// ---------------- detail sheet
+function openSheet(r) {
+  closeSheet();
+  const scrim = document.createElement("div"); scrim.className = "scrim"; scrim.id = "scrim";
+  const sh = document.createElement("div"); sh.className = "sheet"; sh.id = "sheet"; sh.setAttribute("role", "dialog"); sh.setAttribute("aria-modal", "true");
+  const picked = sel.has(r.i);
+  sh.innerHTML = `<div class="in">
+    <div class="shead"><h2 dir="auto">${esc(r.t)}</h2><button class="icon-btn close" id="shClose" type="button" aria-label="סגירה">סגירה</button></div>
+    <canvas data-id="${esc(r.i)}"></canvas>
+    <div class="actions">
+      ${r.p ? `<button class="btn primary" id="shPlay" type="button">השמעה</button>` : `<a class="btn primary" href="${esc(r.u)}" target="_blank" rel="noopener">האזנה ב-${esc(SRC[r.src])}</a>`}
+      <button class="btn" id="shPick" type="button">${picked ? "הוסר מהבחירה" : "הוספה לבחירה"}</button>
+      <button class="btn" id="shCopy" type="button">העתקת מזהה</button>
+      ${r.u ? `<a class="btn" href="${esc(r.u)}" target="_blank" rel="noopener">עמוד המקור</a>` : ""}
+    </div>
+    ${r.ds ? `<div class="note" dir="auto">${esc(r.ds)}</div>` : ""}
+    <div class="kv">
+      <div><span>אורך</span><b>${fmtDur(r.d)}</b></div>
+      <div><span>עוצמה</span><b>${LOUD[r.L]}</b></div>
+      <div><span>גוון</span><b>${TONE[r.T]}</b></div>
+      <div><span>איכות</span><b>${r.q.toFixed(1)} / 5</b></div>
+      <div><span>קטגוריות</span><b>${esc(r.c.map(catName).join(", "))}</b></div>
+      <div><span>סגנון</span><b>${esc((r.s || []).map(s => HE_STYLE[s] || s).join(", ") || "—")}</b></div>
+      <div><span>מקור</span><b>${esc(SRC[r.src])}${r.a ? " · " + esc(r.a) : ""}</b></div>
+      <div><span>רישיון</span><b>${esc(r.l)}${r.cr ? " · חובת קרדיט" : " · בלי קרדיט"}</b></div>
+    </div>
+    ${r.cr ? `<div class="note">קרדיט לשימוש: <code class="id">${esc(r.cr)}</code></div>` : ""}
+    ${r.p ? "" : `<div class="note">ההשמעה כאן אינה זמינה כי רישיון Mixkit לא מתיר להפיץ את הקובץ. הקובץ המלא כבר נמצא בספרייה המקומית ומותר בסרטונים מסחריים.</div>`}
+    ${(r.g || []).length ? `<div class="tags">${r.g.map(t => `<span>${esc(t)}</span>`).join("")}</div>` : ""}
+    <div class="note">מזהה: <code class="id">${esc(r.i)}</code></div>
+  </div>`;
+  document.body.append(scrim, sh);
+  const c = sh.querySelector("canvas"); requestAnimationFrame(() => drawWave(c, r.w, 0));
+  scrim.onclick = closeSheet; sh.querySelector("#shClose").onclick = closeSheet;
+  const sp = sh.querySelector("#shPlay"); sp && (sp.onclick = () => play(r, null));
+  sh.querySelector("#shPick").onclick = e => { sel.has(r.i) ? sel.delete(r.i) : sel.add(r.i); saveSel();
+    e.target.textContent = sel.has(r.i) ? "נוסף לבחירה" : "הוסר מהבחירה"; };
+  sh.querySelector("#shCopy").onclick = () => copy(r.i, "המזהה הועתק");
+  document.addEventListener("keydown", escClose);
+}
+function escClose(e) { if (e.key === "Escape") closeSheet(); }
+function closeSheet() { $("#scrim")?.remove(); $("#sheet")?.remove(); document.removeEventListener("keydown", escClose); }
+
+// ---------------- selection
+function saveSel() { try { localStorage.setItem("sfx-sel", JSON.stringify([...sel])); } catch (e) {} $("#bar").hidden = !sel.size; $("#selN").textContent = sel.size; }
+function copy(text, msg) {
+  const done = () => toast(msg);
+  try { navigator.clipboard.writeText(text).then(done, () => fallback()); } catch (e) { fallback(); }
+  function fallback() { const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select();
+    try { document.execCommand("copy"); done(); } catch (e) { toast("סמנו והעתיקו ידנית"); } t.remove(); }
+}
+function toast(msg) { const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 1800); }
+
+// ---------------- controls
+function seg(label, key, opts) {
+  const row = document.createElement("div"); row.className = "frow";
+  row.innerHTML = `<span>${label}</span><div class="seg">${opts.map(([v, t]) => `<button type="button" data-v="${v}" aria-pressed="false">${t}</button>`).join("")}</div>`;
+  row.querySelectorAll("button").forEach(b => b.onclick = () => {
+    const v = b.dataset.v === "true" ? true : b.dataset.v;
+    state[key] = state[key] === v ? (typeof v === "boolean" ? false : null) : v; state.shown = 60;
+    row.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", String(String(state[key]) === x.dataset.v)));
+    render(); updateFilterLabel();
+  });
+  return row;
+}
+function updateFilterLabel() {
+  const n = ["len", "loud", "tone", "style", "q35", "noattr", "src"].filter(k => state[k]).length;
+  $("#ftoggle").textContent = n ? `סינון (${n})` : "סינון";
+}
+function buildControls() {
+  const f = $("#filters");
+  f.append(
+    seg("אורך", "len", [["micro", "עד חצי שנייה"], ["short", "קצר"], ["medium", "בינוני"], ["long", "ארוך"], ["bed", "רקע 20+ שניות"]]),
+    seg("עוצמה", "loud", [["s", "רך"], ["m", "בינוני"], ["l", "חזק"]]),
+    seg("גוון", "tone", [["d", "כהה ועמוק"], ["m", "אמצע"], ["b", "בהיר"]]),
+    seg("סגנון", "style", Object.entries(HE_STYLE)),
+    seg("איכות", "q35", [["true", "רק איכות גבוהה"]]),
+    seg("רישיון", "noattr", [["true", "בלי חובת קרדיט"]]),
+    seg("מקור", "src", Object.entries(SRC)));
+  $("#ftoggle").onclick = () => { f.hidden = !f.hidden; $("#ftoggle").setAttribute("aria-expanded", String(!f.hidden)); };
+  const ex = $("#examples");
+  EXAMPLES.forEach(t => { const b = document.createElement("button"); b.className = "ex"; b.type = "button"; b.textContent = t;
+    b.onclick = () => { $("#q").value = t; state.q = t; state.shown = 60; render(); }; ex.appendChild(b); });
+  let deb; $("#q").addEventListener("input", e => { clearTimeout(deb); deb = setTimeout(() => { state.q = e.target.value; state.shown = 60; render(); }, 140); });
+  $("#more").onclick = () => { state.shown += 60; render(); };
+  $("#reset").onclick = () => { Object.assign(state, {q:"", cat:null, len:null, loud:null, tone:null, style:null, q35:false, noattr:false, src:null, shown:60});
+    $("#q").value = ""; document.querySelectorAll("[aria-pressed]").forEach(b => b.setAttribute("aria-pressed", "false")); updateFilterLabel(); render(); };
+  $("#selClear").onclick = () => { sel.clear(); saveSel(); };
+  $("#selCopy").onclick = () => copy([...sel].join("\n"), `${sel.size} מזהים הועתקו`);
+  saveSel();
+}
+function buildRail() {
+  const counts = {}; DATA.forEach(r => r.c.forEach(c => counts[c] = (counts[c] || 0) + 1));
+  const rail = $("#rail");
+  const all = document.createElement("button"); all.className = "chip"; all.type = "button"; all.setAttribute("aria-pressed", "true");
+  all.innerHTML = `הכול <small>${DATA.length.toLocaleString("he-IL")}</small>`; rail.appendChild(all);
+  const btns = [all];
+  Object.keys(CAT).filter(c => counts[c]).sort((a, b) => counts[b] - counts[a]).forEach(c => {
+    const b = document.createElement("button"); b.className = "chip"; b.type = "button"; b.dataset.c = c; b.setAttribute("aria-pressed", "false");
+    b.innerHTML = `${esc(CAT[c].he)} <small>${counts[c].toLocaleString("he-IL")}</small>`; rail.appendChild(b); btns.push(b);
+  });
+  btns.forEach(b => b.onclick = () => { state.cat = b.dataset.c || null; state.shown = 60;
+    btns.forEach(x => x.setAttribute("aria-pressed", String(x === b))); render(); });
+}
+
+// ---------------- boot
+Promise.all([fetch("data.json").then(r => r.json()), fetch("lexicon.json").then(r => r.json())]).then(([d, lx]) => {
+  DATA = d; LEX = lx; CAT = lx.categories;
+  DOCS = DATA.map(docTokens);
+  let tot = 0; DOCS.forEach(doc => { let l = 0; for (const t in doc) { DF[t] = (DF[t] || 0) + 1; l += doc[t]; } doc.__len = l; tot += l; });
+  AVG = tot / Math.max(1, DOCS.length);
+  const hours = DATA.reduce((s, r) => s + r.d, 0) / 3600, prev = DATA.filter(r => r.p).length;
+  const srcs = new Set(DATA.map(r => r.src)).size, cats = new Set(DATA.flatMap(r => r.c)).size;
+  $("#meta").innerHTML = `<span><b>${DATA.length.toLocaleString("he-IL")}</b> צלילים</span><span><b>${hours.toFixed(1)}</b> שעות</span>
+    <span><b>${cats}</b> קטגוריות</span><span><b>${srcs}</b> מקורות חינמיים</span><span><b>${prev.toLocaleString("he-IL")}</b> להשמעה כאן</span>`;
+  buildControls(); buildRail(); render();
+}).catch(() => { $("#meta").textContent = "הספרייה לא נטענה. רעננו את העמוד."; });
+window.addEventListener("resize", () => document.querySelectorAll("canvas.wf").forEach(c => drawWave(c, c.dataset.w, 0)));
+})();
+</script>

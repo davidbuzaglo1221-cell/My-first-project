@@ -1,0 +1,6 @@
+audio/
+cache/
+exports/
+*.pyc
+__pycache__/
+preview/dist/

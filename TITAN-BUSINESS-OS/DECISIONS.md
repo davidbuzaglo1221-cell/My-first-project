@@ -13,3 +13,6 @@
 | 22.11.2026 | ComfyUI/Wan 2.2/n8n לא הותקנו | אין GPU; n8n צריך שרת קבוע ורישיונו מגביל מכירה |
 | 22.11.2026 | רשת: נוספו export-download.canva.com, cdn.jsdelivr.net, fonts.googleapis.com, fonts.gstatic.com | הורדת תמונות מ-Canva ורינדור HyperFrames |
 | 23.11.2026 | מערכת הפעלה אישית: ליבת זיכרון נטענת אוטומטית, יומן לקחים, כיוון אמנותי לכל פרויקט, חסימת פעולות הרסניות | דוד: סטודיו יצירתי בלי סגנון יחיד; למידה אמיתית דרך קבצים |
+| 25.11.2026 | ספריית סאונד מקומית (`sound-library`): קבצי השמע לא נשמרים ב-git, רק המניפסט; `sfx sync` משחזר | הריפו ציבורי ורישיון Mixkit אוסר הפצה |
+| 25.11.2026 | Pixabay לא נאסף | האתר חוסם גישה אוטומטית; לא עוקפים הגנות |
+| 25.11.2026 | רשת: נוספו mixkit.co, assets.mixkit.co, kenney.nl, freesound.org, cdn.freesound.org, pixabay.com, cdn.pixabay.com, opengameart.org | הורדת אפקטים קוליים |

@@ -17,6 +17,8 @@
 | Remotion | remotion-dev/skills | חינם ליחיד ועד 3 עובדים | remotion-* (הותקן קודם) | reel-01..03 ✓ |
 | Marketing Skills | coreyhaines31/marketingskills | MIT | 20 מתוך 53: copywriting, social, offers, pricing, launch, content-strategy, competitors, customer-research, marketing-ideas, ad-creative, video, lead-magnets, seo-audit, ai-seo, cold-email, emails, sales-enablement, marketing-psychology, cro, marketing-plan | נטען ✓ |
 | agent-browser | vercel-labs/agent-browser | Apache-2.0 | CLI גלובלי 0.43 + סקיל | **פתח דף ב-GitHub וקרא כותרת ✓** |
+| sfx-sources | sxhzju/sfx | MIT | sfx-sources (חיפוש והורדה מ-Mixkit, Kenney, Freesound, Pixabay) | Mixkit, Kenney, Freesound ✓; Pixabay חסום (Cloudflare) |
+| SFX Kit | wyzowl/sfx-kit | CC0 | 320 אפקטים עם נקודות סנכרון, בתוך `sound-library` | **כל 320 הורדו ונותחו ✓** |
 | Playwright | microsoft/playwright | Apache-2.0 | מותקן מראש בסביבה | ✓ |
 
 **הערות התקנה:** agent-browser ו-HyperFrames צריכים `AGENT_BROWSER_EXECUTABLE_PATH=/opt/pw-browsers/chromium-1243/chrome-linux64/chrome`. ל-animate: Playwright באותה גרסה כמו הסביבה (1.63.0). אתרים חדשים צריכים אישור ברשימת הרשת של הסביבה.
@@ -26,6 +28,7 @@
 |---|---|
 | `director` | המוח הראשי, רץ ראשון בכל בקשה |
 | `art-direction` | בחירת כיוון אמנותי לכל פרויקט ויזואלי + סף איכות לאתרים, אפליקציות, צילום ופרסומות, CGI (23.11.2026) |
+| `sound-library` | ספריית הסאונד: חיפוש בעברית, סינון, התאמה אוטומטית לווידאו, מיקס מקצועי (25.11.2026) |
 | `david-brand`, `premium-app`, `fast-video`, `social-content`, `money-engine`, `replica-*` | מותג, אפליקציות, וידאו, תוכן, כסף, שכפול אפליקציות |
 
 > לבדיקה עתידית: 76 סקילים, ותיאורי כולם נטענים בכל סשן (~22 אלף תווים). ייתכן שחלקם נחתכים. ניקוי כפילויות (למשל `social` מול `social-content`, `video` מול `fast-video`) רק באישור דוד.
