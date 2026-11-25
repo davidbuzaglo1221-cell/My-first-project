@@ -1,0 +1,799 @@
+{
+"he": {
+"מעבר": "transition whoosh swoosh",
+"מעברים": "transition whoosh",
+"וושים": "whoosh",
+"ווש": "whoosh",
+"וווש": "whoosh",
+"סווש": "swoosh swish",
+"שריקת": "whistle whoosh",
+"תנועה": "movement whoosh",
+"זום": "zoom",
+"סיבוב": "spin",
+"החלקה": "swipe slide",
+"גלילה": "scroll",
+"הרצה": "fast",
+"רוח": "wind air",
+"אוויר": "air whoosh",
+"עף": "fly whoosh",
+"טיסה": "fly flyby",
+"חולף": "pass by",
+"ריוורס": "reverse",
+"הפוך": "reverse",
+"אחורה": "rewind reverse",
+"קולנועי": "cinematic epic",
+"קולנועית": "cinematic epic",
+"סרט": "cinematic film",
+"טריילר": "trailer",
+"אפי": "epic",
+"אפית": "epic",
+"דרמטי": "dramatic cinematic",
+"דרמה": "dramatic",
+"מתח": "tension suspense",
+"חשיפה": "reveal",
+"כותרת": "title hit",
+"לוגו": "logo sting",
+"פתיחה": "intro",
+"סיום": "outro",
+"בראם": "braam",
+"פגיעה": "hit impact",
+"מכה": "hit punch impact",
+"מכות": "hit punch",
+"אגרוף": "punch",
+"בעיטה": "kick",
+"סטירה": "slap",
+"התנגשות": "crash collision",
+"טריקה": "slam",
+"דפיקה": "knock",
+"בום": "boom",
+"בומים": "boom",
+"בס": "bass sub",
+"סאב": "sub",
+"דרופ": "drop",
+"רעם": "thunder rumble",
+"רעמים": "thunder",
+"רעידה": "rumble",
+"עלייה": "riser rise",
+"עולה": "riser rising",
+"ירידה": "faller downer",
+"בילדאפ": "build",
+"הצטברות": "build riser",
+"פיצוץ": "explosion blast",
+"פיצוצים": "explosion",
+"התפוצצות": "explosion",
+"פצצה": "bomb explosion",
+"זיקוקים": "fireworks",
+"ירייה": "gunshot shot",
+"יריות": "gunshot",
+"אקדח": "pistol gun",
+"רובה": "rifle gun",
+"טעינה": "reload",
+"חרב": "sword",
+"סכין": "knife blade",
+"לייזר": "laser",
+"חץ": "arrow",
+"קשת": "bow arrow",
+"קרב": "battle fight",
+"מלחמה": "battle war",
+"אימה": "horror scary",
+"מפחיד": "scary creepy horror",
+"מפחידה": "scary horror",
+"מצמרר": "creepy eerie",
+"רוח רפאים": "ghost",
+"רפאים": "ghost",
+"מפלצת": "monster growl",
+"זומבי": "zombie",
+"צרחה": "scream",
+"צעקה": "scream yell shout",
+"דופק": "heartbeat",
+"לב": "heartbeat heart",
+"מצחיק": "funny comedy",
+"מצחיקה": "funny",
+"קומי": "comedy funny",
+"קומדיה": "comedy funny",
+"צחוק": "laugh laughing",
+"צוחק": "laugh",
+"צחקוק": "giggle laugh",
+"כישלון": "fail sad trombone",
+"נכשל": "fail",
+"ממים": "meme",
+"מם": "meme",
+"ויראלי": "viral meme tiktok",
+"טיקטוק": "tiktok meme viral",
+"שריטה": "scratch record",
+"תקליט": "record vinyl scratch",
+"צופר": "horn",
+"צפצוף": "beep",
+"קריצה": "ding",
+"וואו": "wow",
+"מצויר": "cartoon",
+"קריקטורה": "cartoon",
+"קפיץ": "spring boing",
+"קפיצה": "jump boing",
+"החלקה מצחיקה": "slip cartoon",
+"פופ": "pop",
+"פיצוץ בועה": "bubble pop",
+"בועה": "bubble",
+"בועות": "bubbles",
+"בלון": "balloon",
+"קסם": "magic spell",
+"קסום": "magic",
+"נצנוץ": "sparkle shimmer twinkle",
+"נצנצים": "sparkle glitter",
+"פיה": "fairy",
+"הופעה": "appear",
+"היעלמות": "disappear poof",
+"נעלם": "disappear",
+"מופיע": "appear",
+"גליץ": "glitch",
+"גליץ'": "glitch",
+"דיגיטלי": "digital",
+"דיגיטל": "digital",
+"רעש": "noise static",
+"סטטי": "static",
+"מחשב": "computer",
+"האקר": "hack computer",
+"סריקה": "scan",
+"שגיאה": "error fail",
+"הצלחה": "success win",
+"קליק": "click",
+"לחיצה": "click tap press button",
+"כפתור": "button click",
+"ממשק": "ui interface",
+"אפליקציה": "app ui",
+"התראה": "notification alert",
+"הודעה": "message notification",
+"פעמון": "bell",
+"צלצול": "ring bell ringtone",
+"דינג": "ding",
+"משחק": "game arcade",
+"משחקים": "game",
+"ארקייד": "arcade",
+"רטרו": "retro 8bit",
+"מטבע": "coin",
+"מטבעות": "coins coin",
+"ניצחון": "win victory fanfare",
+"הפסד": "lose game over",
+"שלב": "level",
+"בונוס": "power up bonus",
+"רובוט": "robot",
+"חללית": "spaceship",
+"חלל": "space sci-fi",
+"חייזר": "alien",
+"עתידני": "futuristic sci-fi",
+"טלפורט": "teleport",
+"נפילה": "fall drop",
+"נפילת": "fall drop",
+"נופל": "fall falling drop",
+"נופלת": "fall drop",
+"הפלה": "drop",
+"חפץ": "object",
+"חפצים": "object",
+"נחיתה": "land landing thud",
+"חבטה": "thud thump",
+"שבירה": "break smash",
+"נשבר": "break shatter",
+"זכוכית": "glass",
+"כוס": "glass cup",
+"צלחת": "plate",
+"בקבוק": "bottle",
+"עץ": "wood",
+"מתכת": "metal",
+"נייר": "paper",
+"בד": "cloth fabric",
+"רוכסן": "zipper zip",
+"שקית": "bag plastic",
+"מפתחות": "keys",
+"דלת": "door",
+"דלתות": "door",
+"נקישה": "knock click",
+"טריקת דלת": "door slam",
+"חריקה": "creak squeak",
+"מגירה": "drawer",
+"כיסא": "chair",
+"מטבח": "kitchen cooking",
+"בישול": "cooking",
+"קפה": "coffee",
+"מזיגה": "pour",
+"פחית": "can open",
+"אוכל": "eat food",
+"הקלדה": "typing keyboard",
+"מקלדת": "keyboard typing",
+"עכבר": "mouse click",
+"מצלמה": "camera shutter",
+"צילום": "camera shutter",
+"טלפון": "phone",
+"רטט": "vibrate vibration",
+"עט": "pen writing",
+"כתיבה": "writing pen",
+"שעון": "clock tick",
+"תקתוק": "tick ticking clock",
+"ספירה": "countdown",
+"ספירה לאחור": "countdown",
+"שעון מעורר": "alarm clock",
+"אזעקה": "alarm siren",
+"כסף": "money cash",
+"קופה": "cash register",
+"תשלום": "payment",
+"מכונה": "machine mechanical",
+"מנוע": "engine motor",
+"מנעול": "lock",
+"פטיש": "hammer",
+"מקדחה": "drill",
+"מסור": "saw",
+"רכב": "car vehicle",
+"מכונית": "car",
+"מכוניות": "car",
+"אוטו": "car",
+"דריפט": "drift skid tire",
+"צמיגים": "tire screech",
+"חריקת בלמים": "brake screech",
+"בלמים": "brake",
+"אופנוע": "motorcycle",
+"משאית": "truck",
+"רכבת": "train",
+"מטוס": "airplane plane jet",
+"מסוק": "helicopter",
+"סירה": "boat",
+"אוטובוס": "bus",
+"תנועה בכביש": "traffic",
+"כביש": "traffic road",
+"טבע": "nature",
+"יער": "forest",
+"גשם": "rain",
+"סערה": "storm thunder",
+"ברק": "thunder lightning",
+"מים": "water",
+"התזה": "splash",
+"שפריץ": "splash spray",
+"טפטוף": "drip",
+"טיפה": "drip drop water",
+"ים": "ocean sea waves",
+"גלים": "waves ocean",
+"נהר": "river stream",
+"אש": "fire",
+"להבה": "flame fire",
+"בוער": "burning fire",
+"מדורה": "campfire fire crackle",
+"שלג": "snow",
+"עלים": "leaves",
+"לילה": "night",
+"צרצרים": "crickets",
+"חיה": "animal",
+"חיות": "animals animal",
+"כלב": "dog bark",
+"נביחה": "bark dog",
+"חתול": "cat meow",
+"מיאו": "meow cat",
+"ציפור": "bird chirp",
+"ציפורים": "birds bird",
+"ציוץ": "chirp tweet bird",
+"אריה": "lion roar",
+"שאגה": "roar",
+"זאב": "wolf howl",
+"יללה": "howl",
+"פרה": "cow moo",
+"סוס": "horse neigh",
+"תרנגול": "rooster",
+"תרנגולת": "chicken",
+"חזיר": "pig oink",
+"כבשה": "sheep",
+"עז": "goat",
+"ברווז": "duck quack",
+"צפרדע": "frog",
+"קוף": "monkey",
+"פיל": "elephant",
+"ינשוף": "owl",
+"עורב": "crow",
+"דבורה": "bee buzz",
+"זבוב": "fly buzz",
+"נחש": "snake hiss",
+"דוב": "bear growl",
+"דולפין": "dolphin",
+"מדברת": "talking voice speech",
+"מדבר": "talking voice speech",
+"מדברים": "talking voices",
+"דיבור": "speech voice talking",
+"אנושי": "human voice",
+"אנושיים": "human",
+"אדם": "human",
+"קול": "voice",
+"קולות": "voices",
+"נשימה": "breath breathing",
+"נשיפה": "blow breath",
+"אנחה": "sigh",
+"שיעול": "cough",
+"התעטשות": "sneeze",
+"נשיקה": "kiss",
+"מחיאות כפיים": "applause clap",
+"מחיאות": "applause clap",
+"כפיים": "clap applause",
+"קהל": "crowd",
+"עידוד": "cheer crowd",
+"שריקה": "whistle",
+"בכי": "cry crying",
+"תינוק": "baby",
+"צעדים": "footsteps steps",
+"הליכה": "footsteps walking",
+"ריצה": "running footsteps run",
+"גיהוק": "burp",
+"הפתעה": "gasp surprise wow",
+"התנשפות": "gasp",
+"גבר": "male man",
+"אישה": "female woman",
+"ילדים": "children kids",
+"קריין": "announcer voice",
+"קריינות": "voiceover announcer",
+"מספרה": "barber",
+"ספר": "barber",
+"מכונת תספורת": "hair clipper trimmer",
+"מכונה לשיער": "clipper trimmer",
+"טרימר": "trimmer",
+"מספריים": "scissors",
+"תספורת": "haircut scissors clipper",
+"שיער": "hair",
+"ספריי": "spray",
+"מרסס": "spray bottle",
+"פן": "hair dryer blow dryer",
+"מייבש": "hair dryer",
+"גילוח": "shave razor",
+"סכין גילוח": "razor shave",
+"קצף": "foam",
+"מסרק": "comb",
+"מברשת": "brush",
+"חדר כושר": "gym weights",
+"כושר": "gym fitness",
+"משקולות": "weights dumbbell",
+"אימון": "workout gym",
+"אגרוף שק": "punching bag",
+"איגרוף": "boxing",
+"שופט": "referee whistle",
+"כדור": "ball",
+"כדורסל": "basketball",
+"כדורגל": "soccer football",
+"טניס": "tennis",
+"אצטדיון": "stadium crowd",
+"אווירה": "ambience atmosphere",
+"רקע": "ambience background",
+"עיר": "city",
+"רחוב": "street city",
+"בית קפה": "cafe",
+"מסעדה": "restaurant",
+"משרד": "office",
+"חדר": "room tone"
+},
+"mods": {
+"deep": {
+"tone": "dark",
+"low": 1
+},
+"עמוק": {
+"tone": "dark",
+"low": 1
+},
+"עמוקה": {
+"tone": "dark",
+"low": 1
+},
+"low": {
+"tone": "dark",
+"low": 1
+},
+"נמוך": {
+"tone": "dark",
+"low": 1
+},
+"bright": {
+"tone": "bright"
+},
+"בהיר": {
+"tone": "bright"
+},
+"חד": {
+"tone": "bright",
+"attack": "fast"
+},
+"short": {
+"length": [
+"micro",
+"short"
+]
+},
+"קצר": {
+"length": [
+"micro",
+"short"
+]
+},
+"קצרה": {
+"length": [
+"micro",
+"short"
+]
+},
+"quick": {
+"length": [
+"micro",
+"short"
+]
+},
+"מהיר": {
+"length": [
+"micro",
+"short"
+]
+},
+"מהירה": {
+"length": [
+"micro",
+"short"
+]
+},
+"long": {
+"length": [
+"medium",
+"long",
+"bed"
+]
+},
+"ארוך": {
+"length": [
+"medium",
+"long",
+"bed"
+]
+},
+"ארוכה": {
+"length": [
+"medium",
+"long",
+"bed"
+]
+},
+"loud": {
+"loud": "loud"
+},
+"חזק": {
+"loud": "loud"
+},
+"חזקה": {
+"loud": "loud"
+},
+"big": {
+"loud": "loud"
+},
+"גדול": {
+"loud": "loud"
+},
+"ענק": {
+"loud": "loud"
+},
+"huge": {
+"loud": "loud"
+},
+"massive": {
+"loud": "loud"
+},
+"heavy": {
+"loud": "loud",
+"low": 1
+},
+"כבד": {
+"loud": "loud",
+"low": 1
+},
+"soft": {
+"loud": "soft"
+},
+"רך": {
+"loud": "soft"
+},
+"עדין": {
+"loud": "soft"
+},
+"עדינה": {
+"loud": "soft"
+},
+"שקט": {
+"loud": "soft"
+},
+"subtle": {
+"loud": "soft"
+},
+"gentle": {
+"loud": "soft"
+},
+"realistic": {
+"style": "realistic"
+},
+"אמיתי": {
+"style": "realistic"
+},
+"ריאליסטי": {
+"style": "realistic"
+},
+"מקצועי": {
+"quality": 4.0
+},
+"איכותי": {
+"quality": 4.0
+},
+"professional": {
+"quality": 4.0
+}
+},
+"en_syn": {
+"whoosh": "woosh swoosh swish",
+"swoosh": "whoosh swish",
+"transition": "whoosh swoosh sweep",
+"hit": "impact",
+"impact": "hit thud",
+"explosion": "explode blast boom",
+"boom": "explosion bass",
+"drop": "fall thud",
+"fall": "drop falling",
+"falling": "fall drop",
+"object": "item",
+"talking": "speech voice talk",
+"talk": "talking speech",
+"laugh": "laughing laughter giggle",
+"scream": "yell shout",
+"punch": "hit fist",
+"gun": "gunshot pistol",
+"car": "vehicle engine",
+"funny": "comedy cartoon",
+"scary": "horror creepy",
+"riser": "rise build",
+"glitch": "digital static",
+"click": "tap button",
+"dog": "bark",
+"cat": "meow",
+"bird": "chirp",
+"clipper": "trimmer clippers",
+"scissors": "scissor cut",
+"spray": "sprayer",
+"door": "doors",
+"glass": "shatter",
+"break": "breaking smash",
+"magic": "sparkle spell",
+"money": "cash coin"
+},
+"stop": [
+"a",
+"an",
+"and",
+"effect",
+"effects",
+"for",
+"in",
+"like",
+"of",
+"on",
+"or",
+"sfx",
+"some",
+"sound",
+"sounds",
+"the",
+"to",
+"with",
+"או",
+"אני",
+"אפקט",
+"אפקטים",
+"את",
+"גם",
+"לי",
+"סאונד",
+"עם",
+"צליל",
+"צלילים",
+"קול",
+"רוצה",
+"של",
+"תן"
+],
+"prefixes": "הובלמשכ",
+"categories": {
+"cinematic": {
+"en": "Cinematic",
+"he": "קולנועי",
+"kw": "cinematic epic dramatic film movie orchestral hit braam boom sub tension suspense deep reveal title"
+},
+"trailer": {
+"en": "Trailer",
+"he": "טריילר",
+"kw": "trailer braam epic hit riser stinger slam drop logo sting intro outro reveal"
+},
+"horror": {
+"en": "Horror",
+"he": "אימה",
+"kw": "horror scary creepy spooky ghost scream haunted dark eerie monster zombie demonic jumpscare suspense heartbeat"
+},
+"comedy": {
+"en": "Comedy",
+"he": "קומדיה",
+"kw": "comedy funny comic laugh boing fail sad trombone honk squeak slide whistle cartoon kazoo rimshot cricket fart"
+},
+"viral": {
+"en": "Viral TikTok",
+"he": "ויראלי טיקטוק",
+"kw": "meme viral tiktok bruh vine boom record scratch airhorn ding bonk wow oof notification sus emotional damage"
+},
+"whoosh": {
+"en": "Whoosh",
+"he": "וושים",
+"kw": "whoosh woosh swoosh swish swoop swipe air fly pass by passby zip wind"
+},
+"transitions": {
+"en": "Transitions",
+"he": "מעברים",
+"kw": "transition swoosh whoosh reverse rewind tape stop zoom swipe glitch cut wipe scene change sweep"
+},
+"bass": {
+"en": "Bass & Drops",
+"he": "בס ודרופים",
+"kw": "bass sub 808 drop boom rumble low thump subdrop deep"
+},
+"impacts": {
+"en": "Impacts & Hits",
+"he": "פגיעות ומכות",
+"kw": "impact hit punch slam smash crash thud thump bang knock collision kick strike slap"
+},
+"risers": {
+"en": "Risers & Fallers",
+"he": "עליות וירידות",
+"kw": "riser rise rising build buildup uplifter tension sweep upsweep downer faller falling"
+},
+"glitch": {
+"en": "Glitch & Digital",
+"he": "גליץ' ודיגיטל",
+"kw": "glitch digital static noise data computer error stutter bitcrush electronic scan beep processing hack"
+},
+"foley": {
+"en": "Foley",
+"he": "פולי",
+"kw": "foley cloth fabric paper rustle handling grab pick put down bag zipper leather plastic movement"
+},
+"drops": {
+"en": "Falls & Drops",
+"he": "נפילות",
+"kw": "drop dropped fall falling falls thud land landing bounce object tumble body fall"
+},
+"breaking": {
+"en": "Glass & Breaking",
+"he": "שבירה וזכוכית",
+"kw": "glass break shatter smash breaking crack ceramic plate bottle splinter wood break"
+},
+"explosions": {
+"en": "Explosions",
+"he": "פיצוצים",
+"kw": "explosion explode blast bomb detonation boom firework kaboom grenade debris"
+},
+"weapons": {
+"en": "Weapons FX",
+"he": "נשק ואפקטי קרב",
+"kw": "gun gunshot shot rifle pistol shotgun reload cock sword blade knife unsheathe laser blaster arrow bow battle"
+},
+"scifi": {
+"en": "Sci-Fi",
+"he": "מדע בדיוני",
+"kw": "sci-fi scifi space laser robot spaceship alien futuristic teleport hologram force field engine hum warp"
+},
+"magic": {
+"en": "Magic & Shimmer",
+"he": "קסם ונצנוץ",
+"kw": "magic spell sparkle shimmer twinkle fairy chime glitter wand enchant mystic reveal positive"
+},
+"cartoon": {
+"en": "Cartoon",
+"he": "מצויר",
+"kw": "cartoon toon boing bonk slip spring pop squeak bubble zany wacky goofy anime run"
+},
+"pops": {
+"en": "Pops & Appear",
+"he": "פופים והופעה",
+"kw": "pop bubble pluck appear disappear poof cork balloon"
+},
+"ui": {
+"en": "UI & Interface",
+"he": "ממשק",
+"kw": "ui interface click tap button toggle switch menu hover select confirm cancel swipe app scroll"
+},
+"notifications": {
+"en": "Notifications & Alerts",
+"he": "התראות",
+"kw": "notification alert message ding chime success error fail win correct wrong bell beep ping"
+},
+"gaming": {
+"en": "Gaming",
+"he": "משחקים",
+"kw": "game arcade 8bit 8-bit retro chiptune coin power up powerup level jump collect score lose win rpg pickup"
+},
+"cars": {
+"en": "Cars & Vehicles",
+"he": "רכבים",
+"kw": "car engine rev drift skid tire screech horn vehicle motorcycle motorbike truck brake door car racing traffic"
+},
+"transport": {
+"en": "Transport",
+"he": "תחבורה",
+"kw": "train plane airplane jet helicopter boat ship subway bus airport"
+},
+"nature": {
+"en": "Nature & Weather",
+"he": "טבע ומזג אוויר",
+"kw": "nature forest wind rain thunder storm water river stream ocean wave waves sea beach leaves birdsong fire crackle"
+},
+"water": {
+"en": "Water",
+"he": "מים",
+"kw": "water splash drip drop pour bubble liquid underwater swim splashing"
+},
+"fire": {
+"en": "Fire",
+"he": "אש",
+"kw": "fire flame burn burning crackle ignite torch lighter match fireball"
+},
+"animals": {
+"en": "Animals",
+"he": "חיות",
+"kw": "animal dog bark cat meow bird chirp cow horse lion roar wolf howl chicken rooster pig sheep goat duck frog monkey elephant owl crow insect bee fly cricket snake"
+},
+"human": {
+"en": "Human Sounds",
+"he": "קולות אנושיים",
+"kw": "human voice laugh laughing scream yell shout gasp breath breathing sigh cough sneeze kiss clap whistle cry crying baby footsteps heartbeat burp hum crowd cheer applause grunt male female"
+},
+"voice": {
+"en": "Voice & Announcer",
+"he": "קריינות וקולות",
+"kw": "voice voiceover announcer fight round ko knockout go ready win lose game over countdown spoken word"
+},
+"household": {
+"en": "Home & Everyday",
+"he": "בית ויומיום",
+"kw": "door knock doorbell kitchen cooking fridge microwave toilet flush shower keys drawer cup coffee pour bottle can open chair furniture"
+},
+"office": {
+"en": "Office & Tech",
+"he": "משרד וטכנולוגיה",
+"kw": "typing keyboard mouse printer camera shutter phone vibrate ringtone pen writing paper stapler"
+},
+"money": {
+"en": "Money & Business",
+"he": "כסף ועסקים",
+"kw": "money cash coin coins register till cha-ching ka-ching payment card counting"
+},
+"sports": {
+"en": "Sports & Fitness",
+"he": "ספורט וכושר",
+"kw": "sport sports ball kick basketball football soccer tennis whistle referee gym weight dumbbell punch bag boxing bell stadium crowd"
+},
+"barber": {
+"en": "Barbershop",
+"he": "מספרה",
+"kw": "barber hair clipper clippers trimmer shaver razor scissors haircut spray bottle hairdryer hair dryer blow dryer comb brush shave foam"
+},
+"ambience": {
+"en": "Ambience",
+"he": "אווירה ורקע",
+"kw": "ambience ambient atmosphere room tone city street cafe restaurant background drone"
+},
+"mechanical": {
+"en": "Mechanical",
+"he": "מכני",
+"kw": "mechanical machine motor gear lock latch switch lever ratchet metal servo industrial tool drill saw hammer"
+},
+"stings": {
+"en": "Stings & Jingles",
+"he": "ג'ינגלים וחתימות",
+"kw": "sting jingle logo intro outro fanfare tada win music short melody signature"
+},
+"time": {
+"en": "Time & Countdown",
+"he": "זמן וספירה",
+"kw": "clock tick ticking countdown timer alarm stopwatch beep tick-tock"
+}
+}
+}
