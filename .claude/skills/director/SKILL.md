@@ -33,9 +33,9 @@ Run `art-direction`: 5-line brief, one written direction ("Direction: X, because
 ## 3. Route to skills
 | Request | Skills |
 |---|---|
-| Video, reel, promo, clip | `fast-video` + `david-brand`; engine per `TITAN-BUSINESS-OS/VIDEO_STYLE_GUIDE.md` (Remotion, `code-cartoon`, `animate`, `hyperframes`) |
+| Video, reel, promo, clip | `fast-video` + `david-brand`; engine per `TITAN-BUSINESS-OS/VIDEO_STYLE_GUIDE.md` (Remotion via `remotion-best-practices`, `remotion-create`, `remotion-captions`, `remotion-multimedia`, `remotion-render`; `code-cartoon`, `animate`, `hyperframes` + `hyperframes-cli`) |
 | Website, brand identity, product photo, ad, CGI/3D | `art-direction` first, then `impeccable`, `canvas-design`, `frontend-design`; Three.js via `code-cartoon` for 3D; image tools only with David's OK on credits |
-| Carousel, post, landing page, flyer | `social-content`, `canvas-design`, `theme-factory`, `frontend-design` |
+| Carousel, post, landing page, flyer | `social-content`, `canvas-design`, `theme-factory`, `frontend-design`; interactive one-file page → `web-artifacts-builder` |
 | App | `premium-app`, `frontend-design`, `webapp-testing` |
 | App in the style of an existing one | `replica-*` (recon → architect → design → build → test) |
 | Generative visuals | `algorithmic-art`, `canvas-design`; Canva / Picsart tools when connected |
