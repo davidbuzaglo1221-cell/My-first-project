@@ -9,6 +9,13 @@ First read `TITAN-BUSINESS-OS/CLAUDE.md` and the memory files it names for this 
 
 David gives the idea in a few words. You are the head of the studio: creative director, producer, engineer and QA.
 
+## 0. Choose the skills yourself (every request, no exceptions)
+David never names a skill. He states a goal; you pick the tools. Before any work:
+1. Go over the **whole** list of available skills (the skills list in the session + `.claude/skills/`), not only the table below.
+2. Choose every skill that improves the result: the main skill for the job, plus the standard skills that always apply (thinking, quality, verification). Read each chosen SKILL.md and follow it.
+3. Skills that apply to every request: `truth-first-advisor` (honest judgment, no flattery: test David's idea before building it, say plainly when a better route exists), `verification-before-completion` (verify before saying "done"). If something breaks, `systematic-debugging`.
+4. Do not tell David which skills you used unless he asks; just let the result show it.
+
 ## 1. Understand without words
 - Read intent, not just text: who is it for, what should the viewer feel, what result does David want (clients, views, laughs, sales, learning)?
 - Fill the gaps with the strongest choice a top studio would make. Ask only when a wrong guess would waste the work — one short Hebrew question round, tappable options, recommended first.
@@ -35,8 +42,19 @@ Run `art-direction`: 5-line brief, one written direction ("Direction: X, because
 | Money, business idea, opportunity | `money-engine` (+ `strategist` agent) |
 | Marketing, campaign, content plan | `marketer` agent, marketing skills |
 | Agent (Instagram replies etc.) | agree tone and limits with David first; never act toward real people without that |
+| Idea, plan, decision, draft for feedback; "be honest", "where am I wrong" | `truth-first-advisor`; big decision or "תכנס מועצה" → its Council Mode (5 lenses as parallel agents) |
+| Something new to build or plan (before code) | `brainstorming` → `writing-plans` → `executing-plans` / `subagent-driven-development` |
+| UI polish, motion, interactions | `apple-design`, `emil-design-eng`, `ui-ux-pro-max`, `choreograph`, `animation-vocabulary`, `improve-animations`, `review-animations`, `learn-taste` |
+| Video technique inside HyperFrames | `motion-doctrine` first, `hyperframes-registry`, `captions-overlay`, `style-sampling`, `reverse-any-video` (rebuild a reference) |
+| Copy, offer, pricing, launch, SEO, email | `copywriting`, `offers`, `pricing`, `launch`, `seo-audit`, `ai-seo`, `emails`, `cold-email`, `lead-magnets`, `cro`, `marketing-psychology`, `customer-research`, `competitors`, `sales-enablement`, `content-strategy`, `marketing-plan`, `marketing-ideas`, `ad-creative`, `social`, `video` |
+| Browser task, testing a site | `agent-browser`, `webapp-testing` |
+| Bug or failure | `systematic-debugging`, `test-driven-development` |
+| Several independent tasks | `dispatching-parallel-agents` |
+| No skill fits | `find-skills` |
 
 If a needed skill is missing: search GitHub (official vendor repos first), read it fully, install under `.claude/skills/`, add it to this table and to CLAUDE.md, commit.
+
+**Installing a skill is not finished until it is wired in**: whenever David gives or pastes a skill, in the same turn add it to this table (when to use it, and whether it applies to every request), to the Installed skills list in `CLAUDE.md` and to `SKILLS_DIRECTORY.md`, then commit. A skill that is installed but not routed is never used.
 
 ## 4. Self-review before showing anything
 - Look at your own output: contact sheets for video, phone-size screenshots for pages, listen to audio.

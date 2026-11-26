@@ -60,7 +60,9 @@ Use the `premium-app` skill (`.claude/skills/premium-app/SKILL.md`) for every ne
 8. **Ship-quality engineering**: unit tests + Playwright end-to-end checks of every feature, a real check of the live URL, an instant-launch service worker, lock-screen media controls with real artwork.
 
 ## Installed skills
-- **`director` runs first on every request** — it is the lead brain that routes to all the others. Full, tested list with licenses: `TITAN-BUSINESS-OS/SKILLS_DIRECTORY.md`.
+- **`director` runs first on every request** — it is the lead brain that routes to all the others.
+- **David never has to name a skill.** On every request, go over the whole skills list yourself, choose every skill that fits and follow it. `truth-first-advisor` (honest judgment, no flattery) and `verification-before-completion` apply to every request. A skill David gives you is wired into `director`'s routing table in the same turn, or it does not count as installed. Full, tested list with licenses: `TITAN-BUSINESS-OS/SKILLS_DIRECTORY.md`.
+- Thinking: `truth-first-advisor` (always on; Council Mode for big decisions).
 - House: `director`, `art-direction`, `david-brand`, `money-engine`, `premium-app`, `fast-video`, `social-content`, `replica-*`.
 - Video: `remotion-*`, `hyperframes`, `hyperframes-cli`, `hyperframes-registry`, `code-cartoon`, `animate`, `reverse-any-video`, `style-sampling`, `motion-doctrine`, `captions-overlay`.
 - Design: `impeccable`, `ui-ux-pro-max`, `apple-design`, `emil-design-eng`, `choreograph`, `improve-animations`, `review-animations`, `animation-vocabulary`, `learn-taste`, `canvas-design`, `theme-factory`, `algorithmic-art`, `web-artifacts-builder`.
