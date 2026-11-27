@@ -10,6 +10,7 @@ import { Cover, bookHue } from '../ui/Cover'
 import { AreaIcon, IconBook, IconFlame, IconLotus, IconPlay, IconQuiz, IconSearch } from '../ui/Icons'
 import { Eq, Ring, SectionHead, startLesson } from '../ui/Kit'
 import { BookTile, Learned } from '../ui/Books'
+import { TodayCard } from '../ui/Daily'
 
 const fmtListen = (sec: number) => {
   const m = Math.floor(sec / 60)
@@ -134,6 +135,8 @@ export function Home() {
         <p className="h4intro__greet">{greeting()}{s.name ? `, ${s.name}` : ""}</p>
         <h1 className="h4intro__title">הספרייה שלך</h1>
       </div>
+
+      <TodayCard />
 
       <ul className="valuestrip" aria-label="מה יש בספרייה">
         <li>

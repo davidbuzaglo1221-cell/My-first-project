@@ -9,11 +9,12 @@ import { BackButton, PlayGlyph, SectionHead } from '../ui/Kit'
 import { openPlayer } from '../ui/uiState'
 import { Reminders } from './Notebook'
 import { NotFound } from './Explore'
+import { ProgramSection } from '../ui/Daily'
 
 const EMPTY: never[] = []
 const NOOBJ: Record<string, number> = {}
 
-const MED_ICON: Record<Meditation['kind'], string> = { freedom: '◎', stress: '≈', breath: '◌', posture: '│', body: '◍', sleep: '☾', morning: '☼' }
+const MED_ICON: Record<Meditation['kind'], string> = { program: '✦', freedom: '◎', stress: '≈', breath: '◌', posture: '│', body: '◍', sleep: '☾', morning: '☼' }
 const minutes = (id: string) => {
   const n = hasNarration(`calm:${id}`)
   return n
@@ -54,6 +55,8 @@ export function Freedom() {
           <PlayGlyph playing={p.track?.id === `calm:${lead.id}` && p.status === 'playing'} size={20} />
         </span>
       </button>
+
+      <ProgramSection />
 
       <section className="block">
         <SectionHead title="שני מצבים של הגוף" />
