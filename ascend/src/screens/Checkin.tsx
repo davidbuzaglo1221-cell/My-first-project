@@ -6,11 +6,11 @@ import { BackButton } from '../ui/Kit'
 import { toast } from '../ui/uiState'
 
 const MOODS = [
-  { v: 1, label: 'קשה', hue: 4 },
-  { v: 2, label: 'לא משהו', hue: 28 },
-  { v: 3, label: 'בסדר', hue: 48 },
-  { v: 4, label: 'טוב', hue: 120 },
-  { v: 5, label: 'מעולה', hue: 156 },
+  { v: 1, label: 'קשה', hue: 20 },
+  { v: 2, label: 'לא משהו', hue: 60 },
+  { v: 3, label: 'בסדר', hue: 100 },
+  { v: 4, label: 'טוב', hue: 140 },
+  { v: 5, label: 'מעולה', hue: 180 },
 ]
 const NONE: Record<string, { mood: number; q: string; a: string; at: number }> = {}
 
@@ -31,11 +31,17 @@ export function Checkin() {
   const avg = filled ? days.reduce((x, d) => x + (all[dayKey(d)]?.mood ?? 0), 0) / filled : 0
   return (
     <div className="screen checkin">
-      <header className="page-head page-head--back">
-        <BackButton fallback="/" />
-        <h1 className="page-title">איך אתה מרגיש?</h1>
+      <header className="photohero photohero--evening">
+        <img src="photos/evening.webp" alt="" decoding="async" />
+        <div className="photohero__top">
+          <BackButton fallback="/" />
+        </div>
+        <div className="photohero__text">
+          <span className="photohero__kicker">עצירה של דקה</span>
+          <h1>איך אתה מרגיש?</h1>
+          <p>רק בשבילך. נשמר במכשיר שלך.</p>
+        </div>
       </header>
-      <p className="page-sub">דקה אחת ביום לעצור ולשים לב. רק בשבילך, נשמר במכשיר שלך.</p>
 
       <section className="ck__moods" role="radiogroup" aria-label="מצב רוח">
         {MOODS.map((m) => (

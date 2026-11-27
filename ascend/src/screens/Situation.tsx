@@ -19,11 +19,17 @@ export function SituationScreen({ id }: { id?: string }) {
   const next = situations.find((x) => answers[x.id] === undefined && x.id !== s.id)
   return (
     <div className="screen situation">
-      <header className="page-head page-head--back">
-        <BackButton fallback="/" />
-        <h1 className="page-title">מה היית עושה?</h1>
+      <header className="photohero photohero--situation">
+        <img src="photos/situation.webp" alt="" decoding="async" />
+        <div className="photohero__top">
+          <BackButton fallback="/" />
+        </div>
+        <div className="photohero__text">
+          <span className="photohero__kicker">מצב מהחיים</span>
+          <h1>מה היית עושה?</h1>
+          <p>שלוש דרכים להגיב. בחר, ותקבל הסבר מתוך הספרים.</p>
+        </div>
       </header>
-      <p className="page-sub">מצב אמיתי מהחיים, שלוש דרכים להגיב. בחר, ותקבל הסבר מתוך הספרים.</p>
 
       <article className="sit">
         <span className="sit__kicker">המצב של היום</span>

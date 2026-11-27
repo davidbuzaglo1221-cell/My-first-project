@@ -28,9 +28,13 @@ export function Progress() {
 
   return (
     <div className="screen progress">
-      <header className="page-head">
-        <h1 className="page-title">ההתקדמות שלך</h1>
-        <p className="page-sub">כמה למדת, בכל ספר ובכל הספרייה.</p>
+      <header className="photohero photohero--progress">
+        <img src="photos/progress.webp" alt="" decoding="async" />
+        <div className="photohero__text">
+          <span className="photohero__kicker">ההתקדמות</span>
+          <h1>ההתקדמות שלך</h1>
+          <p>רק מה שבאמת עשית: פרקים, ספרים, דקות וימים.</p>
+        </div>
       </header>
 
       <ProgressBooks />

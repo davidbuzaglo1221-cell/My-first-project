@@ -78,11 +78,13 @@ export function Explore() {
 
   return (
     <div className="screen lib">
-      <header className="lib__head">
-        <div className="lib__titles">
-          <h1 className="page-title">הספרייה</h1>
-          <p className="lib__stat">
-            <strong>{stats.books}</strong> ספרים · <strong>{stats.chapters}</strong> פרקים · למדת <strong className="em">{stats.percent}%</strong>
+      <header className="photohero photohero--lib">
+        <img src="photos/library.webp" alt="" decoding="async" />
+        <div className="photohero__text">
+          <span className="photohero__kicker">הספרייה</span>
+          <h1>הספרים שמשנים אנשים</h1>
+          <p className="photohero__stat">
+            <strong>{stats.books}</strong> ספרים · <strong>{stats.chapters}</strong> פרקים · למדת <strong>{stats.percent}%</strong>
           </p>
         </div>
       </header>

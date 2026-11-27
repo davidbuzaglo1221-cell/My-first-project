@@ -43,9 +43,13 @@ export function Notebook({ tab: initial }: { tab?: string }) {
   const due = useStore((s) => dueCards(s).length)
   return (
     <div className="screen notebook">
-      <header className="page-head">
-        <h1 className="page-title">המחברת</h1>
-        <p className="page-sub">כל מה שכתבת, אהבת, הקלטת ורוצה לזכור, במקום אחד.</p>
+      <header className="photohero photohero--notebook">
+        <img src="photos/notebook.webp" alt="" decoding="async" />
+        <div className="photohero__text">
+          <span className="photohero__kicker">המחברת</span>
+          <h1>מה שחשוב לך לזכור</h1>
+          <p>כל מה שכתבת, אהבת והקלטת, במקום אחד.</p>
+        </div>
       </header>
       <div className="tabs" role="tablist">
         {TABS.map((t) => (

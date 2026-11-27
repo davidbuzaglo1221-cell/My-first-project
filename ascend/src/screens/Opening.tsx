@@ -3,11 +3,10 @@ import { books } from '../content'
 import { store } from '../lib/store'
 import { Cover } from '../ui/Cover'
 
-const ROWS = 5
 
 /**
- * The opening: the whole library as a diagonal wall of covers drifting past, row against row,
- * then the name and the way in. Shown once per launch; the first visit also marks the library as opened.
+ * The opening: an architectural space coming out of the dark, the name, one line of light,
+ * the whole library drifting past in a single band, and the way in. Shown once per launch.
  */
 export function Opening({ onEnter }: { onEnter: () => void }) {
   const [leaving, setLeaving] = useState(false)
@@ -22,28 +21,29 @@ export function Opening({ onEnter }: { onEnter: () => void }) {
     store.set({ onboarded: true }, { immediate: true })
     setTimeout(onEnter, 650)
   }
-  // Every book in the library, dealt across the rows; each row is doubled so it loops without a seam.
-  const rows = Array.from({ length: ROWS }, (_, r) => books.filter((_, i) => i % ROWS === r))
   const chapters = books.reduce((a, b) => a + b.lessons.length, 0)
   return (
     <div className={`opening ${leaving ? 'is-leaving' : ''} ${ready ? 'is-ready' : ''}`}>
-      <div className="opening__wall" aria-hidden="true">
-        {rows.map((row, r) => (
-          <div key={r} className={`owall__row owall__row--${r}`}>
-            {[...row, ...row].map((b, i) => (
-              <Cover key={i} book={b} size="md" eager />
-            ))}
-          </div>
-        ))}
+      <div className="opening__photo" aria-hidden="true">
+        <img src="photos/welcome.webp" alt="" fetchPriority="high" decoding="async" />
       </div>
       <div className="opening__shade" aria-hidden="true" />
+      <p className="opening__kicker">MY JOURNEY</p>
       <div className="opening__body">
         <h1 className="opening__brand">המסע שלי</h1>
+        <span className="opening__line" aria-hidden="true" />
         <p className="opening__lead">
-          {books.length} הספרים הטובים בעולם. {chapters} פרקים, כל ספר במלואו, רק העיקר.
+          {books.length} ספרים גדולים, {chapters} פרקים. ללמוד, להקשיב, לתרגל, ולהפוך לגרסה הבאה שלך.
         </p>
+        <div className="opening__wall" aria-hidden="true">
+          <div className="owall__row">
+            {[...books, ...books].map((b, i) => (
+              <Cover key={i} book={b} size="md" eager={i < 14} />
+            ))}
+          </div>
+        </div>
         <button className="opening__enter" onClick={enter}>
-          כניסה אל המסע שלי
+          כניסה
         </button>
       </div>
     </div>

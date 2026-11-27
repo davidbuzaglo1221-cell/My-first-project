@@ -72,6 +72,23 @@ export interface Memo {
   at: number
 }
 
+export interface Commitment {
+  id: string
+  text: string
+  at: number
+  status: 'open' | 'done' | 'dropped'
+  doneAt?: number
+  /** The coach session it came from, if any. */
+  from?: string
+}
+
+/** The coach: one goal, commitments it follows up on, and the sessions you did. */
+export interface CoachState {
+  goal?: { text: string; why?: string; area?: string; at: number }
+  commits?: Commitment[]
+  sessions?: { id: string; kind: string; at: number; answers: string[] }[]
+}
+
 export interface AppState {
   v: 1
   onboarded: boolean
@@ -116,6 +133,7 @@ export interface AppState {
   situations?: Record<string, number>
   /** Notifications: whether this device subscribed, and the morning/evening hours chosen. */
   push?: { on: boolean; hours: number[] }
+  coach?: CoachState
   /** Your day: the day the idea of the day was opened, and the daily reminder time (HH:MM) once set. */
   daily?: { idea?: string; remindAt?: string }
 }

@@ -13,6 +13,7 @@ import { Library } from './screens/Library'
 import { NowPlaying } from './screens/NowPlaying'
 import { Opening } from './screens/Opening'
 import { Checkin } from './screens/Checkin'
+import { Coach } from './screens/Coach'
 import { SituationScreen } from './screens/Situation'
 import { Progress } from './screens/Progress'
 import { Settings } from './screens/Settings'
@@ -157,6 +158,9 @@ export function App() {
       break
     case 'checkin':
       screen = <Checkin />
+      break
+    case 'coach':
+      screen = <Coach session={route.session} />
       break
     case 'situation':
       screen = <SituationScreen id={route.id} />

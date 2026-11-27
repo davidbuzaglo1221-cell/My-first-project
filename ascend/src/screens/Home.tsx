@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { bookById, bookIdeas, bookSeconds, books, categories, categoryById, formatHours, formatMinutes, lessonIndex } from '../content'
+import { bookById, bookSeconds, books, categories, categoryById, formatMinutes, lessonIndex } from '../content'
 import { usePlayer } from '../engine/player'
 import { greeting } from '../lib/dates'
 import { currentStreak, todaySeconds } from '../lib/insights'
@@ -7,10 +7,14 @@ import { bookPercent, bookStatus, dueCards, libraryStats } from '../lib/learn'
 import { navigate } from '../lib/router'
 import { useStore } from '../lib/store'
 import { Cover, bookHue } from '../ui/Cover'
-import { AreaIcon, IconBook, IconFlame, IconLotus, IconPlay, IconQuiz, IconSearch } from '../ui/Icons'
+import { AreaIcon, IconBook, IconChat, IconFlame, IconLotus, IconPlay, IconSearch } from '../ui/Icons'
 import { Eq, Ring, SectionHead, startLesson } from '../ui/Kit'
 import { BookTile, Learned } from '../ui/Books'
 import { TodayCard } from '../ui/Daily'
+import { load } from '../engine/player'
+import { coachNotes } from '../lib/coach'
+import { nextProgramDay, todayChecks } from '../lib/daily'
+import { openPlayer } from '../ui/uiState'
 
 const fmtListen = (sec: number) => {
   const m = Math.floor(sec / 60)
@@ -88,13 +92,6 @@ function Showcase({ ids }: { ids: string[] }) {
   )
 }
 
-/** The size of the library, shown on the home screen. */
-const LIB = {
-  chapters: books.reduce((a, b) => a + b.lessons.length, 0),
-  ideas: books.reduce((a, b) => a + bookIdeas(b), 0),
-  seconds: books.reduce((a, b) => a + bookSeconds(b), 0),
-}
-
 export function Home() {
   const s = useStore((x) => x)
   const p = usePlayer()
@@ -109,6 +106,19 @@ export function Home() {
   const active = books.filter((b) => bookStatus(s, b) === 'active').sort((a, b) => recent(b) - recent(a)).slice(0, 8)
   const nextOf = (b: (typeof books)[number]) => b.lessons.find((l) => !s.progress[l.id]?.done && !s.readDone?.[l.id]) ?? b.lessons[0]
 
+  // The one most valuable thing right now: continue the book you are in, else today's practice, else begin.
+  const notes = coachNotes(s)
+  const checks = todayChecks(s)
+  const prog = nextProgramDay(s)
+  const next = active[0]
+    ? (() => {
+        const l = nextOf(active[0])
+        return { kicker: 'להמשיך מאיפה שעצרת', title: `${active[0].title} · פרק ${active[0].lessons.indexOf(l) + 1}`, go: () => startLesson(l.id) }
+      })()
+    : !checks.practice
+      ? { kicker: 'התרגול של היום', title: prog.day.title, go: () => (load(`calm:${prog.day.id}`, { autoplay: true, from: 0 }), openPlayer()) }
+      : { kicker: 'הספר הראשון שלך', title: `${books[0].title} · פרק 1`, go: () => startLesson(books[0].lessons[0].id) }
+
   // The whole library, interleaved across areas and rotated daily
   const dayN = Math.floor(Date.now() / 86400000)
   const mixed: string[] = []
@@ -119,43 +129,37 @@ export function Home() {
 
   return (
     <div className="screen home4">
-      <header className="h3top">
-        <button className="avatar" onClick={() => navigate('/settings')} aria-label="פרופיל והגדרות">
-          {initial}
-        </button>
-        <span className="wordmark wordmark--he">
-          המסע שלי
-        </span>
-        <button className="icon-btn icon-btn--glass" onClick={() => navigate('/explore')} aria-label="חיפוש בספרייה">
-          <IconSearch size={19} />
+      <header className="homehero">
+        <img className="homehero__img" src="photos/home.webp" alt="" decoding="async" fetchPriority="high" />
+        <div className="h3top h3top--over">
+          <button className="avatar" onClick={() => navigate('/settings')} aria-label="פרופיל והגדרות">
+            {initial}
+          </button>
+          <span className="wordmark wordmark--he">המסע שלי</span>
+          <button className="icon-btn icon-btn--glass" onClick={() => navigate('/explore')} aria-label="חיפוש בספרייה">
+            <IconSearch size={19} />
+          </button>
+        </div>
+        <div className="homehero__text">
+          <p className="homehero__greet">
+            {greeting()}
+            {s.name ? `, ${s.name}` : ''}
+          </p>
+          <h1 className="homehero__title">המסע שלך</h1>
+        </div>
+        <button className="nownext" onClick={next.go}>
+          <span className="nownext__play" aria-hidden="true">
+            {p.status === 'playing' ? <Eq /> : <IconPlay size={15} />}
+          </span>
+          <span className="nownext__body">
+            <small>{next.kicker}</small>
+            <strong>{next.title}</strong>
+          </span>
         </button>
       </header>
 
-      <div className="h4intro">
-        <p className="h4intro__greet">{greeting()}{s.name ? `, ${s.name}` : ""}</p>
-        <h1 className="h4intro__title">המסע שלך</h1>
-      </div>
-
       <TodayCard />
 
-      <ul className="valuestrip" aria-label="מה יש בספרייה">
-        <li>
-          <strong>{books.length}</strong>
-          <span>ספרים</span>
-        </li>
-        <li>
-          <strong>{LIB.chapters}</strong>
-          <span>פרקים</span>
-        </li>
-        <li>
-          <strong>{LIB.ideas}</strong>
-          <span>רעיונות</span>
-        </li>
-        <li>
-          <strong>{formatHours(LIB.seconds).replace(' שעות', '')}</strong>
-          <span>שעות האזנה</span>
-        </li>
-      </ul>
 
       <button className="learnrow" onClick={() => navigate('/progress')} aria-label={`למדת ${stats.percent} אחוז מהספרייה`}>
         <span className="learnrow__top">
@@ -179,10 +183,10 @@ export function Home() {
           <strong>לנשום</strong>
           <small>מהישרדות לחופש</small>
         </button>
-        <button className="q4" onClick={() => navigate(active[0] ? `/quiz/${active[0].id}` : '/explore')}>
-          <IconQuiz size={18} />
-          <strong>להיבחן</strong>
-          <small>{active[0] ? active[0].title : 'בחר ספר'}</small>
+        <button className="q4" onClick={() => navigate('/coach')}>
+          <IconChat size={18} />
+          <strong>המאמן</strong>
+          <small>{notes.length ? `${notes.length} דברים לדבר עליהם` : 'שיחה של חמש דקות'}</small>
         </button>
       </div>
 

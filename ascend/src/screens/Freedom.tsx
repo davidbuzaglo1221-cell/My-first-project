@@ -29,14 +29,15 @@ export function Freedom() {
   const [lead, ...rest] = meditations
   return (
     <div className="screen freedom">
-      <header className="fr-hero">
-        <p className="fr-hero__kicker">מרחב השקט</p>
-        <h1 className="fr-hero__title">מהישרדות לחופש</h1>
-        <p className="fr-hero__lead">כשהגוף במצב הישרדות, אי אפשר לחשוב בבהירות, ללמוד או לבחור. כאן מלמדים את מערכת העצבים לעבור למצב של חופש: נשימה, גוף, ושקט.</p>
-        <div className="fr-hero__stats">
-          <span>
-            <strong>{week}</strong> דקות תרגול השבוע
-          </span>
+      <header className="photohero photohero--calm">
+        <img src="photos/calm.webp" alt="" decoding="async" />
+        <div className="photohero__text">
+        <span className="photohero__kicker">מרחב השקט</span>
+        <h1>מהישרדות לחופש</h1>
+        <p>כשהגוף במצב הישרדות, אי אפשר לחשוב בבהירות, ללמוד או לבחור. כאן מלמדים את מערכת העצבים לעבור למצב של חופש: נשימה, גוף, ושקט.</p>
+        <p className="photohero__stat">
+          <strong>{week}</strong> דקות תרגול השבוע
+        </p>
         </div>
       </header>
 
