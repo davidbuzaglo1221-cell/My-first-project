@@ -31,8 +31,12 @@ jobs:
           cache: npm
           cache-dependency-path: ascend/package-lock.json
       - run: npm ci
+      - run: npm run typecheck
       - run: npm test
       - run: npm run build:pwa
+        env:
+          # where the Pages build finds the app's server (empty = AI features stay hidden)
+          VITE_AI_BASE: ${{ vars.AI_BASE }}
       - run: touch dist/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

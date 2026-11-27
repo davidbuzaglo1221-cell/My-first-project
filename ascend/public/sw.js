@@ -1,6 +1,6 @@
 // Instant launches: the app shell is served from cache and refreshed in the background.
 // Audio streams straight from the network (range requests for seeking are never cached).
-const CACHE = 'hasifria-v7'
+const CACHE = 'hasifria-v8'
 const SHELL = ['./', './index.html', './manifest.json', './apple-touch-icon.png', './icon-192.png', './icon-512.png']
 self.addEventListener('install', (e) => {
   self.skipWaiting()
@@ -13,7 +13,7 @@ self.addEventListener('fetch', (e) => {
   const req = e.request
   const url = new URL(req.url)
   if (req.method !== 'GET' || url.origin !== location.origin) return
-  if (url.pathname.includes('/audio/') || req.headers.has('range')) return
+  if (url.pathname.includes('/audio/') || url.pathname.includes('/api/') || req.headers.has('range')) return
   if (req.mode === 'navigate') {
     const fresh = fetch(req).then((r) => {
       if (r.ok) caches.open(CACHE).then((c) => c.put('./index.html', r.clone()))

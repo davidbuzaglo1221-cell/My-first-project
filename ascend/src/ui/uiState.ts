@@ -1,3 +1,4 @@
+import { haptic } from '../lib/haptics'
 import { useSyncExternalStore } from 'react'
 
 interface UI {
@@ -37,5 +38,5 @@ if (typeof window !== 'undefined')
     if (ui.playerOpen) set({ playerOpen: false })
   })
 
-export const showComplete = (id?: string) => set({ completeId: id })
+export const showComplete = (id?: string) => (id && haptic('success'), set({ completeId: id }))
 export const toast = (text?: string) => set({ toast: text })

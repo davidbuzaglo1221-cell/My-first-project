@@ -60,12 +60,35 @@ const subscribe = (f: () => void) => {
 }
 
 export const useHash = () => useSyncExternalStore(subscribe, () => location.hash || '#/')
-export const navigate = (path: string) => {
-  const next = '#' + path
-  if (location.hash !== next) location.hash = next
-  else window.dispatchEvent(new HashChangeEvent('hashchange'))
+export type NavDirection = 'forward' | 'back' | 'tab'
+
+type VTDocument = Document & { startViewTransition?: (cb: () => Promise<void> | void) => { finished: Promise<void> } }
+
+/** Animate a route change with the View Transitions API where available; elsewhere change it instantly. */
+function transition(dir: NavDirection, update: () => void) {
+  const d = document as VTDocument
+  if (!d.startViewTransition || matchMedia('(prefers-reduced-motion: reduce)').matches) return update()
+  const root = document.documentElement
+  root.dataset.nav = dir
+  const vt = d.startViewTransition(
+    () =>
+      new Promise<void>((resolve) => {
+        // React renders the new route right after hashchange; capture the new frame then (with a safety timeout)
+        const done = () => setTimeout(resolve, 0)
+        window.addEventListener('hashchange', done, { once: true })
+        update()
+        setTimeout(resolve, 260)
+      }),
+  )
+  vt.finished.finally(() => delete root.dataset.nav)
 }
-export const back = (fallback = '/') => (history.length > 1 ? history.back() : navigate(fallback))
+
+export const navigate = (path: string, dir: NavDirection = 'forward') => {
+  const next = '#' + path
+  if (location.hash === next) return void window.dispatchEvent(new HashChangeEvent('hashchange'))
+  transition(dir, () => (location.hash = next))
+}
+export const back = (fallback = '/') => (history.length > 1 ? transition('back', () => history.back()) : navigate(fallback, 'back'))
 
 /** Tab a route belongs to, for the tab bar highlight. */
 export const tabOf = (r: Route): string =>

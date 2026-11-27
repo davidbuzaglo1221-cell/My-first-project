@@ -12,9 +12,9 @@ const { chromium } = require('playwright')
   for (const id of ids) {
     await p.goto(`http://localhost:4173/#/book/${id}`); await p.waitForTimeout(250)
     const title = await p.locator('.bhero__title').count(), rows = await p.locator('.lrow').count(), map = await p.locator('.bmap__ch').count()
-    await p.goto(`http://localhost:4173/#/read/${id}`); await p.waitForTimeout(200)
+    await p.goto(`http://localhost:4173/#/read/${id}`); await p.waitForSelector('.reader__chtitle', { timeout: 4000 }).catch(() => {}) // the reader loads on demand
     const ch = await p.locator('.reader__chtitle').count(), paras = await p.locator('.rpara').count()
-    await p.goto(`http://localhost:4173/#/quiz/${id}`); await p.waitForTimeout(200)
+    await p.goto(`http://localhost:4173/#/quiz/${id}`); await p.waitForSelector('.screen', { timeout: 4000 }).catch(() => {})
     const quiz = await p.locator('.screen').count()
     const ok = title && rows >= 5 && (map >= 5 || id === 'as-a-man-thinketh') && ch && paras >= 3 && quiz
     if (!ok) { bad++; console.log('FAIL', id, { title, rows, map, ch, paras, quiz }) }

@@ -13,11 +13,12 @@ import { IconChat, IconPen, IconQuiz } from '../ui/Icons'
 import { Learned } from '../ui/Books'
 import { NoteEditor } from './Notebook'
 import { useState } from 'react'
+import { useAIAvailable } from '../lib/ai'
 
 /** Asking the book needs Claude around the page; a standalone install hides it. */
-const canAsk = !!(globalThis as unknown as { claude?: unknown }).claude
 
 export function BookScreen({ id }: { id: string }) {
+  const canAsk = useAIAvailable()
   const [note, setNote] = useState(false)
   const b = bookById[id]
   const s = useStore((x) => x)

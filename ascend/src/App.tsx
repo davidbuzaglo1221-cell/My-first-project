@@ -1,31 +1,38 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { bookById } from './content'
 import { load, player, registerArtwork, usePlayer } from './engine/player'
 import { evaluateAchievements } from './lib/insights'
 import { parse, useHash } from './lib/router'
 import { store, useStore } from './lib/store'
+import { useTheme } from './lib/theme'
 import { BookScreen } from './screens/Book'
 import { CategoryScreen, Explore } from './screens/Explore'
-import { Growth, PathScreen } from './screens/Growth'
 import { Home } from './screens/Home'
 import { LessonComplete } from './screens/LessonComplete'
 import { Library } from './screens/Library'
 import { NowPlaying } from './screens/NowPlaying'
 import { Opening } from './screens/Opening'
-import { Progress } from './screens/Progress'
-import { Settings } from './screens/Settings'
 import { Voices } from './screens/Voices'
-import { Reader } from './screens/Reader'
-import { Breathe, Freedom } from './screens/Freedom'
 import { Notebook } from './screens/Notebook'
-import { Quiz } from './screens/Quiz'
-import { Ask } from './screens/Ask'
 import { dueNow, chime } from './lib/remind'
 import { MiniPlayer, TabBar } from './ui/Chrome'
 import { bookHue, bookMotif, coverUrl, hasRealCover } from './ui/Cover'
 import { coverPng } from './ui/coverArt'
 import { Toast } from './ui/Kit'
 import { showComplete, toast, useUI } from './ui/uiState'
+
+/* Screens opened less often load on demand, then are fetched in the background so they work offline. */
+const Growth = lazy(() => import('./screens/Growth').then((m) => ({ default: m.Growth })))
+const PathScreen = lazy(() => import('./screens/Growth').then((m) => ({ default: m.PathScreen })))
+const Progress = lazy(() => import('./screens/Progress').then((m) => ({ default: m.Progress })))
+const Settings = lazy(() => import('./screens/Settings').then((m) => ({ default: m.Settings })))
+const Reader = lazy(() => import('./screens/Reader').then((m) => ({ default: m.Reader })))
+const Freedom = lazy(() => import('./screens/Freedom').then((m) => ({ default: m.Freedom })))
+const Breathe = lazy(() => import('./screens/Freedom').then((m) => ({ default: m.Breathe })))
+const Quiz = lazy(() => import('./screens/Quiz').then((m) => ({ default: m.Quiz })))
+const Ask = lazy(() => import('./screens/Ask').then((m) => ({ default: m.Ask })))
+const preloadScreens = () =>
+  Promise.all([import('./screens/Growth'), import('./screens/Progress'), import('./screens/Settings'), import('./screens/Reader'), import('./screens/Freedom'), import('./screens/Quiz'), import('./screens/Ask')]).catch(() => {})
 
 registerArtwork((t) => {
   const b = t.bookId ? bookById[t.bookId] : undefined
@@ -55,6 +62,7 @@ export function App() {
     setOpened(true)
   }
   const ui = useUI()
+  useTheme()
   const p = usePlayer()
   const main = useRef<HTMLElement>(null)
 
@@ -63,6 +71,13 @@ export function App() {
     window.scrollTo({ top: 0 })
     main.current?.focus({ preventScroll: true })
   }, [hash])
+
+  // After the first screen is up, fetch the other screens quietly (the service worker keeps them for offline use).
+  useEffect(() => {
+    // a plain timer: requestIdleCallback is missing on iPhone, and two seconds is enough for the first paint
+    const t = window.setTimeout(() => void preloadScreens(), 2000)
+    return () => clearTimeout(t)
+  }, [])
 
   // Resume exactly where you stopped: restore the last track, paused, after a reload.
   useEffect(() => {
@@ -158,7 +173,7 @@ export function App() {
   return (
     <div className={`app ${p.track ? 'has-mini' : ''} ${ui.playerOpen ? 'player-open' : ''} ${route.name === 'read' ? 'is-reading' : ''} ${route.name === 'breathe' ? 'is-breathing' : ''}`}>
       <main ref={main} tabIndex={-1} key={hash} className="view" inert={ui.playerOpen || undefined}>
-        {screen}
+        <Suspense fallback={<ScreenSkeleton />}>{screen}</Suspense>
       </main>
       <div className="dock" inert={ui.playerOpen || undefined}>
         <MiniPlayer />
@@ -168,6 +183,16 @@ export function App() {
       <LessonComplete />
       {ui.toast && <Toast text={ui.toast} onDone={() => toast(undefined)} />}
       {(!opened || !onboarded) && <Opening onEnter={enter} />}
+    </div>
+  )
+}
+
+function ScreenSkeleton() {
+  return (
+    <div className="screen" aria-busy="true" aria-label="טוען">
+      <div className="skel" style={{ height: 34, width: '46%', marginTop: 'calc(var(--safe-t) + 56px)' }} />
+      <div className="skel" style={{ height: 16, width: '70%', marginTop: 14 }} />
+      <div className="skel" style={{ height: 180, marginTop: 28, borderRadius: 16 }} />
     </div>
   )
 }

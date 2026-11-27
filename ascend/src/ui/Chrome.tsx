@@ -1,3 +1,4 @@
+import { haptic } from '../lib/haptics'
 import { bookById } from '../content'
 import { neighbours, nextChapter, usePlayer, toggle } from '../engine/player'
 import { navigate, type Route, tabOf } from '../lib/router'
@@ -19,7 +20,7 @@ export function TabBar({ route }: { route: Route }) {
   return (
     <nav className="tabbar" aria-label="ניווט ראשי">
       {tabs.map(({ id, label, path, Icon }) => (
-        <button key={id} className={`tab ${active === id ? 'is-on' : ''}`} aria-current={active === id ? 'page' : undefined} onClick={() => navigate(path)}>
+        <button key={id} className={`tab ${active === id ? 'is-on' : ''}`} aria-current={active === id ? 'page' : undefined} onClick={() => (haptic('tick'), navigate(path, 'tab'))}>
           <Icon size={22} strokeWidth={active === id ? 1.9 : 1.5} />
           <span>{label}</span>
         </button>
@@ -43,7 +44,7 @@ export function MiniPlayer() {
           <span className="mini2__sub">{p.track.subtitle}</span>
         </span>
       </button>
-      <button className="mini2__btn" onClick={toggle} aria-label={playing ? 'השהה' : 'נגן'}>
+      <button className="mini2__btn" onClick={() => (haptic('tap'), toggle())} aria-label={playing ? 'השהה' : 'נגן'}>
         <PlayGlyph playing={playing} size={22} />
       </button>
       <button className="mini2__btn" onClick={nextChapter} aria-label="פרק הבא" disabled={!neighbours(p.track.id).next}>

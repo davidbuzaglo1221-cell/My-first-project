@@ -33,6 +33,12 @@ export function errorText(code?: string) {
       return 'צריך להתחבר שוב לחשבון Claude.'
     case 'cancelled':
       return ''
+    case 'network':
+      return 'אין חיבור לרשת כרגע. בדוק את החיבור ונסה שוב.'
+    case 'not_configured':
+      return 'העוזר החכם עוד לא מחובר בכתובת הזו.'
+    case 'bad_request':
+      return 'השאלה ארוכה מדי. נסה לקצר אותה.'
     default:
       return 'משהו השתבש בדרך. נסה לשאול שוב.'
   }

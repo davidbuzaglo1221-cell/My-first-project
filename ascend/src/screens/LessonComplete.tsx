@@ -19,7 +19,9 @@ export function LessonComplete() {
   const habitAdded = useStore((s) => !!ref?.lesson.exercise.habit && s.habits.some((h) => h.text === ref.lesson.exercise.habit && !h.archived))
   const existing = useStore((s) => (id && ref?.lesson.exercise.reflect ? s.journal.find((j) => j.lessonId === id)?.text ?? '' : ''))
   const [text, setText] = useState('')
-  useEffect(() => setText(existing), [existing, id])
+  useEffect(() => {
+    setText(existing)
+  }, [existing, id])
 
   if (!ref) return null
   const { lesson, book, index } = ref

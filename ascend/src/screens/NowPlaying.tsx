@@ -1,3 +1,4 @@
+import { haptic } from '../lib/haptics'
 import { useEffect, useRef, useState } from 'react'
 import { bookById, formatClock, lessonIndex } from '../content'
 import { currentVoice, setNarrator, jumpToSegment, neighbours, nextChapter, previousChapter, seek, setRate, setSleep, skip, toggle, usePlayer, load } from '../engine/player'
@@ -205,7 +206,7 @@ export function NowPlaying() {
               <button className="np2__t np2__t--skip" onClick={() => skip(-skipBy)} aria-label={`אחורה ${skipBy} שניות`}>
                 <IconBack size={30} seconds={skipBy} />
               </button>
-              <button className="np2__play" onClick={toggle} aria-label={playing ? 'השהה' : 'נגן'}>
+              <button className="np2__play" onClick={() => (haptic('tap'), toggle())} aria-label={playing ? 'השהה' : 'נגן'}>
                 <PlayGlyph playing={playing} size={44} />
               </button>
               <button className="np2__t np2__t--skip" onClick={() => skip(skipBy)} aria-label={`קדימה ${skipBy} שניות`}>

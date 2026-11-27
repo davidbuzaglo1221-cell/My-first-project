@@ -40,6 +40,14 @@ export interface Settings {
   rate: number
   autoContinue: boolean
   skip: number
+  /** Light haptic feedback on supported phones (default on). */
+  haptics?: boolean
+  /** Voice for spoken answers: female (Hila) or male (Avri). */
+  voiceGender?: 'female' | 'male'
+  /** Read assistant answers aloud as they arrive. */
+  speakAnswers?: boolean
+  /** Appearance: follow the device, or always dark / light. */
+  theme?: 'system' | 'dark' | 'light'
 }
 
 export interface Note {

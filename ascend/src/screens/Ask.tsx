@@ -1,69 +1,88 @@
 import { useEffect, useRef, useState } from 'react'
 import { bookById } from '../content'
-import { errorText, getSample } from '../lib/claude'
-import { addNote } from '../lib/store'
+import { AIError, assistant, type ChatProvider, type ChatTurn } from '../lib/ai'
+import { haptic } from '../lib/haptics'
+import { useDictation } from '../lib/listen'
+import { say, stopSpeaking, type Speaking } from '../lib/speech'
+import { addNote, updateSettings, useStore } from '../lib/store'
 import { Cover } from '../ui/Cover'
-import { IconSpark } from '../ui/Icons'
+import { IconMic, IconSend, IconSpark, IconSpeaker, IconStop } from '../ui/Icons'
 import { BackButton } from '../ui/Kit'
 import { toast } from '../ui/uiState'
 import { NotFound } from './Explore'
 
-type Turn = { role: 'user' | 'assistant'; content: string }
+const BOOK_SUGGEST = ['מה שלושת הרעיונות שהכי כדאי לי ליישם השבוע?', 'תסביר לי את הפרק הכי חשוב בספר במילים פשוטות', 'איך אני מיישם את הספר בעבודה?', 'תן לי דוגמה מהחיים לרעיון המרכזי', 'בחן אותי בשאלה פתוחה אחת']
+const LIBRARY_SUGGEST = ['אני רוצה להפסיק לדחות דברים. במה להתחיל?', 'איזה ספר הכי יעזור לי עם כסף?', 'יש לי שיחה קשה מחר. מה כדאי לקרוא היום?', 'בנה לי תוכנית קריאה לחודש הקרוב']
 
-const SUGGEST = ['מה שלושת הרעיונות שהכי כדאי לי ליישם השבוע?', 'תסביר לי את הפרק הכי חשוב בספר במילים פשוטות', 'איך אני מיישם את הספר בעבודה?', 'תן לי דוגמה מהחיים לרעיון המרכזי', 'בחן אותי בשאלה פתוחה אחת']
-
-/** Ask the book: a conversation with Claude, grounded in the book's chapters. */
+/** Ask the book (or the whole library): a conversation grounded in the library's content, by voice or by text. */
 export function Ask({ bookId }: { bookId: string }) {
-  const b = bookById[bookId]
-  const [turns, setTurns] = useState<Turn[]>([])
+  const b = bookId ? bookById[bookId] : undefined
+  const settings = useStore((s) => s.settings)
+  const [turns, setTurns] = useState<ChatTurn[]>([])
   const [text, setText] = useState('')
   const [busy, setBusy] = useState(false)
   const [live, setLive] = useState('')
-  const [avail, setAvail] = useState<boolean | null>(null)
+  const [provider, setProvider] = useState<ChatProvider | null | undefined>(undefined)
+  const [speaking, setSpeaking] = useState<number | null>(null)
   const ctl = useRef<AbortController | null>(null)
   const end = useRef<HTMLDivElement>(null)
+  const voice = useRef<Speaking | null>(null)
+  const dict = useDictation((heard) => ask(heard))
 
   useEffect(() => {
     let on = true
-    getSample().then((s) => on && setAvail(!!s))
+    assistant().then((p) => on && setProvider(p))
     return () => {
       on = false
       ctl.current?.abort()
+      stopSpeaking()
     }
   }, [])
-  useEffect(() => end.current?.scrollIntoView({ block: 'end', behavior: 'smooth' }), [turns, live])
-  if (!b) return <NotFound />
+  // Braces matter: newer browsers return a Promise from scrollIntoView, and React would call it as a cleanup.
+  useEffect(() => {
+    end.current?.scrollIntoView({ block: 'end', behavior: 'smooth' })
+  }, [turns, live])
 
-  const context = [
-    `ספר: ${b.title} (${b.originalTitle}), מאת ${b.author}.`,
-    ...b.lessons.map((l, i) => `פרק ${i + 1}: ${l.title}\n${l.script}\nהשורה התחתונה: ${l.takeaway}`),
-  ].join('\n\n').slice(0, 24000)
-  const rules = `אתה מורה פרטי חכם וחם באפליקציית לימוד בשם הספריה. התלמיד לומד את הספר שלהלן. ענה תמיד בעברית טבעית וברורה, בקצרה (עד כמאה וחמישים מילה, אלא אם התבקש יותר), מבוסס על תוכן הספר. אם שואלים משהו שאינו בספר, אמור זאת וענה בזהירות מהידע הכללי שלך. היה מעשי: דוגמאות מהחיים וצעדים לביצוע. בלי כותרות ובלי סימוני עיצוב.\n\nתוכן הספר:\n${context}`
+  if (bookId && !b) return <NotFound />
+  const suggest = b ? BOOK_SUGGEST : LIBRARY_SUGGEST
 
-  const ask = async (q: string) => {
+  async function speak(k: number, content: string) {
+    if (speaking === k) {
+      voice.current?.stop()
+      setSpeaking(null)
+      return
+    }
+    haptic('tick')
+    setSpeaking(k)
+    voice.current = await say(content, { gender: settings.voiceGender ?? 'female', rate: settings.rate, onEnd: () => setSpeaking((x) => (x === k ? null : x)) })
+    if (!voice.current) (setSpeaking(null), toast('אין במכשיר הזה קול עברי להקראה.'))
+  }
+
+  async function ask(q: string) {
     const question = q.trim()
-    if (!question || busy) return
-    const sample = await getSample()
-    if (!sample) return setAvail(false)
-    const next: Turn[] = [...turns, { role: 'user', content: question }]
+    if (!question || busy || !provider) return
+    haptic('tap')
+    stopSpeaking()
+    setSpeaking(null)
+    const next: ChatTurn[] = [...turns, { role: 'user', content: question }]
     setTurns(next)
     setText('')
     setBusy(true)
     setLive('')
     ctl.current = new AbortController()
     try {
-      const { text: answer } = await sample([{ role: 'user', content: rules }, ...next.slice(-10)], {
-        cache: false,
-        signal: ctl.current.signal,
-        onText: ({ text }: { text: string }) => setLive(text),
-      })
-      setTurns([...next, { role: 'assistant', content: answer }])
+      const answer = await provider.chat(next.slice(-12), { bookId: b?.id, signal: ctl.current.signal, onText: setLive })
+      const all: ChatTurn[] = [...next, { role: 'assistant', content: answer }]
+      setTurns(all)
+      haptic('success')
+      if (settings.speakAnswers) speak(all.length - 1, answer)
     } catch (e) {
-      const err = e as { code?: string; text?: string }
-      const msg = errorText(err.code)
-      if (err.text) setTurns([...next, { role: 'assistant', content: err.text }])
-      if (msg) toast(msg)
-      if (err.code === 'not_granted' || err.code === 'sampling_disabled') setAvail(false)
+      const err = e instanceof AIError ? e : new AIError('server')
+      if (err.code !== 'cancelled') toast(err.message)
+      if (err.code === 'not_granted' || err.code === 'sampling_disabled' || err.code === 'not_configured') setProvider(null)
+      // keep the question in the box so it can be sent again
+      setTurns(turns)
+      setText(question)
     } finally {
       setBusy(false)
       setLive('')
@@ -73,29 +92,44 @@ export function Ask({ bookId }: { bookId: string }) {
   return (
     <div className="screen ask">
       <header className="ask__top">
-        <BackButton fallback={`/book/${bookId}`} />
+        <BackButton fallback={b ? `/book/${b.id}` : '/explore'} />
         <div className="ask__book">
-          <Cover book={b} size="xs" />
+          {b ? <Cover book={b} size="xs" /> : <span className="ask__glyph"><IconSpark size={20} /></span>}
           <span>
-            <strong>שאל את הספר</strong>
-            <small>{b.title}</small>
+            <strong>{b ? 'שאל את הספר' : 'שאל את הספרייה'}</strong>
+            <small>{b ? b.title : 'המלצות והסברים מכל הספרים'}</small>
           </span>
         </div>
+        <button
+          className={`icon-btn ask__voice ${settings.speakAnswers ? 'is-on' : ''}`}
+          onClick={() => (haptic('tick'), updateSettings({ speakAnswers: !settings.speakAnswers }), settings.speakAnswers && stopSpeaking())}
+          aria-pressed={!!settings.speakAnswers}
+          aria-label="הקראת תשובות בקול"
+          title="הקראת תשובות בקול"
+        >
+          <IconSpeaker size={20} />
+        </button>
       </header>
 
-      {avail === false ? (
-        <div className="ask__off">
+      {provider === undefined ? (
+        <div className="ask__log" aria-busy="true">
+          <div className="skel skel--line" />
+          <div className="skel skel--line skel--short" />
+        </div>
+      ) : provider === null ? (
+        <div className="ask__off" role="status">
           <IconSpark size={28} />
-          <p>שאלות לספר זמינות כשהאפליקציה פתוחה בתוך Claude ומחוברת לחשבון. בינתיים אפשר לקרוא, להאזין ולהיבחן על כל ספר.</p>
+          <p>העוזר החכם עוד לא מחובר בכתובת הזו, ולכן אין כאן תשובות מומצאות. בינתיים כל ספר פתוח לקריאה, להאזנה ולמבחן.</p>
         </div>
       ) : (
         <>
           <div className="ask__log" aria-live="polite">
             {turns.length === 0 && (
               <div className="ask__intro">
-                <p>שאל כל שאלה על ״{b.title}״. התשובות מבוססות על כל פרקי הספר.</p>
+                <p>{b ? `שאל כל שאלה על ״${b.title}״. התשובות מבוססות על כל פרקי הספר.` : 'ספר מה מעסיק אותך, והספרייה תמצא את הספר והפרק שמתאימים לך.'}</p>
+                {dict.supported && <p className="ask__hint">אפשר גם לדבר: לחיצה על המיקרופון.</p>}
                 <div className="ask__sugs">
-                  {SUGGEST.map((s) => (
+                  {suggest.map((s) => (
                     <button key={s} className="chip chip--ghost" onClick={() => ask(s)}>
                       {s}
                     </button>
@@ -107,28 +141,62 @@ export function Ask({ bookId }: { bookId: string }) {
               <div key={k} className={`bubble bubble--${t.role}`}>
                 <p>{t.content}</p>
                 {t.role === 'assistant' && (
-                  <button className="bubble__save" onClick={() => (addNote({ kind: 'note', bookId, text: t.content, quote: turns[k - 1]?.content }), toast('נשמר במחברת'))}>
-                    שמור במחברת
-                  </button>
+                  <div className="bubble__tools">
+                    <button className="bubble__save" onClick={() => speak(k, t.content)} aria-label={speaking === k ? 'עצור הקראה' : 'הקרא תשובה'}>
+                      {speaking === k ? <IconStop size={14} /> : <IconSpeaker size={15} />} {speaking === k ? 'עצור' : 'הקרא'}
+                    </button>
+                    <button className="bubble__save" onClick={() => (addNote({ kind: 'note', bookId: b?.id ?? '', text: t.content, quote: turns[k - 1]?.content }), haptic('success'), toast('נשמר במחברת'))}>
+                      שמור במחברת
+                    </button>
+                  </div>
                 )}
               </div>
             ))}
             {busy && (
               <div className="bubble bubble--assistant">
-                <p>{live || 'חושב...'}</p>
+                {live ? (
+                  <p>{live}</p>
+                ) : (
+                  <p className="typing" aria-label="כותב תשובה">
+                    <i />
+                    <i />
+                    <i />
+                  </p>
+                )}
               </div>
             )}
             <div ref={end} />
           </div>
           <form className="ask__bar" onSubmit={(e) => (e.preventDefault(), ask(text))}>
-            <input value={text} onChange={(e) => setText(e.target.value)} placeholder="שאל שאלה על הספר" aria-label="שאלה" />
+            {dict.supported && (
+              <button
+                type="button"
+                className={`icon-btn ask__mic ${dict.listening ? 'is-live' : ''}`}
+                onClick={() => (haptic('tap'), dict.listening ? dict.stop() : dict.start())}
+                aria-label={dict.listening ? 'סיים הקלטה' : 'שאל בקול'}
+                aria-pressed={dict.listening}
+                disabled={busy}
+              >
+                <IconMic size={20} />
+              </button>
+            )}
+            <input
+              value={dict.listening ? dict.text : text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder={dict.listening ? 'מקשיב…' : dict.state === 'denied' ? 'אין הרשאה למיקרופון. אפשר להקליד…' : 'שאל שאלה…'}
+              aria-label="שאלה"
+              enterKeyHint="send"
+              autoComplete="off"
+              maxLength={1500}
+              readOnly={dict.listening}
+            />
             {busy ? (
-              <button type="button" className="btn btn--quiet" onClick={() => ctl.current?.abort()}>
-                עצור
+              <button type="button" className="icon-btn ask__send" onClick={() => ctl.current?.abort()} aria-label="עצור תשובה">
+                <IconStop size={16} />
               </button>
             ) : (
-              <button type="submit" className="btn btn--primary" disabled={!text.trim()}>
-                שאל
+              <button type="submit" className="icon-btn ask__send" disabled={!text.trim()} aria-label="שלח">
+                <IconSend size={18} />
               </button>
             )}
           </form>

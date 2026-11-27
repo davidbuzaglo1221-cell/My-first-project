@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { bookById } from '../content'
-import { fullTexts } from '../content/fulltext'
-import type { Book } from '../content/types'
 import { load } from '../engine/player'
 import { navigate } from '../lib/router'
 import { addListening, markRead, store, toggleLove, useStore } from '../lib/store'
@@ -14,53 +12,21 @@ import { IconHeadphones, IconList } from '../ui/Icons'
 import { BackButton, Sheet } from '../ui/Kit'
 import { openPlayer } from '../ui/uiState'
 import { NotFound } from './Explore'
+import { resolveTheme } from '../lib/theme'
 
 const EMPTY: never[] = []
 const NOOBJ: Record<string, number> = {}
 
-export interface Chapter {
-  title: string
-  paragraphs: string[]
-  /** The lesson that narrates this chapter, if any. */
-  lessonId?: string
-  takeaway?: string
-  steps?: string[]
-  task?: string
-  ideas?: { h: string; t: string }[]
-}
-
-/** The readable text of a book: the full public-domain translation, or the הספריה edition built from its lessons. */
-export function bookChapters(b: Book): { chapters: Chapter[]; full: boolean; note: string } {
-  const full = fullTexts[b.id]
-  if (full) {
-    const chapters: Chapter[] = full.chapters.map((c) => ({ title: c.title, paragraphs: c.paragraphs }))
-    // chapter 0 (foreword) and 1 share the first lesson; the rest map one to one
-    chapters.forEach((c, i) => (c.lessonId = b.lessons[Math.max(0, i - 1)]?.id))
-    chapters.forEach((c, i) => {
-      const l = i > 0 ? b.lessons[i - 1] : undefined
-      if (l) Object.assign(c, { takeaway: l.takeaway, steps: l.steps, task: l.exercise.task })
-    })
-    return { chapters, full: true, note: full.source }
-  }
-  if (b.complete)
-    return {
-      chapters: b.lessons.map((l) => ({ title: l.title, paragraphs: l.script.split(/\n+/), lessonId: l.id, takeaway: l.takeaway, steps: l.steps, task: l.exercise.task, ideas: l.ideas })),
-      full: true,
-      note: 'כל הספר, רק העיקר: כל הפרקים והרעיונות של הספר, בניסוח מקורי ומתומצת של הספריה, בלי מילוי. זה לא תרגום מילולי של הספר.',
-    }
-  const intro: Chapter = { title: 'למה הספר הזה', paragraphs: [b.tagline, b.why, ...b.ideas.map((i) => `${i.title}. ${i.body}`)] }
-  return {
-    chapters: [intro, ...b.lessons.map((l) => ({ title: l.title, paragraphs: l.script.split(/\n+/), lessonId: l.id }))],
-    full: false,
-    note: 'מהדורת הספריה: הסבר מקורי של רעיונות הספר, לא הטקסט של הספר עצמו. את הספר המלא אפשר לרכוש מההוצאה.',
-  }
-}
+export { bookChapters, type Chapter } from '../lib/chapters'
+import { bookChapters } from '../lib/chapters'
 
 const SIZES = [17, 19, 21, 23, 26]
 
 export function Reader({ id }: { id: string }) {
   const b = bookById[id]
-  const prefs = useStore((s) => s.readerPrefs) ?? { size: 1, paper: 'night' as const }
+  const theme = useStore((s) => s.settings.theme)
+  // a reader who never picked a paper gets the one that matches the app's appearance
+  const prefs = useStore((s) => s.readerPrefs) ?? { size: 1, paper: resolveTheme(theme) === 'light' ? ('ivory' as const) : ('night' as const) }
   const saved = useStore((s) => s.reading?.[id])
   const [ch, setCh] = useState(saved?.ch ?? 0)
   const [toc, setToc] = useState(false)

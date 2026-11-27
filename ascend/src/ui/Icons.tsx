@@ -240,3 +240,18 @@ export const IconMore = (p: P) => (
     <circle cx="18" cy="12" r="1.7" />
   </svg>
 )
+export const IconMic = (p: P) => (
+  <svg {...base(p)}><rect x="9" y="3.5" width="6" height="11" rx="3" /><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v2.5" /></svg>
+)
+export const IconSpeaker = (p: P) => (
+  <svg {...base(p)}><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" /><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" /></svg>
+)
+export const IconStop = (p: P) => (
+  <svg {...base(p)}><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor" stroke="none" /></svg>
+)
+export const IconSun = (p: P) => (
+  <svg {...base(p)}><circle cx="12" cy="12" r="4" /><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4" /></svg>
+)
+export const IconSend = (p: P) => (
+  <svg {...base(p)}><path d="M12 19V5M6 11l6-6 6 6" /></svg>
+)

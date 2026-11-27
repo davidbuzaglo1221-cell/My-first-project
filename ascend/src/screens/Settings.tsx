@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { categories } from '../content'
 import type { CategoryId } from '../content/types'
 import { navigate } from '../lib/router'
+import { hapticsAvailable, haptic } from '../lib/haptics'
 import { store, updateSettings, useStore, type AppState } from '../lib/store'
 import { IconAscend } from '../ui/Icons'
 import { BackButton, Segmented } from '../ui/Kit'
@@ -74,6 +75,58 @@ export function Settings() {
             })}
           </div>
         </div>
+      </section>
+
+      <section className="group">
+        <h2 className="group__title">מראה ותחושה</h2>
+        <div className="field">
+          <span>מראה</span>
+          <Segmented
+            label="מראה"
+            value={s.settings.theme ?? 'dark'}
+            onChange={(v) => (haptic('tick'), updateSettings({ theme: v }))}
+            options={[
+              { id: 'dark', label: 'לילה' },
+              { id: 'light', label: 'יום' },
+              { id: 'system', label: 'לפי המכשיר' },
+            ]}
+          />
+        </div>
+        {hapticsAvailable() && (
+          <label className="toggle">
+            <span>
+              רטט עדין במגע
+              <small>משוב קטן בלחיצות, בניגון ובסיום פרק</small>
+            </span>
+            <input type="checkbox" checked={s.settings.haptics !== false} onChange={(e) => (updateSettings({ haptics: e.target.checked }), e.target.checked && haptic('tap'))} />
+            <i aria-hidden="true" />
+          </label>
+        )}
+      </section>
+
+      <section className="group">
+        <h2 className="group__title">קול התשובות</h2>
+        <p className="group__note">כשהעוזר החכם עונה, אפשר לשמוע את התשובה בקול. הקול הזה נפרד מהקריינים של הספרים.</p>
+        <div className="field">
+          <span>קול</span>
+          <Segmented
+            label="קול התשובות"
+            value={s.settings.voiceGender ?? 'female'}
+            onChange={(v) => updateSettings({ voiceGender: v })}
+            options={[
+              { id: 'female', label: 'קול נשי' },
+              { id: 'male', label: 'קול גברי' },
+            ]}
+          />
+        </div>
+        <label className="toggle">
+          <span>
+            הקראה אוטומטית של תשובות
+            <small>התשובה מוקראת מיד כשהיא מגיעה</small>
+          </span>
+          <input type="checkbox" checked={!!s.settings.speakAnswers} onChange={(e) => updateSettings({ speakAnswers: e.target.checked })} />
+          <i aria-hidden="true" />
+        </label>
       </section>
 
       <section className="group">
