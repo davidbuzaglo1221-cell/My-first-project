@@ -33,9 +33,6 @@ function CoachHome() {
     <div className="screen coach">
       <header className="photohero photohero--coach">
         <img src="photos/assistant.webp" alt="" decoding="async" />
-        <div className="photohero__top">
-          <img className="photohero__mark" src="mark.webp" alt="" />
-        </div>
         <div className="photohero__text">
           <span className="photohero__kicker">העוזר האישי</span>
           <h1>ישיר, כן, ולעניין</h1>

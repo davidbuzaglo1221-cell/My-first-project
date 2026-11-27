@@ -55,6 +55,6 @@ Build the first version as if a senior Apple team worked on it for months. The u
 ## Premium from the first version (rule, 27.11.2026)
 - Every main screen opens with a real, licensed photograph (Unsplash License or owner-supplied), chosen for that world and processed to WebP locally; credits in `public/photos/CREDITS.json`.
 - The entrance shows the product from outside: one striking full-bleed image, the mark, the name, and a scroll of "what waits inside" (a photo per world) before the enter button.
-- The icon is original and rendered (e.g. Three.js with real shadows), never a copy of another brand's logo, even when the owner sends one as a reference.
+- The icon: if the owner sends an image and says "this", use that image itself (clean crop, no grey corners, upscale). Otherwise make an original rendered icon. The home-screen icon does not appear inside the app unless asked.
 - The tab bar holds the interesting worlds (home, library, personal assistant, freedom, journey), not utility pages like notes.
 - An e2e check asserts that each main route has a photograph near the top.

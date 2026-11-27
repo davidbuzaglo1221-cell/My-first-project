@@ -2,14 +2,14 @@ import { bookById } from '../content'
 import { neighbours, nextChapter, usePlayer, toggle } from '../engine/player'
 import { navigate, type Route, tabOf } from '../lib/router'
 import { Cover } from './Cover'
-import { IconChart, IconHeadphones, IconHome, IconLibrary, IconLotus, IconNextTrack } from './Icons'
+import { IconChart, IconHeadphones, IconHome, IconLibrary, IconLotus, IconNextTrack, IconSpark } from './Icons'
 import { PlayGlyph } from './Kit'
 import { openPlayer } from './uiState'
 
 const tabs = [
   { id: 'home', label: 'בית', path: '/', Icon: IconHome },
   { id: 'explore', label: 'ספרייה', path: '/explore', Icon: IconLibrary },
-  { id: 'coach', label: 'עוזר אישי', path: '/coach', Icon: null },
+  { id: 'coach', label: 'עוזר אישי', path: '/coach', Icon: IconSpark },
   { id: 'freedom', label: 'לחופש', path: '/freedom', Icon: IconLotus },
   { id: 'progress', label: 'המסע', path: '/progress', Icon: IconChart },
 ] as const
@@ -20,7 +20,7 @@ export function TabBar({ route }: { route: Route }) {
     <nav className="tabbar" aria-label="ניווט ראשי">
       {tabs.map(({ id, label, path, Icon }) => (
         <button key={id} className={`tab tab--${id} ${active === id ? 'is-on' : ''}`} aria-current={active === id ? 'page' : undefined} onClick={() => navigate(path)}>
-          {Icon ? <Icon size={22} strokeWidth={active === id ? 1.9 : 1.5} /> : <img className="tab__mark" src="mark.webp" alt="" />}
+          <Icon size={22} strokeWidth={active === id ? 1.9 : 1.5} />
           <span>{label}</span>
         </button>
       ))}

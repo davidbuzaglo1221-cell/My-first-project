@@ -42,7 +42,6 @@ export function Opening({ onEnter }: { onEnter: () => void }) {
         <div className="ophero__shade" aria-hidden="true" />
         <p className="opening__kicker">MY JOURNEY</p>
         <div className="opening__body">
-          <img className="opening__mark" src="mark.webp" alt="" />
           <h1 className="opening__brand">המסע שלי</h1>
           <span className="opening__line" aria-hidden="true" />
           <p className="opening__lead">
