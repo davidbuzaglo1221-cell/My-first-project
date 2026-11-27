@@ -30,6 +30,7 @@ These rules apply to every request in this repository, from the first message. T
 - Never claim something works before you verified it yourself (tests, a real browser run, the live URL). Report problems honestly.
 
 ## The quality bar: maximum on the first try
+- **Standing order from David (27.11.2026): always deliver premium results without being asked.** Premium is the default, never an upgrade he has to request. Before any build: a visual direction with real photography for his approval in one message; the first version already has real photos on every main screen, a striking entrance, an App-Store-grade icon and polished motion; before delivery, review it as he will see it on his phone, against his references.
 - He should never have to say "make it better" or "level up". The first version of anything — app, video, landing page, carousel, image, agent — is already the best you can make: research what top products do today, think outside the box, then exceed it. Review your own output (screenshots, frames, listening) and improve it before showing him.
 - Use and extend the skills in `.claude/skills`. When a task needs a skill that isn't there, search GitHub for a reputable one (official vendor repos first), read it fully, install it under `.claude/skills/`, and commit it.
 

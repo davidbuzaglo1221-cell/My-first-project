@@ -39,6 +39,8 @@ Run `art-direction`: 5-line brief, one written direction ("Direction: X, because
 If a needed skill is missing: search GitHub (official vendor repos first), read it fully, install under `.claude/skills/`, add it to this table and to CLAUDE.md, commit.
 
 ## 4. Self-review before showing anything
+**Premium gate (David's standing order, 27.11.2026: premium without being asked).** Do not show anything that would make him ask for "premium", "better" or "not boring". Check: real photography or rendered art on every main screen; a memorable first screen; an icon/cover at store level; motion that feels alive; nothing generic; viewed at phone size as he will see it. If any item fails, fix it before delivering.
+
 - Look at your own output: contact sheets for video, phone-size screenshots for pages, listen to audio.
 - Ask: would the best creator in this niche post this as is? Would David have to say "make it better"? If yes, fix it first.
 - Verify technically (renders, tests, live URL). Never claim what you did not check.
