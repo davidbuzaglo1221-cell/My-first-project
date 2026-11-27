@@ -54,10 +54,11 @@ Use the `premium-app` skill (`.claude/skills/premium-app/SKILL.md`) for every ne
 2. **Home-screen profile**: an iOS `.mobileconfig` web clip with a Hebrew name, the app icon, `FullScreen=true`, sent to the user as a file.
 3. **A beautiful name and a premium icon** (golden/emerald, no generic art).
 4. **Apple-grade design**: large titles, grouped lists with hairline separators (not a box per item), native-style tab bar, compact mini player, Apple Music–style full player (artwork, scrubber with elapsed/remaining, prev/±15/play/next, lyrics-style captions, up next, speed, sleep timer).
-5. **Human narration** for anything spoken: Microsoft neural Hebrew voices (Avri, Hila, and a duo) via `scripts/narration/render_edge.py`; check every recording for truncation and with Hebrew ASR (`qa_books.py`) before shipping.
+5. **Human-sounding narration**, chosen by measurement against Hebrew listener votes: Maya and Yoav (Microsoft multilingual voices via `scripts/narration/render_edge.py`) with presence EQ and livelier intonation (`prosody.py`), plus a duo; check every recording for truncation and with Hebrew ASR (`qa_books.py`) before shipping. The user wants a narrator full of energy: calm, happy, alive.
 6. **Content that teaches**: every chapter = heading, the core idea in one sentence, the essential text (no filler), and "in practice" — two or three concrete steps for real life, plus an exercise. Narration reads the same structure. Plus three key ideas in depth per chapter (models, stories, examples): the user wants to really understand the whole book, condensed but complete — never a 7-minute skim.
 7. **No steering, no questionnaires**: the user sees the full catalogue and chooses. Show learning progress in percent.
-8. **Ship-quality engineering**: unit tests + Playwright end-to-end checks of every feature, a real check of the live URL, an instant-launch service worker, lock-screen media controls with real artwork.
+8. **Every day something new**: a daily "היום שלך" card, a narrated multi-day program, and a daily reminder (calendar) that brings the user back.
+9. **Ship-quality engineering**: unit tests + Playwright end-to-end checks of every feature, a real check of the live URL, an instant-launch service worker, lock-screen media controls with real artwork.
 
 ## Installed skills
 - **`director` runs first on every request** — it is the lead brain that routes to all the others. Full, tested list with licenses: `TITAN-BUSINESS-OS/SKILLS_DIRECTORY.md`.

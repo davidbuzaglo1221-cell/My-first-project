@@ -3,6 +3,7 @@ import { BASE_CPS, bookById, lessonIndex, spokenIdeas, spokenScript } from '../c
 import audioManifest from '../content/audioManifest.json'
 import { getFile } from '../lib/idb'
 import { calmLines, meditationById } from '../content/calm'
+import { completeProgramDay } from '../lib/store'
 import { addCalm, addListening, completeLesson, setLessonPosition, store } from '../lib/store'
 import { offsets, toSegments } from './sentences'
 import { pickVoice, speechSupported } from './voices'
@@ -78,7 +79,8 @@ export function trackFor(id: string): Track | undefined {
   if (id.startsWith('calm:')) {
     const m = meditationById[id.slice(5)]
     if (!m) return
-    return { id, kind: 'calm', title: m.title, subtitle: 'מהישרדות לחופש', author: 'מדיטציה מודרכת', script: calmLines(m).join('\n'), src: narrationFor(id) ? narrationSrc(id) : undefined }
+    const program = m.kind === 'program'
+    return { id, kind: 'calm', title: m.title, subtitle: program ? m.sub : 'מהישרדות לחופש', author: program ? '30 יום מהישרדות לחופש' : 'מדיטציה מודרכת', script: calmLines(m).join('\n'), src: narrationFor(id) ? narrationSrc(id) : undefined }
   }
   if (id.endsWith('-quick')) {
     const book = bookById[id.slice(0, -6)]
@@ -461,7 +463,10 @@ function finish() {
   stopKeepAlive()
   emit({ status: 'ended', position: snap.duration, endedId: t.id })
   if (t.kind === 'lesson') completeLesson(t.id, snap.duration)
-  if (t.kind === 'calm') addCalm(Math.round(snap.duration / 60))
+  if (t.kind === 'calm') {
+    addCalm(Math.round(snap.duration / 60))
+    if (t.id.startsWith('calm:day-')) completeProgramDay(t.id.slice(5))
+  }
   if (t.kind === 'file') setLessonPosition(t.id, 0, snap.duration)
   if ('mediaSession' in navigator) navigator.mediaSession.playbackState = 'paused'
 

@@ -108,6 +108,10 @@ export interface AppState {
   cards?: Record<string, { box: number; due: number }>
   /** Minutes of practice in the calm space, per day. */
   calm?: Record<string, number>
+  /** Thirty-day program: the day each program day was completed (day key). */
+  program?: Record<string, string>
+  /** Your day: the day the idea of the day was opened, and the daily reminder time (HH:MM) once set. */
+  daily?: { idea?: string; remindAt?: string }
 }
 
 const KEY = 'ascend:v1'
@@ -327,6 +331,16 @@ export function addMemo(m: Memo) {
 export function deleteMemo(id: string) {
   store.set((s) => ({ memos: (s.memos ?? []).filter((m) => m.id !== id) }), { immediate: true })
 }
+/** The idea of the day was opened. */
+export function markDailyIdea() {
+  store.set((s) => ({ daily: { ...s.daily, idea: dayKey() } }), { immediate: true })
+}
+
+/** A program day was heard to the end. */
+export function completeProgramDay(id: string) {
+  store.set((s) => ({ program: { ...s.program, [id]: s.program?.[id] ?? dayKey() } }), { immediate: true })
+}
+
 export function addCalm(minutes: number) {
   const k = dayKey()
   store.set((s) => ({ calm: { ...s.calm, [k]: (s.calm?.[k] ?? 0) + minutes } }), { immediate: true })

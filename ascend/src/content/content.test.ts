@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { books, categories, curatedPaths, lessonIndex, estimateSeconds } from './index'
 import { toSegments } from '../engine/sentences'
+import { programDays } from './program'
+import { ideaOfDay, challengeOfDay } from '../lib/daily'
 
 describe('library', () => {
   it('every category has at least three books', () => {
@@ -56,5 +58,25 @@ describe('learning quality', () => {
       expect(i.h + i.t, l.id).not.toMatch(/[0-9A-Za-z]/)
       for (const s of toSegments(i.t)) expect(s.length, l.id).toBeLessThanOrEqual(190)
     }
+  })
+})
+
+describe('thirty-day program and your day', () => {
+  it('has thirty distinct days, each with a speakable script, a practice pause and a mission', () => {
+    expect(programDays.length).toBe(30)
+    expect(new Set(programDays.map((d) => d.id)).size).toBe(30)
+    for (const d of programDays) {
+      const lines = d.script.split('\n').map((l) => l.trim()).filter(Boolean)
+      expect(lines.some((l) => l.startsWith('~')), d.id).toBe(true)
+      for (const l of lines.filter((l) => !l.startsWith('~'))) expect(l, d.id).not.toMatch(/[0-9A-Za-z]/)
+      expect(lines.filter((l) => !l.startsWith('~')).join(' ').split(' ').length, d.id).toBeGreaterThan(100)
+      expect(d.mission.length, d.id).toBeGreaterThan(20)
+    }
+  })
+  it('gives a different idea and challenge on consecutive days', () => {
+    const days = Array.from({ length: 30 }, (_, i) => new Date(2026, 10, 1 + i))
+    expect(new Set(days.map((d) => ideaOfDay(d).h)).size).toBe(30)
+    expect(new Set(days.map((d) => ideaOfDay(d).bookId)).size).toBeGreaterThan(20)
+    expect(new Set(days.map((d) => challengeOfDay(d).text)).size).toBe(30)
   })
 })

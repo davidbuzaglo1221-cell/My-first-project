@@ -10,6 +10,7 @@ import { Cover, bookHue } from '../ui/Cover'
 import { AreaIcon, IconBook, IconFlame, IconLotus, IconPlay, IconQuiz, IconSearch } from '../ui/Icons'
 import { Eq, Ring, SectionHead, startLesson } from '../ui/Kit'
 import { BookTile, Learned } from '../ui/Books'
+import { TodayCard } from '../ui/Daily'
 
 const fmtListen = (sec: number) => {
   const m = Math.floor(sec / 60)
@@ -135,6 +136,8 @@ export function Home() {
         <h1 className="h4intro__title">הספרייה שלך</h1>
       </div>
 
+      <TodayCard />
+
       <ul className="valuestrip" aria-label="מה יש בספרייה">
         <li>
           <strong>{books.length}</strong>
@@ -154,25 +157,15 @@ export function Home() {
         </li>
       </ul>
 
-      <button className="learnhero" onClick={() => navigate('/progress')}>
-        <Ring value={stats.percent / 100} size={104} stroke={5} className="learnhero__ring">
+      <button className="learnrow" onClick={() => navigate('/progress')} aria-label={`למדת ${stats.percent} אחוז מהספרייה`}>
+        <span className="learnrow__top">
           <strong>{stats.percent}%</strong>
-          <span>מהספרייה</span>
-        </Ring>
-        <span className="learnhero__facts">
-          <span>
-            <strong>{stats.done}</strong> פרקים למדת
-          </span>
-          <span>
-            <strong>{stats.booksDone}</strong> ספרים הושלמו
-          </span>
-          <span>
-            <strong>{stats.booksActive}</strong> ספרים בתהליך
-          </span>
-          <span className="learnhero__mini">
-            <IconFlame size={14} /> {streak} ימים ברצף · היום {today} דק׳
+          <span>מהספרייה למדת</span>
+          <span className="learnrow__facts">
+            {stats.done} פרקים · {stats.booksDone} ספרים · <IconFlame size={13} /> {streak} ימים ברצף
           </span>
         </span>
+        <Learned value={stats.percent} />
       </button>
 
       <div className="quick4">

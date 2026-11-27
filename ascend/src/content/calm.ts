@@ -1,10 +1,11 @@
+import { programDays } from './program'
 /* From survival to freedom: guided practices, narrated. A line "~ N" is N seconds of quiet. */
 
 export interface Meditation {
   id: string
   title: string
   sub: string
-  kind: 'stress' | 'body' | 'breath' | 'posture' | 'sleep' | 'morning' | 'freedom'
+  kind: 'stress' | 'body' | 'breath' | 'posture' | 'sleep' | 'morning' | 'freedom' | 'program'
   script: string
 }
 
@@ -266,7 +267,9 @@ export const meditations: Meditation[] = [
   },
 ]
 
-export const meditationById: Record<string, Meditation> = Object.fromEntries(meditations.map((m) => [m.id, m]))
+/** The thirty program days, as narrated practices (same player, captions and quiet lines). */
+export const programPractices: Meditation[] = programDays.map((d, i) => ({ id: d.id, title: d.title, sub: `יום ${i + 1} · ${d.week}`, kind: 'program', script: d.script }))
+export const meditationById: Record<string, Meditation> = Object.fromEntries([...meditations, ...programPractices].map((m) => [m.id, m]))
 
 /** Spoken lines of a practice, without the silences. */
 export const calmLines = (m: Meditation) =>

@@ -7,11 +7,13 @@ import { IconAscend } from '../ui/Icons'
 import { BackButton, Segmented } from '../ui/Kit'
 import { toast } from '../ui/uiState'
 import { Assessment } from './Growth'
+import { ReminderSheet } from '../ui/Daily'
 
 export function Settings() {
   const s = useStore((x) => x)
   const file = useRef<HTMLInputElement>(null)
   const [confirmReset, setConfirmReset] = useState(false)
+  const [remind, setRemind] = useState(false)
 
   function exportData() {
     const blob = new Blob([JSON.stringify(store.get(), null, 2)], { type: 'application/json' })
@@ -74,6 +76,14 @@ export function Settings() {
             })}
           </div>
         </div>
+      </section>
+
+      <section className="group">
+        <h2 className="group__title">תזכורת יומית</h2>
+        <button className="btn btn--ghost btn--wide" onClick={() => setRemind(true)}>
+          {s.daily?.remindAt ? `התזכורת שלך: ${s.daily.remindAt}. לשנות שעה` : 'להוסיף תזכורת יומית ליומן'}
+        </button>
+        <ReminderSheet open={remind} onClose={() => setRemind(false)} />
       </section>
 
       <section className="group">

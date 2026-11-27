@@ -5,6 +5,7 @@ Usage: render_edge.py synth            -> fill the cache for both voices
        render_edge.py build <voice>    -> avri | hila | duo  -> public/audio/<voice>/<book>.mp3 + .json"""
 import asyncio, hashlib, json, os, subprocess, sys, numpy as np
 import edge_tts
+from prosody import liven  # livelier intonation, measured against Hebrew listener votes
 # Chosen by measurement (see voice research): fewer pronunciation errors on joined Hebrew words and more
 # natural intonation than Avri/Hila, scored with a preference model trained on 2,257 Hebrew listener votes.
 VOICES = {'maya': 'en-US-EmmaMultilingualNeural', 'yoav': 'en-US-BrianMultilingualNeural'}
@@ -59,7 +60,7 @@ def build(voice):
                 v = voice if voice != 'duo' else ('maya' if para_n % 2 == 0 else 'yoav')
                 para_n += 1
                 for si, text in enumerate(para):
-                    w = pcm(key(v, text)); segs.append(round(cur - start, 2)); chunks.append(w); cur += len(w) / SR
+                    w = liven(pcm(key(v, text)), SR, v); segs.append(round(cur - start, 2)); chunks.append(w); cur += len(w) / SR
                     gap = PARA_GAP if si == len(para) - 1 else SENT_GAP
                     chunks.append(np.zeros(int(gap * SR), np.float32)); cur += gap
             tracks[tr['id']] = {'o': round(start, 3), 'd': round(cur - start, 2), 's': segs}

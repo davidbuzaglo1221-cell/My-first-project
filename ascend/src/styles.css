@@ -5268,3 +5268,54 @@ html:has(.reader--ivory) {
 .opening__enter { width: 100%; max-width: 380px; height: 58px; border-radius: 999px; font-size: 18px; font-weight: 800; color: #1a1408; background: linear-gradient(180deg, #f6e4ad, #d4ad5a); box-shadow: 0 12px 34px rgba(212, 173, 90, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.6); transition: transform 0.15s ease; }
 .opening__enter:active { transform: scale(0.97); }
 @media (prefers-reduced-motion: reduce) { .owall__row, .opening__brand { animation: none !important; } }
+
+/* ───────── Your day: three small steps, new every day ───────── */
+.myday { margin: 0 20px 18px; padding: 16px 16px 14px; border-radius: 22px; background: linear-gradient(165deg, rgba(47, 191, 140, 0.16), rgba(47, 191, 140, 0.04) 55%, rgba(217, 183, 106, 0.06)); border: 0.5px solid rgba(111, 224, 179, 0.22); box-shadow: 0 18px 40px -24px rgba(47, 191, 140, 0.45); }
+.myday__head { display: flex; align-items: center; gap: 14px; }
+.myday__ring strong { font-size: 14px; font-weight: 800; color: var(--text-1); font-variant-numeric: tabular-nums; }
+.myday__titles { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.myday__kicker { font-size: 11.5px; font-weight: 800; letter-spacing: 0.06em; color: var(--gold-2, #f1dca2); }
+.myday__titles strong { font-size: 18px; font-weight: 800; color: var(--text-1); }
+.myday__line { font-size: 13px; color: var(--text-2); }
+.myday__list { margin-top: 12px; border-radius: 16px; background: rgba(0, 0, 0, 0.28); overflow: hidden; }
+.myday__list li + li button { border-top: 0.5px solid var(--sep); }
+.myday__list button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; text-align: start; }
+.myday__list button:active { background: rgba(255, 255, 255, 0.04); }
+.myday__mark { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: rgba(255, 255, 255, 0.08); color: var(--text-1); }
+.myday__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold, #d9b76a); box-shadow: 0 0 10px rgba(217, 183, 106, 0.6); }
+.myday__list li.is-done .myday__mark { background: linear-gradient(160deg, var(--em-300), var(--em-500)); color: #03140e; }
+.myday__list li.is-done strong { color: var(--text-2); }
+.myday__body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.myday__body small { font-size: 11.5px; font-weight: 700; color: var(--em-300); }
+.myday__body strong { font-size: 15px; font-weight: 700; line-height: 1.35; color: var(--text-1); }
+.myday__challenge { margin-top: 12px; font-size: 14px; line-height: 1.5; color: var(--text-1); }
+.myday__challenge span { display: block; font-size: 11.5px; font-weight: 800; letter-spacing: 0.04em; color: var(--gold-2, #f1dca2); margin-bottom: 2px; }
+.myday__remind { display: flex; align-items: center; justify-content: center; margin-top: 12px; width: 100%; height: 42px; border-radius: 999px; font-size: 14px; font-weight: 700; color: var(--text-1); background: rgba(255, 255, 255, 0.08); border: 0.5px solid rgba(255, 255, 255, 0.12); }
+.sheet__lead { margin: -4px 0 14px; font-size: 14.5px; line-height: 1.55; color: var(--text-2); }
+
+/* Freedom: the thirty-day program */
+.prog__head { margin-bottom: 12px; }
+.prog__kicker { font-size: 12px; font-weight: 800; letter-spacing: 0.06em; color: var(--gold-2, #f1dca2); }
+.prog__head h2 { font-size: 22px; font-weight: 800; margin-top: 2px; }
+.prog__head p { font-size: 13.5px; color: var(--text-2); margin-top: 4px; }
+.prog__bar { display: block; height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.08); margin-top: 10px; overflow: hidden; }
+.prog__bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--em-500), var(--gold, #d9b76a)); }
+.prog__next { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px; border-radius: 18px; text-align: start; background: linear-gradient(160deg, rgba(23, 154, 112, 0.28), rgba(10, 63, 45, 0.25)); border: 0.5px solid rgba(111, 224, 179, 0.25); }
+.prog__day { flex: none; width: 56px; height: 56px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: linear-gradient(160deg, var(--gold-2, #f1dca2), var(--gold, #d9b76a)); color: #1a1408; }
+.prog__day small { font-size: 10.5px; font-weight: 800; line-height: 1; }
+.prog__day strong { font-family: var(--serif); font-size: 24px; font-weight: 700; line-height: 1.05; }
+.prog__body { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.prog__body small { font-size: 11.5px; font-weight: 700; color: var(--em-300); }
+.prog__body strong { font-size: 17px; font-weight: 800; }
+.prog__body span { font-size: 13px; line-height: 1.45; color: var(--text-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.prog__play { flex: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: #000; }
+.prog__grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-top: 12px; }
+.prog__grid button { width: 100%; aspect-ratio: 1; border-radius: 9px; font-size: 12.5px; font-weight: 700; color: var(--text-2); background: rgba(255, 255, 255, 0.05); font-variant-numeric: tabular-nums; }
+.prog__grid button.is-done { color: #1a1408; background: linear-gradient(160deg, var(--gold-2, #f1dca2), var(--gold, #d9b76a)); }
+.prog__grid button.is-next { color: var(--text-1); box-shadow: inset 0 0 0 1.5px var(--em-300); background: rgba(47, 191, 140, 0.14); }
+/* Home: one slim line for how much of the library you learned */
+.learnrow { display: block; width: calc(100% - 40px); margin: 0 20px 20px; padding: 12px 14px; border-radius: 16px; text-align: start; background: var(--row-bg); }
+.learnrow__top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.learnrow__top strong { font-family: var(--serif); font-size: 24px; font-weight: 700; color: var(--em-300); font-variant-numeric: tabular-nums; }
+.learnrow__top > span { font-size: 13.5px; color: var(--text-2); }
+.learnrow__facts { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px !important; color: var(--text-3) !important; }
