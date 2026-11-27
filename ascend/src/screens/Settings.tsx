@@ -122,6 +122,13 @@ export function Settings() {
       </section>
 
       <section className="group">
+        <h2 className="group__title">קרדיטים</h2>
+        <p className="credits">
+          ההקלטה בכניסה: דוד, בקולו. מוזיקה: "Dreams Become Real" מאת Kevin MacLeod (incompetech.com), ברישיון Creative Commons Attribution 4.0. צילומים: Unsplash, ברישיון Unsplash.
+        </p>
+      </section>
+
+      <section className="group">
         <h2 className="group__title">הנתונים שלך</h2>
         <p className="group__note">ההתקדמות נשמרת במכשיר הזה בלבד. שמור גיבוי מדי פעם כדי לא לאבד אותה.</p>
         <div className="row">

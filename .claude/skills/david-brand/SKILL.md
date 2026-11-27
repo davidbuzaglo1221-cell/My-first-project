@@ -48,3 +48,8 @@ A mix: David's own phone photos and videos are the base; Claude grades and edits
 - Photos: Canva `generate-image` (realistic editorial prompts, 9:16, "real photo, no text") → `create-design` with the media ids as references (Instagram Story, one full-bleed photo per page) → `export-design` PNG → download from export-download.canva.com (allowed in the environment). The image job previews are only 112 px; always export.
 - Edit: focus pull on the first frame, slow push-ins, lateral pan on the profile, handheld drift, one-frame exposure blip on cuts, house grade (sepia 0.32, saturate 0.55), grain, soft vignette, name only at the end in small spaced Heebo 400.
 - Sound: deep-house groove with a real Rhodes (GM program 4), soft kick and shaker, vinyl, shutter on each cut.
+
+## David's own voice (27.11.2026)
+- When David says "use my voice", it means his real voice: recordings in `TITAN-BUSINESS-OS/assets/david-voice/` (see its README). Not a synthetic narrator.
+- New recordings go through `ascend/scripts/voice/david_master.py` (pauses tightened, intonation +25%, warm/present studio chain, -16 LUFS), then a Hebrew ASR check that no word changed.
+- Music under his voice: recorded instruments with a commercial license (e.g. Kevin MacLeod, CC BY 4.0, credited), ducked under the voice, swelling on the last line.

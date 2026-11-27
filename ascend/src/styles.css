@@ -5570,3 +5570,22 @@ html:has(.reader--ivory) {
 .homehero__frame { aspect-ratio: 2 / 3; left: 50%; right: auto; translate: -50% 0; transform-origin: 50% 45%; }
 .homehero__frame .homehero__img { object-position: 50% 62%; filter: saturate(0.95) contrast(1.06) brightness(0.95); }
 .homehero::after { background: linear-gradient(180deg, rgba(3, 3, 3, 0.6) 0%, rgba(3, 3, 3, 0.1) 22%, rgba(3, 3, 3, 0) 42%, rgba(3, 3, 3, 0.55) 70%, #030303 97%); }
+
+/* David's voice at the entrance */
+.opvoice { display: flex; align-items: center; gap: 12px; width: calc(100% - 56px); max-width: 380px; margin-bottom: 14px; padding: 9px 16px 9px 10px; border-radius: 999px; text-align: start; color: var(--ivory); background: rgba(14, 13, 12, 0.5); -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%); border: 0.5px solid rgba(255, 244, 224, 0.18); }
+.opvoice__btn { position: relative; flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: conic-gradient(var(--champ) var(--p), rgba(255, 255, 255, 0.14) 0); }
+.opvoice__btn::before { content: ''; position: absolute; inset: 2.5px; border-radius: 50%; background: #121110; }
+.opvoice__play, .opvoice__pause { position: relative; display: block; }
+.opvoice__play { width: 0; height: 0; margin-left: 4px; border-top: 7px solid transparent; border-bottom: 7px solid transparent; border-left: 11px solid var(--ivory); }
+.opvoice__pause { width: 11px; height: 13px; border-inline: 3.5px solid var(--ivory); }
+.opvoice__text { flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.opvoice__text strong { font-size: 15px; font-weight: 700; }
+.opvoice__text small { font-size: 12.5px; color: rgba(236, 228, 212, 0.66); font-variant-numeric: tabular-nums; }
+.opvoice__bars { display: flex; align-items: center; gap: 2.5px; height: 26px; }
+.opvoice__bars i { width: 2.5px; height: 100%; border-radius: 2px; background: var(--champ); opacity: 0.55; transform-origin: center; transition: transform 0.08s linear; }
+.opvoice.is-on .opvoice__bars i { opacity: 1; }
+.opvoice:not(.is-on) .opvoice__bars i { animation: barsidle 2.4s ease-in-out infinite; }
+.opvoice:not(.is-on) .opvoice__bars i:nth-child(3n) { animation-delay: -0.8s; }
+.opvoice:not(.is-on) .opvoice__bars i:nth-child(3n + 1) { animation-delay: -1.6s; }
+@keyframes barsidle { 0%, 100% { transform: scaleY(0.25); } 50% { transform: scaleY(0.6); } }
+.credits { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--text-2); }
