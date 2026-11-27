@@ -63,9 +63,13 @@ export function Growth() {
 
   return (
     <div className="screen growth">
-      <header className="page-head">
-        <h1 className="page-title">הצמיחה שלך</h1>
-        <p className="page-sub">לא כמה שמעת, אלא מה השתנה. המדד משלב איפה התחלת, מה למדת, מה תרגלת ומה הפך להרגל.</p>
+      <header className="photohero">
+        <img src="photos/wealth.webp" alt="" decoding="async" />
+        <div className="photohero__text">
+          <span className="photohero__kicker">הצמיחה</span>
+          <h1>הצמיחה שלך</h1>
+          <p>לא כמה שמעת, אלא מה השתנה: מה למדת, מה תרגלת ומה הפך להרגל.</p>
+        </div>
       </header>
 
       <section className="radarbox">

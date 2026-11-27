@@ -39,9 +39,15 @@ export function Settings() {
 
   return (
     <div className="screen settings">
-      <header className="page-head page-head--back">
-        <BackButton fallback="/" />
-        <h1 className="page-title">הגדרות</h1>
+      <header className="photohero">
+        <img src="photos/coach.webp" alt="" decoding="async" />
+        <div className="photohero__top">
+          <BackButton fallback="/" />
+        </div>
+        <div className="photohero__text">
+          <span className="photohero__kicker">הגדרות</span>
+          <h1>המסע, בדרך שלך</h1>
+        </div>
       </header>
 
       <section className="group">

@@ -6,12 +6,6 @@
   "license": "Unsplash License"
  },
  {
-  "file": "photos/home.webp",
-  "photographer": "supplied by the owner (David)",
-  "source": "owner upload, 27.11.2026",
-  "license": "owner-supplied; upscaled 4x locally (Real-ESRGAN ONNX)"
- },
- {
   "file": "photos/library.webp",
   "photographer": "Intricate Explorer",
   "source": "https://unsplash.com/photos/7AEFNoZDy6Q",
@@ -58,5 +52,29 @@
   "photographer": "Jose Manuel Esp",
   "source": "https://unsplash.com/photos/rrPyZhPjZbE",
   "license": "Unsplash License"
+ },
+ {
+  "file": "photos/home.webp",
+  "photographer": "Dmitry Spravko",
+  "source": "https://unsplash.com/photos/yFP97uD27QI",
+  "license": "Unsplash License"
+ },
+ {
+  "file": "photos/assistant.webp",
+  "photographer": "Bundo Kim",
+  "source": "https://unsplash.com/photos/1bxmZtj8D-g",
+  "license": "Unsplash License"
+ },
+ {
+  "file": "photos/evening2.webp",
+  "photographer": "Akshat Jhingran",
+  "source": "https://unsplash.com/photos/YPF-1AaXNWY",
+  "license": "Unsplash License"
+ },
+ {
+  "file": "photos/entrance.webp",
+  "photographer": "supplied by the owner (David)",
+  "source": "owner upload, 27.11.2026",
+  "license": "owner-supplied; upscaled 4x locally (Real-ESRGAN ONNX)"
  }
 ]

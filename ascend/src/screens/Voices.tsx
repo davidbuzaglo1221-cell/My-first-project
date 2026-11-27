@@ -52,9 +52,15 @@ export function Voices() {
 
   return (
     <div className="screen voices-screen">
-      <header className="page-head page-head--back">
-        <BackButton fallback="/settings" />
-        <h1 className="page-title">בחירת קריין</h1>
+      <header className="photohero">
+        <img src="photos/evening2.webp" alt="" decoding="async" />
+        <div className="photohero__top">
+          <BackButton fallback="/settings" />
+        </div>
+        <div className="photohero__text">
+          <span className="photohero__kicker">הקריין</span>
+          <h1>הקול שילווה אותך</h1>
+        </div>
       </header>
       <p className="page-sub">שלוש אפשרויות קריינות. כל אחת מקריאה את אותו סיכום, "הפסיכולוגיה של הכסף בדקה". תקשיב ובחר את מי שנעים לך לשמוע.</p>
 

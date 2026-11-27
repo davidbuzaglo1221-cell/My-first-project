@@ -4,6 +4,7 @@ import { Learned } from '../ui/Books'
 import { Cover } from '../ui/Cover'
 import { hebrewWeekday } from '../lib/dates'
 import { achievementList, categoryMastery, completedIds, consistency, currentStreak, heatmap, longestStreak, totalSeconds, weekSeries } from '../lib/insights'
+import { PhotoTile } from '../ui/PhotoTile'
 import { navigate } from '../lib/router'
 import { useStore } from '../lib/store'
 import { IconAscend, IconLock } from '../ui/Icons'
@@ -42,8 +43,13 @@ export function Progress() {
       <section className="block">
         <SectionHead title="עוד בשבילך" />
       </section>
+      <div className="ptiles ptiles--grid">
+        <PhotoTile img="notebook" kicker="המחברת" title="מה שחשוב לזכור" to="/notes" />
+        <PhotoTile img="wealth" kicker="הצמיחה" title="הרגלים ותחומים" to="/growth" />
+        <PhotoTile img="evening" kicker="מצב רוח" title="איך הרגשת" to="/checkin" pos="50% 70%" />
+        <PhotoTile img="situation" kicker="מצבים" title="מה היית עושה?" to="/situation" pos="38% 50%" />
+      </div>
       <nav className="morelinks" aria-label="עוד בשבילך">
-        <button onClick={() => navigate('/growth')}>הצמיחה וההרגלים שלי</button>
         <button onClick={() => navigate('/library')}>ההאזנות והקבצים שלי</button>
         <button onClick={() => navigate('/voices')}>בחירת קריין</button>
         <button onClick={() => navigate('/settings')}>הגדרות</button>

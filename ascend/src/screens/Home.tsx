@@ -1,3 +1,4 @@
+import { PhotoTile } from '../ui/PhotoTile'
 import { createPortal } from "react-dom";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -240,11 +241,6 @@ export function Home() {
               decoding="async"
               fetchPriority="high"
             />
-            <i className="lamp" style={{ left: "77%", top: "23%" }} />
-            <i className="lamp lamp--2" style={{ left: "81.5%", top: "39%" }} />
-            <i className="lamp lamp--3" style={{ left: "90%", top: "37.5%" }} />
-            <i className="lamp lamp--4" style={{ left: "73%", top: "44%" }} />
-            <i className="homehero__water" />
           </div>
         </div>
         {createPortal(
@@ -316,27 +312,16 @@ export function Home() {
         <Learned value={stats.percent} />
       </button>
 
-      <div className="quick4">
-        <button className="q4" onClick={() => navigate("/notes/cards")}>
-          <IconBook size={18} />
-          <strong>לזכור</strong>
-          <small>{due ? `${due} כרטיסים לחזרה` : "חזרה חכמה"}</small>
-        </button>
-        <button className="q4" onClick={() => navigate("/freedom")}>
-          <IconLotus size={18} />
-          <strong>לנשום</strong>
-          <small>מהישרדות לחופש</small>
-        </button>
-        <button className="q4" onClick={() => navigate("/coach")}>
-          <IconChat size={18} />
-          <strong>המאמן</strong>
-          <small>
-            {notes.length
-              ? `${notes.length} דברים לדבר עליהם`
-              : "שיחה של חמש דקות"}
-          </small>
-        </button>
-      </div>
+      <section className="block">
+        <SectionHead title="העולמות שלך" sub="כל אחד מהם הוא דקה שמשנה את היום" />
+        <div className="ptiles" role="list">
+          <PhotoTile size="lg" img="assistant" kicker="עוזר אישי" title={notes.length ? `${notes.length} דברים לדבר עליהם` : 'שיחה של חמש דקות'} line="ישיר, כן, ולעניין" to="/coach" />
+          <PhotoTile size="lg" img="calm" kicker="מהישרדות לחופש" title="נשימה, גוף ושקט" line="30 יום שמלמדים את הגוף להירגע" to="/freedom" pos="50% 62%" />
+          <PhotoTile size="lg" img="situation" kicker="מצב מהחיים" title="מה היית עושה?" line="שלוש תגובות, רק אחת עובדת" to="/situation" pos="38% 50%" />
+          <PhotoTile size="lg" img="evening" kicker="עצירה של דקה" title="איך אתה מרגיש?" line="השאלה של היום" to="/checkin" pos="50% 70%" />
+          <PhotoTile size="lg" img="notebook" kicker="המחברת" title={due ? `${due} כרטיסים לחזרה` : 'מה שחשוב לזכור'} line="מה שכתבת, אהבת והקלטת" to="/notes" />
+        </div>
+      </section>
 
       {active.length > 0 && (
         <section className="block">

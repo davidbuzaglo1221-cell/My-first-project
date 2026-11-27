@@ -2,16 +2,16 @@ import { bookById } from '../content'
 import { neighbours, nextChapter, usePlayer, toggle } from '../engine/player'
 import { navigate, type Route, tabOf } from '../lib/router'
 import { Cover } from './Cover'
-import { IconChart, IconHeadphones, IconHome, IconLibrary, IconLotus, IconNextTrack, IconPen } from './Icons'
+import { IconChart, IconHeadphones, IconHome, IconLibrary, IconLotus, IconNextTrack } from './Icons'
 import { PlayGlyph } from './Kit'
 import { openPlayer } from './uiState'
 
 const tabs = [
   { id: 'home', label: 'בית', path: '/', Icon: IconHome },
   { id: 'explore', label: 'ספרייה', path: '/explore', Icon: IconLibrary },
-  { id: 'freedom', label: 'חופש', path: '/freedom', Icon: IconLotus },
-  { id: 'notes', label: 'מחברת', path: '/notes', Icon: IconPen },
-  { id: 'progress', label: 'התקדמות', path: '/progress', Icon: IconChart },
+  { id: 'coach', label: 'עוזר אישי', path: '/coach', Icon: null },
+  { id: 'freedom', label: 'לחופש', path: '/freedom', Icon: IconLotus },
+  { id: 'progress', label: 'המסע', path: '/progress', Icon: IconChart },
 ] as const
 
 export function TabBar({ route }: { route: Route }) {
@@ -19,8 +19,8 @@ export function TabBar({ route }: { route: Route }) {
   return (
     <nav className="tabbar" aria-label="ניווט ראשי">
       {tabs.map(({ id, label, path, Icon }) => (
-        <button key={id} className={`tab ${active === id ? 'is-on' : ''}`} aria-current={active === id ? 'page' : undefined} onClick={() => navigate(path)}>
-          <Icon size={22} strokeWidth={active === id ? 1.9 : 1.5} />
+        <button key={id} className={`tab tab--${id} ${active === id ? 'is-on' : ''}`} aria-current={active === id ? 'page' : undefined} onClick={() => navigate(path)}>
+          {Icon ? <Icon size={22} strokeWidth={active === id ? 1.9 : 1.5} /> : <img className="tab__mark" src="mark.webp" alt="" />}
           <span>{label}</span>
         </button>
       ))}

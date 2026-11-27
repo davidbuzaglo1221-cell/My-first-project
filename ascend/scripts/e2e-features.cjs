@@ -9,10 +9,12 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m)
   await p.goto('http://localhost:4173/#/')
   await p.waitForTimeout(800)
   // 1. welcome: no questions, one button
-  ok(await p.locator('.opening__enter').isVisible(), 'opening: a single entry button')
-  ok((await p.locator('.opening .owall__row .cover').count()) === 102, 'opening: the whole library (51 covers) drifting in a diagonal wall')
+  ok(await p.locator('.opening__enter >> nth=0').isVisible(), 'opening: a single entry button')
+  ok((await p.locator('.opening .owall__row .cover').count()) === 102, 'opening: the whole library (51 covers) inside the tour')
   ok((await p.locator('.opening input, .opening [role=radio]').count()) === 0, 'opening asks nothing')
-  await p.click('.opening__enter'); await p.waitForTimeout(900)
+  ok(await p.locator('.ophero__pano img').isVisible() && (await p.locator('.opin').count()) === 5, 'entrance: the house in full, and five worlds waiting inside')
+  ok(await p.evaluate(() => { const i = document.querySelector('.ophero__pano img'); return i.complete && i.naturalWidth > 2000 }), 'entrance photo loaded in full resolution')
+  await p.click('.opening__enter >> nth=0'); await p.waitForTimeout(900)
   ok(await p.locator('h1:has-text("המסע שלך")').isVisible(), 'enters the home library')
   // 2. library: search + filters
   await p.goto('http://localhost:4173/#/explore'); await p.waitForTimeout(600)
@@ -92,6 +94,18 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m)
   await p.goto('http://localhost:4173/#/'); await p.waitForTimeout(600)
   await p.click('.myday__remind'); await p.waitForTimeout(500)
   ok(await p.locator('.sheet button:has-text("הפעל התראות")').isVisible() && (await p.locator('.sheet .chip').count()) === 8, 'notification sheet: morning and evening hours')
+  // tab bar: home, library, personal assistant, freedom, journey
+  await p.keyboard.press('Escape'); await p.waitForTimeout(600)
+  const tabs = await p.locator('.tabbar .tab span').allInnerTexts()
+  ok(tabs.join('|') === 'בית|ספרייה|עוזר אישי|לחופש|המסע', 'tab bar: ' + tabs.join(' · '))
+  await p.click('.tab--coach'); await p.waitForTimeout(500)
+  ok((await p.evaluate(() => location.hash)) === '#/coach', 'assistant tab routes to the assistant')
+  // every main screen leads with a photograph
+  for (const r of ['/', '/explore', '/freedom', '/progress', '/coach', '/notes', '/situation', '/checkin', '/growth', '/settings', '/voices', '/library']) {
+    await p.goto('http://localhost:4173/#' + r); await p.waitForTimeout(500)
+    const ok2 = await p.evaluate(() => [...document.querySelectorAll('.view img')].some((i) => i.src.includes('/photos/') && i.getBoundingClientRect().top < 300))
+    ok(ok2, 'photograph at the top of ' + r)
+  }
   // coach: a full clarity session becomes a goal and a commitment, and the commitment can be closed
   await p.goto('http://localhost:4173/#/coach'); await p.waitForTimeout(700)
   ok(await p.locator('.cnote').first().isVisible(), 'coach: notices there is no goal yet')

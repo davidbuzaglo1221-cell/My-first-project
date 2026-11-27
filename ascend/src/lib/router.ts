@@ -84,6 +84,6 @@ export const tabOf = (r: Route): string =>
       ? 'freedom'
       : ['settings', 'voices', 'growth', 'library'].includes(r.name)
         ? 'progress'
-        : r.name === 'coach'
-          ? 'home'
+        : r.name === 'notes'
+          ? 'progress'
           : r.name

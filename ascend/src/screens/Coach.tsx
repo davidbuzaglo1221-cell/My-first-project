@@ -32,19 +32,19 @@ function CoachHome() {
   return (
     <div className="screen coach">
       <header className="photohero photohero--coach">
-        <img src="photos/coach.webp" alt="" decoding="async" />
+        <img src="photos/assistant.webp" alt="" decoding="async" />
         <div className="photohero__top">
-          <BackButton fallback="/" />
+          <img className="photohero__mark" src="mark.webp" alt="" />
         </div>
         <div className="photohero__text">
-          <span className="photohero__kicker">המאמן</span>
+          <span className="photohero__kicker">העוזר האישי</span>
           <h1>ישיר, כן, ולעניין</h1>
           <p>בלי מחמאות ריקות. שואל את השאלה הנכונה, וסוגר כל שיחה בצעד אחד.</p>
         </div>
       </header>
 
       {notes.length > 0 && (
-        <section className="cnotes" aria-label="מה המאמן שם לב">
+        <section className="cnotes" aria-label="מה העוזר שם לב">
           {notes.map((n) => (
             <div key={n.id} className="cnote">
               <p>{n.text}</p>
@@ -70,7 +70,7 @@ function CoachHome() {
           ) : (
             <>
               <strong>עוד לא הגדרת מטרה</strong>
-              <span>מטרה אחת ל-90 יום. המאמן מחבר אליה כל דבר אחר.</span>
+              <span>מטרה אחת ל-90 יום. העוזר מחבר אליה כל דבר אחר.</span>
               <small>להגדיר</small>
             </>
           )}
@@ -93,7 +93,7 @@ function CoachHome() {
           ))}
           <li className="glist__add">
             <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="התחייבות חדשה, קטנה וברורה" onKeyDown={(e) => e.key === 'Enter' && (addCommit(draft), setDraft(''))} />
-            <button disabled={!draft.trim()} onClick={() => (addCommit(draft), setDraft(''), toast('נרשם. המאמן יחזור אליך על זה'))}>
+            <button disabled={!draft.trim()} onClick={() => (addCommit(draft), setDraft(''), toast('נרשם. העוזר יחזור אליך על זה'))}>
               הוספה
             </button>
           </li>
@@ -118,7 +118,7 @@ function CoachHome() {
       </section>
 
       <section className="block">
-        <h2 className="glist__title">שיחה עם המאמן</h2>
+        <h2 className="glist__title">שיחה עם העוזר</h2>
         <ul className="glist">
           {coachSessions.map((x) => (
             <li key={x.id}>

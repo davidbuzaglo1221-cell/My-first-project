@@ -30,11 +30,15 @@ export function Library() {
 
   return (
     <div className="screen library">
-      <header className="page-head">
-        <h1 className="page-title">ההאזנות שלי</h1>
-        <p className="page-sub">
-          {allLessons.length} פרקים מ־{Object.keys(bookById).length} ספרים
-        </p>
+      <header className="photohero">
+        <img src="photos/welcome.webp" alt="" decoding="async" style={{ objectPosition: '62% 60%' }} />
+        <div className="photohero__text">
+          <span className="photohero__kicker">ההאזנות שלי</span>
+          <h1>כל מה ששמעת</h1>
+          <p>
+            {allLessons.length} פרקים מ־{Object.keys(bookById).length} ספרים
+          </p>
+        </div>
       </header>
       <Segmented<Tab>
         label="תצוגת ספרייה"
