@@ -7,9 +7,9 @@
  },
  {
   "file": "photos/home.webp",
-  "photographer": "Jahanzeb Ahsan",
-  "source": "https://unsplash.com/photos/QV917h1OfZ4",
-  "license": "Unsplash License"
+  "photographer": "supplied by the owner (David)",
+  "source": "owner upload, 27.11.2026",
+  "license": "owner-supplied; upscaled 4x locally (Real-ESRGAN ONNX)"
  },
  {
   "file": "photos/library.webp",
