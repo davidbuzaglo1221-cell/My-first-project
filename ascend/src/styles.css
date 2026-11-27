@@ -5313,3 +5313,9 @@ html:has(.reader--ivory) {
 .prog__grid button { width: 100%; aspect-ratio: 1; border-radius: 9px; font-size: 12.5px; font-weight: 700; color: var(--text-2); background: rgba(255, 255, 255, 0.05); font-variant-numeric: tabular-nums; }
 .prog__grid button.is-done { color: #1a1408; background: linear-gradient(160deg, var(--gold-2, #f1dca2), var(--gold, #d9b76a)); }
 .prog__grid button.is-next { color: var(--text-1); box-shadow: inset 0 0 0 1.5px var(--em-300); background: rgba(47, 191, 140, 0.14); }
+/* Home: one slim line for how much of the library you learned */
+.learnrow { display: block; width: calc(100% - 40px); margin: 0 20px 20px; padding: 12px 14px; border-radius: 16px; text-align: start; background: var(--row-bg); }
+.learnrow__top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.learnrow__top strong { font-family: var(--serif); font-size: 24px; font-weight: 700; color: var(--em-300); font-variant-numeric: tabular-nums; }
+.learnrow__top > span { font-size: 13.5px; color: var(--text-2); }
+.learnrow__facts { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px !important; color: var(--text-3) !important; }
