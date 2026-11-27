@@ -4,7 +4,10 @@ import { programDays } from '../content/program'
 import { load, usePlayer } from '../engine/player'
 import { challengeOfDay, ideaOfDay, nextProgramDay, todayChecks } from '../lib/daily'
 import { todaySeconds } from '../lib/insights'
+import { dayKey } from '../lib/dates'
 import { navigate } from '../lib/router'
+import { enablePush, isIOS, isStandalone } from '../lib/push'
+import { situationOfDay, questionOfDay } from '../content/nudges'
 import { markDailyIdea, store, useStore } from '../lib/store'
 import { IconCheck, IconPlay } from './Icons'
 import { Ring, Sheet } from './Kit'
@@ -88,13 +91,85 @@ export function TodayCard() {
         <span>האתגר של היום</span>
         {challenge.text}
       </p>
-      {!s.daily?.remindAt && (
+      <div className="myday__more">
+        <button onClick={() => navigate('/situation')}>
+          <small>מה היית עושה?</small>
+          <strong>{situationOfDay().title}</strong>
+        </button>
+        <button onClick={() => navigate('/checkin')}>
+          <small>{s.checkins?.[dayKey()] ? 'עצרת היום' : 'איך אתה מרגיש?'}</small>
+          <strong>{questionOfDay()}</strong>
+        </button>
+      </div>
+      {!s.push?.on && (
         <button className="myday__remind" onClick={() => setRemind(true)}>
-          תזכורת יומית לטלפון
+          הפעל התראות מהאפליקציה
         </button>
       )}
-      <ReminderSheet open={remind} onClose={() => setRemind(false)} />
+      <PushSheet open={remind} onClose={() => setRemind(false)} />
     </section>
+  )
+}
+
+const MORNING = [7, 8, 9, 10]
+const EVENING = [19, 20, 21, 22]
+
+/** Notifications from the app itself: it decides what to send (a situation, a question, a nudge), you pick when. */
+export function PushSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const cur = useStore((x) => x.push)
+  const [am, setAm] = useState(cur?.hours[0] ?? 9)
+  const [pm, setPm] = useState(cur?.hours[1] ?? 21)
+  const [state, setState] = useState<'idle' | 'busy' | 'install' | 'denied' | 'error' | 'unsupported'>('idle')
+  const needInstall = isIOS() && !isStandalone()
+  const go = async () => {
+    setState('busy')
+    const r = await enablePush([am, pm])
+    if (r === 'on') {
+      toast('ההתראות פעילות. ההודעה הראשונה כבר אצלך')
+      setState('idle')
+      onClose()
+    } else setState(r)
+  }
+  const hour = (h: number) => `${String(h).padStart(2, '0')}:00`
+  return (
+    <Sheet open={open} onClose={onClose} label="התראות">
+      <h3 className="sheet__title">האפליקציה תפנה אליך</h3>
+      <p className="sheet__lead">פעמיים ביום, בלי שתצטרך לזכור: בבוקר מצב מהחיים או תרגול, ובערב שאלה קטנה על איך אתה מרגיש. כל יום משהו אחר.</p>
+      {needInstall || state === 'install' ? (
+        <ol className="install">
+          <li>פותחים את הקישור בספארי</li>
+          <li>לוחצים על כפתור השיתוף בתחתית המסך</li>
+          <li>בוחרים "הוספה למסך הבית", ואז "הוסף"</li>
+          <li>נכנסים מהאייקון החדש ולוחצים כאן שוב</li>
+        </ol>
+      ) : (
+        <>
+          <span className="sheet__label">בוקר</span>
+          <div className="chips chips--wrap" role="radiogroup" aria-label="שעת בוקר">
+            {MORNING.map((h) => (
+              <button key={h} role="radio" aria-checked={am === h} className={`chip ${am === h ? 'is-on' : ''}`} onClick={() => setAm(h)}>
+                {hour(h)}
+              </button>
+            ))}
+          </div>
+          <span className="sheet__label">ערב</span>
+          <div className="chips chips--wrap" role="radiogroup" aria-label="שעת ערב">
+            {EVENING.map((h) => (
+              <button key={h} role="radio" aria-checked={pm === h} className={`chip ${pm === h ? 'is-on' : ''}`} onClick={() => setPm(h)}>
+                {hour(h)}
+              </button>
+            ))}
+          </div>
+          {state === 'denied' && <p className="sheet__note">ההתראות חסומות. הגדרות ← התראות ← המסע שלי ← לאפשר, ואז לנסות שוב.</p>}
+          {(state === 'error' || state === 'unsupported') && <p className="sheet__note">לא הצלחנו להפעיל כרגע. בדוק חיבור לאינטרנט ונסה שוב.</p>}
+          <div className="sheet__actions">
+            <button className="btn btn--primary btn--wide" disabled={state === 'busy'} onClick={go}>
+              {state === 'busy' ? 'מפעיל…' : cur?.on ? 'עדכון השעות' : 'הפעל התראות'}
+            </button>
+          </div>
+        </>
+      )}
+    </Sheet>
   )
 }
 

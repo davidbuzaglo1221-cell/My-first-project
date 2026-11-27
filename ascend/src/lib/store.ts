@@ -110,6 +110,12 @@ export interface AppState {
   calm?: Record<string, number>
   /** Thirty-day program: the day each program day was completed (day key). */
   program?: Record<string, string>
+  /** Daily check-in: mood (1-5), the question of the day and your answer, per day key. */
+  checkins?: Record<string, { mood: number; q: string; a: string; at: number }>
+  /** "What would you do?": the choice made for each situation. */
+  situations?: Record<string, number>
+  /** Notifications: whether this device subscribed, and the morning/evening hours chosen. */
+  push?: { on: boolean; hours: number[] }
   /** Your day: the day the idea of the day was opened, and the daily reminder time (HH:MM) once set. */
   daily?: { idea?: string; remindAt?: string }
 }

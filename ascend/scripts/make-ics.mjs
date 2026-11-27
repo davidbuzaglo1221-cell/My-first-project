@@ -22,15 +22,15 @@ const pad = (n) => String(n).padStart(2, '0')
 const stamp = (d) => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`
 const now = new Date()
 const dtstamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d+/, '')
-const HEADS = (idea) => [`הרעיון של היום: ${idea.h}`, 'שמעת היום פרק? כמה דקות בספריה', 'התרגול של היום מחכה לך', `${idea.bookTitle}: רעיון אחד להיום`, 'התקדמת היום מספיק? צעד קטן אחד']
+const HEADS = (idea) => [`הרעיון של היום: ${idea.h}`, 'שמעת היום פרק? כמה דקות במסע שלך', 'התרגול של היום מחכה לך', `${idea.bookTitle}: רעיון אחד להיום`, 'התקדמת היום מספיק? צעד קטן אחד']
 mkdirSync('public/remind', { recursive: true })
 for (const t of TIMES) {
-  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//HaSifria//Daily//HE', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'X-WR-CALNAME:הספריה', 'X-WR-TIMEZONE:Asia/Jerusalem']
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//HaMasa//Daily//HE', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'X-WR-CALNAME:המסע שלי', 'X-WR-TIMEZONE:Asia/Jerusalem']
   for (let i = 0; i < DAYS; i++) {
     const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + i)
     const idea = ideaOfDay(d), ch = challengeOfDay(d)
     const heads = HEADS(idea)
-    const summary = `הספריה · ${heads[i % heads.length]}`
+    const summary = `המסע שלי · ${heads[i % heads.length]}`
     const desc = `הרעיון של היום מתוך "${idea.bookTitle}": ${idea.h}.\nהאתגר של היום: ${ch.text}\n\nשלושה צעדים קטנים: תרגול, פרק אחד, ורעיון אחד.\n${URL}`
     lines.push('BEGIN:VEVENT', `UID:hasifria-${stamp(d)}-${t}@hasifria`, `DTSTAMP:${dtstamp}`, `DTSTART:${stamp(d)}T${t}00`, 'DURATION:PT10M',
       fold(`SUMMARY:${esc(summary)}`), fold(`DESCRIPTION:${esc(desc)}`), `URL:${URL}`, 'TRANSP:TRANSPARENT',

@@ -124,7 +124,7 @@ export function Home() {
           {initial}
         </button>
         <span className="wordmark wordmark--he">
-          הספריה
+          המסע שלי
         </span>
         <button className="icon-btn icon-btn--glass" onClick={() => navigate('/explore')} aria-label="חיפוש בספרייה">
           <IconSearch size={19} />
@@ -133,7 +133,7 @@ export function Home() {
 
       <div className="h4intro">
         <p className="h4intro__greet">{greeting()}{s.name ? `, ${s.name}` : ""}</p>
-        <h1 className="h4intro__title">הספרייה שלך</h1>
+        <h1 className="h4intro__title">המסע שלך</h1>
       </div>
 
       <TodayCard />

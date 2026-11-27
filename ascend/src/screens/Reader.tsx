@@ -46,13 +46,13 @@ export function bookChapters(b: Book): { chapters: Chapter[]; full: boolean; not
     return {
       chapters: b.lessons.map((l) => ({ title: l.title, paragraphs: l.script.split(/\n+/), lessonId: l.id, takeaway: l.takeaway, steps: l.steps, task: l.exercise.task, ideas: l.ideas })),
       full: true,
-      note: 'כל הספר, רק העיקר: כל הפרקים והרעיונות של הספר, בניסוח מקורי ומתומצת של הספריה, בלי מילוי. זה לא תרגום מילולי של הספר.',
+      note: 'כל הספר, רק העיקר: כל הפרקים והרעיונות של הספר, בניסוח מקורי ומתומצת של המסע שלי, בלי מילוי. זה לא תרגום מילולי של הספר.',
     }
   const intro: Chapter = { title: 'למה הספר הזה', paragraphs: [b.tagline, b.why, ...b.ideas.map((i) => `${i.title}. ${i.body}`)] }
   return {
     chapters: [intro, ...b.lessons.map((l) => ({ title: l.title, paragraphs: l.script.split(/\n+/), lessonId: l.id }))],
     full: false,
-    note: 'מהדורת הספריה: הסבר מקורי של רעיונות הספר, לא הטקסט של הספר עצמו. את הספר המלא אפשר לרכוש מההוצאה.',
+    note: 'מהדורת המסע שלי: הסבר מקורי של רעיונות הספר, לא הטקסט של הספר עצמו. את הספר המלא אפשר לרכוש מההוצאה.',
   }
 }
 

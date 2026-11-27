@@ -38,12 +38,12 @@ export function Opening({ onEnter }: { onEnter: () => void }) {
       </div>
       <div className="opening__shade" aria-hidden="true" />
       <div className="opening__body">
-        <h1 className="opening__brand">הספריה</h1>
+        <h1 className="opening__brand">המסע שלי</h1>
         <p className="opening__lead">
           {books.length} הספרים הטובים בעולם. {chapters} פרקים, כל ספר במלואו, רק העיקר.
         </p>
         <button className="opening__enter" onClick={enter}>
-          כניסה אל הספרייה שלי
+          כניסה אל המסע שלי
         </button>
       </div>
     </div>

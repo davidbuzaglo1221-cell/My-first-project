@@ -24,7 +24,7 @@ export function reminderIcs(r: Reminder) {
     `DTEND:${local(end)}`,
     `RRULE:FREQ=${days ? 'WEEKLY' : 'DAILY'}${days}`,
     `SUMMARY:${text}`,
-    'DESCRIPTION:תזכורת מ-הספריה',
+    'DESCRIPTION:תזכורת מהמסע שלי',
     'BEGIN:VALARM',
     'ACTION:DISPLAY',
     `DESCRIPTION:${text}`,

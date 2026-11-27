@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { estimateSeconds, formatMinutes, lessonIndex } from '../content'
 import { load, player, usePlayer, toggle } from '../engine/player'
@@ -160,14 +161,15 @@ export function Sheet({ open, onClose, children, label, className = '' }: { open
     }
   }, [open, onClose])
   if (!mounted) return null
-  return (
+  return createPortal(
     <div className={`sheet-wrap ${open ? 'is-open' : ''}`}>
       <div className="sheet-scrim" onClick={onClose} />
       <div ref={ref} className={`sheet ${className}`} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1}>
         <div className="sheet__grip" aria-hidden="true" />
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
 

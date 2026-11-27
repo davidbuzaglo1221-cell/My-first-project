@@ -1,6 +1,6 @@
 # Builds the ASCEND web app (ascend/) and publishes it to GitHub Pages.
 # Needs: repository public (or GitHub Pro), and Settings → Pages → Source: "GitHub Actions".
-name: Deploy הספריה to GitHub Pages
+name: Deploy המסע שלי
 
 on:
   push:

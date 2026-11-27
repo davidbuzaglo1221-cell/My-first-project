@@ -17,6 +17,8 @@ export type Route =
   | { name: 'notes'; tab?: string }
   | { name: 'quiz'; id: string; lesson?: string }
   | { name: 'ask'; id: string }
+  | { name: 'checkin' }
+  | { name: 'situation'; id?: string }
 
 export function parse(hash: string): Route {
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent)
@@ -41,6 +43,10 @@ export function parse(hash: string): Route {
       return { name: 'read', id: parts[1] ?? '' }
     case 'freedom':
       return { name: 'freedom' }
+    case 'checkin':
+      return { name: 'checkin' }
+    case 'situation':
+      return { name: 'situation', id: parts[1] }
     case 'breathe':
       return { name: 'breathe', id: parts[1] ?? '' }
     case 'notes':
@@ -71,7 +77,7 @@ export const back = (fallback = '/') => (history.length > 1 ? history.back() : n
 export const tabOf = (r: Route): string =>
   ['category', 'book', 'path', 'read', 'quiz', 'ask'].includes(r.name)
     ? 'explore'
-    : r.name === 'breathe'
+    : r.name === 'breathe' || r.name === 'checkin' || r.name === 'situation'
       ? 'freedom'
       : ['settings', 'voices', 'growth', 'library'].includes(r.name)
         ? 'progress'

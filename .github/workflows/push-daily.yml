@@ -1,0 +1,68 @@
+# המסע שלי · daily notifications. Every hour: pick up new subscribers, and at each one's chosen hours send the
+# message of the day (a situation, a question, a nudge). The VAPID private key and the subscriber list live only in
+# the Actions cache (never in the repository); only the public key is committed for the app.
+name: המסע שלי · daily notifications
+
+on:
+  schedule:
+    - cron: '13 * * * *'
+  workflow_dispatch:
+    inputs:
+      test:
+        description: 'Send a test message to every subscriber now'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: push-daily
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ascend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ascend/package-lock.json
+      - run: npm ci
+      - uses: actions/cache/restore@v4
+        with:
+          path: ascend/.push-state
+          key: push-state-${{ github.run_id }}
+          restore-keys: push-state-
+      - run: node scripts/push/send.mjs ${{ inputs.test && '--test' || '' }}
+      - uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: ascend/.push-state
+          key: push-state-${{ github.run_id }}
+      - name: Publish the public key (first run only) and redeploy the app
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -n "$(git status --porcelain public/push)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add public/push/vapid.json
+            git commit -m "Notifications: publish the public key"
+            git push
+            gh workflow run ascend-pages.yml --ref main
+          fi
+      - name: Keep the schedule alive (GitHub pauses idle schedules after 60 days)
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$(date -u +%d%H)" = "0103" ]; then gh api --method PUT "repos/${{ github.repository }}/actions/workflows/push-daily.yml/enable"; fi

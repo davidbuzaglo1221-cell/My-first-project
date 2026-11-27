@@ -1,6 +1,6 @@
 // Instant launches: the app shell is served from cache and refreshed in the background.
 // Audio streams straight from the network (range requests for seeking are never cached).
-const CACHE = 'hasifria-v8'
+const CACHE = 'hamasa-v1'
 const SHELL = ['./', './index.html', './manifest.json', './apple-touch-icon.png', './icon-192.png', './icon-512.png']
 self.addEventListener('install', (e) => {
   self.skipWaiting()
@@ -33,4 +33,21 @@ self.addEventListener('fetch', (e) => {
         }),
     ),
   )
+})
+
+// Notifications from the app: the daily sender pushes {title, body, url}; a tap opens that place in the app.
+self.addEventListener('push', (e) => {
+  let d = {}
+  try { d = e.data ? e.data.json() : {} } catch { d = { body: e.data ? e.data.text() : '' } }
+  e.waitUntil(self.registration.showNotification(d.title || 'המסע שלי', {
+    body: d.body || '', icon: 'icon-192.png', badge: 'icon-192.png', tag: d.tag || 'daily', data: { url: d.url || './' },
+  }))
+})
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close()
+  const target = new URL(e.notification.data && e.notification.data.url ? e.notification.data.url : './', self.registration.scope).href
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+    for (const c of list) if ('focus' in c) { c.navigate(target).catch(() => {}); return c.focus() }
+    return clients.openWindow(target)
+  }))
 })

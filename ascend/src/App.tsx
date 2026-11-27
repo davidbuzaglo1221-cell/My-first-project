@@ -12,6 +12,8 @@ import { LessonComplete } from './screens/LessonComplete'
 import { Library } from './screens/Library'
 import { NowPlaying } from './screens/NowPlaying'
 import { Opening } from './screens/Opening'
+import { Checkin } from './screens/Checkin'
+import { SituationScreen } from './screens/Situation'
 import { Progress } from './screens/Progress'
 import { Settings } from './screens/Settings'
 import { Voices } from './screens/Voices'
@@ -152,6 +154,12 @@ export function App() {
       break
     case 'ask':
       screen = <Ask bookId={route.id} />
+      break
+    case 'checkin':
+      screen = <Checkin />
+      break
+    case 'situation':
+      screen = <SituationScreen id={route.id} />
       break
   }
 

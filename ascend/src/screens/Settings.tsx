@@ -7,13 +7,14 @@ import { IconAscend } from '../ui/Icons'
 import { BackButton, Segmented } from '../ui/Kit'
 import { toast } from '../ui/uiState'
 import { Assessment } from './Growth'
-import { ReminderSheet } from '../ui/Daily'
+import { PushSheet, ReminderSheet } from '../ui/Daily'
 
 export function Settings() {
   const s = useStore((x) => x)
   const file = useRef<HTMLInputElement>(null)
   const [confirmReset, setConfirmReset] = useState(false)
   const [remind, setRemind] = useState(false)
+  const [push, setPush] = useState(false)
 
   function exportData() {
     const blob = new Blob([JSON.stringify(store.get(), null, 2)], { type: 'application/json' })
@@ -32,7 +33,7 @@ export function Settings() {
       store.replace(data)
       toast('הגיבוי שוחזר')
     } catch {
-      toast('הקובץ הזה לא נראה כמו גיבוי של הספריה.')
+      toast('הקובץ הזה לא נראה כמו גיבוי של המסע שלי.')
     }
   }
 
@@ -79,9 +80,13 @@ export function Settings() {
       </section>
 
       <section className="group">
-        <h2 className="group__title">תזכורת יומית</h2>
+        <h2 className="group__title">התראות</h2>
+        <button className="btn btn--primary btn--wide" onClick={() => setPush(true)}>
+          {s.push?.on ? `פעיל · ${s.push.hours.map((h) => `${h}:00`).join(' ו־')}. לשנות שעות` : 'הפעל התראות מהאפליקציה'}
+        </button>
+        <PushSheet open={push} onClose={() => setPush(false)} />
         <button className="btn btn--ghost btn--wide" onClick={() => setRemind(true)}>
-          {s.daily?.remindAt ? `התזכורת שלך: ${s.daily.remindAt}. לשנות שעה` : 'להוסיף תזכורת יומית ליומן'}
+          {s.daily?.remindAt ? `גם ביומן: ${s.daily.remindAt}. לשנות שעה` : 'גיבוי: תזכורת גם ביומן'}
         </button>
         <ReminderSheet open={remind} onClose={() => setRemind(false)} />
       </section>
@@ -141,7 +146,7 @@ export function Settings() {
       <section className="group about">
         <IconAscend size={28} />
         <p>
-          <strong>הספריה</strong> היא הבית של הספרים הגדולים על צמיחה אישית. כל ספר מופיע במלואו, פרק אחר פרק, רק העיקר, בניסוח מקורי של הספריה. זה אינו תרגום מילולי של הספרים. הקריינות מוקלטת מראש בעברית, ואפשר גם להוסיף קבצי אודיו משלך.
+          <strong>המסע שלי</strong> הוא הבית של הספרים הגדולים על צמיחה אישית. כל ספר מופיע במלואו, פרק אחר פרק, רק העיקר, בניסוח מקורי. זה אינו תרגום מילולי של הספרים. הקריינות מוקלטת מראש בעברית, ואפשר גם להוסיף קבצי אודיו משלך.
         </p>
       </section>
     </div>
