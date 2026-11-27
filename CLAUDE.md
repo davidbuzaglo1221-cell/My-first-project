@@ -51,6 +51,8 @@ These rules apply to every request in this repository, from the first message. T
 ## The app standard ("100 days" rule — every app looks like this)
 Use the `premium-app` skill (`.claude/skills/premium-app/SKILL.md`) for every new app. In short:
 1. **Full screen, its own address**: a standalone PWA hosted on GitHub Pages (repo public, Pages source = GitHub Actions, deploy from `main`), never only inside the Claude viewer.
+   **Permanent install rule (27.11.2026):** one permanent link; installed from Safari with Share → Add to Home Screen; opens full screen with no Safari bar at the top or bottom (`display: standalone`, `apple-mobile-web-app-capable`); a premium icon and a Hebrew name — never Safari's generic screenshot icon. Verify manifest, apple-touch-icon and standalone mode before handing over.
+   **Notifications are real Web Push from the app itself** (it decides and sends: situations, questions, nudges), not calendar events.
 2. **Home-screen profile**: an iOS `.mobileconfig` web clip with a Hebrew name, the app icon, `FullScreen=true`, sent to the user as a file.
 3. **A beautiful name and a premium icon** (golden/emerald, no generic art).
 4. **Apple-grade design**: large titles, grouped lists with hairline separators (not a box per item), native-style tab bar, compact mini player, Apple Music–style full player (artwork, scrubber with elapsed/remaining, prev/±15/play/next, lyrics-style captions, up next, speed, sleep timer).

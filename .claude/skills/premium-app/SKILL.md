@@ -13,6 +13,8 @@ Build the first version as if a senior Apple team worked on it for months. The u
 - PWA: `manifest.json`, apple-touch-icon 180, icons 192/512, `apple-mobile-web-app-capable`, `viewport-fit=cover`, safe-area insets, and a service worker that serves the shell from cache (stale-while-revalidate) and never caches audio or range requests.
 
 ## 2. Distribution (no Claude bar, real full screen)
+- **The permanent install rule**: one link, Safari → Share → Add to Home Screen, full screen with no Safari bars, premium icon (180px apple-touch-icon, 192/512/1024 manifest icons, maskable), Hebrew `name`/`short_name`/`apple-mobile-web-app-title`. iOS Web Push works only in this installed mode (iOS 16.4+), so this is also the way to get notifications.
+- **Notifications**: Web Push from the app (service worker `push` + `notificationclick`), VAPID keys created and kept by the sender workflow, subscriptions relayed to it, an hourly GitHub Actions sender with a daily message bank. Never substitute calendar events for app notifications.
 - Host on **GitHub Pages**: repository public, Settings → Pages → Source = GitHub Actions, workflow deploys from `main` only (a second trigger branch cancels the run).
 - Allow the Pages host in the cloud environment so the live site can be verified with curl and Playwright (via `HTTPS_PROXY`).
 - Make an iOS `.mobileconfig` web clip: Hebrew `Label`, PNG icon, `URL` = Pages address, `FullScreen=true`, `IgnoreManifestScope=true`, stable `PayloadIdentifier` (so a new profile replaces the old one). Send it with Hebrew install steps.
