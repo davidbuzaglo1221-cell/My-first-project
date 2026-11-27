@@ -16,7 +16,7 @@ for it in items:
     for line in it['lines']:
         if line.startswith('~'):
             sec = float(line[1:].strip() or 3); chunks.append(np.zeros(int(sec * SR), np.float32)); cur += sec; continue
-        w = R.pcm(R.key(VOICE, line, rate(it))); segs.append({'t': round(cur, 2), 'text': line}); chunks.append(w); cur += len(w) / SR
+        w = R.pcm(R.key(VOICE, line, rate(it))); w = R.liven(w, SR, VOICE) if it['id'].startswith('day-') else w; segs.append({'t': round(cur, 2), 'text': line}); chunks.append(w); cur += len(w) / SR
         gap = 0.6 if it['id'].startswith('day-') else 1.1
         chunks.append(np.zeros(int(gap * SR), np.float32)); cur += gap
     chunks += [np.zeros(int(1.5 * SR), np.float32), bell()]; cur += 7.0

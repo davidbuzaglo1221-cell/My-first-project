@@ -27,10 +27,11 @@ Build the first version as if a senior Apple team worked on it for months. The u
 - Screenshot every new screen at 390×844 and look at it before shipping.
 
 ## 4. Voice
-- Use Microsoft neural Hebrew voices (`he-IL-AvriNeural`, `he-IL-HilaNeural`) via `edge-tts`; synthesize sentence by sentence, cache by hash, assemble one file per book with exact sentence offsets, master with loudnorm −16 LUFS.
-- Offer only **real** choices (Avri, Hila, and Avri+Hila alternating by paragraph). Never label one voice as several.
-- Reject truncated clips (bytes ≥ 130 × characters) and rescan durations after synthesis; check with `ivrit-ai/whisper-large-v3-turbo` (WER/CER) before publishing.
-- Edge voices are for personal use; commercial release needs the same voices through Azure Speech.
+- **Measure, don't guess.** Hebrew listener votes exist: `ivrit-ai/tts-arena-preferences` on Hugging Face (2,257+ pairwise votes). A logistic model on simple acoustics (spectral centroid, voicing continuity, pitch variation, pauses; `features.py`) predicts the winner ~68% of the time. Score every candidate on the same sentences, plus Hebrew ASR (`ivrit-ai/whisper-large-v3-turbo-ct2`) for WER/CER and a joined-words test (וכשהוא, שבבית, לכשתחליט…).
+- **Current best free voices**: Microsoft multilingual "Copilot" voices through `edge-tts` — Emma (presented as **מאיה**) and Brian (**יואב**), plus a duo. They beat he-IL Avri/Hila on joined words and naturalness. Andrew stumbles on joins. Adding niqqud (Phonikud) made Edge voices worse.
+- **Make it lively**: master with presence EQ (`equalizer=f=3200:g=2.5, highshelf=f=7000:g=3`), and widen each sentence's pitch movement ×1.4 with a slight lift (Praat PSOLA, `prosody.py`): + ~4–5 points of predicted preference, no intelligibility cost. Faster pace does not help.
+- Synthesize sentence by sentence, cache by hash, assemble one file per book with exact sentence offsets, loudnorm −16 LUFS. Reject truncated clips and rescan durations; rephrase a line a voice cannot render.
+- Paid voices still lead (Gemini 3.1 Flash TTS, ElevenLabs v3); say so honestly when asked.
 
 ## 5. Content
 - Whole book, only what matters: chapter headings that each carry a real part of the book.
@@ -39,7 +40,12 @@ Build the first version as if a senior Apple team worked on it for months. The u
 - Numbers and abbreviations spelled out for narration. No Latin letters or digits inside spoken text (tests enforce it).
 - No steering or questionnaires: show the whole catalogue, let the user choose, show learning in percent.
 
-## 6. Release checklist
+## 6. Every day something new (retention)
+- Home starts with **"היום שלך"**: three small steps that change daily (today's practice, one chapter, the idea of the day from the key ideas) + a challenge of the day + a ring (x/3) and minutes vs goal.
+- A narrated **30-day program** (body → mind → action → people & meaning), each day ~2 min with a guided practice and a mission; a 30-tile grid; completion recorded when heard to the end.
+- **Daily reminder**: generated `.ics` calendars (one per time slot, 120 days, a different message each day, alert + link), regenerated on every build; and, with the Calendar connector, a recurring daily event in the user's own calendar.
+
+## 7. Release checklist
 1. `npx tsc -b --noEmit`, `npx vitest run`, Playwright feature tests (`scripts/e2e-features.cjs`, `scripts/e2e-audio.cjs`) all green.
 2. Build, push to the work branch and `main`, wait for the Pages run, then verify the live URL (assets, audio range 206, a real browser playback).
 3. Tell the user in Hebrew what changed, what was verified, and anything still limited — honestly.
