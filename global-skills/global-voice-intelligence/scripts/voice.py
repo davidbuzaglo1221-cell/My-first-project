@@ -13,7 +13,7 @@ Engines (all free, no key):
 Script JSON: {"style": "podcast", "voice": "blue:yael", "lang": "he", "lexicon": "lex.json",
               "segments": [{"id": "01", "text": "...", "voice": "...", "style": "...", "pause": 0.6}]}
 """
-import argparse, asyncio, hashlib, json, os, subprocess, sys, tempfile
+import argparse, asyncio, hashlib, json, os, re, subprocess, sys, tempfile
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import textprep
@@ -87,9 +87,10 @@ def trim(w, thr=0.006, pre=0.03, post=0.08):
     if not len(idx): return w
     return w[max(0, idx[0] - int(pre * SR)): idx[-1] + int(post * SR)]
 
-def liven(w, k, lift, lo=75, hi=420):
-    """Widen pitch movement around the median (PSOLA). k=1 and lift=1 leave the audio untouched."""
-    if abs(k - 1) < 1e-3 and abs(lift - 1) < 1e-3: return w
+def liven(w, k, lift, lo=75, hi=420, target_med=None):
+    """Widen pitch movement around the median (PSOLA). k=1 and lift=1 leave the audio untouched.
+    target_med anchors this chunk's median pitch to the voice's running median (continuity across chunks)."""
+    if abs(k - 1) < 1e-3 and abs(lift - 1) < 1e-3 and not target_med: return w
     try:
         import parselmouth
         from parselmouth.praat import call
@@ -98,7 +99,8 @@ def liven(w, k, lift, lo=75, hi=420):
         if not med or med != med: return w
         man = call(snd, 'To Manipulation', 0.01, lo, hi)
         pt = call(man, 'Extract pitch tier')
-        call(pt, 'Formula', f'{med * lift} * (self / {med}) ^ {k}')
+        base = med if not target_med else float(np.clip(target_med, med * 0.92, med * 1.08))
+        call(pt, 'Formula', f'{base * lift} * (self / {med}) ^ {k}')
         call([pt, man], 'Replace pitch tier')
         return call(man, 'Get resynthesis (overlap-add)').values[0].astype(np.float32)[:len(w) + 200]
     except Exception:
@@ -133,22 +135,69 @@ def pick_voice(style, lang, voice=None):
     vs = STYLES[style]['voices']
     return (vs.get(lang) or vs['en'])[0]
 
+TAKES = int(os.environ.get('GVI_TAKES', '3'))
+WH = ('מה', 'למה', 'איפה', 'מתי', 'איך', 'מי', 'כמה', 'איזה', 'איזו', 'מאיפה', 'לאן', 'what', 'why', 'where', 'when', 'how', 'who', 'which')
+
+def pitch_stats(w):
+    """(p10-p90 range in semitones, end movement in semitones) of a mono 24 kHz chunk."""
+    try:
+        import parselmouth
+        p = parselmouth.Sound(w.astype(np.float64), sampling_frequency=SR).to_pitch(time_step=0.01, pitch_floor=70, pitch_ceiling=450)
+        f = p.selected_array['frequency']; t = p.xs(); t, f = t[f > 0], f[f > 0]
+        if len(f) < 20: return 0.0, 0.0
+        st = 12 * np.log2(f / np.median(f)); rng = float(np.percentile(st, 90) - np.percentile(st, 10))
+        end = t[-1]; last = f[t > end - 0.45]; prev = f[(t <= end - 0.45) & (t > end - 1.05)]
+        mv = float(12 * np.log2(np.median(last[-12:]) / np.median(prev))) if len(last) > 4 and len(prev) > 4 else 0.0
+        return rng, mv
+    except Exception:
+        return 0.0, 0.0
+
+def take_score(w, text, st):
+    """Higher is better: pitch range near the style's target (before liven), yes/no questions must rise,
+    statements should fall; punish clipping."""
+    rng, mv = pitch_stats(w)
+    target = st.get('target_range', 9.0) / max(st['k'], 0.5)
+    score = -abs(rng - target)
+    s = text.strip()
+    if s.endswith('?'):
+        clause = re.split(r'[:,;]', s)[-1].split() or s.split()   # the question is the last clause
+        first = clause[0].lower() if clause else ''
+        if not any(first == q or first == 'ו' + q for q in WH): score += 1.5 * min(mv, 6)   # yes/no question: reward the rise
+    elif s.endswith('.'):
+        score += 0.5 * min(-mv, 6)                                                          # statement: reward the fall
+    if np.max(np.abs(w)) > 0.99: score -= 5
+    return score
+
 def synth_chunk(text, voice, lang, style):
     st = STYLES[style]
     eng, name = parse_voice(voice)
-    h = hashlib.sha1(json.dumps([text, voice, lang, style, st], ensure_ascii=False).encode()).hexdigest()
+    h = hashlib.sha1(json.dumps([text, voice, lang, style, st, TAKES if voice.startswith('blue') else 1], ensure_ascii=False).encode()).hexdigest()
     cp = os.path.join(CACHE, h + '.f32')
     if os.path.exists(cp): return np.fromfile(cp, np.float32)
     if eng == 'edge':
         w, sr = edge(text, name, lang, 1.0, st['edge_rate'], st['edge_pitch'])
+        w = trim(resample(w, sr))
+    elif eng == 'blue' and TAKES > 1:
+        # BlueTTS samples a new delivery on every call (flow matching): record several takes, keep the best one
+        takes = [trim(resample(*ENGINES[eng](text, name, lang, st['speed']))) for _ in range(TAKES)]
+        w = max(takes, key=lambda x: take_score(x, text, st))
     else:
         w, sr = ENGINES[eng](text, name, lang, st['speed'])
-    w = trim(resample(w, sr))
-    w = liven(w, st['k'], st['lift'])
+        w = trim(resample(w, sr))
     peak = float(np.max(np.abs(w))) if len(w) else 0
     if peak > 0.98: w = w * (0.9 / peak)   # never feed a clipped chunk into the master chain
     os.makedirs(CACHE, exist_ok=True); w.astype(np.float32).tofile(cp)
     return w
+
+VOICE_MED = {}   # voice -> medians of every chunk rendered in this process (one product = one voice "line")
+def chunk_median(w):
+    try:
+        import parselmouth
+        f = parselmouth.Sound(w.astype(np.float64), sampling_frequency=SR).to_pitch(time_step=0.01, pitch_floor=70, pitch_ceiling=450).selected_array['frequency']
+        f = f[f > 0]
+        return float(np.median(f)) if len(f) > 10 else None
+    except Exception:
+        return None
 
 def speak(text, style='podcast', voice=None, lang=None, lexicon=None):
     """Text -> (audio, chunk timings). Each breath chunk is synthesized on its own so timings are exact."""
@@ -161,6 +210,10 @@ def speak(text, style='podcast', voice=None, lang=None, lexicon=None):
         cs = textprep.chunks(textprep.prepare(para, lang, lexicon))
         for ci, c in enumerate(cs):
             w = synth_chunk(c, voice, lang, style)
+            med = chunk_median(w)
+            if med: VOICE_MED.setdefault(voice, []).append(med)
+            ref = float(np.median(VOICE_MED[voice])) if VOICE_MED.get(voice) else None
+            w = liven(w, st['k'], st['lift'], target_med=ref)
             cues.append({'start': round(t, 3), 'end': round(t + len(w) / SR, 3), 'text': c})
             out.append(w); t += len(w) / SR
             gap = st['para_gap'] if ci == len(cs) - 1 and pi < len(paras) - 1 else st['sent_gap']

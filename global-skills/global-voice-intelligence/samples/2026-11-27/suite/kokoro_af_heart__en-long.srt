@@ -1,0 +1,20 @@
+1
+00:00:00,000 --> 00:00:04,017
+When you walk into a great barbershop you can feel it before anyone says a word,
+
+2
+00:00:04,217 --> 00:00:05,683
+because there is coffee in the air,
+
+3
+00:00:05,883 --> 00:00:07,479
+quiet music in the background,
+
+4
+00:00:07,679 --> 00:00:09,114
+and someone who looks at you,
+
+5
+00:00:09,314 --> 00:00:12,520
+and asks how your week was before they ever talk about your hair.
+

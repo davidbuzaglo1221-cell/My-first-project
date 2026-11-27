@@ -31,6 +31,13 @@ $PY $GVI/qa.py suite -v blue:david -v edge:he-IL-AvriNeural -o qa-report/
 Voice ids: `blue:<name>` (Hebrew+English+more, local), `kokoro:<name>` (English, local), `edge:<MicrosoftVoice>` (online, unofficial, free — never the only path for a product).
 Lexicon per project: JSON `{"written": "spoken"}` → `--lexicon lex.json` or `"lexicon"` in the render script.
 
+## What the renderer does for you (measured, see LEARNINGS.md)
+- Splits text at breath points and synthesizes chunk by chunk → exact caption times.
+- **Takes**: BlueTTS delivers differently on every render, so it records 3 takes per chunk and keeps the one closest to the style's liveliness target, with rising yes/no questions and falling statements (`GVI_TAKES=1` for quick drafts).
+- **Continuity**: anchors every chunk to the voice's running median pitch, so a chapter sounds like one session.
+- Style pitch/pace shaping (PSOLA), presence EQ, de-ess, compression, loudness to the style's LUFS with a −1.5 dBTP ceiling.
+- Cache per chunk: changing one sentence re-renders one sentence.
+
 ## Hard rules
 - Hebrew is checked by a Hebrew ASR, not by eye. A render whose transcript misses words is not delivered.
 - A question must measurably rise at the end (`end_move_st > 0.5`); if the engine flattens it, rewrite the line (hebrew.md §3).

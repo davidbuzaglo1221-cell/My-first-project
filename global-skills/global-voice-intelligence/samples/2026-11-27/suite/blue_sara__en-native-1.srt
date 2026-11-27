@@ -1,0 +1,8 @@
+1
+00:00:00,000 --> 00:00:02,941
+Honestly, I didn't expect it to work this well.
+
+2
+00:00:03,141 --> 00:00:06,963
+We tried it on Monday, and by Friday everyone was using it.
+

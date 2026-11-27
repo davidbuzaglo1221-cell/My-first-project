@@ -1,0 +1,138 @@
+[
+ {
+  "file": "01-he-social-david.mp3",
+  "style": "social",
+  "voice": "blue:david",
+  "text": "שלושים שניות. מכונה אחת. ככה נראה פייד שמחזיק שבועיים.",
+  "seconds": 4.89,
+  "cer": 0.0,
+  "pitch_range_st": 12.5,
+  "end_move_st": -4.5,
+  "chars_per_s": 6.5,
+  "transcript": "30 שניות, מכונה אחת,  ככה נראה פייד שמחזיק שבועיים.",
+  "sync": {
+   "cues": 3,
+   "in_sync": 3,
+   "worst_offset_s": 0.056
+  }
+ },
+ {
+  "file": "02-he-podcast-sara.mp3",
+  "style": "podcast",
+  "voice": "blue:sara",
+  "text": "תקשיבו, רוב האנשים חושבים שתספורת טובה מתחילה במספריים. היא מתחילה בשאלה אחת: מה אתם רוצים שיראו כשאתם נכנסים לחדר?",
+  "seconds": 9.08,
+  "cer": 0.0,
+  "pitch_range_st": 9.6,
+  "end_move_st": 7.3,
+  "chars_per_s": 8.5,
+  "transcript": "תקשיבו,  רוב האנשים חושבים שתספורת טובה מתחילה במספריים.  היא מתחילה בשאלה אחת, מה אתם רוצים שיראו כשאתם נכנסים לחדר?",
+  "sync": {
+   "cues": 2,
+   "in_sync": 2,
+   "worst_offset_s": 0.025
+  }
+ },
+ {
+  "file": "03-he-audiobook-noa.mp3",
+  "style": "audiobook",
+  "voice": "blue:noa",
+  "text": "הבוקר עוד היה אפור כשהוא פתח את הדלת. ריח של קפה, רדיו ישן, והכיסא שחיכה לו כמו בכל יום. הוא ידע שהיום משהו עומד להשתנות.",
+  "seconds": 11.3,
+  "cer": 0.0,
+  "pitch_range_st": 8.6,
+  "end_move_st": -2.1,
+  "chars_per_s": 6.5,
+  "transcript": "הבוקר עוד היה אפור, כשהוא פתח את הדלת,  ריח של קפה, רדיו ישן,  והכיסא שחיכה לו כמו בכל יום.  הוא ידע שהיום משהו עומד להשתנות.",
+  "sync": {
+   "cues": 3,
+   "in_sync": 3,
+   "worst_offset_s": 0.095
+  }
+ },
+ {
+  "file": "04-he-documentary-michael.mp3",
+  "style": "documentary",
+  "voice": "blue:michael",
+  "text": "בשנות החמישים, המספרה הייתה הרבה יותר ממקום להסתפר. היא הייתה מרכז השכונה: כאן שמעו חדשות, סגרו עסקאות, ומצאו עבודה.",
+  "seconds": 10.24,
+  "cer": 0.0,
+  "pitch_range_st": 8.5,
+  "end_move_st": -6.3,
+  "chars_per_s": 7.4,
+  "transcript": "בשנות ה-50 המספרה הייתה הרבה יותר ממקום להסתפר.  היא הייתה מרכז השכונה, כאן שמעו חדשות,  סגרו עסקאות  ומצאו עבודה.",
+  "sync": {
+   "cues": 2,
+   "in_sync": 2,
+   "worst_offset_s": 0.081
+  }
+ },
+ {
+  "file": "05-he-ad-david.mp3",
+  "style": "advertisement",
+  "voice": "blue:david",
+  "text": "תור תוך דקה, בלי לחכות על הקו. נכנסים, בוחרים שעה, ומגיעים מוכנים. קובעים עכשיו.",
+  "seconds": 6.7,
+  "cer": 0.0,
+  "pitch_range_st": 11.6,
+  "end_move_st": -3.8,
+  "chars_per_s": 7.0,
+  "transcript": "תור תוך דקה,  בלי לחכות על הקו.  נכנסים, בוחרים שעה, ומגיעים מוכנים. קובעים עכשיו.",
+  "sync": {
+   "cues": 3,
+   "in_sync": 3,
+   "worst_offset_s": 0.033
+  }
+ },
+ {
+  "file": "06-he-educational-sara.mp3",
+  "style": "educational",
+  "voice": "blue:sara",
+  "text": "ומה עושים כשהשיער לא מתנהג? מתחילים מהשורש. מייבשים בכיוון ההפוך, ורק אז מעצבים.",
+  "seconds": 7.84,
+  "cer": 0.0,
+  "pitch_range_st": 10.7,
+  "end_move_st": -5.0,
+  "chars_per_s": 6.3,
+  "transcript": "ומה עושים כשהשיער לא מתנהג?  מתחילים מהשורש,  מייבשים בכיוון ההפוך,  ורק אז מעצבים.",
+  "sync": {
+   "cues": 3,
+   "in_sync": 3,
+   "worst_offset_s": 0.051
+  }
+ },
+ {
+  "file": "07-en-podcast-heart.mp3",
+  "style": "podcast",
+  "voice": "kokoro:af_heart",
+  "text": "Here's the thing about a great haircut: it doesn't start with the scissors. It starts with one question. What do you want people to see when you walk into a room?",
+  "seconds": 8.59,
+  "cer": 0.0,
+  "pitch_range_st": 10.2,
+  "end_move_st": 2.5,
+  "chars_per_s": 14.9,
+  "transcript": "Here's the thing about a great haircut.  It doesn't start with the scissors.  It starts with one question.  What do you want people to see when you walk into a room?",
+  "sync": {
+   "cues": 3,
+   "in_sync": 3,
+   "worst_offset_s": 0.032
+  }
+ },
+ {
+  "file": "08-en-social-david.mp3",
+  "style": "social",
+  "voice": "blue:david",
+  "text": "Thirty seconds. One clipper. This is what a fade that lasts two weeks looks like.",
+  "seconds": 5.2,
+  "cer": 0.0,
+  "pitch_range_st": 9.1,
+  "end_move_st": -4.1,
+  "chars_per_s": 12.3,
+  "transcript": "30 seconds, one clipper.  This is what a fade that lasts two weeks looks like.",
+  "sync": {
+   "cues": 3,
+   "in_sync": 3,
+   "worst_offset_s": 0.068
+  }
+ }
+]

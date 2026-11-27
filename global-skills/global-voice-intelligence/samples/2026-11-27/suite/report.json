@@ -1,0 +1,1003 @@
+{
+ "blue:david": [
+  {
+   "file": "blue_david__he-native-1.mp3",
+   "lang": "he",
+   "seconds": 4.46,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 7.6,
+   "pitch_median_hz": 97.5,
+   "pitch_range_st": 14.5,
+   "end_move_st": -1.7,
+   "transcript": "בוקר טוב אני רוצה לספר לך משהו קטן שעשה לי את היום.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.04
+   },
+   "id": "he-native-1",
+   "cat": "hebrew",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_david__he-native-2.mp3",
+   "lang": "he",
+   "seconds": 4.11,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 8.3,
+   "pitch_median_hz": 92.7,
+   "pitch_range_st": 9.0,
+   "end_move_st": -2.6,
+   "transcript": "הספר במספרה קרא ספר, ואז סיפר לי מה הוא למד ממנו.",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.02
+   },
+   "id": "he-native-2",
+   "cat": "hebrew",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_david__he-native-3.mp3",
+   "lang": "he",
+   "seconds": 5.06,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 8.7,
+   "pitch_median_hz": 97.5,
+   "pitch_range_st": 10.6,
+   "end_move_st": -3.4,
+   "transcript": "שמעתי שאתם מחפשים מישהו שיבין בדיוק מה אתם רוצים,  בלי להסביר פעמיים.",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.04
+   },
+   "id": "he-native-3",
+   "cat": "hebrew",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_david__he-question.mp3",
+   "lang": "he",
+   "seconds": 2.61,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 7.3,
+   "pitch_median_hz": 119.5,
+   "pitch_range_st": 12.9,
+   "end_move_st": 10.2,
+   "transcript": "רגע, אתה בטוח שזה מה שביקשת?",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.02
+   },
+   "id": "he-question",
+   "cat": "intonation",
+   "style": "conversational",
+   "intonation_ok": true
+  },
+  {
+   "file": "blue_david__he-statement.mp3",
+   "lang": "he",
+   "seconds": 1.74,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 6.9,
+   "pitch_median_hz": 119.6,
+   "pitch_range_st": 12.6,
+   "end_move_st": -8.5,
+   "transcript": "זה בדיוק מה שביקשת.",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.02
+   },
+   "id": "he-statement",
+   "cat": "intonation",
+   "style": "conversational",
+   "intonation_ok": true
+  },
+  {
+   "file": "blue_david__he-long.mp3",
+   "lang": "he",
+   "seconds": 13.41,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 8.6,
+   "pitch_median_hz": 105.1,
+   "pitch_range_st": 10.9,
+   "end_move_st": -5.4,
+   "transcript": "כשאתה נכנס למספרה טובה, אתה מרגיש את זה עוד לפני שמישהו אומר מילה,  כי יש ריח של קפה,  יש מוזיקה שקטה ברקע,  ויש מישהו שמסתכל עליך ושואל איך עבר עליך השבוע,  ורק אחר כך מדבר על השיער.",
+   "sync": {
+    "cues": 3,
+    "in_sync": 3,
+    "worst_offset_s": 0.06
+   },
+   "id": "he-long",
+   "cat": "long",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_david__he-numbers.mp3",
+   "lang": "he",
+   "seconds": 7.31,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 7.2,
+   "pitch_median_hz": 107.7,
+   "pitch_range_st": 9.2,
+   "end_move_st": -4.2,
+   "transcript": "התור שלך ביום שלישי בשעה שתיים וחצי,  והמחיר הוא 120 שקלים.  שילמת כבר 50%.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.059
+   },
+   "id": "he-numbers",
+   "cat": "numbers",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_david__he-foreign.mp3",
+   "lang": "he",
+   "seconds": 8.48,
+   "cer": 0.048,
+   "wer": 0.188,
+   "last_word_heard": false,
+   "chars_per_s": 7.4,
+   "pitch_median_hz": 112.3,
+   "pitch_range_st": 10.7,
+   "end_move_st": -8.0,
+   "transcript": "תעלה את הסרטון לאינסטגרם ולטיק טוק ותשמור עותק בגוגל דרייב.  השתמשתי באייפון 15 ובצ'אט gpt.",
+   "must_hear_ok": true,
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.04
+   },
+   "id": "he-foreign",
+   "cat": "foreign",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_david__he-emotion-joy.mp3",
+   "lang": "he",
+   "seconds": 3.54,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 7.1,
+   "pitch_median_hz": 110.4,
+   "pitch_range_st": 13.4,
+   "end_move_st": -7.4,
+   "transcript": "יצא מושלם, תסתכל במראה, זה בדיוק אתה.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.049
+   },
+   "id": "he-emotion-joy",
+   "cat": "emotion",
+   "style": "advertisement"
+  },
+  {
+   "file": "blue_david__he-emotion-calm.mp3",
+   "lang": "he",
+   "seconds": 4.11,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 6.1,
+   "pitch_median_hz": 98.8,
+   "pitch_range_st": 7.7,
+   "end_move_st": -2.0,
+   "transcript": "יצא מושלם.  תסתכל במראה, זה בדיוק אתה.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.08
+   },
+   "id": "he-emotion-calm",
+   "cat": "emotion",
+   "style": "audiobook"
+  },
+  {
+   "file": "blue_david__he-emotion-drama.mp3",
+   "lang": "he",
+   "seconds": 4.32,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 5.8,
+   "pitch_median_hz": 104.5,
+   "pitch_range_st": 11.5,
+   "end_move_st": -4.1,
+   "transcript": "יצא מושלם?  תסתכל במראה, זה בדיוק אתה.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.06
+   },
+   "id": "he-emotion-drama",
+   "cat": "emotion",
+   "style": "storytelling"
+  },
+  {
+   "file": "blue_david__en-native-1.mp3",
+   "lang": "en",
+   "seconds": 7.04,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 11.8,
+   "pitch_median_hz": 106.4,
+   "pitch_range_st": 10.9,
+   "end_move_st": -4.2,
+   "transcript": "Honestly, I didn't expect it to work this well.  We tried it on Monday, and by Friday everyone was using it.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.066
+   },
+   "id": "en-native-1",
+   "cat": "english",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_david__en-question.mp3",
+   "lang": "en",
+   "seconds": 2.38,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 14.7,
+   "pitch_median_hz": 105.2,
+   "pitch_range_st": 4.5,
+   "end_move_st": 0.5,
+   "transcript": "Wait, are you sure that's what you asked for?",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.08
+   },
+   "id": "en-question",
+   "cat": "intonation",
+   "style": "conversational",
+   "intonation_ok": false
+  },
+  {
+   "file": "blue_david__en-numbers.mp3",
+   "lang": "en",
+   "seconds": 7.76,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 13.4,
+   "pitch_median_hz": 113.0,
+   "pitch_range_st": 11.8,
+   "end_move_st": -4.7,
+   "transcript": "Your appointment is on March 3rd at 2.30 p.m.  and it costs $45, about 20% less than last year.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.091
+   },
+   "id": "en-numbers",
+   "cat": "numbers",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_david__en-long.mp3",
+   "lang": "en",
+   "seconds": 14.31,
+   "cer": 0.0,
+   "wer": 0.043,
+   "last_word_heard": true,
+   "chars_per_s": 13.4,
+   "pitch_median_hz": 105.1,
+   "pitch_range_st": 9.0,
+   "end_move_st": -4.4,
+   "transcript": "When you walk into a great barber shop, you can feel it before anyone says a word,  because there is coffee in the air, quiet music in the background,  and someone who looks at you and asks how your week was before they ever talk about your hair.",
+   "sync": {
+    "cues": 5,
+    "in_sync": 5,
+    "worst_offset_s": 0.089
+   },
+   "id": "en-long",
+   "cat": "long",
+   "style": "conversational"
+  },
+  {
+   "id": "continuity",
+   "cat": "continuity",
+   "chunks": 6,
+   "loudness_spread_db": 0.64,
+   "pitch_drift_pct": 3.5,
+   "sync": {
+    "cues": 6,
+    "in_sync": 6,
+    "worst_offset_s": 0.08
+   }
+  }
+ ],
+ "blue:sara": [
+  {
+   "file": "blue_sara__he-native-1.mp3",
+   "lang": "he",
+   "seconds": 4.41,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 7.7,
+   "pitch_median_hz": 183.7,
+   "pitch_range_st": 10.4,
+   "end_move_st": -5.7,
+   "transcript": "בוקר טוב,  אני רוצה לספר לך משהו קטן שעשה לי את היום.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.055
+   },
+   "id": "he-native-1",
+   "cat": "hebrew",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_sara__he-native-2.mp3",
+   "lang": "he",
+   "seconds": 4.5,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 7.6,
+   "pitch_median_hz": 188.8,
+   "pitch_range_st": 9.9,
+   "end_move_st": -4.6,
+   "transcript": "הספר במספרה קרא ספר,  ואז סיפר לי מה הוא למד ממנו.",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.04
+   },
+   "id": "he-native-2",
+   "cat": "hebrew",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_sara__he-native-3.mp3",
+   "lang": "he",
+   "seconds": 5.17,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 8.5,
+   "pitch_median_hz": 190.7,
+   "pitch_range_st": 9.0,
+   "end_move_st": -6.0,
+   "transcript": "שמעתי שאתם מחפשים מישהו שיבין בדיוק מה אתם רוצים בלי להסביר פעמיים.",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.04
+   },
+   "id": "he-native-3",
+   "cat": "hebrew",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_sara__he-question.mp3",
+   "lang": "he",
+   "seconds": 2.56,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 7.4,
+   "pitch_median_hz": 195.3,
+   "pitch_range_st": 10.6,
+   "end_move_st": 5.0,
+   "transcript": "רגע, אתה בטוח שזה מה שביקשת?",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.02
+   },
+   "id": "he-question",
+   "cat": "intonation",
+   "style": "conversational",
+   "intonation_ok": true
+  },
+  {
+   "file": "blue_sara__he-statement.mp3",
+   "lang": "he",
+   "seconds": 1.71,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 7.0,
+   "pitch_median_hz": 186.8,
+   "pitch_range_st": 10.9,
+   "end_move_st": -9.3,
+   "transcript": "זה בדיוק מה שביקשת.",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.04
+   },
+   "id": "he-statement",
+   "cat": "intonation",
+   "style": "conversational",
+   "intonation_ok": true
+  },
+  {
+   "file": "blue_sara__he-long.mp3",
+   "lang": "he",
+   "seconds": 13.59,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 8.5,
+   "pitch_median_hz": 192.8,
+   "pitch_range_st": 10.1,
+   "end_move_st": -4.0,
+   "transcript": "כשאתה נכנס למספרה טובה, אתה מרגיש את זה עוד לפני שמישהו אומר מילה, כי יש ריח של קפה.  יש מוזיקה שקטה ברקע,  ויש מישהו שמסתכל עליך ושואל איך עבר עליך השבוע,  ורק אחר כך מדבר על השיער.",
+   "sync": {
+    "cues": 3,
+    "in_sync": 3,
+    "worst_offset_s": 0.04
+   },
+   "id": "he-long",
+   "cat": "long",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_sara__he-numbers.mp3",
+   "lang": "he",
+   "seconds": 7.4,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 7.2,
+   "pitch_median_hz": 188.2,
+   "pitch_range_st": 9.1,
+   "end_move_st": -6.1,
+   "transcript": "התור שלך ביום שלישי בשעה שתיים וחצי והמחיר הוא 120 שקלים.  שילמת כבר 50%.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.069
+   },
+   "id": "he-numbers",
+   "cat": "numbers",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_sara__he-foreign.mp3",
+   "lang": "he",
+   "seconds": 8.34,
+   "cer": 0.0,
+   "wer": 0.125,
+   "last_word_heard": true,
+   "chars_per_s": 7.6,
+   "pitch_median_hz": 190.3,
+   "pitch_range_st": 10.3,
+   "end_move_st": -8.1,
+   "transcript": "תעלה את הסרטון לאינסטגרם ולטיק-טוק  ותשמור עותק בגוגל דרייב.  השתמשתי באייפון 15 ובצ'אט GPT.",
+   "must_hear_ok": true,
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.021
+   },
+   "id": "he-foreign",
+   "cat": "foreign",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_sara__he-emotion-joy.mp3",
+   "lang": "he",
+   "seconds": 3.71,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 6.7,
+   "pitch_median_hz": 195.7,
+   "pitch_range_st": 9.5,
+   "end_move_st": -4.0,
+   "transcript": "יצא מושלם.  תסתכל במראה, זה בדיוק אתה.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.06
+   },
+   "id": "he-emotion-joy",
+   "cat": "emotion",
+   "style": "advertisement"
+  },
+  {
+   "file": "blue_sara__he-emotion-calm.mp3",
+   "lang": "he",
+   "seconds": 4.27,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 5.9,
+   "pitch_median_hz": 188.0,
+   "pitch_range_st": 10.1,
+   "end_move_st": -4.3,
+   "transcript": "יצא מושלם.  תסתכל במראה, זה בדיוק אתה.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.028
+   },
+   "id": "he-emotion-calm",
+   "cat": "emotion",
+   "style": "audiobook"
+  },
+  {
+   "file": "blue_sara__he-emotion-drama.mp3",
+   "lang": "he",
+   "seconds": 4.3,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 5.8,
+   "pitch_median_hz": 189.0,
+   "pitch_range_st": 10.9,
+   "end_move_st": -3.8,
+   "transcript": "יצא מושלם.  תסתכל במראה,  זה בדיוק אתה.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.06
+   },
+   "id": "he-emotion-drama",
+   "cat": "emotion",
+   "style": "storytelling"
+  },
+  {
+   "file": "blue_sara__en-native-1.mp3",
+   "lang": "en",
+   "seconds": 6.96,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 11.9,
+   "pitch_median_hz": 190.3,
+   "pitch_range_st": 9.8,
+   "end_move_st": -2.5,
+   "transcript": "Honestly, I didn't expect it to work this well.  We tried it on Monday, and by Friday everyone was using it.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.12
+   },
+   "id": "en-native-1",
+   "cat": "english",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_sara__en-question.mp3",
+   "lang": "en",
+   "seconds": 2.4,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 14.6,
+   "pitch_median_hz": 190.9,
+   "pitch_range_st": 10.3,
+   "end_move_st": 6.8,
+   "transcript": "Wait, are you sure that's what you asked for?",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.06
+   },
+   "id": "en-question",
+   "cat": "intonation",
+   "style": "conversational",
+   "intonation_ok": true
+  },
+  {
+   "file": "blue_sara__en-numbers.mp3",
+   "lang": "en",
+   "seconds": 7.77,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 13.4,
+   "pitch_median_hz": 191.8,
+   "pitch_range_st": 9.8,
+   "end_move_st": -3.4,
+   "transcript": "Your appointment is on March 3rd at 2.30 p.m. and it costs $45, about 20% less than last  year.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.097
+   },
+   "id": "en-numbers",
+   "cat": "numbers",
+   "style": "conversational"
+  },
+  {
+   "file": "blue_sara__en-long.mp3",
+   "lang": "en",
+   "seconds": 14.32,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 13.4,
+   "pitch_median_hz": 189.3,
+   "pitch_range_st": 9.3,
+   "end_move_st": -4.4,
+   "transcript": "When you walk into a great barbershop, you can feel it before anyone says a word, because  there is coffee in the air, quiet music in the background, and someone who looks at you  and asks how your week was before they ever talk about your hair.",
+   "sync": {
+    "cues": 5,
+    "in_sync": 5,
+    "worst_offset_s": 0.08
+   },
+   "id": "en-long",
+   "cat": "long",
+   "style": "conversational"
+  },
+  {
+   "id": "continuity",
+   "cat": "continuity",
+   "chunks": 6,
+   "loudness_spread_db": 0.66,
+   "pitch_drift_pct": 1.6,
+   "sync": {
+    "cues": 6,
+    "in_sync": 6,
+    "worst_offset_s": 0.062
+   }
+  }
+ ],
+ "kokoro:af_heart": [
+  {
+   "file": "kokoro_af_heart__en-native-1.mp3",
+   "lang": "en",
+   "seconds": 5.97,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 13.9,
+   "pitch_median_hz": 210.9,
+   "pitch_range_st": 8.7,
+   "end_move_st": -8.6,
+   "transcript": "Honestly, I didn't expect it to work this well.  We tried it on Monday, and by Friday, everyone was using it.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.02
+   },
+   "id": "en-native-1",
+   "cat": "english",
+   "style": "conversational"
+  },
+  {
+   "file": "kokoro_af_heart__en-question.mp3",
+   "lang": "en",
+   "seconds": 1.99,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 17.6,
+   "pitch_median_hz": 207.9,
+   "pitch_range_st": 8.2,
+   "end_move_st": 6.3,
+   "transcript": "Wait, are you sure that's what you asked for?",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.02
+   },
+   "id": "en-question",
+   "cat": "intonation",
+   "style": "conversational",
+   "intonation_ok": true
+  },
+  {
+   "file": "kokoro_af_heart__en-numbers.mp3",
+   "lang": "en",
+   "seconds": 6.81,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 15.3,
+   "pitch_median_hz": 201.7,
+   "pitch_range_st": 10.7,
+   "end_move_st": 6.2,
+   "transcript": "Your appointment is on March 3rd at 2.30 p.m., and it costs $45, about 20 percent less than  last year.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.022
+   },
+   "id": "en-numbers",
+   "cat": "numbers",
+   "style": "conversational"
+  },
+  {
+   "file": "kokoro_af_heart__en-long.mp3",
+   "lang": "en",
+   "seconds": 12.52,
+   "cer": 0.0,
+   "wer": 0.043,
+   "last_word_heard": true,
+   "chars_per_s": 15.3,
+   "pitch_median_hz": 201.0,
+   "pitch_range_st": 10.7,
+   "end_move_st": -3.6,
+   "transcript": "When you walk into a great barber shop, you can feel it before anyone says a word.  Because there is coffee in the air, quiet music in the background, and  someone who looks at you and asks how your week was before they ever talk about your hair.",
+   "sync": {
+    "cues": 5,
+    "in_sync": 5,
+    "worst_offset_s": 0.026
+   },
+   "id": "en-long",
+   "cat": "long",
+   "style": "conversational"
+  }
+ ],
+ "edge:he-IL-AvriNeural": [
+  {
+   "file": "edge_he-IL-AvriNeural__he-native-1.mp3",
+   "lang": "he",
+   "seconds": 4.14,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 8.2,
+   "pitch_median_hz": 114.7,
+   "pitch_range_st": 8.1,
+   "end_move_st": -9.0,
+   "transcript": "בוקר טוב, אני רוצה לספר לך משהו קטן שעשה לי את היום.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.02
+   },
+   "id": "he-native-1",
+   "cat": "hebrew",
+   "style": "conversational"
+  },
+  {
+   "file": "edge_he-IL-AvriNeural__he-native-2.mp3",
+   "lang": "he",
+   "seconds": 4.18,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 8.1,
+   "pitch_median_hz": 110.9,
+   "pitch_range_st": 9.6,
+   "end_move_st": -6.7,
+   "transcript": "הספר במספרה קרא ספר,  ואז סיפר לי מה הוא למד ממנו.",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.02
+   },
+   "id": "he-native-2",
+   "cat": "hebrew",
+   "style": "conversational"
+  },
+  {
+   "file": "edge_he-IL-AvriNeural__he-native-3.mp3",
+   "lang": "he",
+   "seconds": 4.85,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 9.1,
+   "pitch_median_hz": 109.1,
+   "pitch_range_st": 9.2,
+   "end_move_st": -6.6,
+   "transcript": "שמעתי שאתם מחפשים מישהו שיבין בדיוק מה אתם רוצים,  בלי להסביר פעמיים.",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.02
+   },
+   "id": "he-native-3",
+   "cat": "hebrew",
+   "style": "conversational"
+  },
+  {
+   "file": "edge_he-IL-AvriNeural__he-question.mp3",
+   "lang": "he",
+   "seconds": 2.6,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 7.3,
+   "pitch_median_hz": 105.4,
+   "pitch_range_st": 11.4,
+   "end_move_st": 10.9,
+   "transcript": "רגע, אתה בטוח שזה מה שביקשת?",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.02
+   },
+   "id": "he-question",
+   "cat": "intonation",
+   "style": "conversational",
+   "intonation_ok": true
+  },
+  {
+   "file": "edge_he-IL-AvriNeural__he-statement.mp3",
+   "lang": "he",
+   "seconds": 1.72,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 7.0,
+   "pitch_median_hz": 102.7,
+   "pitch_range_st": 9.4,
+   "end_move_st": -6.2,
+   "transcript": "זה בדיוק מה שביקשת.",
+   "sync": {
+    "cues": 1,
+    "in_sync": 1,
+    "worst_offset_s": 0.02
+   },
+   "id": "he-statement",
+   "cat": "intonation",
+   "style": "conversational",
+   "intonation_ok": true
+  },
+  {
+   "file": "edge_he-IL-AvriNeural__he-long.mp3",
+   "lang": "he",
+   "seconds": 13.84,
+   "cer": 0.009,
+   "wer": 0.027,
+   "last_word_heard": true,
+   "chars_per_s": 8.3,
+   "pitch_median_hz": 107.8,
+   "pitch_range_st": 8.5,
+   "end_move_st": -5.6,
+   "transcript": "כשאתה נכנס למספרה טובה אתה מרגיש את זה עוד לפני שמישהו אומר מילה,  כי יש ריח של קפה.  יש מוזיקה שקטה ברקע,  ויש מישהו שמסתכל עליך ושואל איך עבר עליך שבוע,  ורק אחר כך מדבר על השיער.",
+   "sync": {
+    "cues": 3,
+    "in_sync": 3,
+    "worst_offset_s": 0.04
+   },
+   "id": "he-long",
+   "cat": "long",
+   "style": "conversational"
+  },
+  {
+   "file": "edge_he-IL-AvriNeural__he-numbers.mp3",
+   "lang": "he",
+   "seconds": 7.27,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 8.1,
+   "pitch_median_hz": 105.5,
+   "pitch_range_st": 10.2,
+   "end_move_st": -1.0,
+   "transcript": "התור שלך ביום שלישי בשעה 14.30 והמחיר הוא 120 שקלים,  שילמת כבר 50%.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.04
+   },
+   "id": "he-numbers",
+   "cat": "numbers",
+   "style": "conversational"
+  },
+  {
+   "file": "edge_he-IL-AvriNeural__he-foreign.mp3",
+   "lang": "he",
+   "seconds": 7.93,
+   "cer": 0.175,
+   "wer": 0.5,
+   "last_word_heard": false,
+   "chars_per_s": 7.9,
+   "pitch_median_hz": 106.5,
+   "pitch_range_st": 8.7,
+   "end_move_st": -5.3,
+   "transcript": "תעלה את הסרטון לאינסטגרם ולטיק טוק ותשמור עותק בטרילי דרייב.  השתמשתי ב-IPGEN15 וב-CGTGPT.",
+   "must_hear_ok": false,
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.02
+   },
+   "id": "he-foreign",
+   "cat": "foreign",
+   "style": "conversational"
+  },
+  {
+   "file": "edge_he-IL-AvriNeural__he-emotion-joy.mp3",
+   "lang": "he",
+   "seconds": 3.37,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 7.4,
+   "pitch_median_hz": 109.0,
+   "pitch_range_st": 12.3,
+   "end_move_st": -7.2,
+   "transcript": "יצא מושלם, תסתכל במראה, זה בדיוק אתה.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.027
+   },
+   "id": "he-emotion-joy",
+   "cat": "emotion",
+   "style": "advertisement"
+  },
+  {
+   "file": "edge_he-IL-AvriNeural__he-emotion-calm.mp3",
+   "lang": "he",
+   "seconds": 4.18,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 6.0,
+   "pitch_median_hz": 106.2,
+   "pitch_range_st": 11.8,
+   "end_move_st": -4.2,
+   "transcript": "יצא מושלם,  תסתכל במראה,  זה בדיוק אתה.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.02
+   },
+   "id": "he-emotion-calm",
+   "cat": "emotion",
+   "style": "audiobook"
+  },
+  {
+   "file": "edge_he-IL-AvriNeural__he-emotion-drama.mp3",
+   "lang": "he",
+   "seconds": 4.26,
+   "cer": 0.0,
+   "wer": 0.0,
+   "last_word_heard": true,
+   "chars_per_s": 5.9,
+   "pitch_median_hz": 105.2,
+   "pitch_range_st": 12.2,
+   "end_move_st": -5.4,
+   "transcript": "יצא מושלם,  תסתכל במראה,  זה בדיוק אתה.",
+   "sync": {
+    "cues": 2,
+    "in_sync": 2,
+    "worst_offset_s": 0.031
+   },
+   "id": "he-emotion-drama",
+   "cat": "emotion",
+   "style": "storytelling"
+  },
+  {
+   "id": "continuity",
+   "cat": "continuity",
+   "chunks": 6,
+   "loudness_spread_db": 0.15,
+   "pitch_drift_pct": 3.0,
+   "sync": {
+    "cues": 6,
+    "in_sync": 6,
+    "worst_offset_s": 0.045
+   }
+  }
+ ]
+}

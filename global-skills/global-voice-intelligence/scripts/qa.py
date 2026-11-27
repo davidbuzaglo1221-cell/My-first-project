@@ -48,7 +48,7 @@ def clean(t, lang):
         t = t.replace('%', ' אחוז ')
         t = re.sub(r'\d+', lambda m: ' ' + he_num(m.group()) + ' ', t)
         t = re.sub(r'(?<=[ א-ת])[יו](?=[א-ת])', '', t)   # spelling-insensitive: drop internal matres
-        t = re.sub(r'[^א-ת a-zA-Z]', ' ', t).translate(FINALS)
+        t = re.sub(r'[^א-ת a-zA-Z]', ' ', t).translate(FINALS).lower()   # "GPT" == "gpt"
     else:
         t = t.lower()
         t = re.sub(r'\$(\d+)', r'\1 dollars', t).replace('%', ' percent ')

@@ -1,0 +1,12 @@
+1
+00:00:00,000 --> 00:00:03,848
+Here's the thing about a great haircut: it doesn't start with the scissors.
+
+2
+00:00:04,148 --> 00:00:05,662
+It starts with one question.
+
+3
+00:00:05,962 --> 00:00:08,585
+What do you want people to see when you walk into a room?
+

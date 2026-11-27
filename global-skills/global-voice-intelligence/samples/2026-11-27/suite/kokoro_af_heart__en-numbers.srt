@@ -1,0 +1,8 @@
+1
+00:00:00,000 --> 00:00:02,698
+Your appointment is on March 3rd at two thirty PM,
+
+2
+00:00:02,898 --> 00:00:06,814
+and it costs 45 dollars, about 20 percent less than last year.
+

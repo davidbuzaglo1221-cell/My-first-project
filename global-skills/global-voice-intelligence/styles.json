@@ -1,5 +1,5 @@
 {
- "_doc": "Delivery profiles. speed: engine speed (1.0 = voice's natural pace). k: pitch-movement widening around the sentence median (1.0 = untouched). lift: median pitch lift. gaps in seconds. lufs: integrated loudness target. edge_rate/edge_pitch: Microsoft voices. Voices are per language; first is the default, chosen by measurement (references/engines.md). Hebrew defaults (27.11.2026 screening): male lead blue:david (deep, widest range of the male voices whose questions rise), female lead blue:sara (strongest question rise); blue:michael/yael have wide range but flatten questions -> statements-heavy styles only. English defaults: kokoro:af_heart (female lead, question rises); most Kokoro male voices flatten questions (am_michael -4, bm_george -11.6 st) -> statements-heavy styles only; blue:david as male lead (question +8.4 st, CER 1.8%).",
+ "_doc": "Delivery profiles. speed: engine speed (1.0 = voice's natural pace). k: pitch-movement widening around the sentence median (1.0 = untouched). lift: median pitch lift. gaps in seconds. lufs: integrated loudness target. edge_rate/edge_pitch: Microsoft voices. Voices are per language; first is the default, chosen by measurement (references/engines.md). Hebrew defaults (27.11.2026 screening): male lead blue:david (deep, widest range of the male voices whose questions rise), female lead blue:sara (strongest question rise); blue:michael/yael have wide range but flatten questions -> statements-heavy styles only. English defaults: kokoro:af_heart (female lead, question rises); most Kokoro male voices flatten questions (am_michael -4, bm_george -11.6 st) -> statements-heavy styles only; blue:david as male lead (question +8.4 st, CER 1.8%). target_range: p10-p90 pitch range (st) the take selector aims for after liven; BlueTTS renders GVI_TAKES (default 3) takes per chunk and keeps the best.",
  "podcast": {
   "speed": 1.0,
   "k": 1.25,
@@ -20,11 +20,12 @@
     "blue:david",
     "edge:en-US-AvaMultilingualNeural"
    ]
-  }
+  },
+  "target_range": 9.5
  },
  "audiobook": {
   "speed": 0.94,
-  "k": 1.15,
+  "k": 1.25,
   "lift": 1.0,
   "sent_gap": 0.45,
   "para_gap": 1.0,
@@ -42,7 +43,8 @@
     "kokoro:bm_george",
     "edge:en-US-AvaMultilingualNeural"
    ]
-  }
+  },
+  "target_range": 8.5
  },
  "documentary": {
   "speed": 0.96,
@@ -64,11 +66,12 @@
     "kokoro:am_michael",
     "edge:en-US-AvaMultilingualNeural"
    ]
-  }
+  },
+  "target_range": 7.5
  },
  "advertisement": {
   "speed": 1.1,
-  "k": 1.45,
+  "k": 1.3,
   "lift": 1.03,
   "sent_gap": 0.15,
   "para_gap": 0.35,
@@ -86,7 +89,8 @@
     "kokoro:af_heart",
     "edge:en-US-AvaMultilingualNeural"
    ]
-  }
+  },
+  "target_range": 11
  },
  "educational": {
   "speed": 0.98,
@@ -108,11 +112,12 @@
     "blue:david",
     "edge:en-US-AvaMultilingualNeural"
    ]
-  }
+  },
+  "target_range": 9
  },
  "storytelling": {
   "speed": 0.92,
-  "k": 1.35,
+  "k": 1.3,
   "lift": 1.0,
   "sent_gap": 0.45,
   "para_gap": 1.1,
@@ -130,11 +135,12 @@
     "kokoro:af_heart",
     "edge:en-US-AvaMultilingualNeural"
    ]
-  }
+  },
+  "target_range": 10.5
  },
  "conversational": {
   "speed": 1.04,
-  "k": 1.3,
+  "k": 1.25,
   "lift": 1.01,
   "sent_gap": 0.2,
   "para_gap": 0.5,
@@ -152,11 +158,12 @@
     "kokoro:af_heart",
     "edge:en-US-AvaMultilingualNeural"
    ]
-  }
+  },
+  "target_range": 9.5
  },
  "social": {
   "speed": 1.14,
-  "k": 1.5,
+  "k": 1.3,
   "lift": 1.03,
   "sent_gap": 0.12,
   "para_gap": 0.3,
@@ -174,7 +181,8 @@
     "kokoro:af_heart",
     "edge:en-US-AvaMultilingualNeural"
    ]
-  }
+  },
+  "target_range": 11
  },
  "assistant": {
   "speed": 1.05,
@@ -196,6 +204,7 @@
     "blue:sara",
     "edge:en-US-AvaMultilingualNeural"
    ]
-  }
+  },
+  "target_range": 8
  }
 }
