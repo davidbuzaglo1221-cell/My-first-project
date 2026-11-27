@@ -41,7 +41,7 @@ The rule for every genre: **attention-grabbing but effortless**. Real moments, c
 ## Reference build
 `reels/reel-01` — 15 s, 120 BPM, drop at 3 s, a hit every beat: original synthesized beat (`tools/music.py`), Heebo fonts bundled locally, Remotion composition with zoom/whip/drop entries, chroma split, beat pulse, shake on hits, grain and flash frames. Render with the local headless shell:
 `npx remotion render src/index.ts Reel out/reel.mp4 --browser-executable=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell --concurrency=2 --timeout=120000`
-Notes: edge-tts cannot connect from the cloud container (the proxy blocks WebSockets); ElevenLabs currently rejects the key. Until fixed, reels are music + kinetic text, or narration rendered elsewhere.
+Voice: use `global-voice-intelligence` (`voice.py render … -s social`, default Hebrew voice blue:david) — local, free, works in the cloud container; its `manifest.json` sets scene lengths and its SRT feeds the captions. edge-tts works again since 27.11.2026 (the proxy CA is added in voice.py) but stays a backup.
 
 ## Looks human, not AI (David's rule — reel-02 is the reference)
 The "AI look" = gold-on-black luxury, centred giant word on every beat, chroma split, synthetic beeps. Avoid it. Human editors:

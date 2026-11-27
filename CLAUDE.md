@@ -38,6 +38,7 @@ These rules apply to every request in this repository, from the first message. T
 - Vertical 9:16 1080×1920 for Reels/TikTok unless told otherwise. Built with Remotion (skills `remotion-*`).
 
 ## Voice
+- **Every voice task uses the global skill `global-voice-intelligence`** (in `~/.claude/skills`, source in `global-skills/`; installed in every session by the cloud environment's setup script; on any other machine run `bash global-skills/install.sh`). It picks the style per content type, prepares the Hebrew script, renders with free local engines and measures quality before delivery.
 - Spoken content sounds alive, energetic and high-level — like a top presenter, not a reader. Faster rate, lively pitch, short sentences.
 - Learning content (books) keeps the calm narration standard below; marketing/social content uses the energetic style.
 
@@ -63,6 +64,7 @@ Use the `premium-app` skill (`.claude/skills/premium-app/SKILL.md`) for every ne
 9. **Ship-quality engineering**: unit tests + Playwright end-to-end checks of every feature, a real check of the live URL, an instant-launch service worker, lock-screen media controls with real artwork.
 
 ## Installed skills
+- **Global (all projects):** `global-voice-intelligence` — source `global-skills/`, install `bash global-skills/install.sh`.
 - **`director` runs first on every request** — it is the lead brain that routes to all the others. Full, tested list with licenses: `TITAN-BUSINESS-OS/SKILLS_DIRECTORY.md`.
 - House: `director`, `art-direction`, `david-brand`, `money-engine`, `premium-app`, `fast-video`, `social-content`, `replica-*`.
 - Video: `remotion-*`, `hyperframes`, `hyperframes-cli`, `hyperframes-registry`, `code-cartoon`, `animate`, `reverse-any-video`, `style-sampling`, `motion-doctrine`, `captions-overlay`.

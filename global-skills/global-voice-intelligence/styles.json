@@ -1,0 +1,201 @@
+{
+ "_doc": "Delivery profiles. speed: engine speed (1.0 = voice's natural pace). k: pitch-movement widening around the sentence median (1.0 = untouched). lift: median pitch lift. gaps in seconds. lufs: integrated loudness target. edge_rate/edge_pitch: Microsoft voices. Voices are per language; first is the default, chosen by measurement (references/engines.md). Hebrew defaults (27.11.2026 screening): male lead blue:david (deep, widest range of the male voices whose questions rise), female lead blue:sara (strongest question rise); blue:michael/yael have wide range but flatten questions -> statements-heavy styles only. English defaults: kokoro:af_heart (female lead, question rises); most Kokoro male voices flatten questions (am_michael -4, bm_george -11.6 st) -> statements-heavy styles only; blue:david as male lead (question +8.4 st, CER 1.8%).",
+ "podcast": {
+  "speed": 1.0,
+  "k": 1.25,
+  "lift": 1.01,
+  "sent_gap": 0.3,
+  "para_gap": 0.7,
+  "lufs": -16,
+  "edge_rate": "+4%",
+  "edge_pitch": "+0Hz",
+  "voices": {
+   "he": [
+    "blue:david",
+    "blue:sara",
+    "edge:he-IL-AvriNeural"
+   ],
+   "en": [
+    "kokoro:af_heart",
+    "blue:david",
+    "edge:en-US-AvaMultilingualNeural"
+   ]
+  }
+ },
+ "audiobook": {
+  "speed": 0.94,
+  "k": 1.15,
+  "lift": 1.0,
+  "sent_gap": 0.45,
+  "para_gap": 1.0,
+  "lufs": -19,
+  "edge_rate": "-4%",
+  "edge_pitch": "+0Hz",
+  "voices": {
+   "he": [
+    "blue:noa",
+    "blue:michael",
+    "edge:he-IL-AvriNeural"
+   ],
+   "en": [
+    "kokoro:af_heart",
+    "kokoro:bm_george",
+    "edge:en-US-AvaMultilingualNeural"
+   ]
+  }
+ },
+ "documentary": {
+  "speed": 0.96,
+  "k": 1.05,
+  "lift": 0.99,
+  "sent_gap": 0.4,
+  "para_gap": 0.9,
+  "lufs": -16,
+  "edge_rate": "-2%",
+  "edge_pitch": "-2Hz",
+  "voices": {
+   "he": [
+    "blue:michael",
+    "blue:tamar",
+    "edge:he-IL-AvriNeural"
+   ],
+   "en": [
+    "kokoro:bm_george",
+    "kokoro:am_michael",
+    "edge:en-US-AvaMultilingualNeural"
+   ]
+  }
+ },
+ "advertisement": {
+  "speed": 1.1,
+  "k": 1.45,
+  "lift": 1.03,
+  "sent_gap": 0.15,
+  "para_gap": 0.35,
+  "lufs": -14,
+  "edge_rate": "+12%",
+  "edge_pitch": "+4Hz",
+  "voices": {
+   "he": [
+    "blue:david",
+    "blue:sara",
+    "edge:he-IL-AvriNeural"
+   ],
+   "en": [
+    "blue:david",
+    "kokoro:af_heart",
+    "edge:en-US-AvaMultilingualNeural"
+   ]
+  }
+ },
+ "educational": {
+  "speed": 0.98,
+  "k": 1.2,
+  "lift": 1.01,
+  "sent_gap": 0.35,
+  "para_gap": 0.8,
+  "lufs": -16,
+  "edge_rate": "+0%",
+  "edge_pitch": "+0Hz",
+  "voices": {
+   "he": [
+    "blue:sara",
+    "blue:david",
+    "edge:he-IL-AvriNeural"
+   ],
+   "en": [
+    "kokoro:af_heart",
+    "blue:david",
+    "edge:en-US-AvaMultilingualNeural"
+   ]
+  }
+ },
+ "storytelling": {
+  "speed": 0.92,
+  "k": 1.35,
+  "lift": 1.0,
+  "sent_gap": 0.45,
+  "para_gap": 1.1,
+  "lufs": -16,
+  "edge_rate": "-6%",
+  "edge_pitch": "+0Hz",
+  "voices": {
+   "he": [
+    "blue:noa",
+    "blue:daniel",
+    "edge:he-IL-AvriNeural"
+   ],
+   "en": [
+    "kokoro:am_fenrir",
+    "kokoro:af_heart",
+    "edge:en-US-AvaMultilingualNeural"
+   ]
+  }
+ },
+ "conversational": {
+  "speed": 1.04,
+  "k": 1.3,
+  "lift": 1.01,
+  "sent_gap": 0.2,
+  "para_gap": 0.5,
+  "lufs": -16,
+  "edge_rate": "+6%",
+  "edge_pitch": "+0Hz",
+  "voices": {
+   "he": [
+    "blue:david",
+    "blue:sara",
+    "edge:he-IL-AvriNeural"
+   ],
+   "en": [
+    "blue:david",
+    "kokoro:af_heart",
+    "edge:en-US-AvaMultilingualNeural"
+   ]
+  }
+ },
+ "social": {
+  "speed": 1.14,
+  "k": 1.5,
+  "lift": 1.03,
+  "sent_gap": 0.12,
+  "para_gap": 0.3,
+  "lufs": -14,
+  "edge_rate": "+15%",
+  "edge_pitch": "+5Hz",
+  "voices": {
+   "he": [
+    "blue:david",
+    "blue:sara",
+    "edge:he-IL-AvriNeural"
+   ],
+   "en": [
+    "blue:david",
+    "kokoro:af_heart",
+    "edge:en-US-AvaMultilingualNeural"
+   ]
+  }
+ },
+ "assistant": {
+  "speed": 1.05,
+  "k": 1.15,
+  "lift": 1.0,
+  "sent_gap": 0.15,
+  "para_gap": 0.3,
+  "lufs": -18,
+  "edge_rate": "+5%",
+  "edge_pitch": "+0Hz",
+  "voices": {
+   "he": [
+    "blue:sara",
+    "blue:jonathan",
+    "edge:he-IL-AvriNeural"
+   ],
+   "en": [
+    "kokoro:af_heart",
+    "blue:sara",
+    "edge:en-US-AvaMultilingualNeural"
+   ]
+  }
+ }
+}

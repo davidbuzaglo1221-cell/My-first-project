@@ -1,0 +1,21 @@
+{
+  "_doc": "Permanent voice QA suite. Each test: id, lang, category, text, and what is checked. Never edit a test to make an engine pass; add a new one.",
+  "tests": [
+    {"id": "he-native-1", "lang": "he", "cat": "hebrew", "text": "בוקר טוב. אני רוצה לספר לך משהו קטן שעשה לי את היום."},
+    {"id": "he-native-2", "lang": "he", "cat": "hebrew", "text": "הספר במספרה קרא ספר, ואז סיפר לי מה הוא למד ממנו."},
+    {"id": "he-native-3", "lang": "he", "cat": "hebrew", "text": "שמעתי שאתם מחפשים מישהו שיבין בדיוק מה אתם רוצים, בלי להסביר פעמיים."},
+    {"id": "he-question", "lang": "he", "cat": "intonation", "text": "רגע, אתה בטוח שזה מה שביקשת?", "expect": "rise"},
+    {"id": "he-statement", "lang": "he", "cat": "intonation", "text": "זה בדיוק מה שביקשת.", "expect": "fall"},
+    {"id": "he-long", "lang": "he", "cat": "long", "text": "כשאתה נכנס למספרה טובה אתה מרגיש את זה עוד לפני שמישהו אומר מילה, כי יש ריח של קפה, יש מוזיקה שקטה ברקע, ויש מישהו שמסתכל עליך ושואל איך עבר עליך השבוע, ורק אחר כך מדבר על השיער."},
+    {"id": "he-numbers", "lang": "he", "cat": "numbers", "text": "התור שלך ביום שלישי בשעה 14:30, והמחיר הוא 120 ש\"ח. שילמת כבר 50%.", "refs": ["התור שלך ביום שלישי בשעה שתיים וחצי, והמחיר הוא 120 שקלים. שילמת כבר 50 אחוז.", "התור שלך ביום שלישי בשעה ארבע עשרה שלושים, והמחיר הוא 120 שקלים. שילמת כבר 50 אחוז."]},
+    {"id": "he-foreign", "lang": "he", "cat": "foreign", "text": "תעלה את הסרטון לאינסטגרם ולטיקטוק, ותשמור עותק ב-Google Drive. השתמשתי ב-iPhone 15 וב-ChatGPT.", "refs": ["תעלה את הסרטון לאינסטגרם ולטיקטוק, ותשמור עותק בגוגל דרייב. השתמשתי באייפון 15 ובצ'אט ג'יפיטי.", "תעלה את הסרטון לאינסטגרם ולטיקטוק, ותשמור עותק בגוגל דרייב. השתמשתי באייפון 15 ובצ'אט GPT."], "must_hear": ["גוגל", "דרייב", "אייפון"]},
+    {"id": "he-emotion-joy", "lang": "he", "cat": "emotion", "style": "advertisement", "text": "יצא מושלם. תסתכל במראה, זה בדיוק אתה."},
+    {"id": "he-emotion-calm", "lang": "he", "cat": "emotion", "style": "audiobook", "text": "יצא מושלם. תסתכל במראה, זה בדיוק אתה."},
+    {"id": "he-emotion-drama", "lang": "he", "cat": "emotion", "style": "storytelling", "text": "יצא מושלם. תסתכל במראה, זה בדיוק אתה."},
+    {"id": "en-native-1", "lang": "en", "cat": "english", "text": "Honestly, I didn't expect it to work this well. We tried it on Monday, and by Friday everyone was using it."},
+    {"id": "en-question", "lang": "en", "cat": "intonation", "text": "Wait, are you sure that's what you asked for?", "expect": "rise"},
+    {"id": "en-numbers", "lang": "en", "cat": "numbers", "text": "Your appointment is on March 3rd at 2:30 PM, and it costs $45, about 20% less than last year."},
+    {"id": "en-long", "lang": "en", "cat": "long", "text": "When you walk into a great barbershop you can feel it before anyone says a word, because there is coffee in the air, quiet music in the background, and someone who looks at you and asks how your week was before they ever talk about your hair."}
+  ],
+  "continuity": {"lang": "he", "text": "זה הפרק הראשון. היום נדבר על הרגלים קטנים.\n\nהרגל קטן הוא פעולה שלוקחת פחות משתי דקות. היא כל כך קלה, שאין לך סיבה לדחות אותה.\n\nבפרק הבא נבנה יחד את ההרגל הראשון שלך. תביא מחברת."}
+}
