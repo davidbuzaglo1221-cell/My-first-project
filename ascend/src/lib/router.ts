@@ -22,6 +22,7 @@ export type Route =
   | { name: 'coach'; session?: string }
   | { name: 'mastery'; sub?: string }
   | { name: 'pause'; app: string }
+  | { name: 'more' }
 
 export function parse(hash: string): Route {
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent)
@@ -52,6 +53,8 @@ export function parse(hash: string): Route {
       return { name: 'coach', session: parts[1] }
     case 'mastery':
       return { name: 'mastery', sub: parts[1] }
+    case 'more':
+      return { name: 'more' }
     case 'pause':
       return { name: 'pause', app: parts[1] ?? 'instagram' }
     case 'situation':
@@ -82,12 +85,14 @@ export const navigate = (path: string) => {
 }
 export const back = (fallback = '/') => (history.length > 1 ? history.back() : navigate(fallback))
 
-/** Tab a route belongs to, for the tab bar highlight. */
+/** Tab a route belongs to: home, today, coach, progress; every other world lives under "עוד". */
 export const tabOf = (r: Route): string =>
-  ['category', 'book', 'path', 'read', 'quiz', 'ask'].includes(r.name)
-    ? 'explore'
-    : r.name === 'breathe' || r.name === 'checkin' || r.name === 'situation'
-      ? 'freedom'
-      : ['settings', 'voices', 'growth', 'library', 'progress', 'notes', 'pause'].includes(r.name)
-        ? 'mastery'
-        : r.name
+  r.name === 'home'
+    ? 'home'
+    : r.name === 'mastery' && r.sub === 'day'
+      ? 'today'
+      : r.name === 'coach'
+        ? 'coach'
+        : ['progress', 'growth', 'settings', 'voices', 'library'].includes(r.name)
+          ? 'progress'
+          : 'more'

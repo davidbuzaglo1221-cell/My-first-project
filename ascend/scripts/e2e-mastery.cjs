@@ -14,7 +14,7 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m)
   // hub and tab
   await p.goto(U + '/mastery'); await p.waitForTimeout(700)
   ok((await p.locator('.mastery .glist__row').count()) >= 6, 'hub lists the six areas')
-  ok(await p.locator('.tab--mastery.is-on').isVisible(), 'the "שליטה" tab is active')
+  ok(await p.locator('.tab--more.is-on').isVisible(), 'the "עוד" tab is active')
 
   // the day: focus, slots, spoken tasks parsed and confirmed, cap of three
   await p.goto(U + '/mastery/day'); await p.waitForTimeout(600)

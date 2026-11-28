@@ -2,16 +2,16 @@ import { bookById } from '../content'
 import { neighbours, nextChapter, usePlayer, toggle } from '../engine/player'
 import { navigate, type Route, tabOf } from '../lib/router'
 import { Cover } from './Cover'
-import { IconAscend, IconChart, IconHeadphones, IconHome, IconLibrary, IconLotus, IconNextTrack, IconSpark } from './Icons'
+import { IconAscend, IconChart, IconHeadphones, IconHome, IconLotus, IconMore, IconNextTrack, IconSpark } from './Icons'
 import { PlayGlyph } from './Kit'
 import { openPlayer } from './uiState'
 
 const tabs = [
   { id: 'home', label: 'בית', path: '/', Icon: IconHome },
-  { id: 'explore', label: 'ספרייה', path: '/explore', Icon: IconLibrary },
-  { id: 'coach', label: 'עוזר אישי', path: '/coach', Icon: IconSpark },
-  { id: 'freedom', label: 'לחופש', path: '/freedom', Icon: IconLotus },
-  { id: 'mastery', label: 'שליטה', path: '/mastery', Icon: IconAscend },
+  { id: 'today', label: 'היום', path: '/mastery/day', Icon: IconAscend },
+  { id: 'coach', label: 'מאמן', path: '/coach', Icon: IconSpark },
+  { id: 'progress', label: 'התקדמות', path: '/progress', Icon: IconChart },
+  { id: 'more', label: 'עוד', path: '/more', Icon: IconMore },
 ] as const
 
 export function TabBar({ route }: { route: Route }) {

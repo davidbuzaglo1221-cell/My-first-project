@@ -46,13 +46,14 @@ function Gate({ onOpen }: { onOpen: (code: string, v: UrgeVault) => void }) {
   }
   return (
     <div className="screen urge">
-      <header className="photohero">
-        <img src="photos/evening.webp" alt="" decoding="async" style={{ objectPosition: '50% 70%' }} />
+      <header className="photohero photohero--power">
+        <img src="photos/inner-power.webp" alt="" decoding="async" />
+        <InnerLight />
         <div className="photohero__top">
-          <BackButton fallback="/mastery" />
+          <BackButton fallback="/more" />
         </div>
         <div className="photohero__text">
-          <span className="photohero__kicker">דחפים</span>
+          <span className="photohero__kicker">כוח פנימי</span>
           <h1>אתה מחליט, לא הדחף</h1>
           <p>מקום פרטי לגמרי. בלי שיפוט, בלי בושה. דחף הוא דבר טבעי; המטרה היא שאתה תבחר מה לעשות איתו.</p>
         </div>
@@ -112,9 +113,16 @@ function Unlocked({ v, save, lock }: { v: UrgeVault; save: (v: UrgeVault) => Pro
   if (step !== 'home' && e) return <Protocol e={e} setE={setE} step={step} setStep={setStep} finish={finish} />
   return (
     <div className="screen urge">
-      <header className="page-head page-head--back">
-        <BackButton fallback="/mastery" />
-        <h1 className="page-title">דחפים</h1>
+      <header className="photohero photohero--power photohero--short">
+        <img src="photos/inner-power.webp" alt="" decoding="async" />
+        <InnerLight />
+        <div className="photohero__top">
+          <BackButton fallback="/more" />
+        </div>
+        <div className="photohero__text">
+          <span className="photohero__kicker">כוח פנימי</span>
+          <h1>הבחירה אצלך</h1>
+        </div>
       </header>
       <button className="urge__now" onClick={begin}>
         <strong>יש דחף עכשיו</strong>
@@ -330,6 +338,23 @@ function Protocol({ e, setE, step, setStep, finish }: { e: UrgeEntry; setE: (e: 
           </div>
         </article>
       )}
+    </div>
+  )
+}
+
+/** INNER POWER: soft emerald light rising from the body, rays, slow dust and low fog. Pure CSS, still when motion is reduced. */
+function InnerLight() {
+  return (
+    <div className="ilight" aria-hidden="true">
+      <i className="ilight__glow" />
+      <i className="ilight__rays" />
+      <i className="ilight__rise" />
+      <span className="ilight__dust">
+        {Array.from({ length: 18 }, (_, k) => (
+          <b key={k} style={{ ['--x' as string]: `${(k * 37) % 100}%`, ['--d' as string]: `${(k * 1.7) % 9}s`, ['--s' as string]: `${1 + (k % 3)}px`, ['--t' as string]: `${9 + (k % 5) * 2}s` }} />
+        ))}
+      </span>
+      <i className="ilight__fog" />
     </div>
   )
 }

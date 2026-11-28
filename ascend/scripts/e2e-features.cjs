@@ -98,9 +98,47 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m)
   // tab bar: home, library, personal assistant, freedom, journey
   await p.keyboard.press('Escape'); await p.waitForTimeout(600)
   const tabs = await p.locator('.tabbar .tab span').allInnerTexts()
-  ok(tabs.join('|') === 'בית|ספרייה|עוזר אישי|לחופש|שליטה', 'tab bar: ' + tabs.join(' · '))
-  await p.click('.tab--coach'); await p.waitForTimeout(500)
-  ok((await p.evaluate(() => location.hash)) === '#/coach', 'assistant tab routes to the assistant')
+  ok(tabs.join('|') === 'בית|היום|מאמן|התקדמות|עוד', 'tab bar: ' + tabs.join(' · '))
+  for (const [t, h] of [['coach', '#/coach'], ['today', '#/mastery/day'], ['progress', '#/progress'], ['more', '#/more'], ['home', '#/']]) {
+    await p.click('.tab--' + t); await p.waitForTimeout(450)
+    ok((await p.evaluate(() => location.hash)) === h && (await p.locator('.tab--' + t + '.is-on').count()) === 1, 'tab ' + t + ' opens ' + h + ' and lights up')
+  }
+  // "עוד": every world, grouped, searchable, each card a real screen with a loaded photo
+  await p.goto('http://localhost:4173/#/more'); await p.waitForTimeout(900)
+  const groupTitles = await p.locator('.more__group .glist__title').allInnerTexts()
+  ok(groupTitles.join('|') === 'שליטה עצמית|גוף ונפש|נוכחות ותקשורת|ידע והתפתחות|כסף וקריירה', 'more: five groups ' + groupTitles.join(' · '))
+  const nCards = await p.locator('.tcard').count()
+  ok(nCards === 21, 'more: 21 topic cards (' + nCards + ')')
+  for (let i = 0; i < nCards; i++) await p.locator('.tcard').nth(i).scrollIntoViewIfNeeded()
+  await p.waitForTimeout(900)
+  const broken = await p.evaluate(() => [...document.querySelectorAll('.tcard img')].filter((i) => !i.complete || !i.naturalWidth).map((i) => i.src))
+  ok(broken.length === 0, 'more: every card photo loaded ' + broken.join(','))
+  const noHScroll = await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)
+  ok(noHScroll, 'more: no horizontal scroll')
+  await p.fill('.more__search input', 'שינה'); await p.waitForTimeout(300)
+  ok((await p.locator('.tcard').count()) === 1, 'more: search narrows to one topic')
+  await p.fill('.more__search input', 'zzzz'); await p.waitForTimeout(300)
+  ok(await p.locator('.mempty').isVisible(), 'more: empty search says so')
+  await p.fill('.more__search input', '')
+  const targets = await p.evaluate(() => document.querySelectorAll('.tcard').length)
+  for (let i = 0; i < targets; i++) {
+    await p.goto('http://localhost:4173/#/more'); await p.waitForTimeout(400)
+    const title = await p.locator('.tcard strong').nth(i).innerText()
+    await p.locator('.tcard').nth(i).click(); await p.waitForTimeout(500)
+    const h = await p.evaluate(() => location.hash)
+    const has = await p.evaluate(() => !!document.querySelector('.view .screen') && document.querySelector('.view').innerText.length > 40)
+    ok(h !== '#/more' && has, 'more: ' + title + ' opens ' + h)
+  }
+  // INNER POWER: the private screen opens on the light-rising photograph
+  await p.goto('http://localhost:4173/#/mastery/urge'); await p.waitForTimeout(600)
+  ok(await p.evaluate(() => !!document.querySelector('.photohero--power img[src*="inner-power"]') && document.querySelectorAll('.ilight__dust b').length === 18), 'inner power hero with rising light and dust')
+  // category screens open with their own photograph
+  await p.goto('http://localhost:4173/#/explore/money'); await p.waitForTimeout(600)
+  ok(await p.evaluate(() => !!document.querySelector('.cathero__photo[src*="city"]')), 'money category opens on the city at night')
+  // topic screens lead to the coach in context
+  await p.goto('http://localhost:4173/#/mastery/sleep'); await p.waitForTimeout(500)
+  await p.click('.photohero__coach'); await p.waitForTimeout(500)
+  ok((await p.evaluate(() => location.hash)) === '#/coach/reset', 'sleep links to a coach conversation')
   // every main screen leads with a photograph
   for (const r of ['/', '/explore', '/freedom', '/progress', '/coach', '/notes', '/situation', '/checkin', '/growth', '/settings', '/voices', '/library', '/mastery', '/mastery/day', '/mastery/sleep', '/mastery/screen', '/mastery/urge', '/mastery/discipline', '/mastery/speech', '/pause/instagram']) {
     await p.goto('http://localhost:4173/#' + r); await p.waitForTimeout(500)

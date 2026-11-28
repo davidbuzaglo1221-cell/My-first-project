@@ -96,9 +96,9 @@ export function SpeechLab() {
   return (
     <div className="screen speech">
       <header className="photohero">
-        <img src="photos/library.webp" alt="" decoding="async" />
+        <img src="photos/presence.webp" alt="" decoding="async" />
         <div className="photohero__top">
-          <BackButton fallback="/mastery" />
+          <BackButton fallback="/more" />
         </div>
         <div className="photohero__text">
           <span className="photohero__kicker">דיבור וקול</span>

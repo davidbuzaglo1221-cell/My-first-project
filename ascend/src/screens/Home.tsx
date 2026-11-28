@@ -33,6 +33,7 @@ import { load } from "../engine/player";
 import { coachNotes } from "../lib/coach";
 import { nextProgramDay, todayChecks } from "../lib/daily";
 import { openPlayer } from "../ui/uiState";
+import { rank, tasksFor } from "../lib/mastery";
 
 const fmtListen = (sec: number) => {
   const m = Math.floor(sec / 60);
@@ -218,6 +219,21 @@ export function Home() {
           go: () => startLesson(books[0].lessons[0].id),
         };
 
+  // The one task that matters most today, from the user's own list. A precise line from real data, never a slogan.
+  const top = tasksFor(s)
+    .filter((t) => !t.done)
+    .sort((a, b) => rank(b) - rank(a))[0];
+  const openTasks = tasksFor(s).filter((t) => !t.done).length;
+  const heroLine = top
+    ? openTasks > 1
+      ? `${openTasks} דברים פתוחים היום. מתחילים בחשוב מכולם.`
+      : "נשאר דבר אחד היום. הוא שלך."
+    : dayDone === 3
+      ? "שלושת הדברים של היום מאחוריך."
+      : streak
+        ? `${streak} ימים ברצף. היום שומר עליו.`
+        : "יום חדש. צעד אחד מספיק כדי להתחיל.";
+
   // The whole library, interleaved across areas and rotated daily
   const dayN = Math.floor(Date.now() / 86400000);
   const mixed: string[] = [];
@@ -277,11 +293,13 @@ export function Home() {
               {dayDone}/3 היום
             </span>
           </div>
+          <span className="homehero__kicker">MY JOURNEY</span>
           <p className="homehero__greet">
             {greeting()}
             {s.name ? `, ${s.name}` : ""}
           </p>
           <h1 className="homehero__title">המסע שלך</h1>
+          <p className="homehero__line">{heroLine}</p>
         </div>
         <button className="nownext" onClick={next.go}>
           <span className="nownext__play" aria-hidden="true">
@@ -293,6 +311,12 @@ export function Home() {
           </span>
         </button>
       </header>
+
+      <button className="toptask" onClick={() => navigate("/mastery/day")}>
+        <span className="toptask__k">{top ? "החשוב ביותר היום" : "היום שלך"}</span>
+        <strong>{top ? top.text : "לבחור את הדבר האחד שחשוב היום"}</strong>
+        <span className="toptask__go" aria-hidden="true">‹</span>
+      </button>
 
       <TodayCard />
 

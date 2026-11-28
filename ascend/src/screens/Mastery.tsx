@@ -15,7 +15,7 @@ import { toast } from '../ui/uiState'
 
 const APP_URL = 'https://davidbuzaglo1221-cell.github.io/My-first-project/'
 
-function Hero({ img, kicker, title, line, back = '/mastery', pos }: { img: string; kicker: string; title: string; line?: string; back?: string | null; pos?: string }) {
+function Hero({ img, kicker, title, line, back = '/more', pos, coach }: { img: string; kicker: string; title: string; line?: string; back?: string | null; pos?: string; coach?: string }) {
   return (
     <header className="photohero">
       <img src={`photos/${img}.webp`} alt="" decoding="async" style={pos ? { objectPosition: pos } : undefined} />
@@ -28,6 +28,11 @@ function Hero({ img, kicker, title, line, back = '/mastery', pos }: { img: strin
         <span className="photohero__kicker">{kicker}</span>
         <h1>{title}</h1>
         {line && <p>{line}</p>}
+        {coach && (
+          <button className="photohero__coach" onClick={() => navigate(`/coach/${coach}`)}>
+            לשיחה עם המאמן על זה
+          </button>
+        )}
       </div>
     </header>
   )
@@ -53,7 +58,7 @@ export function MasteryHub() {
   ]
   return (
     <div className="screen mastery">
-      <Hero img="progress" kicker="שליטה" title="לא רק לעקוב. להוביל." line="מקום אחד לעבוד על כל תחום. כל מספר כאן מגיע ממה שעשית באמת." back={null} />
+      <Hero img="mastery" kicker="שליטה" title="לא רק לעקוב. להוביל." line="מקום אחד לעבוד על כל תחום. כל מספר כאן מגיע ממה שעשית באמת." coach="week" />
       {ft.planned > 0 && (
         <p className="mfact">
           השבוע ביצעת <strong>{ft.done}</strong> מתוך <strong>{ft.planned}</strong> דברים שתכננת.
@@ -141,7 +146,7 @@ export function MasteryDay() {
   const tomorrow = dayKey(addDays(new Date(), 1))
   return (
     <div className="screen mday">
-      <Hero img="notebook" kicker="היום שלי" title="אחוז אחד טוב יותר" line="לא שלושים משימות. מעט דברים נכונים, שבאמת קורים." />
+      <Hero img="summit" kicker="היום שלי" title="אחוז אחד טוב יותר" line="לא שלושים משימות. מעט דברים נכונים, שבאמת קורים." back={null} coach="clarity" />
 
       <section className="block">
         <h2 className="glist__title">המטרה המרכזית של היום</h2>
@@ -346,7 +351,7 @@ export function MasterySleep() {
   const [items, setItems] = useState('')
   return (
     <div className="screen msleep">
-      <Hero img="evening2" kicker="שינה ושגרה" title="לקום בזמן מתחיל בערב" line="יעד, ביצוע ושינוי הדרגתי. רק מה שתיעדת." />
+      <Hero img="sleep" kicker="שינה ושגרה" title="לקום בזמן מתחיל בערב" line="יעד, ביצוע ושינוי הדרגתי. רק מה שתיעדת." coach="reset" />
 
       <section className="block">
         <h2 className="glist__title">היעדים</h2>
@@ -489,7 +494,7 @@ export function MasteryScreen() {
   }
   return (
     <div className="screen mscreen">
-      <Hero img="situation" kicker="זמן מסך" title="הטלפון בשבילך, לא אתה בשבילו" line="מגבלה לכל אפליקציה, ועצירה של רגע לפני שגוללים." pos="38% 50%" />
+      <Hero img="focus" kicker="זמן מסך ומיקוד" title="הטלפון בשבילך, לא אתה בשבילו" line="מגבלה לכל אפליקציה, ועצירה של רגע לפני שגוללים." coach="avoid" />
 
       <div className="mhonest">
         <strong>מה עובד כאן באמת</strong>
@@ -669,7 +674,7 @@ export function MasteryDiscipline() {
   const recent = st.log.slice(-6).reverse()
   return (
     <div className="screen mdisc">
-      <Hero img="wealth" kicker="משמעת" title={`שלב ${st.level}`} line="אתגרים שעולים כשאתה מצליח, ויורדים כשקשה. בלי עונש." />
+      <Hero img="discipline" kicker="הרגלים ומשמעת" title={`שלב ${st.level}`} line="אתגרים שעולים כשאתה מצליח, ויורדים כשקשה. בלי עונש." coach="avoid" />
       {run && c ? (
         <section className="block mtimer">
           <h2>{c.title}</h2>

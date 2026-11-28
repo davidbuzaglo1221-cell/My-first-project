@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { CATEGORY_PHOTO } from '../content/topics'
 import { bookSeconds, books, booksByCategory, categories, categoryById, curatedPaths, formatMinutes, lessonIndex } from '../content'
 import type { CategoryId } from '../content/types'
 import { categoryMastery, pathProgress } from '../lib/insights'
@@ -263,7 +264,8 @@ export function CategoryScreen({ id }: { id: string }) {
   const order = [...list].sort((a, b) => (a.level === b.level ? 0 : a.level === 'יסודות' ? -1 : 1))
   return (
     <div className="screen category">
-      <div className="cathero">
+      <div className="cathero cathero--photo">
+        {CATEGORY_PHOTO[c.id] && <img className="cathero__photo" src={`photos/${CATEGORY_PHOTO[c.id].img}.webp`} alt="" decoding="async" style={CATEGORY_PHOTO[c.id].pos ? { objectPosition: CATEGORY_PHOTO[c.id].pos } : undefined} />}
         <CoverFan books={list} className="cathero__fan" />
         <BackButton fallback="/explore" />
         <div className="cathero__body">
