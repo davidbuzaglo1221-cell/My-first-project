@@ -1,6 +1,8 @@
 import { useSyncExternalStore } from 'react'
 import type { CategoryId } from '../content/types'
 import { dayKey } from './dates'
+import type { Mastery } from './mastery'
+import type { SpeechMetrics } from './speech'
 
 export interface LessonProgress {
   pos: number
@@ -134,6 +136,10 @@ export interface AppState {
   /** Notifications: whether this device subscribed, and the morning/evening hours chosen. */
   push?: { on: boolean; hours: number[] }
   coach?: CoachState
+  /** Self-mastery: the day, tasks, sleep, routines, scroll pauses, the discipline ladder. (Urges live in the encrypted vault, not here.) */
+  mastery?: Mastery
+  /** Speech practice: measured on the device. */
+  speech?: { id: string; at: number; drill: string; m: SpeechMetrics }[]
   /** Your day: the day the idea of the day was opened, and the daily reminder time (HH:MM) once set. */
   daily?: { idea?: string; remindAt?: string }
 }

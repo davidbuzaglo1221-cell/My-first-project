@@ -14,6 +14,9 @@ import { NowPlaying } from './screens/NowPlaying'
 import { Opening } from './screens/Opening'
 import { Checkin } from './screens/Checkin'
 import { Coach } from './screens/Coach'
+import { MasteryDay, MasteryDiscipline, MasteryHub, MasteryScreen, MasterySleep, ScrollPause } from './screens/Mastery'
+import { SpeechLab } from './screens/Speech'
+import { UrgeScreen } from './screens/Urge'
 import { SituationScreen } from './screens/Situation'
 import { Progress } from './screens/Progress'
 import { Settings } from './screens/Settings'
@@ -158,6 +161,13 @@ export function App() {
       break
     case 'checkin':
       screen = <Checkin />
+      break
+    case 'mastery':
+      screen =
+        route.sub === 'day' ? <MasteryDay /> : route.sub === 'sleep' ? <MasterySleep /> : route.sub === 'screen' ? <MasteryScreen /> : route.sub === 'urge' ? <UrgeScreen /> : route.sub === 'discipline' ? <MasteryDiscipline /> : route.sub === 'speech' ? <SpeechLab /> : <MasteryHub />
+      break
+    case 'pause':
+      screen = <ScrollPause app={route.app} />
       break
     case 'coach':
       screen = <Coach session={route.session} />

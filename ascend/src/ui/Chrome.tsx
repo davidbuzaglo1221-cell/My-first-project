@@ -2,7 +2,7 @@ import { bookById } from '../content'
 import { neighbours, nextChapter, usePlayer, toggle } from '../engine/player'
 import { navigate, type Route, tabOf } from '../lib/router'
 import { Cover } from './Cover'
-import { IconChart, IconHeadphones, IconHome, IconLibrary, IconLotus, IconNextTrack, IconSpark } from './Icons'
+import { IconAscend, IconChart, IconHeadphones, IconHome, IconLibrary, IconLotus, IconNextTrack, IconSpark } from './Icons'
 import { PlayGlyph } from './Kit'
 import { openPlayer } from './uiState'
 
@@ -11,7 +11,7 @@ const tabs = [
   { id: 'explore', label: 'ספרייה', path: '/explore', Icon: IconLibrary },
   { id: 'coach', label: 'עוזר אישי', path: '/coach', Icon: IconSpark },
   { id: 'freedom', label: 'לחופש', path: '/freedom', Icon: IconLotus },
-  { id: 'progress', label: 'המסע', path: '/progress', Icon: IconChart },
+  { id: 'mastery', label: 'שליטה', path: '/mastery', Icon: IconAscend },
 ] as const
 
 export function TabBar({ route }: { route: Route }) {

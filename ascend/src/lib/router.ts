@@ -20,6 +20,8 @@ export type Route =
   | { name: 'checkin' }
   | { name: 'situation'; id?: string }
   | { name: 'coach'; session?: string }
+  | { name: 'mastery'; sub?: string }
+  | { name: 'pause'; app: string }
 
 export function parse(hash: string): Route {
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent)
@@ -48,6 +50,10 @@ export function parse(hash: string): Route {
       return { name: 'checkin' }
     case 'coach':
       return { name: 'coach', session: parts[1] }
+    case 'mastery':
+      return { name: 'mastery', sub: parts[1] }
+    case 'pause':
+      return { name: 'pause', app: parts[1] ?? 'instagram' }
     case 'situation':
       return { name: 'situation', id: parts[1] }
     case 'breathe':
@@ -82,8 +88,6 @@ export const tabOf = (r: Route): string =>
     ? 'explore'
     : r.name === 'breathe' || r.name === 'checkin' || r.name === 'situation'
       ? 'freedom'
-      : ['settings', 'voices', 'growth', 'library'].includes(r.name)
-        ? 'progress'
-        : r.name === 'notes'
-          ? 'progress'
-          : r.name
+      : ['settings', 'voices', 'growth', 'library', 'progress', 'notes', 'pause'].includes(r.name)
+        ? 'mastery'
+        : r.name

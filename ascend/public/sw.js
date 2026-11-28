@@ -1,6 +1,6 @@
 // Instant launches: the app shell is served from cache and refreshed in the background.
 // Audio streams straight from the network (range requests for seeking are never cached).
-const CACHE = 'hamasa-v9'
+const CACHE = 'hamasa-v10'
 const SHELL = ['./', './index.html', './manifest.json', './apple-touch-icon.png', './icon-192.png', './icon-512.png']
 self.addEventListener('install', (e) => {
   self.skipWaiting()

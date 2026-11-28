@@ -98,11 +98,11 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m)
   // tab bar: home, library, personal assistant, freedom, journey
   await p.keyboard.press('Escape'); await p.waitForTimeout(600)
   const tabs = await p.locator('.tabbar .tab span').allInnerTexts()
-  ok(tabs.join('|') === 'בית|ספרייה|עוזר אישי|לחופש|המסע', 'tab bar: ' + tabs.join(' · '))
+  ok(tabs.join('|') === 'בית|ספרייה|עוזר אישי|לחופש|שליטה', 'tab bar: ' + tabs.join(' · '))
   await p.click('.tab--coach'); await p.waitForTimeout(500)
   ok((await p.evaluate(() => location.hash)) === '#/coach', 'assistant tab routes to the assistant')
   // every main screen leads with a photograph
-  for (const r of ['/', '/explore', '/freedom', '/progress', '/coach', '/notes', '/situation', '/checkin', '/growth', '/settings', '/voices', '/library']) {
+  for (const r of ['/', '/explore', '/freedom', '/progress', '/coach', '/notes', '/situation', '/checkin', '/growth', '/settings', '/voices', '/library', '/mastery', '/mastery/day', '/mastery/sleep', '/mastery/screen', '/mastery/urge', '/mastery/discipline', '/mastery/speech', '/pause/instagram']) {
     await p.goto('http://localhost:4173/#' + r); await p.waitForTimeout(500)
     const ok2 = await p.evaluate(() => [...document.querySelectorAll('.view img')].some((i) => i.src.includes('/photos/') && i.getBoundingClientRect().top < 300))
     ok(ok2, 'photograph at the top of ' + r)
