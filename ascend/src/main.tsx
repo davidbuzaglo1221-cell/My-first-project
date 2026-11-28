@@ -10,12 +10,17 @@ import '@fontsource/assistant/latin-400.css'
 import '@fontsource/assistant/latin-600.css'
 import './styles.css'
 import { App } from './App'
+import { Guard } from './ui/Guard'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <Guard>
+      <App />
+    </Guard>
   </StrictMode>,
 )
+// The app is up: the boot guard in index.html stands down.
+requestAnimationFrame(() => ((window as unknown as { __hamasaBooted?: boolean }).__hamasaBooted = true))
 
 if ('serviceWorker' in navigator && import.meta.env.PROD && location.protocol === 'https:' && import.meta.env.MODE !== 'single') {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}))

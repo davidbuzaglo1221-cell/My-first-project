@@ -97,12 +97,18 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m)
   ok(await p.locator('.sheet button:has-text("הפעל התראות")').isVisible() && (await p.locator('.sheet .chip').count()) === 8, 'notification sheet: morning and evening hours')
   // tab bar: home, library, personal assistant, freedom, journey
   await p.keyboard.press('Escape'); await p.waitForTimeout(600)
-  const tabs = await p.locator('.tabbar .tab span').allInnerTexts()
+  const tabs = await p.locator('.tabbar .tab > span:last-child').allInnerTexts()
   ok(tabs.join('|') === 'בית|היום|מאמן|התקדמות|עוד', 'tab bar: ' + tabs.join(' · '))
   for (const [t, h] of [['coach', '#/coach'], ['today', '#/mastery/day'], ['progress', '#/progress'], ['more', '#/more'], ['home', '#/']]) {
     await p.click('.tab--' + t); await p.waitForTimeout(450)
     ok((await p.evaluate(() => location.hash)) === h && (await p.locator('.tab--' + t + '.is-on').count()) === 1, 'tab ' + t + ' opens ' + h + ' and lights up')
   }
+  // the signature bar: the coach orb, the sliding light, and live signals from real data only
+  ok(await p.locator('.tab--coach .orb').isVisible(), 'tab bar: coach orb')
+  await p.click('.tab--more'); await p.waitForTimeout(700)
+  const lightAt = await p.evaluate(() => getComputedStyle(document.querySelector('.tabbar')).getPropertyValue('--i').trim())
+  ok(lightAt === '4', 'tab bar: the light follows the open tab (' + lightAt + ')')
+  ok((await p.locator('.tab__badge').count()) === 0, 'tab bar: no streak badge without a streak')
   // "עוד": every world, grouped, searchable, each card a real screen with a loaded photo
   await p.goto('http://localhost:4173/#/more'); await p.waitForTimeout(900)
   const groupTitles = await p.locator('.more__group .glist__title').allInnerTexts()

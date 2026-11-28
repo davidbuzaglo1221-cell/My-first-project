@@ -17,6 +17,7 @@ import { Coach } from './screens/Coach'
 import { MasteryDay, MasteryDiscipline, MasteryHub, MasteryScreen, MasterySleep, ScrollPause } from './screens/Mastery'
 import { SpeechLab } from './screens/Speech'
 import { More } from './screens/More'
+import { Guard } from './ui/Guard'
 import { UrgeScreen } from './screens/Urge'
 import { SituationScreen } from './screens/Situation'
 import { Progress } from './screens/Progress'
@@ -184,7 +185,7 @@ export function App() {
   return (
     <div className={`app ${p.track ? 'has-mini' : ''} ${ui.playerOpen ? 'player-open' : ''} ${route.name === 'read' ? 'is-reading' : ''} ${route.name === 'breathe' ? 'is-breathing' : ''}`}>
       <main ref={main} tabIndex={-1} key={hash} className="view" inert={ui.playerOpen || undefined}>
-        {screen}
+        <Guard resetKey={hash}>{screen}</Guard>
       </main>
       <div className="dock" inert={ui.playerOpen || undefined}>
         <MiniPlayer />

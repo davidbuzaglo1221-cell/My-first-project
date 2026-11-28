@@ -5765,3 +5765,44 @@ html, body { background: #080A09; }
 .toptask__go { position: absolute; inset-inline-end: 18px; top: 50%; transform: translateY(-50%); font-size: 24px; color: var(--text-2); }
 .photohero--power .photohero__top, .photohero--power .photohero__text { position: relative; z-index: 1; }
 .ilight { -webkit-mask-image: linear-gradient(0deg, transparent 0, #000 30%); mask-image: linear-gradient(0deg, transparent 0, #000 30%); }
+.guard { min-height: 70svh; display: flex; flex-direction: column; justify-content: center; gap: 10px; padding-top: 40px; }
+.guard__mark { font-size: 11px; letter-spacing: 0.34em; color: var(--champ); direction: ltr; text-align: end; }
+.guard h1 { margin: 0; font-family: var(--serif); font-size: 32px; font-weight: 500; color: var(--text-1); }
+.guard p { margin: 0 0 14px; color: var(--text-2); font-size: 15px; }
+.guard__row { display: flex; gap: 10px; }
+
+/* ===================== v12 · signature tab bar ===================== */
+.tabbar--sig { position: relative; overflow: visible; height: calc(62px + var(--safe-b)); background: linear-gradient(180deg, rgba(14, 19, 16, 0.9), rgba(8, 10, 9, 0.96)); border-top: 0.5px solid rgba(140, 203, 165, 0.16); backdrop-filter: blur(26px) saturate(160%); -webkit-backdrop-filter: blur(26px) saturate(160%); }
+.tabbar--sig::before { content: ''; position: absolute; top: -0.5px; left: 12%; right: 12%; height: 0.5px; background: linear-gradient(90deg, transparent, rgba(140, 203, 165, 0.55), transparent); }
+.tabbar__light { position: absolute; top: 0; inset-inline-start: calc(var(--i) * 20%); width: 20%; height: 62px; pointer-events: none; transition: inset-inline-start 0.5s cubic-bezier(0.3, 1.25, 0.4, 1), opacity 0.3s ease; }
+.tabbar__light::before { content: ''; position: absolute; top: 0; left: 50%; width: 34px; height: 2px; transform: translateX(-50%); border-radius: 0 0 2px 2px; background: #8ccba5; box-shadow: 0 0 14px 2px rgba(140, 203, 165, 0.7); }
+.tabbar__light::after { content: ''; position: absolute; top: 0; left: 50%; width: 70px; height: 48px; transform: translateX(-50%); background: radial-gradient(50% 70% at 50% 0%, rgba(140, 203, 165, 0.2), transparent 75%); }
+.tabbar__light.is-hidden { opacity: 0; }
+.tabbar--sig .tab { color: #7d867f; font-size: 10.5px; font-weight: 600; gap: 3px; padding-top: 2px; -webkit-tap-highlight-color: transparent; }
+.tabbar--sig .tab.is-on { color: #f0f3f0; }
+.tabbar--sig .tab.is-on::after { display: none; }
+.tab__icon { position: relative; display: grid; place-items: center; width: 34px; height: 30px; }
+.tabbar--sig .tab svg { transition: transform 0.25s cubic-bezier(0.3, 1.4, 0.5, 1), color 0.25s; filter: none; }
+.tabbar--sig .tab.is-on .tab__icon > svg:not(.tab__ring) { color: #8ccba5; animation: tab-pop 0.5s cubic-bezier(0.3, 1.5, 0.5, 1); filter: drop-shadow(0 0 6px rgba(140, 203, 165, 0.45)); }
+.tabbar--sig .tab:active .tab__icon > svg { transform: scale(0.86); }
+@keyframes tab-pop { 0% { transform: scale(0.82); } 55% { transform: scale(1.12); } 100% { transform: scale(1); } }
+.tabbar--sig rect { transition: x 0.3s ease, width 0.3s ease; }
+.ti-lamp { transition: r 0.3s ease; }
+.tab--home.is-on .ti-lamp { filter: drop-shadow(0 0 3px #b9e3c9); }
+.tab--today.is-on .ti-rays { animation: ti-rays 2.6s ease-in-out 0.3s 1; }
+@keyframes ti-rays { 50% { opacity: 0.35; } }
+.tab__ring { position: absolute; inset: -4px -1px; width: 36px; height: 38px; transform: rotate(-90deg) scaleY(-1); fill: none; stroke: #8ccba5; stroke-width: 1.6; stroke-linecap: round; opacity: 0.75; }
+.tab__badge { position: absolute; top: -3px; inset-inline-start: -6px; min-width: 15px; height: 15px; padding: 0 4px; border-radius: 8px; font-size: 9.5px; font-weight: 700; line-height: 15px; text-align: center; color: #06140d; background: #8ccba5; box-shadow: 0 0 0 2px #0a0d0b; }
+/* the coach: a raised orb, the app's signature */
+.tab--coach .orb { position: relative; display: grid; place-items: center; width: 50px; height: 50px; margin-top: -22px; border-radius: 50%; color: #b9e3c9; background: radial-gradient(circle at 50% 30%, #1d2a22, #0b100d 70%); border: 0.5px solid rgba(140, 203, 165, 0.45); box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.9), 0 0 0 4px #0a0d0b, inset 0 1px 0 rgba(255, 255, 255, 0.08); transition: transform 0.3s cubic-bezier(0.3, 1.4, 0.5, 1), background 0.4s ease, color 0.3s; }
+.tab--coach .orb::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; border: 0.5px solid rgba(140, 203, 165, 0.25); animation: orb-breath 4.5s ease-in-out infinite; }
+.tab--coach.is-on .orb { color: #f0f3f0; background: radial-gradient(circle at 50% 28%, #2f9a68, #185b3b 62%, #0f3a26); box-shadow: 0 12px 30px -8px rgba(24, 91, 59, 0.95), 0 0 0 4px #0a0d0b, 0 0 26px rgba(140, 203, 165, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2); }
+.tab--coach.is-on .orb svg { animation: orb-spin 0.7s cubic-bezier(0.3, 1.3, 0.5, 1); }
+.tab--coach:active .orb { transform: scale(0.9); }
+.orb__dot { position: absolute; top: 4px; inset-inline-end: 5px; width: 8px; height: 8px; border-radius: 50%; background: #8ccba5; box-shadow: 0 0 0 2px #0b100d, 0 0 8px #8ccba5; }
+@keyframes orb-breath { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 0.15; } }
+@keyframes orb-spin { from { transform: rotate(-90deg) scale(0.7); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .tabbar__light, .tabbar--sig .tab svg, .tab--coach .orb { transition: none; }
+  .tab--coach .orb::after, .tabbar--sig .tab.is-on .tab__icon > svg, .tab--coach.is-on .orb svg, .tab--today.is-on .ti-rays { animation: none !important; }
+}

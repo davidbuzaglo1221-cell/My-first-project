@@ -22,7 +22,35 @@
     <title>המסע שלי</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><div class="boot" aria-label="טוען"><span class="boot__mark">MY JOURNEY</span><span class="boot__name">המסע שלי</span><i class="boot__line"></i></div></div>
+    <style>
+      html, body { margin: 0; background: #080a09; }
+      .boot { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: radial-gradient(60% 40% at 50% 45%, rgba(24, 91, 59, 0.35), transparent 70%), #080a09; color: #f0f3f0; font-family: -apple-system, system-ui, sans-serif; }
+      .boot__mark { font-size: 11px; letter-spacing: 0.4em; color: #8ccba5; }
+      .boot__name { font-size: 34px; font-family: 'Times New Roman', serif; }
+      .boot__line { width: 64px; height: 1px; background: linear-gradient(90deg, transparent, #8ccba5, transparent); animation: bootp 1.6s ease-in-out infinite; }
+      @keyframes bootp { 50% { opacity: 0.3; transform: scaleX(0.5); } }
+    </style>
+    <script>
+      // If the app has not started within 8 seconds, or its code failed to load, clear the saved copies once and reload.
+      ;(function () {
+        var KEY = 'hamasa:boot-retry'
+        function heal() {
+          try {
+            var last = +sessionStorage.getItem(KEY) || 0
+            if (Date.now() - last < 60000) return
+            sessionStorage.setItem(KEY, String(Date.now()))
+          } catch (e) {}
+          var jobs = []
+          if (window.caches) jobs.push(caches.keys().then(function (k) { return Promise.all(k.map(function (n) { return caches.delete(n) })) }))
+          if (navigator.serviceWorker) jobs.push(navigator.serviceWorker.getRegistrations().then(function (r) { return Promise.all(r.map(function (x) { return x.unregister() })) }))
+          Promise.all(jobs).catch(function () {}).then(function () { location.reload() })
+        }
+        window.__hamasaHeal = heal
+        addEventListener('error', function (e) { var t = e.target; if (t && (t.tagName === 'SCRIPT' || t.tagName === 'LINK')) heal() }, true)
+        setTimeout(function () { if (!window.__hamasaBooted) heal() }, 8000)
+      })()
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

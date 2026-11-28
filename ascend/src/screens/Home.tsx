@@ -34,6 +34,7 @@ import { coachNotes } from "../lib/coach";
 import { nextProgramDay, todayChecks } from "../lib/daily";
 import { openPlayer } from "../ui/uiState";
 import { rank, tasksFor } from "../lib/mastery";
+import { voiceLine } from "../lib/voice";
 
 const fmtListen = (sec: number) => {
   const m = Math.floor(sec / 60);
@@ -227,12 +228,10 @@ export function Home() {
   const heroLine = top
     ? openTasks > 1
       ? `${openTasks} דברים פתוחים היום. מתחילים בחשוב מכולם.`
-      : "נשאר דבר אחד היום. הוא שלך."
+      : "נשאר דבר אחד היום. סגור אותו."
     : dayDone === 3
-      ? "שלושת הדברים של היום מאחוריך."
-      : streak
-        ? `${streak} ימים ברצף. היום שומר עליו.`
-        : "יום חדש. צעד אחד מספיק כדי להתחיל.";
+      ? "שלושת הדברים של היום מאחוריך. זה מי שאתה."
+      : voiceLine();
 
   // The whole library, interleaved across areas and rotated daily
   const dayN = Math.floor(Date.now() / 86400000);
