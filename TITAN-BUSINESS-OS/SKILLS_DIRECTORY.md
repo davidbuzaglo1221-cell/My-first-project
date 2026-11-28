@@ -18,6 +18,11 @@
 | Marketing Skills | coreyhaines31/marketingskills | MIT | 20 מתוך 53: copywriting, social, offers, pricing, launch, content-strategy, competitors, customer-research, marketing-ideas, ad-creative, video, lead-magnets, seo-audit, ai-seo, cold-email, emails, sales-enablement, marketing-psychology, cro, marketing-plan | נטען ✓ |
 | agent-browser | vercel-labs/agent-browser | Apache-2.0 | CLI גלובלי 0.43 + סקיל | **פתח דף ב-GitHub וקרא כותרת ✓** |
 | Playwright | microsoft/playwright | Apache-2.0 | מותקן מראש בסביבה | ✓ |
+| SFX Finder | thedomid/sfx-finder | MIT | sfx-finder (חיפוש צלילים לפי תיאור או לפי קטע מסרטון, CLAP) | **17/17 בדיקות ✓; אינדקס של 224 צלילים וחיפוש אמיתי ✓** (28.11.2026) |
+| Motion Graphics | Barty-Bart/motion-graphics | MIT (צלילים CC0) | sound-effects, motion-broll, object-separation, explainer-default, explainer-engaging, explainer-high-energy | נטען ✓; 103 צלילי CC0 שלו נכנסו לספרייה |
+| AI Video Editing | AskEditor/ai-video-editing-skills | MIT | video-editing (41 אפקטים: חיתוך, כתוביות, גריידינג, B-roll, מעברים, מוזיקה, qc-check). הבנת דיבור באנגלית בלבד | **setup READY; 16 בדיקות עברו, 6 דולגו (צריכות קליפים פרטיים של היוצרים); qc-check רץ על סרטון ההדגמה ✓** |
+
+**סביבת סאונד בסשן חדש:** `bash TITAN-BUSINESS-OS/sound-library/tools/setup.sh` (torch מ-PyPI כי האינדקס של PyTorch חסום ברשת; libEGL ל-AskEditor).
 
 **הערות התקנה:** agent-browser ו-HyperFrames צריכים `AGENT_BROWSER_EXECUTABLE_PATH=/opt/pw-browsers/chromium-1243/chrome-linux64/chrome`. ל-animate: Playwright באותה גרסה כמו הסביבה (1.63.0). אתרים חדשים צריכים אישור ברשימת הרשת של הסביבה.
 
@@ -27,6 +32,7 @@
 | `director` | המוח הראשי, רץ ראשון בכל בקשה |
 | `art-direction` | בחירת כיוון אמנותי לכל פרויקט ויזואלי + סף איכות לאתרים, אפליקציות, צילום ופרסומות, CGI (23.11.2026) |
 | `david-brand`, `premium-app`, `fast-video`, `social-content`, `money-engine`, `replica-*` | מותג, אפליקציות, וידאו, תוכן, כסף, שכפול אפליקציות |
+| `studio-sound` | צינור העריכה והסאונד לכל סרטון: ניתוח, תוכנית, חיפוש והורדה מהספרייה, מיקום לפי פריים, מיקס −14 LUFS, בדיקות (28.11.2026) |
 
 > לבדיקה עתידית: 76 סקילים, ותיאורי כולם נטענים בכל סשן (~22 אלף תווים). ייתכן שחלקם נחתכים. ניקוי כפילויות (למשל `social` מול `social-content`, `video` מול `fast-video`) רק באישור דוד.
 

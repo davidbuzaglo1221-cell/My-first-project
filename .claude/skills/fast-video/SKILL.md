@@ -18,7 +18,7 @@ Never slow. The viewer decides in the first second.
 - Transitions: whip pan / smear, zoom punch, slide with motion blur, flash frame, match cut. Each ≤ 8 frames. Vary them; never the same one twice in a row.
 - Kinetic captions in Hebrew RTL: 1–3 words at a time, big bold font (Heebo/Assistant 900), word-level highlight synced to the voice, slight pop-in (spring), high contrast with stroke/shadow.
 - Speed ramps, light camera shake on hits, subtle grain; colour grade consistent across shots.
-- Sound design: whooshes on transitions, hits on reveals, music ducked under the voice.
+- Sound design: always through the `studio-sound` skill (library search, frame-accurate placement, varied takes per video, -14 LUFS, sync + qc-check proof). Whooshes on transitions, hits on reveals, music ducked under the voice.
 
 ## Voice
 - Energetic, alive, presenter-level: short sentences, faster rate (+10–20%), lively pitch, emphasis on key words. Prefer ElevenLabs (multilingual, expressive) when the connection works; otherwise edge-tts `he-IL-AvriNeural` / `he-IL-HilaNeural` with `--rate=+15%` and a slight pitch lift.

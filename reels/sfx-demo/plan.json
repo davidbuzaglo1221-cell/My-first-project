@@ -1,0 +1,305 @@
+{
+ "video": "out/silent.mp4",
+ "out": "out/sfx-demo.mp4",
+ "video_id": "sfx-demo-01",
+ "target_lufs": -14,
+ "true_peak": -1.5,
+ "music": {
+  "file": "work/m130.mp3",
+  "offset": 14.840725623582767,
+  "start": 0.9752,
+  "gain_db": -7,
+  "fade_in": 0.02,
+  "fade_out": [
+   14.6286,
+   17.0667
+  ],
+  "automation": [
+   {
+    "t0": 2.9257,
+    "t1": 4.8762,
+    "lowpass": 550,
+    "gain_db": -6,
+    "ramp": 0.12
+   },
+   {
+    "t0": 7.8019,
+    "t1": 9.7524,
+    "lowpass": 900,
+    "gain_db": -3,
+    "ramp": 0.6
+   }
+  ],
+  "source": "\"Tech House vibes\" by Alejandro Magaña (A. M.), Mixkit #130",
+  "license": "Mixkit Stock Music Free License"
+ },
+ "cues": [
+  {
+   "t": 0.0,
+   "cue": "photo",
+   "max_dur": 1.0,
+   "gain_db": -1,
+   "label": "hook: shutter flash"
+  },
+  {
+   "t": 0.0,
+   "cue": "reveal",
+   "category": "bass-hit",
+   "query": "sub boom",
+   "gain_db": -3,
+   "label": "hook: sub boom"
+  },
+  {
+   "t": 0.4876,
+   "category": "pop",
+   "max_dur": 0.4,
+   "gain_db": -12,
+   "label": "second line lands"
+  },
+  {
+   "t": 0.9752,
+   "cue": "scene_cut",
+   "align": "peak",
+   "max_dur": 1.2,
+   "gain_db": -3,
+   "mood": [
+    "fast"
+   ],
+   "label": "whip pan"
+  },
+  {
+   "t": 1.0484,
+   "category": "barber",
+   "query": "hair clipper",
+   "dur": 1.7,
+   "fade": 0.35,
+   "gain_db": -10,
+   "pan": 0.25,
+   "label": "clipper on beard",
+   "id": "fr-546372",
+   "trim_start": 1.0
+  },
+  {
+   "t": 1.8773,
+   "category": "glitch",
+   "max_dur": 1.2,
+   "dur": 0.7,
+   "fade": 0.15,
+   "gain_db": -6,
+   "label": "glitch transition"
+  },
+  {
+   "t": 2.9257,
+   "category": "dark",
+   "query": "dark drone",
+   "dur": 2.3,
+   "fade": 0.6,
+   "gain_db": -4,
+   "label": "night bed"
+  },
+  {
+   "t": 2.9257,
+   "category": "tick",
+   "query": "clock ticking calm",
+   "dur": 1.9,
+   "fade": 0.3,
+   "gain_db": -9,
+   "pan": -0.3,
+   "label": "wall clocks"
+  },
+  {
+   "t": 3.901,
+   "category": "footsteps",
+   "query": "concrete footstep",
+   "max_dur": 1.0,
+   "gain_db": -7,
+   "label": "step"
+  },
+  {
+   "t": 4.1448,
+   "category": "footsteps",
+   "query": "concrete footstep",
+   "max_dur": 1.0,
+   "gain_db": -7,
+   "label": "step"
+  },
+  {
+   "t": 4.3886,
+   "category": "footsteps",
+   "query": "concrete footstep",
+   "max_dur": 1.0,
+   "gain_db": -7,
+   "label": "step"
+  },
+  {
+   "t": 4.8762,
+   "category": "reverse",
+   "align": "end",
+   "max_dur": 6,
+   "gain_db": -4,
+   "label": "reverse swell into the master"
+  },
+  {
+   "t": 4.8762,
+   "category": "bass-hit",
+   "max_dur": 2.5,
+   "gain_db": -6,
+   "label": "low hit on the cut"
+  },
+  {
+   "t": 5.8514,
+   "category": "barber",
+   "query": "scissors snap cut",
+   "max_dur": 3.0,
+   "dur": 0.5,
+   "fade": 0.1,
+   "gain_db": -6,
+   "label": "snip"
+  },
+  {
+   "t": 6.0952,
+   "category": "barber",
+   "query": "scissors snap cut",
+   "max_dur": 3.0,
+   "dur": 0.5,
+   "fade": 0.1,
+   "gain_db": -6,
+   "label": "snip"
+  },
+  {
+   "t": 6.339,
+   "category": "barber",
+   "query": "scissors snap cut",
+   "max_dur": 3.0,
+   "dur": 0.5,
+   "fade": 0.1,
+   "gain_db": -6,
+   "label": "snip"
+  },
+  {
+   "t": 6.5829,
+   "category": "barber",
+   "query": "scissors snap cut",
+   "max_dur": 3.0,
+   "dur": 0.5,
+   "fade": 0.1,
+   "gain_db": -6,
+   "label": "snip"
+  },
+  {
+   "t": 6.8267,
+   "category": "camera",
+   "query": "camera shutter",
+   "max_dur": 1.6,
+   "gain_db": -5,
+   "label": "portrait shutter"
+  },
+  {
+   "t": 7.0705,
+   "category": "camera",
+   "query": "camera shutter",
+   "max_dur": 1.6,
+   "gain_db": -5,
+   "label": "portrait shutter"
+  },
+  {
+   "t": 7.3143,
+   "category": "camera",
+   "query": "camera shutter",
+   "max_dur": 1.6,
+   "gain_db": -5,
+   "label": "portrait shutter"
+  },
+  {
+   "t": 9.7524,
+   "category": "riser",
+   "align": "end",
+   "min_dur": 1.8,
+   "max_dur": 8,
+   "gain_db": -5,
+   "label": "build to the reveal"
+  },
+  {
+   "t": 9.7524,
+   "cue": "reveal",
+   "category": "impact",
+   "gain_db": -1,
+   "label": "reveal impact"
+  },
+  {
+   "t": 9.7524,
+   "category": "bass-hit",
+   "max_dur": 2.5,
+   "gain_db": -5,
+   "label": "reveal sub"
+  },
+  {
+   "t": 10.7276,
+   "category": "luxury",
+   "query": "glass clink",
+   "max_dur": 3.5,
+   "dur": 1.6,
+   "fade": 0.4,
+   "gain_db": -8,
+   "label": "glass clink"
+  },
+  {
+   "t": 10.9714,
+   "category": "luxury",
+   "query": "shimmer sparkle",
+   "max_dur": 8,
+   "dur": 1.8,
+   "fade": 0.6,
+   "gain_db": -11,
+   "label": "light leak shimmer"
+  },
+  {
+   "t": 11.7029,
+   "category": "pop",
+   "max_dur": 0.6,
+   "gain_db": -7,
+   "label": "word 1"
+  },
+  {
+   "t": 12.1905,
+   "category": "whoosh",
+   "align": "peak",
+   "max_dur": 0.7,
+   "gain_db": -9,
+   "label": "word 2"
+  },
+  {
+   "t": 12.6781,
+   "category": "ui",
+   "max_dur": 0.5,
+   "gain_db": -7,
+   "label": "word 3"
+  },
+  {
+   "t": 13.6533,
+   "category": "drop",
+   "max_dur": 8,
+   "dur": 2.6,
+   "fade": 0.8,
+   "gain_db": -4,
+   "label": "drop to end card"
+  },
+  {
+   "t": 13.7021,
+   "category": "luxury",
+   "query": "shimmer",
+   "max_dur": 8,
+   "dur": 2.2,
+   "fade": 0.8,
+   "gain_db": -12,
+   "label": "end shimmer"
+  },
+  {
+   "t": 14.3848,
+   "category": "ding",
+   "max_dur": 1.5,
+   "gain_db": -15,
+   "label": "signature"
+  }
+ ]
+}

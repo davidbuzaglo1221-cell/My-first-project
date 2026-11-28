@@ -1,0 +1,8 @@
+database/
+__pycache__/
+*.pyc
+*.wav
+*.mp3
+.DS_Store
+.pytest_cache/
+.venv/
