@@ -80,3 +80,29 @@ describe('thirty-day program and your day', () => {
     expect(new Set(days.map((d) => challengeOfDay(d).text)).size).toBe(30)
   })
 })
+
+import covers from './coversManifest.json'
+describe('library covers', () => {
+  it('every book has a real cover file listed', () => {
+    const missing = books.filter((b) => !(covers as Record<string, boolean>)[b.id]).map((b) => b.id)
+    expect(missing).toEqual([])
+  })
+  it('every cover file exists and is sharp enough for a phone screen', async () => {
+    const { existsSync, readFileSync } = await import('node:fs')
+    const small: string[] = []
+    for (const b of books) {
+      const f = `public/covers/${b.id}.jpg`
+      expect(existsSync(f), f).toBe(true)
+      const buf = readFileSync(f)
+      // JPEG height from the SOF marker
+      let i = 2, h = 0
+      while (i < buf.length) {
+        const m = buf[i + 1], len = buf.readUInt16BE(i + 2)
+        if (m >= 0xc0 && m <= 0xc3) { h = buf.readUInt16BE(i + 5); break }
+        i += 2 + len
+      }
+      if (h < 700) small.push(`${b.id}:${h}`)
+    }
+    expect(small).toEqual([])
+  })
+})

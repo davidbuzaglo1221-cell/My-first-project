@@ -102,45 +102,9 @@
     "license": "Unsplash License"
   },
   {
-    "file": "photos/summit.webp",
-    "photographer": "Marek Piwnicki",
-    "source": "https://unsplash.com/photos/hycORWHgfo4",
-    "license": "Unsplash License"
-  },
-  {
     "file": "photos/presence.webp",
     "photographer": "Hermes Rivera",
     "source": "https://unsplash.com/photos/UbOfi152Z6k",
-    "license": "Unsplash License"
-  },
-  {
-    "file": "photos/city.webp",
-    "photographer": "Yilei (Jerry) Bao",
-    "source": "https://unsplash.com/photos/5sf46kgHnVg",
-    "license": "Unsplash License"
-  },
-  {
-    "file": "photos/business.webp",
-    "photographer": "Alim",
-    "source": "https://unsplash.com/photos/FO8HzgNQlB0",
-    "license": "Unsplash License"
-  },
-  {
-    "file": "photos/psych.webp",
-    "photographer": "Sergei Gussev",
-    "source": "https://unsplash.com/photos/1-kLRB1meiA",
-    "license": "Unsplash License"
-  },
-  {
-    "file": "photos/mindset.webp",
-    "photographer": "MARIOLA GROBELSKA",
-    "source": "https://unsplash.com/photos/32aAsu25AXc",
-    "license": "Unsplash License"
-  },
-  {
-    "file": "photos/attraction.webp",
-    "photographer": "Rafael Garcin",
-    "source": "https://unsplash.com/photos/6uxxtZsT14E",
     "license": "Unsplash License"
   },
   {
@@ -150,21 +114,9 @@
     "license": "Unsplash License"
   },
   {
-    "file": "photos/confidence.webp",
-    "photographer": "Leo_Visions",
-    "source": "https://unsplash.com/photos/veseZpmPUWY",
-    "license": "Unsplash License"
-  },
-  {
     "file": "photos/discipline.webp",
     "photographer": "Kristjan Kotar",
     "source": "https://unsplash.com/photos/KFcGFDX13x8",
-    "license": "Unsplash License"
-  },
-  {
-    "file": "photos/leadership.webp",
-    "photographer": "Kevin Schmid",
-    "source": "https://unsplash.com/photos/wjjqPof0HwU",
     "license": "Unsplash License"
   },
   {
@@ -177,6 +129,54 @@
     "file": "photos/inner-power.webp",
     "photographer": "Liam Arning",
     "source": "https://unsplash.com/photos/CQvy1NvIKZo",
+    "license": "Unsplash License"
+  },
+  {
+    "file": "photos/city.webp",
+    "photographer": "Lukas Zischke",
+    "source": "https://unsplash.com/photos/jyhez-QQ7X0",
+    "license": "Unsplash License"
+  },
+  {
+    "file": "photos/business.webp",
+    "photographer": "Bunny Lau",
+    "source": "https://unsplash.com/photos/zXp1m--6ry0",
+    "license": "Unsplash License"
+  },
+  {
+    "file": "photos/attraction.webp",
+    "photographer": "Meghan Holmes",
+    "source": "https://unsplash.com/photos/GxL2ZKcqVV4",
+    "license": "Unsplash License"
+  },
+  {
+    "file": "photos/confidence.webp",
+    "photographer": "S'mile Vilakati",
+    "source": "https://unsplash.com/photos/Q71uExlf89w",
+    "license": "Unsplash License"
+  },
+  {
+    "file": "photos/summit.webp",
+    "photographer": "Matthias Schröder",
+    "source": "https://unsplash.com/photos/Ov7Sedf31OM",
+    "license": "Unsplash License"
+  },
+  {
+    "file": "photos/mindset.webp",
+    "photographer": "Nadine Marfurt",
+    "source": "https://unsplash.com/photos/8CunQ9GcUwo",
+    "license": "Unsplash License"
+  },
+  {
+    "file": "photos/psych.webp",
+    "photographer": "Charles Etoroma",
+    "source": "https://unsplash.com/photos/ngnWyvbxRZo",
+    "license": "Unsplash License"
+  },
+  {
+    "file": "photos/leadership.webp",
+    "photographer": "Fahad Bin Kamal Anik",
+    "source": "https://unsplash.com/photos/vfB_Z6NSXm4",
     "license": "Unsplash License"
   }
 ]
