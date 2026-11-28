@@ -124,7 +124,7 @@ export function Settings() {
       <section className="group">
         <h2 className="group__title">קרדיטים</h2>
         <p className="credits">
-          צילומים: Unsplash, ברישיון Unsplash.
+          צילומים: Unsplash, ברישיון Unsplash. מוזיקה במדיטציות ובתוכנית: "Dreams Become Real" מאת Kevin MacLeod (incompetech.com), ברישיון Creative Commons Attribution 4.0. המדיטציה "מהישרדות לחופש" בקולה של דנית (ElevenLabs).
         </p>
       </section>
 
