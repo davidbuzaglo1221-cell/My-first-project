@@ -124,7 +124,7 @@ export function Settings() {
       <section className="group">
         <h2 className="group__title">קרדיטים</h2>
         <p className="credits">
-          ההקלטה בכניסה: דוד, בקולו. מוזיקה: "Dreams Become Real" מאת Kevin MacLeod (incompetech.com), ברישיון Creative Commons Attribution 4.0. צילומים: Unsplash, ברישיון Unsplash.
+          צילומים: Unsplash, ברישיון Unsplash.
         </p>
       </section>
 

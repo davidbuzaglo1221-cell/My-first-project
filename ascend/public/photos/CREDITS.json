@@ -76,11 +76,5 @@
   "photographer": "supplied by the owner (David)",
   "source": "owner upload, 27.11.2026",
   "license": "owner-supplied; upscaled 4x locally (Real-ESRGAN ONNX)"
- },
- {
-  "file": "voice/intro-david.m4a",
-  "photographer": "voice: David (owner); music: \"Dreams Become Real\" by Kevin MacLeod (incompetech.com)",
-  "source": "owner recording 27.11.2026; music via archive.org/details/DreamsBecomeReal",
-  "license": "voice owner-supplied; music CC BY 4.0"
  }
 ]
