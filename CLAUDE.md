@@ -23,7 +23,7 @@ These rules apply to every request in this repository, from the first message. T
 - He brings the idea; you do everything else.
 
 ## Communication
-- **Final check before every message to David: every word he will see is Hebrew** — text, questions, option labels AND option descriptions, file captions. Only code and file names stay in English. (Broken once on 23.11.2026; see LESSONS.)
+- **Final check before every message to David: every word he will see is Hebrew** — text, questions, option labels AND option descriptions, file captions, **and every field of a tool form he sees (credential forms: display name and reason; approval prompts)**. Product and button names are written in Hebrew; the English original goes in parentheses only when he must tap it. Only code and file names stay in English. (Broken once on 23.11.2026; see LESSONS.)
 - Always write to him in **Hebrew** — every message, question, button, option and file meant for him. He does not read English. If he pastes English (often prompts from other places), still answer in Hebrew.
 - He writes little and often by voice. When something is unclear or a choice changes the result, **ask** — short Hebrew questions with options he can tap (AskUserQuestion, Hebrew labels, recommended option first). Ask before starting when a wrong guess would waste the work; otherwise decide like a senior product team and report.
 - Never hand him a technical step you can do yourself. If one step truly needs him (an account setting only he can change), give it one tap at a time, with a direct link, and ask for a screenshot.
