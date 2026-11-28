@@ -107,6 +107,13 @@ const ok = (c, m) => console.log((c ? 'PASS ' : 'FAIL ') + m)
     const ok2 = await p.evaluate(() => [...document.querySelectorAll('.view img')].some((i) => i.src.includes('/photos/') && i.getBoundingClientRect().top < 300))
     ok(ok2, 'photograph at the top of ' + r)
   }
+  // narrator screen: premium Hebrew voices preview, not selectable yet
+  await p.goto('http://localhost:4173/#/voices'); await p.waitForTimeout(700)
+  ok((await p.locator('.vcard--premium').count()) === 3, 'voices: three premium Hebrew voices listed')
+  await p.locator('.vcard--premium .vcard__play').first().click(); await p.waitForTimeout(2500)
+  ok(await p.locator('.vcard--premium.is-playing').count() === 1, 'voices: premium preview plays')
+  ok((await p.locator('.vcard--premium button:has-text("בחר")').count()) === 0, 'voices: premium voices cannot be chosen before the upgrade')
+  await p.locator('.vcard--premium .vcard__play').first().click()
   // coach: a full clarity session becomes a goal and a commitment, and the commitment can be closed
   await p.goto('http://localhost:4173/#/coach'); await p.waitForTimeout(700)
   ok(await p.locator('.cnote').first().isVisible(), 'coach: notices there is no goal yet')
